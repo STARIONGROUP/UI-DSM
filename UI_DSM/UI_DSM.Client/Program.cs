@@ -11,12 +11,17 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-
 namespace UI_DSM.Client
 {
+    using System.Diagnostics.CodeAnalysis;
+
+    using Microsoft.AspNetCore.Components.Authorization;
+    using Microsoft.AspNetCore.Components.Web;
+    using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+
+    using UI_DSM.Client.Services.AuthenticationService;
+    using UI_DSM.Client.Services.CometSessionService;
+
     /// <summary>
     ///     Entry class of the <see cref="UI_DSM.Client" /> project
     /// </summary>
@@ -37,7 +42,11 @@ namespace UI_DSM.Client
             builder.Services.AddScoped(_ => new HttpClient
                 { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-            builder.Services.AddDevExpressBlazor();
+            builder.Services.AddAuthorizationCore();
+
+            builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddSingleton<ICometSessionService, CometSessionService>();
+            builder.Services.AddSingleton<AuthenticationStateProvider, CometAuthenticationStateProvider>();
 
             await builder.Build().RunAsync();
         }

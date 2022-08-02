@@ -11,12 +11,13 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using NLog;
-
 namespace UI_DSM.Server
 {
+    using System.Diagnostics.CodeAnalysis;
+    using System.Reflection;
+
+    using NLog;
+
     /// <summary>
     ///     Entry class of the <see cref="UI_DSM.Server" /> project
     /// </summary>
@@ -51,6 +52,7 @@ namespace UI_DSM.Server
             else
             {
                 app.UseExceptionHandler("/Error");
+
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -61,7 +63,6 @@ namespace UI_DSM.Server
             app.UseStaticFiles();
 
             app.UseRouting();
-
 
             app.MapRazorPages();
             app.MapControllers();
@@ -83,4 +84,3 @@ namespace UI_DSM.Server
         }
     }
 }
-

@@ -8,10 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CDP4Dal-CE" Version="8.1.0" />
-    <PackageReference Include="DevExpress.Blazor" Version="20.2.11" />
+    <PackageReference Include="CDP4ServicesDal-CE" Version="8.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.7" PrivateAssets="all" />
+    <PackageReference Include="ReactiveUI" Version="18.3.1" />
   </ItemGroup>
 
   <ItemGroup>

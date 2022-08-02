@@ -1,24 +1,32 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
-    App.razor
-    Copyright (c) 2022 RHEA System S.A.
-    
-    Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
-    
-    This file is part of UI-DSM. 
-    The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-    
-    The UI-DSM application is provided to the community under the Apache License 2.0.
---------------------------------------------------------------------------------------------------------!>
+// App.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
 
-<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
+<CascadingAuthenticationState>
+	<Router AppAssembly="@typeof(App).Assembly">
+		<Found Context="routeData">
+			<AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+				<Authorizing>
+					<text>Please wait, we are authorizing the user.</text>
+				</Authorizing>
+				<NotAuthorized>
+					<text> You are not authorized to access this page. </text>
+				</NotAuthorized>
+			</AuthorizeRouteView>
+		</Found>
+		<NotFound>
+			<PageTitle>Not found</PageTitle>
+			<LayoutView Layout="@typeof(MainLayout)">
+				<p role="alert">Sorry, there's nothing at this address.</p>
+			</LayoutView>
+		</NotFound>
+	</Router>
+</CascadingAuthenticationState>
