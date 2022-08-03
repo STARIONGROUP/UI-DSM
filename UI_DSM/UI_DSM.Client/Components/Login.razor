@@ -1,0 +1,65 @@
+﻿@using UI_DSM.Client.Enumerator
+<!--------------------------------------------------------------------------------------------------------
+// Login.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+<EditForm Model="this.authentication" OnValidSubmit="this.ExecuteLogin">
+	<DataAnnotationsValidator/>
+	
+	<div class="input-group row">
+		<label for="sourceAddress" class="text-align-start">Source Address:</label>
+		<InputText id="sourceAddress" class="form-control" @bind-Value="this.authentication.SourceAddress"/>
+	</div>
+	
+	<div class="input-group row m-top-10px">
+		<label for="username" class="text-align-start">Username:</label>
+		<InputText id="username" class="form-control" @bind-Value="this.authentication.UserName"/>
+	</div>
+	
+	<div class="input-group row m-top-10px">
+		<label for="password" class="text-align-start">Password:</label>
+		<InputText id="password" type="password" class="form-control" @bind-Value="this.authentication.Password"/>
+	</div>
+	
+	<ValidationSummary/>
+	
+	@if (this.AuthenticationStatus == AuthenticationStatus.Fail)
+	{
+		<div class="input-group row m-top-10px">
+			<label class="text-danger">Login fail.</label>
+		</div>
+	}
+	
+	@if (this.AuthenticationStatus == AuthenticationStatus.ServerFailure)
+	{
+		<div class="input-group row m-top-10px">
+			<label class="text-danger">Provided server can not be reached.</label>
+		</div>
+	}
+	
+	<div class="row">
+		<div class="col-md-12 text-center">
+			@switch (this.AuthenticationStatus)
+			{
+				case AuthenticationStatus.None:
+					<button id="connectbtn" type="submit" class="btn btn-connect m-top-10px">Connect</button>            
+					break;
+				case AuthenticationStatus.Authenticating:
+					<button id="connectbtn" type="submit" class="btn btn-connect m-top-10px" disabled>Connecting</button>            
+					break;
+				case AuthenticationStatus.Fail:
+				case AuthenticationStatus.ServerFailure:
+					<button id="connectbtn" type="submit" class="btn btn-connect m-top-10px">Retry</button>            
+					break;
+			}
+		</div>
+	</div>
+</EditForm>

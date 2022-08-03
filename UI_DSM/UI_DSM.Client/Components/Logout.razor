@@ -1,5 +1,5 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
-// MainLayout.razor
+// Logout.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -10,20 +10,4 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
-@inherits LayoutComponentBase
-
-<div class="page">
-	
-	<div class="sidebar">
-		<NavMenu/>
-	</div>
-	
-	<main>
-		<div class="top-row">
-			<Header/>
-		</div>
-		<article class="content px-4">
-			@(this.Body)
-		</article>
-	</main>
-</div>
+<input type="submit" @onclick="this.ExecuteLogout" value="Logout"/>
