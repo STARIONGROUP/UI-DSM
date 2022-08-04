@@ -26,7 +26,7 @@ namespace UI_DSM.Client.Components
         /// Gets or sets the <see cref="IAuthenticationService"/>
         /// </summary>
         [Inject]
-        public IAuthenticationService? AuthenticationService { get; set; }
+        public IAuthenticationService AuthenticationService { get; set; }
 
         /// <summary>
         /// Logout from the data source

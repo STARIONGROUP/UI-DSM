@@ -13,73 +13,81 @@
 
 namespace UI_DSM.Client.Tests.Services.AuthenticationService
 {
-    using CDP4Dal.DAL;
-    using CDP4Dal.Exceptions;
+    using System.Net;
+    using System.Text.Json;
+
+    using Blazored.SessionStorage;
 
     using Moq;
 
     using NUnit.Framework;
 
-    using UI_DSM.Client.Enumerator;
+    using RichardSzalay.MockHttp;
+
     using UI_DSM.Client.Services.AuthenticationService;
-    using UI_DSM.Client.Services.AuthenticationService.Dto;
-    using UI_DSM.Client.Services.CometSessionService;
+    using UI_DSM.Shared.DTO;
 
     [TestFixture]
     public class AuthenticationServiceTestFixture
     {
         private AuthenticationService service;
-        private Mock<ICometSessionService> cometSessionService;
+        private MockHttpMessageHandler httpMessageHandler;
+        private Mock<AuthenticationProvider> authenticationProvider;
+        private Mock<ISessionStorageService> sessionStorage;
 
         [SetUp]
         public void Setup()
         {
-            this.cometSessionService = new Mock<ICometSessionService>();
-
-            this.service = new AuthenticationService(this.cometSessionService.Object);
+            this.httpMessageHandler = new MockHttpMessageHandler();
+            this.sessionStorage = new Mock<ISessionStorageService>();
+            this.authenticationProvider = new Mock<AuthenticationProvider>(new HttpClient(), this.sessionStorage.Object);
+            var httpClient = this.httpMessageHandler.ToHttpClient();
+            httpClient.BaseAddress = new Uri("http://localhost/api");
+            this.service = new AuthenticationService(httpClient, this.authenticationProvider.Object, this.sessionStorage.Object);
         }
 
         [Test]
         public void VerifyLogin()
         {
-            var authentication = new AuthenticationDto();
+            var mockRequest = this.httpMessageHandler.When("/User/Login");
 
-            Assert.That(this.service.Login(authentication).Result, Is.EqualTo(AuthenticationStatus.Fail));
+            var httpResponseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.Unauthorized,
+                Content = new StringContent(JsonSerializer.Serialize(new AuthenticationResponseDto()
+                {
+                    ErrorMessage = "Unauthorized User"
+                }))
+            };
 
-            this.cometSessionService.Setup(x => x.Open(It.IsAny<Credentials>()))
-                .ReturnsAsync(false);
+            mockRequest.Respond(_ => httpResponseMessage);
 
-            authentication.SourceAddress = "http://test.com";
-            authentication.UserName = "a";
-            authentication.Password = "b";
-            Assert.That(this.service.Login(authentication).Result, Is.EqualTo(AuthenticationStatus.Fail));
+            var authentication = new AuthenticationDto()
+            {
+                UserName = "admin",
+                Password = "password"
+            };
 
-            this.cometSessionService.Setup(x => x.Open(It.IsAny<Credentials>()))
-                .ReturnsAsync(true);
+            Assert.That(this.service.Login(authentication).Result.IsAuthenticated, Is.False);
 
-            Assert.That(this.service.Login(authentication).Result, Is.EqualTo(AuthenticationStatus.Success));
+            httpResponseMessage.StatusCode = HttpStatusCode.OK;
 
-            this.cometSessionService.Setup(x => x.Close()).Returns(Task.CompletedTask);
+            httpResponseMessage.Content = new StringContent(JsonSerializer.Serialize(new AuthenticationResponseDto()
+            {
+                IsAuthenticated = true,
+                Token = Guid.NewGuid().ToString()
+            }));
 
-            this.cometSessionService.Setup(x => x.Open(It.IsAny<Credentials>()))
-                .ThrowsAsync(new DalReadException());
-
-            Assert.That(this.service.Login(authentication).Result, Is.EqualTo(AuthenticationStatus.Fail));
-
-            this.cometSessionService.Setup(x => x.Open(It.IsAny<Credentials>()))
-                .ThrowsAsync(new HttpRequestException());
-
-            Assert.That(this.service.Login(authentication).Result, Is.EqualTo(AuthenticationStatus.ServerFailure));
-
-            this.cometSessionService.Verify(x => x.Close(), Times.Exactly(2));
+            Assert.That(this.service.Login(authentication).Result.IsAuthenticated, Is.True);
         }
 
         [Test]
         public void VerifyLogout()
         {
-            this.cometSessionService.Setup(x => x.Close()).Returns(Task.CompletedTask);
+            this.sessionStorage.Setup(x => x.RemoveItemAsync(AuthenticationProvider.SessionStorageKey, null));
             Assert.That(async () => await this.service.Logout(), Throws.Nothing);
-            this.cometSessionService.Verify(x => x.Close(), Times.Once);
+
+            this.sessionStorage.Verify(x => x.RemoveItemAsync(AuthenticationProvider.SessionStorageKey, null), Times.Once);
         }
     }
 }

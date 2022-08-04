@@ -14,11 +14,6 @@
 <EditForm Model="this.authentication" OnValidSubmit="this.ExecuteLogin">
 	<DataAnnotationsValidator/>
 	
-	<div class="input-group row">
-		<label for="sourceAddress" class="text-align-start">Source Address:</label>
-		<InputText id="sourceAddress" class="form-control" @bind-Value="this.authentication.SourceAddress"/>
-	</div>
-	
 	<div class="input-group row m-top-10px">
 		<label for="username" class="text-align-start">Username:</label>
 		<InputText id="username" class="form-control" @bind-Value="this.authentication.UserName"/>
@@ -34,17 +29,10 @@
 	@if (this.AuthenticationStatus == AuthenticationStatus.Fail)
 	{
 		<div class="input-group row m-top-10px">
-			<label class="text-danger">Login fail.</label>
+			<label class="text-danger">@this.ErrorMessage</label>
 		</div>
 	}
-	
-	@if (this.AuthenticationStatus == AuthenticationStatus.ServerFailure)
-	{
-		<div class="input-group row m-top-10px">
-			<label class="text-danger">Provided server can not be reached.</label>
-		</div>
-	}
-	
+
 	<div class="row">
 		<div class="col-md-12 text-center">
 			@switch (this.AuthenticationStatus)
@@ -56,7 +44,6 @@
 					<button id="connectbtn" type="submit" class="btn btn-connect m-top-10px" disabled>Connecting</button>            
 					break;
 				case AuthenticationStatus.Fail:
-				case AuthenticationStatus.ServerFailure:
 					<button id="connectbtn" type="submit" class="btn btn-connect m-top-10px">Retry</button>            
 					break;
 			}

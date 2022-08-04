@@ -13,28 +13,25 @@
 
 namespace UI_DSM.Client.Services.AuthenticationService
 {
-    using CDP4Dal;
-
-    using UI_DSM.Client.Enumerator;
-    using UI_DSM.Client.Services.AuthenticationService.Dto;
+    using UI_DSM.Shared.DTO;
 
     /// <summary>
-    /// Interface definition for <see cref="AuthenticationService"/>
+    ///     Interface definition for <see cref="AuthenticationService" />
     /// </summary>
     public interface IAuthenticationService
     {
         /// <summary>
-        /// Login to a data source with the provided <see cref="AuthenticationDto"/>
+        ///     Login to the UI-DSM data source with the provided <see cref="AuthenticationDto" />
         /// </summary>
-        /// <param name="authentication">The <see cref="AuthenticationDto"/> to use to authenticate</param>
-        /// <returns>A <see cref="Task"/> with a <see cref="AuthenticationStatus.Success"/> result when a <see cref="ISession"/> has been fully opened</returns>
-        Task<AuthenticationStatus> Login(AuthenticationDto authentication);
+        /// <param name="authentication">The <see cref="AuthenticationDto" /> to use to authenticate</param>
+        /// <returns>A <see cref="Task" /> with a <see cref="AuthenticationResponseDto" /> result </returns>
+        Task<AuthenticationResponseDto> Login(AuthenticationDto authentication);
 
         /// <summary>
-        /// Logout from the data source
+        ///     Logout from the data source
         /// </summary>
         /// <returns>
-        /// a <see cref="Task"/>
+        ///     a <see cref="Task" />
         /// </returns>
         Task Logout();
     }

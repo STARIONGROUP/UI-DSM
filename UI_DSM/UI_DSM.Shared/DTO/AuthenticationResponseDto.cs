@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="AuthenticationDto.cs" company="RHEA System S.A.">
+// <copyright file="AuthenticationResponseDto.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -11,32 +11,26 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Services.AuthenticationService.Dto
+namespace UI_DSM.Shared.DTO
 {
-    using System.ComponentModel.DataAnnotations;
-
     /// <summary>
-    /// Authentication information used to establish a connection to an E-TM-10-25 data source
+    /// Authentication response after an authentication request
     /// </summary>
-    public class AuthenticationDto
+    public class AuthenticationResponseDto
     {
         /// <summary>
-        /// Gets or sets the E-TM-10-25 data source address
+        /// Value asserting that the authentication proceeded successfully
         /// </summary>
-        [Required]
-        [Url]
-        public string? SourceAddress { get; set; }
+        public bool IsAuthenticated { get; set; }
 
         /// <summary>
-        /// Gets or sets the username to use to authenticate
+        /// The message in case of authentication failure
         /// </summary>
-        [Required]
-        public string? UserName { get; set; }
+        public string ErrorMessage { get; set; }
 
         /// <summary>
-        /// Gets or sets the password to use to authenticate
+        /// The authentication token
         /// </summary>
-        [Required]
-        public string? Password { get; set; }
+        public string Token { get; set; }
     }
 }
