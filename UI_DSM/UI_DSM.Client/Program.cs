@@ -15,12 +15,13 @@ namespace UI_DSM.Client
 {
     using System.Diagnostics.CodeAnalysis;
 
+    using Blazored.SessionStorage;
+
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
     using UI_DSM.Client.Services.AuthenticationService;
-    using UI_DSM.Client.Services.CometSessionService;
 
     /// <summary>
     ///     Entry class of the <see cref="UI_DSM.Client" /> project
@@ -40,13 +41,12 @@ namespace UI_DSM.Client
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
             builder.Services.AddScoped(_ => new HttpClient
-                { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+                { BaseAddress = new Uri("https://localhost:7032/api/") });
 
             builder.Services.AddAuthorizationCore();
-
-            builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
-            builder.Services.AddSingleton<ICometSessionService, CometSessionService>();
-            builder.Services.AddSingleton<AuthenticationStateProvider, CometAuthenticationStateProvider>();
+            builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProvider>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddBlazoredSessionStorage();
 
             await builder.Build().RunAsync();
         }

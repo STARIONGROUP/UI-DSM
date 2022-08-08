@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="AuthenticationStatus.cs" company="RHEA System S.A.">
+// <copyright file="AuthenticationDto.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -11,31 +11,25 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Enumerator
+namespace UI_DSM.Shared.DTO
 {
+    using System.ComponentModel.DataAnnotations;
+
     /// <summary>
-    /// Enumeration that defines possible status for the authentication process
+    /// Authentication information used to login to the UI-DSM server
     /// </summary>
-    public enum AuthenticationStatus
+    public class AuthenticationDto
     {
         /// <summary>
-        /// Defaut status, when no authentication process has been performed 
+        /// Gets or sets the username to use to authenticate
         /// </summary>
-        None,
+        [Required]
+        public string UserName { get; set; }
 
         /// <summary>
-        /// Status when the authentication process is in progress
+        /// Gets or sets the password to use to authenticate
         /// </summary>
-        Authenticating,
-
-        /// <summary>
-        /// Status when the authentication process ends succesfully
-        /// </summary>
-        Success,
-
-        /// <summary>
-        /// Status when the authentication process failed
-        /// </summary>
-        Fail
+        [Required]
+        public string Password { get; set; }
     }
 }

@@ -13,14 +13,12 @@
 
 namespace UI_DSM.Client.Components
 {
-    using CDP4Dal;
-
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
 
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Services.AuthenticationService;
-    using UI_DSM.Client.Services.AuthenticationService.Dto;
+    using UI_DSM.Shared.DTO;
 
     /// <summary>
     /// The <see cref="Login"/> enables the user to login to a E-TM-10-25 data source
@@ -41,20 +39,29 @@ namespace UI_DSM.Client.Components
         /// Gets or sets the <see cref="IAuthenticationService"/>
         /// </summary>
         [Inject]
-        public IAuthenticationService? AuthenticationService { get; set; }
+        public IAuthenticationService AuthenticationService { get; set; }
 
         /// <summary>
-        /// Tries to open an new <see cref="ISession"/>
+        /// Gets or sets the login error message
+        /// </summary>
+        public string ErrorMessage { get; set; }
+
+        /// <summary>
+        /// Tries to authenticate to the server
         /// </summary>
         /// <returns>A <see cref="Task"/></returns>
         public async Task ExecuteLogin()
         {
             this.AuthenticationStatus = AuthenticationStatus.Authenticating;
+            this.ErrorMessage = string.Empty;
+
             this.StateHasChanged();
 
             if (this.AuthenticationService != null)
             {
-                this.AuthenticationStatus = await this.AuthenticationService.Login(this.authentication);
+                var response = await this.AuthenticationService.Login(this.authentication);
+                this.AuthenticationStatus = response.IsAuthenticated ? AuthenticationStatus.Success : AuthenticationStatus.Fail;
+                this.ErrorMessage = response.ErrorMessage;
             }
 
             this.StateHasChanged();

@@ -24,7 +24,7 @@ namespace UI_DSM.Client.Tests.Components
     using UI_DSM.Client.Components;
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Services.AuthenticationService;
-    using UI_DSM.Client.Services.AuthenticationService.Dto;
+    using UI_DSM.Shared.DTO;
 
     using TestContext = Bunit.TestContext;
 
@@ -56,15 +56,10 @@ namespace UI_DSM.Client.Tests.Components
 
             var login = renderComponent.Instance;
             login.AuthenticationStatus = AuthenticationStatus.Fail;
+            login.ErrorMessage = "Login fail.";
             renderComponent.Render();
 
             Assert.That(renderComponent.Find(".text-danger").TextContent, Is.EqualTo("Login fail."));
-            Assert.That(renderComponent.Find("#connectbtn").TextContent, Is.EqualTo("Retry"));
-
-            login.AuthenticationStatus = AuthenticationStatus.ServerFailure;
-            renderComponent.Render();
-
-            Assert.That(renderComponent.Find(".text-danger").TextContent, Is.EqualTo("Provided server can not be reached."));
             Assert.That(renderComponent.Find("#connectbtn").TextContent, Is.EqualTo("Retry"));
 
             login.AuthenticationStatus = AuthenticationStatus.Authenticating;
@@ -77,14 +72,16 @@ namespace UI_DSM.Client.Tests.Components
         public void VerifyLogin()
         {
             this.authenticationService.Setup(x => x.Login(It.IsAny<AuthenticationDto>()))
-                .ReturnsAsync(AuthenticationStatus.Success);
+                .ReturnsAsync(new AuthenticationResponseDto()
+                {
+                    IsAuthenticated = true
+                });
 
             var renderComponent = this.context.RenderComponent<Login>();
             var loginButton = renderComponent.Find("#connectbtn");
             
             loginButton.Click();
 
-            renderComponent.Find("#sourceAddress").Change("https://test.com");
             renderComponent.Find("#username").Change("a");
             renderComponent.Find("#password").Change("b");
 
