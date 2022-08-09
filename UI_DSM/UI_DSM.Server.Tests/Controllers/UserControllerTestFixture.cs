@@ -23,7 +23,7 @@ namespace UI_DSM.Server.Tests.Controllers
 
     using UI_DSM.Server.Controllers;
     using UI_DSM.Server.Models;
-    using UI_DSM.Shared.DTO;
+    using UI_DSM.Shared.DTO.UserManagement;
 
     [TestFixture]
     public class UserControllerTestFixture
@@ -37,15 +37,37 @@ namespace UI_DSM.Server.Tests.Controllers
         {
             var configuration = new Mock<IConfiguration>();
             this.configurationSection = new Mock<IConfigurationSection>();
-            this.userManager = new Mock<UserManager<User>>(new Mock<IUserStore<User>>().Object, null, null, null,null,null,null,null,null);
+            this.userManager = new Mock<UserManager<User>>(new Mock<IUserStore<User>>().Object, null, null, null, null, null, null, null, null);
             configuration.Setup(x => x.GetSection("JwtSettings")).Returns(this.configurationSection.Object);
             this.controller = new UserController(this.userManager.Object, configuration.Object);
         }
 
         [Test]
+        public void VerifyDeleteUser()
+        {
+            var userId = Guid.NewGuid().ToString();
+
+            this.userManager.Setup(x => x.FindByIdAsync(userId)).ReturnsAsync((User)null);
+
+            Assert.That(this.controller.DeleteUser(userId).Result.GetType(), Is.EqualTo(typeof(NotFoundObjectResult)));
+
+            var user = new User
+            {
+                IsAdmin = true,
+                Id = userId
+            };
+
+            this.userManager.Setup(x => x.FindByIdAsync(userId)).ReturnsAsync(user);
+            Assert.That(this.controller.DeleteUser(userId).Result.GetType(), Is.EqualTo(typeof(BadRequestObjectResult)));
+
+            user.IsAdmin = false;
+            Assert.That(this.controller.DeleteUser(userId).Result.GetType(), Is.EqualTo(typeof(OkObjectResult)));
+        }
+
+        [Test]
         public void VerifyLogin()
         {
-            var authentication = new AuthenticationDto()
+            var authentication = new AuthenticationDto
             {
                 UserName = "admin",
                 Password = "password"
@@ -55,7 +77,7 @@ namespace UI_DSM.Server.Tests.Controllers
 
             Assert.That(this.controller.Login(authentication).Result.GetType(), Is.EqualTo(typeof(UnauthorizedObjectResult)));
 
-            var user = new User()
+            var user = new User
             {
                 IsAdmin = false,
                 UserName = "userName"
@@ -76,7 +98,44 @@ namespace UI_DSM.Server.Tests.Controllers
             user.IsAdmin = true;
 
             var okResponse = this.controller.Login(authentication).Result as OkObjectResult;
-            Assert.That(((AuthenticationResponseDto)okResponse.Value).IsAuthenticated, Is.True);
+            Assert.That(((AuthenticationResponseDto)okResponse!.Value!).IsRequestSuccessful, Is.True);
+        }
+
+        [Test]
+        public void VerifyRegisterUser()
+        {
+            Assert.That(this.controller.RegisterUser(null).Result.GetType(), Is.EqualTo(typeof(BadRequestResult)));
+
+            var registration = new RegistrationDto
+            {
+                UserName = "user",
+                Password = "aPassword",
+                ConfirmPassword = "aPassword"
+            };
+
+            this.userManager.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError
+                {
+                    Description = "User already exist"
+                }));
+
+            var registrationResult = this.controller.RegisterUser(registration).Result as BadRequestObjectResult;
+            Assert.That(((RegistrationResponseDto)registrationResult!.Value!).IsRequestSuccessful, Is.False);
+            Assert.That(((RegistrationResponseDto)registrationResult!.Value!).Errors.Count(), Is.EqualTo(1));
+
+            this.userManager.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
+                .ReturnsAsync(IdentityResult.Success);
+
+            var user = new User()
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = registration.UserName
+            };
+
+            this.userManager.Setup(x => x.FindByNameAsync(user.UserName)).ReturnsAsync(user);
+
+            var okRegistrationResult = this.controller.RegisterUser(registration).Result as ObjectResult;
+            Assert.That(okRegistrationResult!.StatusCode, Is.EqualTo(201));
         }
     }
 }

@@ -30,7 +30,7 @@ namespace UI_DSM.Server.Context.Configuration
         /// <summary>
         /// The unique ID for the Admin user, to prevent loosing data on migration
         /// </summary>
-        private const string AdminId = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7";
+        public const string AdminId = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7";
 
         /// <summary>
         ///     Configures the entity of type <see cref="User"/>

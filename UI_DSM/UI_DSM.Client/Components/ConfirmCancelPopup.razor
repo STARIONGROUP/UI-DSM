@@ -1,0 +1,20 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// ConfirmCancelPopup.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+<DxPopup @bind-Visible="@this.ViewModel.IsVisible" HeaderText="@this.ViewModel.HeaderText" ShowCloseButton="true">
+	<Content>
+		@this.ViewModel.ContentText
+	</Content>
+	<FooterTemplate>
+			<DxButton Text="Cancel" RenderStyle="@this.ViewModel.CancelRenderStyle" Click="@this.ViewModel.OnCancel"/>
+			<DxButton Text="Confirm" RenderStyle="@this.ViewModel.ConfirmRenderStyle" Click="@this.ViewModel.OnConfirm"/>
+	</FooterTemplate>
+</DxPopup>

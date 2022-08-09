@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="AuthenticationDto.cs" company="RHEA System S.A.">
+// <copyright file="RequestResponseDto.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -11,25 +11,21 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Shared.DTO
+namespace UI_DSM.Shared.DTO.Common
 {
-    using System.ComponentModel.DataAnnotations;
-
     /// <summary>
-    /// Authentication information used to login to the UI-DSM server
+    /// Common DTO used to respond to all basic operation (creation/update/delete) request
     /// </summary>
-    public class AuthenticationDto
+    public class RequestResponseDto
     {
         /// <summary>
-        /// Gets or sets the username to use to authenticate
+        /// Value indicating if the request has proceed successfuly
         /// </summary>
-        [Required]
-        public string UserName { get; set; }
+        public bool IsRequestSuccessful { get; set; }
 
         /// <summary>
-        /// Gets or sets the password to use to authenticate
+        /// A collection of errors
         /// </summary>
-        [Required]
-        public string Password { get; set; }
+        public IEnumerable<string> Errors { get; set; } 
     }
 }

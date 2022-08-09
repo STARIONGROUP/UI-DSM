@@ -49,6 +49,15 @@ namespace UI_DSM.Server.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "AF8956F8-CA85-4DF2-8CB6-C46D0845B987",
+                            ConcurrencyStamp = "fe7b8d25-16f8-47c2-9100-5c064cff2393",
+                            Name = "Administrator",
+                            NormalizedName = "ADMINISTRATOR"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -136,6 +145,13 @@ namespace UI_DSM.Server.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7",
+                            RoleId = "AF8956F8-CA85-4DF2-8CB6-C46D0845B987"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -228,14 +244,14 @@ namespace UI_DSM.Server.Migrations
                         {
                             Id = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6a3d2d13-515a-4f23-99db-2db886289644",
+                            ConcurrencyStamp = "e09699ab-a903-43e2-ac73-b316fd71d5cf",
                             EmailConfirmed = false,
                             IsAdmin = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGU3W5f+n3Rm/8tR1/E4wM5gtRQqdbJ+9ih4sIuYReTNbRMibL+YNq9U039HhFJVpg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEAeysVODCLqjegWO2sUPtcq178eAqy196QWmkMRpAnsBzSEltZI1XVk1D2BT0YgmJQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "8abfac94-8bde-445c-8cd1-7766f9277389",
+                            SecurityStamp = "acc66fb4-5feb-4fce-9232-dbf8125be7b9",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });

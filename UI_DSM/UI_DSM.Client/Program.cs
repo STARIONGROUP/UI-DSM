@@ -21,7 +21,10 @@ namespace UI_DSM.Client
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
+    using UI_DSM.Client.Services.Administration.UserService;
     using UI_DSM.Client.Services.AuthenticationService;
+    using UI_DSM.Client.ViewModels.Components;
+    using UI_DSM.Client.ViewModels.Pages.Administration;
 
     /// <summary>
     ///     Entry class of the <see cref="UI_DSM.Client" /> project
@@ -40,15 +43,40 @@ namespace UI_DSM.Client
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            builder.Services.AddScoped(_ => new HttpClient
-                { BaseAddress = new Uri("https://localhost:7032/api/") });
-
-            builder.Services.AddAuthorizationCore();
-            builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProvider>();
-            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-            builder.Services.AddBlazoredSessionStorage();
+            AddServices(builder);
+            AddViewModels(builder);
 
             await builder.Build().RunAsync();
+        }
+
+        /// <summary>
+        /// Register all ViewModels into the <see cref="WebAssemblyHostBuilder"/>
+        /// </summary>
+        /// <param name="builder">The <see cref="WebAssemblyHostBuilder"/></param>
+        private static void AddViewModels(WebAssemblyHostBuilder builder)
+        {
+            builder.Services.AddTransient<IUserManagementViewModel, UserManagementViewModel>();
+            builder.Services.AddTransient<ILoginViewModel, LoginViewModel>();
+            builder.Services.AddTransient<ILogoutViewModel, LogoutViewModel>();
+        }
+
+        /// <summary>
+        /// Register all services into the <see cref="WebAssemblyHostBuilder.Services"/>
+        /// </summary>
+        /// <param name="builder">The <see cref="WebAssemblyHostBuilder"/></param>
+        private static void AddServices(WebAssemblyHostBuilder builder)
+        {
+            builder.Services.AddScoped(_ => new HttpClient
+                { BaseAddress = new Uri(builder.Configuration["apiUri"]) });
+
+            builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProvider>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+
+            builder.Services.AddAuthorizationCore();
+
+            builder.Services.AddBlazoredSessionStorage();
+            builder.Services.AddDevExpressBlazor();
         }
     }
 }

@@ -46,6 +46,8 @@ namespace UI_DSM.Server.Context
             base.OnModelCreating(builder);
 
             builder.ApplyConfiguration(new UserConfiguration());
+            builder.ApplyConfiguration(new RoleConfiguration());
+            builder.ApplyConfiguration(new UserRoleConfiguration());
         }
     }
 }

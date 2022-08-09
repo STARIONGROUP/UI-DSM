@@ -13,7 +13,7 @@
 
 namespace UI_DSM.Client.Services.AuthenticationService
 {
-    using UI_DSM.Shared.DTO;
+    using UI_DSM.Shared.DTO.UserManagement;
 
     /// <summary>
     ///     Interface definition for <see cref="AuthenticationService" />

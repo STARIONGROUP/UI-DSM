@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="Login.cs" company="RHEA System S.A.">
+// <copyright file="Login.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -13,58 +13,56 @@
 
 namespace UI_DSM.Client.Components
 {
-    using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.Components.Forms;
+    using System.Reactive.Concurrency;
+    using System.Reactive.Linq;
 
-    using UI_DSM.Client.Enumerator;
-    using UI_DSM.Client.Services.AuthenticationService;
-    using UI_DSM.Shared.DTO;
+    using Microsoft.AspNetCore.Components;
+
+    using ReactiveUI;
+
+    using UI_DSM.Client.ViewModels.Components;
 
     /// <summary>
-    /// The <see cref="Login"/> enables the user to login to a E-TM-10-25 data source
+    ///     The <see cref="Login" /> enables the user to login to a E-TM-10-25 data source
     /// </summary>
-    public partial class Login
+    public partial class Login : IDisposable
     {
         /// <summary>
-        /// The <see cref="AuthenticationDto"/> used for the <see cref="EditForm"/>
-        /// </summary>
-	    private AuthenticationDto authentication = new();
-
-        /// <summary>
-        /// Gets or sets the <see cref="Enumerator.AuthenticationStatus"/>
-        /// </summary>
-        public AuthenticationStatus AuthenticationStatus { get; set; }
-
-        /// <summary>
-        /// Gets or sets the <see cref="IAuthenticationService"/>
+        ///     Gets or sets the <see cref="ILoginViewModel" />
         /// </summary>
         [Inject]
-        public IAuthenticationService AuthenticationService { get; set; }
+        public ILoginViewModel ViewModel { get; set; }
 
         /// <summary>
-        /// Gets or sets the login error message
+        /// A collection of <see cref="IDisposable" />
         /// </summary>
-        public string ErrorMessage { get; set; }
+        private List<IDisposable> disposables = new();
 
         /// <summary>
-        /// Tries to authenticate to the server
+        ///     Method invoked when the component is ready to start, having received its
+        ///     initial parameters from its parent in the render tree.
+        ///     Override this method if you will perform an asynchronous operation and
+        ///     want the component to refresh when that operation is completed.
         /// </summary>
-        /// <returns>A <see cref="Task"/></returns>
-        public async Task ExecuteLogin()
+        /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
+        protected override Task OnInitializedAsync()
         {
-            this.AuthenticationStatus = AuthenticationStatus.Authenticating;
-            this.ErrorMessage = string.Empty;
+            this.disposables.Add(this.ViewModel.WhenAnyValue(x => x.ErrorMessage)
+                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
-            this.StateHasChanged();
+            this.disposables.Add(this.ViewModel.WhenAnyValue(x => x.AuthenticationStatus)
+                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
-            if (this.AuthenticationService != null)
-            {
-                var response = await this.AuthenticationService.Login(this.authentication);
-                this.AuthenticationStatus = response.IsAuthenticated ? AuthenticationStatus.Success : AuthenticationStatus.Fail;
-                this.ErrorMessage = response.ErrorMessage;
-            }
+            return base.OnInitializedAsync();
+        }
 
-            this.StateHasChanged();
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.disposables.ForEach(x => x.Dispose());
+            this.disposables.Clear();
         }
     }
 }

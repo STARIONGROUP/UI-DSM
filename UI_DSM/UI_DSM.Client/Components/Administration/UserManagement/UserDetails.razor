@@ -1,0 +1,30 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// UserDetails.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+<EditForm Context="editFormContext" Model="@this.ViewModel.User">
+	<DxFormLayout>
+		<DxFormLayoutItem Caption="User Id:" ColSpanMd="12">
+			<Template>
+				<InputText @bind-Value="@this.ViewModel.User.UserId" disabled="true" class="form-control"/>
+			</Template>
+		</DxFormLayoutItem>
+		<DxFormLayoutItem Caption="UserName:" ColSpanMd="12">
+			<Template>
+				<InputText @bind-Value="@this.ViewModel.User.UserName" disabled="true" class="form-control"/>
+			</Template>
+		</DxFormLayoutItem>
+		<DxFormLayoutItem Caption="Is Administrator:" ColSpanMd="12">
+			<Template>
+				<DxCheckBox @bind-Checked="@this.ViewModel.User.IsAdmin" Enabled="false"/>
+			</Template>
+		</DxFormLayoutItem>
+	</DxFormLayout>
+</EditForm>

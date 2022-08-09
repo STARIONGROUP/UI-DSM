@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="Logout.cs" company="RHEA System S.A.">
+// <copyright file="Logout.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -15,29 +15,17 @@ namespace UI_DSM.Client.Components
 {
     using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Client.Services.AuthenticationService;
+    using UI_DSM.Client.ViewModels.Components;
 
     /// <summary>
-    /// The <see cref="Login"/> enables the user to log out to the E-TM-10-25 data source
+    ///     The <see cref="Login" /> enables the user to log out to the E-TM-10-25 data source
     /// </summary>
     public partial class Logout
     {
         /// <summary>
-        /// Gets or sets the <see cref="IAuthenticationService"/>
+        ///     Gets or sets the <see cref="ILogoutViewModel" />
         /// </summary>
         [Inject]
-        public IAuthenticationService AuthenticationService { get; set; }
-
-        /// <summary>
-        /// Logout from the data source
-        /// </summary>
-        /// <returns></returns>
-        public async Task ExecuteLogout()
-        {
-            if (this.AuthenticationService != null)
-            {
-                await this.AuthenticationService.Logout();
-            }
-        }
+        public ILogoutViewModel ViewModel { get; set; }
     }
 }

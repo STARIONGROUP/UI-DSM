@@ -25,7 +25,7 @@ namespace UI_DSM.Client.Tests.Services.AuthenticationService
     using RichardSzalay.MockHttp;
 
     using UI_DSM.Client.Services.AuthenticationService;
-    using UI_DSM.Shared.DTO;
+    using UI_DSM.Shared.DTO.UserManagement;
 
     [TestFixture]
     public class AuthenticationServiceTestFixture
@@ -56,7 +56,10 @@ namespace UI_DSM.Client.Tests.Services.AuthenticationService
                 StatusCode = HttpStatusCode.Unauthorized,
                 Content = new StringContent(JsonSerializer.Serialize(new AuthenticationResponseDto()
                 {
-                    ErrorMessage = "Unauthorized User"
+                    Errors = new List<string>()
+                    {
+                        "Unauthorized User"
+                    }
                 }))
             };
 
@@ -68,17 +71,17 @@ namespace UI_DSM.Client.Tests.Services.AuthenticationService
                 Password = "password"
             };
 
-            Assert.That(this.service.Login(authentication).Result.IsAuthenticated, Is.False);
+            Assert.That(this.service.Login(authentication).Result.IsRequestSuccessful, Is.False);
 
             httpResponseMessage.StatusCode = HttpStatusCode.OK;
 
             httpResponseMessage.Content = new StringContent(JsonSerializer.Serialize(new AuthenticationResponseDto()
             {
-                IsAuthenticated = true,
+                IsRequestSuccessful = true,
                 Token = Guid.NewGuid().ToString()
             }));
 
-            Assert.That(this.service.Login(authentication).Result.IsAuthenticated, Is.True);
+            Assert.That(this.service.Login(authentication).Result.IsRequestSuccessful, Is.True);
         }
 
         [Test]

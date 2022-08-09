@@ -13,14 +13,13 @@
 
 namespace UI_DSM.Client.Services.AuthenticationService
 {
+    using System.IdentityModel.Tokens.Jwt;
     using System.Net.Http.Headers;
     using System.Security.Claims;
 
     using Blazored.SessionStorage;
 
     using Microsoft.AspNetCore.Components.Authorization;
-
-    using UI_DSM.Client.Features;
 
     /// <summary>
     ///     Provides information about the authentication state of the current user.
@@ -35,7 +34,7 @@ namespace UI_DSM.Client.Services.AuthenticationService
         /// <summary>
         ///     Value for the <see cref="AuthenticationHeaderValue" /> key
         /// </summary>
-        public const string AuthenticationHeaderKey = "bearer";
+        public const string AuthenticationHeaderKey = "Bearer";
 
         /// <summary>
         ///     Value for the <see cref="ClaimsIdentity.AuthenticationType" />
@@ -69,7 +68,7 @@ namespace UI_DSM.Client.Services.AuthenticationService
         /// <returns>A task that, when resolved, gives an <see cref="AuthenticationState" /> instance that describes the current user.</returns>
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var token = await this.sessionStorage.GetItemAsStringAsync(SessionStorageKey);
+            var token = await this.sessionStorage.GetItemAsync<string>(SessionStorageKey);
 
             if (string.IsNullOrEmpty(token))
             {
@@ -79,7 +78,9 @@ namespace UI_DSM.Client.Services.AuthenticationService
 
             this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthenticationHeaderKey, token);
 
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(JwtParser.ParseClaimsFromJwt(token), AuthenticationType)));
+            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
+
+            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(jwt.Claims, AuthenticationType)));
         }
 
         /// <summary>

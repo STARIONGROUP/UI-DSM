@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.Tests.Shared
 {
     using Bunit;
+    using Bunit.TestDoubles;
 
     using NUnit.Framework;
 
@@ -30,6 +31,7 @@ namespace UI_DSM.Client.Tests.Shared
         public void Setup()
         {
             this.context = new TestContext();
+            this.context.AddTestAuthorization();
         }
 
         [TearDown]

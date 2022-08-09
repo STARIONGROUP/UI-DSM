@@ -21,23 +21,13 @@ namespace UI_DSM.Client.Services.AuthenticationService
 
     using Microsoft.AspNetCore.Components.Authorization;
 
-    using UI_DSM.Shared.DTO;
+    using UI_DSM.Shared.DTO.UserManagement;
 
     /// <summary>
     ///     The <see cref="AuthenticationService" /> allow the user to login and logout to the UI-DSM data source
     /// </summary>
-    public class AuthenticationService : IAuthenticationService
+    public class AuthenticationService : ServiceBase, IAuthenticationService
     {
-        /// <summary>
-        ///     The <see cref="HttpClient" /> to acess to the API
-        /// </summary>
-        private readonly HttpClient httpClient;
-
-        /// <summary>
-        ///     The <see cref="JsonSerializerOptions" /> that is used for JSON action
-        /// </summary>
-        private readonly JsonSerializerOptions jsonSerializerOptions;
-
         /// <summary>
         ///     The <see cref="ISessionStorageService" />
         /// </summary>
@@ -52,12 +42,11 @@ namespace UI_DSM.Client.Services.AuthenticationService
         /// <param name="httpClient">The <see cref="HttpClient" /></param>
         /// <param name="stateProvider">The <see cref="AuthenticationStateProvider" /></param>
         /// <param name="sessionStorageService">The <see cref="ISessionStorageService" /></param>
-        public AuthenticationService(HttpClient httpClient, AuthenticationStateProvider stateProvider, ISessionStorageService sessionStorageService)
+        public AuthenticationService(HttpClient httpClient, AuthenticationStateProvider stateProvider, ISessionStorageService sessionStorageService) :
+            base(httpClient)
         {
-            this.httpClient = httpClient;
             this.stateProvider = stateProvider;
             this.sessionStorageService = sessionStorageService;
-            this.jsonSerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         }
 
         /// <summary>
@@ -70,9 +59,9 @@ namespace UI_DSM.Client.Services.AuthenticationService
             var content = JsonSerializer.Serialize(authentication);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
-            var authenticationResult = await this.httpClient.PostAsync("User/Login", bodyContent);
+            var authenticationResult = await this.HttpClient.PostAsync("User/Login", bodyContent);
             var authenticationContent = await authenticationResult.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<AuthenticationResponseDto>(authenticationContent, this.jsonSerializerOptions);
+            var result = JsonSerializer.Deserialize<AuthenticationResponseDto>(authenticationContent, this.JsonSerializerOptions);
 
             if (!authenticationResult.IsSuccessStatusCode)
             {
@@ -82,11 +71,11 @@ namespace UI_DSM.Client.Services.AuthenticationService
             await this.sessionStorageService.SetItemAsync(AuthenticationProvider.SessionStorageKey, result.Token);
             ((AuthenticationProvider)this.stateProvider).NotifyAuthenticationStateChanged();
 
-            this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthenticationProvider.AuthenticationHeaderKey, result.Token);
+            this.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthenticationProvider.AuthenticationHeaderKey, result.Token);
 
             return new AuthenticationResponseDto
             {
-                IsAuthenticated = true
+                IsRequestSuccessful = true
             };
         }
 

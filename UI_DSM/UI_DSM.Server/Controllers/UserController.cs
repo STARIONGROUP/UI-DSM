@@ -17,12 +17,15 @@ namespace UI_DSM.Server.Controllers
     using System.Security.Claims;
     using System.Text;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.IdentityModel.Tokens;
 
     using UI_DSM.Server.Models;
-    using UI_DSM.Shared.DTO;
+    using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.DTO.UserManagement;
 
     /// <summary>
     ///     The <see cref="UserController" /> is a <see cref="Controller" /> to manage <see cref="User" />s
@@ -68,13 +71,121 @@ namespace UI_DSM.Server.Controllers
             {
                 return this.Unauthorized(new AuthenticationResponseDto
                 {
-                    ErrorMessage = "Username and/or password are incorrect"
+                    Errors = new List<string>
+                    {
+                        "Username and/or password are incorrect"
+                    }
                 });
             }
 
-            var tokenOptions = this.GenerateTokenOptions(this.GetSigningCredentials(), this.GetClaims(user));
+            var tokenOptions = this.GenerateTokenOptions(this.GetSigningCredentials(), await this.GetClaims(user));
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-            return this.Ok(new AuthenticationResponseDto { IsAuthenticated = true, Token = token });
+            return this.Ok(new AuthenticationResponseDto { IsRequestSuccessful = true, Token = token });
+        }
+
+        /// <summary>
+        ///     Tries to register a new user base on the provided <see cref="RegistrationDto" />
+        /// </summary>
+        /// <param name="registration">The <see cref="RegistrationDto" /></param>
+        /// <returns>The <see cref="UserDto" /> if correctly created, a simple <see cref="RegistrationResponseDto" /> otherwise</returns>
+        [HttpPost("Register")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> RegisterUser([FromBody] RegistrationDto registration)
+        {
+            if (registration == null || !this.ModelState.IsValid)
+            {
+                return this.BadRequest();
+            }
+
+            var user = new User
+            {
+                UserName = registration.UserName
+            };
+
+            var identityResult = await this.userManager.CreateAsync(user, registration.Password);
+
+            var response = new RegistrationResponseDto
+            {
+                IsRequestSuccessful = identityResult.Succeeded
+            };
+
+            if (!identityResult.Succeeded)
+            {
+                response.Errors = identityResult.Errors.Select(e => e.Description);
+                return this.BadRequest(response);
+            }
+
+            var createdUser = await this.userManager.FindByNameAsync(user.UserName);
+
+            response.CreatedUser = new UserDto
+            {
+                UserName = createdUser.UserName,
+                IsAdmin = createdUser.IsAdmin,
+                UserId = createdUser.Id
+            };
+
+            return this.StatusCode(201, response);
+        }
+
+        /// <summary>
+        ///     Get the collections of registered users
+        /// </summary>
+        /// <returns>A <see cref="Task" /> that will contains the collection of <see cref="UserDto" /></returns>
+        [HttpGet]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> GetUsers()
+        {
+            var users = await this.userManager.Users.ToListAsync();
+
+            var usersDto = users.Select(x => new UserDto
+            {
+                UserName = x.UserName,
+                UserId = x.Id,
+                IsAdmin = x.IsAdmin
+            });
+
+            return this.Ok(usersDto);
+        }
+
+        /// <summary>
+        ///     Tries to delete an <see cref="User" /> defined by the given <paramref name="userId" />
+        /// </summary>
+        /// <param name="userId">The <see cref="User.Id" /></param>
+        /// <returns>A <see cref="Task" /> with the result of the delete action</returns>
+        [HttpDelete("{userId}")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+            var user = await this.userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return this.NotFound(new RequestResponseDto
+                {
+                    Errors = new List<string>
+                    {
+                        $"User with id {userId} not found"
+                    }
+                });
+            }
+
+            if (user.IsAdmin)
+            {
+                return this.BadRequest(new RegistrationResponseDto
+                {
+                    Errors = new List<string>
+                    {
+                        "Forbidden to delete an Administrator"
+                    }
+                });
+            }
+
+            await this.userManager.DeleteAsync(user);
+
+            return this.Ok(new RequestResponseDto
+            {
+                IsRequestSuccessful = true
+            });
         }
 
         /// <summary>
@@ -94,7 +205,7 @@ namespace UI_DSM.Server.Controllers
         /// </summary>
         /// <param name="user">The <see cref="User" /></param>
         /// <returns>A collection of <see cref="Claim" /></returns>
-        private IEnumerable<Claim> GetClaims(User user)
+        private async Task<IEnumerable<Claim>> GetClaims(User user)
         {
             var claims = new List<Claim>
             {
