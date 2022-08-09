@@ -14,6 +14,7 @@
 namespace UI_DSM.Client
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Reflection;
 
     using Blazored.SessionStorage;
 
@@ -23,8 +24,6 @@ namespace UI_DSM.Client
 
     using UI_DSM.Client.Services.Administration.UserService;
     using UI_DSM.Client.Services.AuthenticationService;
-    using UI_DSM.Client.ViewModels.Components;
-    using UI_DSM.Client.ViewModels.Pages.Administration;
 
     /// <summary>
     ///     Entry class of the <see cref="UI_DSM.Client" /> project
@@ -50,20 +49,32 @@ namespace UI_DSM.Client
         }
 
         /// <summary>
-        /// Register all ViewModels into the <see cref="WebAssemblyHostBuilder"/>
+        ///     Register all ViewModels into the <see cref="WebAssemblyHostBuilder" />
         /// </summary>
-        /// <param name="builder">The <see cref="WebAssemblyHostBuilder"/></param>
+        /// <param name="builder">The <see cref="WebAssemblyHostBuilder" /></param>
         private static void AddViewModels(WebAssemblyHostBuilder builder)
         {
-            builder.Services.AddTransient<IUserManagementViewModel, UserManagementViewModel>();
-            builder.Services.AddTransient<ILoginViewModel, LoginViewModel>();
-            builder.Services.AddTransient<ILogoutViewModel, LogoutViewModel>();
+            var viewModelInterfaces = Assembly.GetCallingAssembly().GetExportedTypes()
+                .Where(x => x.IsInterface && x.Name.Contains("ViewModel")).ToList();
+
+            foreach (var viewModelInterface in viewModelInterfaces)
+            {
+                var viewModel = Assembly.GetCallingAssembly().GetExportedTypes()
+                    .FirstOrDefault(x => x.IsClass
+                                         && x.Name == viewModelInterface.Name.Remove(0, 1)
+                                         && x.GetInterface(viewModelInterface.Name) == viewModelInterface);
+
+                if (viewModel != null)
+                {
+                    builder.Services.AddTransient(viewModelInterface, viewModel);
+                }
+            }
         }
 
         /// <summary>
-        /// Register all services into the <see cref="WebAssemblyHostBuilder.Services"/>
+        ///     Register all services into the <see cref="WebAssemblyHostBuilder.Services" />
         /// </summary>
-        /// <param name="builder">The <see cref="WebAssemblyHostBuilder"/></param>
+        /// <param name="builder">The <see cref="WebAssemblyHostBuilder" /></param>
         private static void AddServices(WebAssemblyHostBuilder builder)
         {
             builder.Services.AddScoped(_ => new HttpClient
