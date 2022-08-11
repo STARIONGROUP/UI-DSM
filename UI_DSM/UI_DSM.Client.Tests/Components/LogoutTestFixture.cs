@@ -14,15 +14,19 @@
 namespace UI_DSM.Client.Tests.Components
 {
     using Bunit;
+    using Bunit.TestDoubles;
 
+    using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.DependencyInjection;
 
     using Moq;
+    using Moq.Protected;
 
     using NUnit.Framework;
 
     using UI_DSM.Client.Components;
     using UI_DSM.Client.Services.AuthenticationService;
+    using UI_DSM.Client.ViewModels.Components;
 
     using TestContext = Bunit.TestContext;
 
@@ -31,14 +35,17 @@ namespace UI_DSM.Client.Tests.Components
     {
         private TestContext context;
         private Mock<IAuthenticationService> authenticationService;
+        private Mock<NavigationManager> navigationManager;
+        private ILogoutViewModel logoutViewModel;
 
         [SetUp]
         public void Setup()
         {
             this.authenticationService = new Mock<IAuthenticationService>();
-
             this.context = new TestContext();
-            this.context.Services.AddSingleton(this.authenticationService.Object);
+            this.logoutViewModel = new LogoutViewModel(this.authenticationService.Object, null);
+            this.context.Services.AddSingleton(this.logoutViewModel);
+            this.logoutViewModel.NavigationManager = this.context.Services.GetRequiredService<NavigationManager>();
         }
 
         [TearDown]

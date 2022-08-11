@@ -24,7 +24,8 @@ namespace UI_DSM.Client.Tests.Components
     using UI_DSM.Client.Components;
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Services.AuthenticationService;
-    using UI_DSM.Shared.DTO;
+    using UI_DSM.Client.ViewModels.Components;
+    using UI_DSM.Shared.DTO.UserManagement;
 
     using TestContext = Bunit.TestContext;
 
@@ -33,14 +34,15 @@ namespace UI_DSM.Client.Tests.Components
     {
         private TestContext context;
         private Mock<IAuthenticationService> authenticationService;
+        private ILoginViewModel viewModel;
 
         [SetUp]
         public void Setup()
         {
             this.authenticationService = new Mock<IAuthenticationService>();
-
+            this.viewModel = new LoginViewModel(this.authenticationService.Object);
             this.context = new TestContext();
-            this.context.Services.AddSingleton(this.authenticationService.Object);
+            this.context.Services.AddSingleton(this.viewModel);
         }
 
         [TearDown]
@@ -54,15 +56,14 @@ namespace UI_DSM.Client.Tests.Components
         {
             var renderComponent = this.context.RenderComponent<Login>();
 
-            var login = renderComponent.Instance;
-            login.AuthenticationStatus = AuthenticationStatus.Fail;
-            login.ErrorMessage = "Login fail.";
+            this.viewModel.AuthenticationStatus = AuthenticationStatus.Fail;
+            this.viewModel.ErrorMessage = "Login fail.";
             renderComponent.Render();
 
             Assert.That(renderComponent.Find(".text-danger").TextContent, Is.EqualTo("Login fail."));
             Assert.That(renderComponent.Find("#connectbtn").TextContent, Is.EqualTo("Retry"));
 
-            login.AuthenticationStatus = AuthenticationStatus.Authenticating;
+            this.viewModel.AuthenticationStatus = AuthenticationStatus.Authenticating;
             renderComponent.Render();
 
             Assert.That(renderComponent.Find("#connectbtn").TextContent, Is.EqualTo("Connecting"));
@@ -74,7 +75,7 @@ namespace UI_DSM.Client.Tests.Components
             this.authenticationService.Setup(x => x.Login(It.IsAny<AuthenticationDto>()))
                 .ReturnsAsync(new AuthenticationResponseDto()
                 {
-                    IsAuthenticated = true
+                    IsRequestSuccessful = true
                 });
 
             var renderComponent = this.context.RenderComponent<Login>();

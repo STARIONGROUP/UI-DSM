@@ -14,6 +14,7 @@
 namespace UI_DSM.Client
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Reflection;
 
     using Blazored.SessionStorage;
 
@@ -21,6 +22,7 @@ namespace UI_DSM.Client
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
+    using UI_DSM.Client.Services.Administration.UserService;
     using UI_DSM.Client.Services.AuthenticationService;
 
     /// <summary>
@@ -40,15 +42,52 @@ namespace UI_DSM.Client
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            builder.Services.AddScoped(_ => new HttpClient
-                { BaseAddress = new Uri("https://localhost:7032/api/") });
-
-            builder.Services.AddAuthorizationCore();
-            builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProvider>();
-            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-            builder.Services.AddBlazoredSessionStorage();
+            AddServices(builder);
+            AddViewModels(builder);
 
             await builder.Build().RunAsync();
+        }
+
+        /// <summary>
+        ///     Register all ViewModels into the <see cref="WebAssemblyHostBuilder" />
+        /// </summary>
+        /// <param name="builder">The <see cref="WebAssemblyHostBuilder" /></param>
+        private static void AddViewModels(WebAssemblyHostBuilder builder)
+        {
+            var viewModelInterfaces = Assembly.GetCallingAssembly().GetExportedTypes()
+                .Where(x => x.IsInterface && x.Name.Contains("ViewModel")).ToList();
+
+            foreach (var viewModelInterface in viewModelInterfaces)
+            {
+                var viewModel = Assembly.GetCallingAssembly().GetExportedTypes()
+                    .FirstOrDefault(x => x.IsClass
+                                         && x.Name == viewModelInterface.Name.Remove(0, 1)
+                                         && x.GetInterface(viewModelInterface.Name) == viewModelInterface);
+
+                if (viewModel != null)
+                {
+                    builder.Services.AddTransient(viewModelInterface, viewModel);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Register all services into the <see cref="WebAssemblyHostBuilder.Services" />
+        /// </summary>
+        /// <param name="builder">The <see cref="WebAssemblyHostBuilder" /></param>
+        private static void AddServices(WebAssemblyHostBuilder builder)
+        {
+            builder.Services.AddScoped(_ => new HttpClient
+                { BaseAddress = new Uri(builder.Configuration["apiUri"]) });
+
+            builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProvider>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+
+            builder.Services.AddAuthorizationCore();
+
+            builder.Services.AddBlazoredSessionStorage();
+            builder.Services.AddDevExpressBlazor();
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="AuthenticationResponseDto.cs" company="RHEA System S.A.">
+// <copyright file="UserDetails.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -11,26 +11,21 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Shared.DTO
+namespace UI_DSM.Client.Components.Administration.UserManagement
 {
+    using Microsoft.AspNetCore.Components;
+
+    using UI_DSM.Client.ViewModels.Components.Administration.UserManagement;
+
     /// <summary>
-    /// Authentication response after an authentication request
+    ///     Component used to provide all informations related to a user
     /// </summary>
-    public class AuthenticationResponseDto
+    public partial class UserDetails
     {
         /// <summary>
-        /// Value asserting that the authentication proceeded successfully
+        ///     The <see cref="IUserDetailsViewModel" />
         /// </summary>
-        public bool IsAuthenticated { get; set; }
-
-        /// <summary>
-        /// The message in case of authentication failure
-        /// </summary>
-        public string ErrorMessage { get; set; }
-
-        /// <summary>
-        /// The authentication token
-        /// </summary>
-        public string Token { get; set; }
+        [Parameter]
+        public IUserDetailsViewModel ViewModel { get; set; }
     }
 }

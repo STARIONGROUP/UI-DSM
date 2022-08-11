@@ -76,6 +76,7 @@ namespace UI_DSM.Server
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateIssuerSigningKey = true,
+                    ValidateLifetime = false,
 
                     ValidIssuer = jwtSettings["validIssuer"],
                     ValidAudience = jwtSettings["validAudience"],
@@ -106,6 +107,8 @@ namespace UI_DSM.Server
 
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.MapRazorPages();
             app.MapControllers();
             app.MapFallbackToFile("index.html");
