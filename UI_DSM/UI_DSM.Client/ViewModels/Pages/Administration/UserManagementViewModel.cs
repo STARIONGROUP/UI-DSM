@@ -26,6 +26,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
     using UI_DSM.Client.Services.Administration.UserService;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.Administration.UserManagement;
+    using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
 
     /// <summary>

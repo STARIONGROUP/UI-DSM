@@ -14,18 +14,18 @@
 namespace UI_DSM.Shared.DTO.Common
 {
     /// <summary>
-    /// Common DTO used to respond to all basic operation (creation/update/delete) request
+    ///     Common DTO used to respond to all basic operation (creation/update/delete) request
     /// </summary>
     public class RequestResponseDto
     {
         /// <summary>
-        /// Value indicating if the request has proceed successfuly
+        ///     Value indicating if the request has proceed successfuly
         /// </summary>
         public bool IsRequestSuccessful { get; set; }
 
         /// <summary>
-        /// A collection of errors
+        ///     A collection of errors
         /// </summary>
-        public IEnumerable<string> Errors { get; set; } 
+        public List<string> Errors { get; set; } = new();
     }
 }

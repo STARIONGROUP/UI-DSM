@@ -45,7 +45,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
             this.viewModel = new UserRegistrationViewModel()
             {
                 OnValidSubmit = new EventCallbackFactory().Create(this, () => this.viewModel.Registration = new RegistrationDto()),
-                Registration = new RegistrationDto(),
+                Registration = new RegistrationDto()
             };
         }
 

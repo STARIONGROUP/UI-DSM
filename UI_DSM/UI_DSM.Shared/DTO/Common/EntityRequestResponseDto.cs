@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="User.cs" company="RHEA System S.A.">
+// <copyright file="EntityRequestResponseDto.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -11,18 +11,19 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Server.Models
+namespace UI_DSM.Shared.DTO.Common
 {
-    using Microsoft.AspNetCore.Identity;
+    using UI_DSM.Shared.DTO.Models;
 
     /// <summary>
-    /// The <see cref="User" /> is used for authentication 
+    ///     Common DTO used to respond to all basic operation (creation/update/delete) request on <see cref="EntityDto" />
     /// </summary>
-    public class User : IdentityUser
+    /// <typeparam name="TEntityDto">An <see cref="EntityDto" /></typeparam>
+    public class EntityRequestResponseDto<TEntityDto> : RequestResponseDto where TEntityDto : EntityDto
     {
         /// <summary>
-        /// Value indicating if the current <see cref="User"/> is an Administrator or not
+        ///     Gets or sets the <see cref="TEntityDto" />
         /// </summary>
-        public bool IsAdmin { get; set; }
+        public TEntityDto Entity { get; set; }
     }
 }

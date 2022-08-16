@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.Services.Administration.UserService
 {
     using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
 
     /// <summary>

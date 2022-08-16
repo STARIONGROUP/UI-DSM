@@ -23,9 +23,10 @@ namespace UI_DSM.Server.Controllers
     using Microsoft.EntityFrameworkCore;
     using Microsoft.IdentityModel.Tokens;
 
-    using UI_DSM.Server.Models;
+    using UI_DSM.Shared.Models;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.UserManagement;
+    using UI_DSM.Shared.DTO.Models;
 
     /// <summary>
     ///     The <see cref="UserController" /> is a <see cref="Controller" /> to manage <see cref="User" />s
@@ -78,7 +79,7 @@ namespace UI_DSM.Server.Controllers
                 });
             }
 
-            var tokenOptions = this.GenerateTokenOptions(this.GetSigningCredentials(), await this.GetClaims(user));
+            var tokenOptions = this.GenerateTokenOptions(this.GetSigningCredentials(), this.GetClaims(user));
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             return this.Ok(new AuthenticationResponseDto { IsRequestSuccessful = true, Token = token });
         }
@@ -92,11 +93,6 @@ namespace UI_DSM.Server.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> RegisterUser([FromBody] RegistrationDto registration)
         {
-            if (registration == null || !this.ModelState.IsValid)
-            {
-                return this.BadRequest();
-            }
-
             var user = new User
             {
                 UserName = registration.UserName
@@ -111,18 +107,13 @@ namespace UI_DSM.Server.Controllers
 
             if (!identityResult.Succeeded)
             {
-                response.Errors = identityResult.Errors.Select(e => e.Description);
+                response.Errors = identityResult.Errors.Select(e => e.Description).ToList();
                 return this.BadRequest(response);
             }
 
             var createdUser = await this.userManager.FindByNameAsync(user.UserName);
 
-            response.CreatedUser = new UserDto
-            {
-                UserName = createdUser.UserName,
-                IsAdmin = createdUser.IsAdmin,
-                UserId = createdUser.Id
-            };
+            response.CreatedUser = createdUser.ToDto();
 
             return this.StatusCode(201, response);
         }
@@ -137,14 +128,7 @@ namespace UI_DSM.Server.Controllers
         {
             var users = await this.userManager.Users.ToListAsync();
 
-            var usersDto = users.Select(x => new UserDto
-            {
-                UserName = x.UserName,
-                UserId = x.Id,
-                IsAdmin = x.IsAdmin
-            });
-
-            return this.Ok(usersDto);
+            return this.Ok(users.Select(x => x.ToDto()));
         }
 
         /// <summary>
@@ -205,7 +189,7 @@ namespace UI_DSM.Server.Controllers
         /// </summary>
         /// <param name="user">The <see cref="User" /></param>
         /// <returns>A collection of <see cref="Claim" /></returns>
-        private async Task<IEnumerable<Claim>> GetClaims(User user)
+        private IEnumerable<Claim> GetClaims(User user)
         {
             var claims = new List<Claim>
             {

@@ -30,6 +30,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
     using UI_DSM.Client.Services.Administration.UserService;
     using UI_DSM.Client.ViewModels.Pages.Administration;
     using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
 
     using TestContext = Bunit.TestContext;
@@ -53,13 +54,13 @@ namespace UI_DSM.Client.Tests.Pages.Administration
                 {
                     UserName = "admin",
                     IsAdmin = true,
-                    UserId = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 },
                 new ()
                 {
                     UserName = "notAdmin",
                     IsAdmin = false,
-                    UserId = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 }
             };
 

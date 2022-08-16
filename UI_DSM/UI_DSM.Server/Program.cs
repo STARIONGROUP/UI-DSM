@@ -25,7 +25,7 @@ namespace UI_DSM.Server
     using NLog;
 
     using UI_DSM.Server.Context;
-    using UI_DSM.Server.Models;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     Entry class of the <see cref="UI_DSM.Server" /> project
@@ -62,6 +62,8 @@ namespace UI_DSM.Server
             builder.Services.AddDbContext<DatabaseContext>(opt => opt.UseNpgsql(builder.Configuration["DataBaseConnection"]));
 
             builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DatabaseContext>();
+
+            RegisterManagers(builder);
 
             var jwtSettings = builder.Configuration.GetSection("JWTSettings");
             
@@ -116,6 +118,29 @@ namespace UI_DSM.Server
             LogAppStart();
 
             app.Run();
+        }
+
+        /// <summary>
+        ///     Register all Managers into the <see cref="WebApplicationBuilder" />
+        /// </summary>
+        /// <param name="builder">The <see cref="WebApplicationBuilder" /></param>
+        private static void RegisterManagers(WebApplicationBuilder builder)
+        {
+            var managerInterfaces = Assembly.GetCallingAssembly().GetExportedTypes()
+                .Where(x => x.IsInterface && x.Name.EndsWith("Manager")).ToList();
+
+            foreach (var managerInterface in managerInterfaces)
+            {
+                var manager = Assembly.GetCallingAssembly().GetExportedTypes()
+                    .FirstOrDefault(x => x.IsClass
+                                         && x.Name == managerInterface.Name.Remove(0, 1)
+                                         && x.GetInterface(managerInterface.Name) == managerInterface);
+
+                if (manager != null)
+                {
+                    builder.Services.AddScoped(managerInterface, manager);
+                }
+            }
         }
 
         /// <summary>

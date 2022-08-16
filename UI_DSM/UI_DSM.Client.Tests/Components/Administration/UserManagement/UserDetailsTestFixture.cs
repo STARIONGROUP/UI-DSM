@@ -22,7 +22,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
 
     using UI_DSM.Client.Components.Administration.UserManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.UserManagement;
-    using UI_DSM.Shared.DTO.UserManagement;
+    using UI_DSM.Shared.DTO.Models;
 
     using TestContext = Bunit.TestContext;
 
@@ -47,7 +47,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
             {
                 UserName = "admin",
                 IsAdmin = true,
-                UserId = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             var renderer = this.context.RenderComponent<UserDetails>(parameters => 
@@ -55,8 +55,10 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
 
             var inputTexts = renderer.FindComponents<InputText>();
 
-            Assert.That(inputTexts[0].Instance.Value, Is.EqualTo(this.viewModel.User.UserId));
-            Assert.That(inputTexts[1].Instance.Value, Is.EqualTo(this.viewModel.User.UserName));
+            Assert.That(inputTexts[0].Instance.Value, Is.EqualTo(this.viewModel.User.UserName));
+
+            var userId = renderer.Find("#userId");
+            Assert.That(userId.TextContent, Is.EqualTo(this.viewModel.User.Id.ToString()));
         }
     }
 }

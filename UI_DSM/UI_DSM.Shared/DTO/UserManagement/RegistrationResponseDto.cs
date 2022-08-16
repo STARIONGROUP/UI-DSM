@@ -14,6 +14,7 @@
 namespace UI_DSM.Shared.DTO.UserManagement
 {
     using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.DTO.Models;
 
     /// <summary>
     ///     Response used after a registration request

@@ -19,16 +19,16 @@ namespace UI_DSM.Server.Context
     using Microsoft.EntityFrameworkCore;
 
     using UI_DSM.Server.Context.Configuration;
-    using UI_DSM.Server.Models;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
-    /// The <see cref="DatabaseContext"/> is the Database Context for the Entity Framework
+    ///     The <see cref="DatabaseContext" /> is the Database Context for the Entity Framework
     /// </summary>
     [ExcludeFromCodeCoverage]
     public class DatabaseContext : IdentityDbContext<User>
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="DatabaseContext" />.
+        ///     Initializes a new instance of <see cref="DatabaseContext" />.
         /// </summary>
         /// <param name="options">The options to be used by a <see cref="DbContext" />.</param>
         public DatabaseContext(DbContextOptions options) : base(options)
@@ -36,10 +36,22 @@ namespace UI_DSM.Server.Context
         }
 
         /// <summary>
-        /// Configures the schema needed for the identity framework.
+        ///     Initializes a new instance of the <see cref="DatabaseContext" /> class.
+        /// </summary>
+        protected DatabaseContext()
+        {
+        }
+
+        /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="Project" />
+        /// </summary>
+        public virtual DbSet<Project> Projects { get; set; }
+
+        /// <summary>
+        ///     Configures the schema needed for the identity framework.
         /// </summary>
         /// <param name="builder">
-        /// The builder being used to construct the model for this context.
+        ///     The builder being used to construct the model for this context.
         /// </param>
         protected override void OnModelCreating(ModelBuilder builder)
         {
