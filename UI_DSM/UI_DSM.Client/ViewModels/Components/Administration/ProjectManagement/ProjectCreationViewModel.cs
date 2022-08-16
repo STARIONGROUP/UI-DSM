@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="UserDto.cs" company="RHEA System S.A.">
+// <copyright file="ProjectCreationViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -11,26 +11,26 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Shared.DTO.UserManagement
+namespace UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement
 {
+    using Microsoft.AspNetCore.Components;
+
+    using UI_DSM.Client.Components.Administration.ProjectManagement;
+    using UI_DSM.Shared.Models;
+
     /// <summary>
-    /// DTO used to transfer non-private user data stored on the data base
+    ///     View model for the <see cref="ProjectCreation" /> component
     /// </summary>
-    public class UserDto
+    public class ProjectCreationViewModel : IProjectCreationViewModel
     {
         /// <summary>
-        /// The unique id
+        ///     The <see cref="Project" /> to create
         /// </summary>
-        public string UserId { get; set; }
+        public Project Project { get; set; }
 
         /// <summary>
-        /// The name of the user
+        ///     The <see cref="EventCallback" /> to call for data submit
         /// </summary>
-        public string UserName { get; set; }
-
-        /// <summary>
-        /// Value indicating if the current user is the site administrator
-        /// </summary>
-        public bool IsAdmin { get; set; } 
+        public EventCallback OnValidSubmit { get; set; }
     }
 }

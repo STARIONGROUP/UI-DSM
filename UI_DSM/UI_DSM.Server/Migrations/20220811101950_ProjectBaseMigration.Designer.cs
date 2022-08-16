@@ -11,12 +11,9 @@ using UI_DSM.Server.Context;
 
 namespace UI_DSM.Server.Migrations
 {
-    using System.Diagnostics.CodeAnalysis;
-
-    [ExcludeFromCodeCoverage]
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220804064607_Identity")]
-    partial class Identity
+    [Migration("20220811101950_ProjectBaseMigration")]
+    partial class ProjectBaseMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -51,6 +48,15 @@ namespace UI_DSM.Server.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "AF8956F8-CA85-4DF2-8CB6-C46D0845B987",
+                            ConcurrencyStamp = "77e42081-58b4-4ea2-9df7-1995c0591df0",
+                            Name = "Administrator",
+                            NormalizedName = "ADMINISTRATOR"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -138,6 +144,13 @@ namespace UI_DSM.Server.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7",
+                            RoleId = "AF8956F8-CA85-4DF2-8CB6-C46D0845B987"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -159,7 +172,23 @@ namespace UI_DSM.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("UI_DSM.Server.Models.User", b =>
+            modelBuilder.Entity("UI_DSM.Shared.Models.Entity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("EntityContainerId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityContainerId");
+
+                    b.ToTable("Entity");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -230,17 +259,46 @@ namespace UI_DSM.Server.Migrations
                         {
                             Id = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6a3d2d13-515a-4f23-99db-2db886289644",
+                            ConcurrencyStamp = "f9e3bd0e-0186-4603-bb99-5dd4d551c714",
                             EmailConfirmed = false,
                             IsAdmin = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGU3W5f+n3Rm/8tR1/E4wM5gtRQqdbJ+9ih4sIuYReTNbRMibL+YNq9U039HhFJVpg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEB4zGIxFk7DMDglPndkZ+6x6+y0fTD1zJwZhKpm23xHjweDYJ3RM4e9nuWvrzznCbA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "8abfac94-8bde-445c-8cd1-7766f9277389",
+                            SecurityStamp = "5933b6d7-af34-49c4-837c-500087566000",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Participant", b =>
+                {
+                    b.HasBaseType("UI_DSM.Shared.Models.Entity");
+
+                    b.Property<Guid?>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Participant");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Project", b =>
+                {
+                    b.HasBaseType("UI_DSM.Shared.Models.Entity");
+
+                    b.Property<string>("ProjectName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.ToTable("Project");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -254,7 +312,7 @@ namespace UI_DSM.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("UI_DSM.Server.Models.User", null)
+                    b.HasOne("UI_DSM.Shared.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -263,7 +321,7 @@ namespace UI_DSM.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("UI_DSM.Server.Models.User", null)
+                    b.HasOne("UI_DSM.Shared.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -278,7 +336,7 @@ namespace UI_DSM.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UI_DSM.Server.Models.User", null)
+                    b.HasOne("UI_DSM.Shared.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -287,11 +345,55 @@ namespace UI_DSM.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("UI_DSM.Server.Models.User", null)
+                    b.HasOne("UI_DSM.Shared.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Entity", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Entity", "EntityContainer")
+                        .WithMany()
+                        .HasForeignKey("EntityContainerId");
+
+                    b.Navigation("EntityContainer");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Participant", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Entity", null)
+                        .WithOne()
+                        .HasForeignKey("UI_DSM.Shared.Models.Participant", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UI_DSM.Shared.Models.Project", null)
+                        .WithMany("Participants")
+                        .HasForeignKey("ProjectId");
+
+                    b.HasOne("UI_DSM.Shared.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Project", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Entity", null)
+                        .WithOne()
+                        .HasForeignKey("UI_DSM.Shared.Models.Project", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Project", b =>
+                {
+                    b.Navigation("Participants");
                 });
 #pragma warning restore 612, 618
         }

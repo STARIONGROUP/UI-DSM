@@ -17,6 +17,7 @@ namespace UI_DSM.Client.Services.Administration.UserService
     using System.Text.Json;
 
     using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
 
     /// <summary>
@@ -71,9 +72,9 @@ namespace UI_DSM.Client.Services.Administration.UserService
         {
             if (!userToDelete.IsAdmin)
             {
-                var url = Path.Combine("User", userToDelete.UserId);
-                var deleteReponse = await this.HttpClient.DeleteAsync(url);
-                var deleteContent = await deleteReponse.Content.ReadAsStringAsync();
+                var url = Path.Combine("User", userToDelete.Id.ToString());
+                var deleteResponse = await this.HttpClient.DeleteAsync(url);
+                var deleteContent = await deleteResponse.Content.ReadAsStringAsync();
 
                 return JsonSerializer.Deserialize<RequestResponseDto>(deleteContent,this.JsonSerializerOptions);
             }

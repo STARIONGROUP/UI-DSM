@@ -13,7 +13,7 @@
 
 namespace UI_DSM.Client.ViewModels.Components.Administration.UserManagement
 {
-    using UI_DSM.Shared.DTO.UserManagement;
+    using UI_DSM.Shared.DTO.Models;
 
     /// <summary>
     ///     Interface definition for <see cref="UserDetailsViewModel" />

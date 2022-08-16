@@ -14,7 +14,7 @@
 namespace UI_DSM.Client.ViewModels.Components.Administration.UserManagement
 {
     using UI_DSM.Client.Components.Administration.UserManagement;
-    using UI_DSM.Shared.DTO.UserManagement;
+    using UI_DSM.Shared.DTO.Models;
 
     /// <summary>
     ///     View model for <see cref="UserDetails" /> component

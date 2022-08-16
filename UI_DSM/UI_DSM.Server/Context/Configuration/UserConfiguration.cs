@@ -19,7 +19,7 @@ namespace UI_DSM.Server.Context.Configuration
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-    using UI_DSM.Server.Models;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     /// The <see cref="IEntityTypeConfiguration{TEntity}"/> for the <see cref="User"/> entity

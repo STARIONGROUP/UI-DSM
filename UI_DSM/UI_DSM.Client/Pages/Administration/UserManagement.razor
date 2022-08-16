@@ -10,7 +10,6 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @page "/Administration/UserManagement"
-@using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Administrator")]
 
 <ConfirmCancelPopup ViewModel="@this.ViewModel.ConfirmCancelPopup"/>

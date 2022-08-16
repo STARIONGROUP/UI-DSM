@@ -22,7 +22,7 @@ namespace UI_DSM.Server.Tests.Controllers
     using NUnit.Framework;
 
     using UI_DSM.Server.Controllers;
-    using UI_DSM.Server.Models;
+    using UI_DSM.Shared.Models;
     using UI_DSM.Shared.DTO.UserManagement;
 
     [TestFixture]
@@ -104,8 +104,6 @@ namespace UI_DSM.Server.Tests.Controllers
         [Test]
         public void VerifyRegisterUser()
         {
-            Assert.That(this.controller.RegisterUser(null).Result.GetType(), Is.EqualTo(typeof(BadRequestResult)));
-
             var registration = new RegistrationDto
             {
                 UserName = "user",
@@ -121,7 +119,7 @@ namespace UI_DSM.Server.Tests.Controllers
 
             var registrationResult = this.controller.RegisterUser(registration).Result as BadRequestObjectResult;
             Assert.That(((RegistrationResponseDto)registrationResult!.Value!).IsRequestSuccessful, Is.False);
-            Assert.That(((RegistrationResponseDto)registrationResult!.Value!).Errors.Count(), Is.EqualTo(1));
+            Assert.That(((RegistrationResponseDto)registrationResult!.Value!).Errors.Count, Is.EqualTo(1));
 
             this.userManager.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success);

@@ -14,13 +14,11 @@
 namespace UI_DSM.Client.Tests.Components
 {
     using Bunit;
-    using Bunit.TestDoubles;
 
     using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.DependencyInjection;
 
     using Moq;
-    using Moq.Protected;
 
     using NUnit.Framework;
 
@@ -35,7 +33,6 @@ namespace UI_DSM.Client.Tests.Components
     {
         private TestContext context;
         private Mock<IAuthenticationService> authenticationService;
-        private Mock<NavigationManager> navigationManager;
         private ILogoutViewModel logoutViewModel;
 
         [SetUp]

@@ -22,6 +22,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
 
     using UI_DSM.Client.Services.Administration.UserService;
     using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
 
     [TestFixture]
@@ -58,12 +59,12 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
                 new ()
                 {
                     UserName = "user1",
-                    UserId = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 },
                 new ()
                 {
                     UserName = "user2",
-                    UserId = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 }
             };
 
@@ -100,13 +101,13 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
             {
                 UserName = "user",
                 IsAdmin = false,
-                UserId = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             httpResponse.Content = new StringContent(JsonSerializer.Serialize(registrationResponse));
             registrationResult = this.service.RegisterUser(new RegistrationDto()).Result;
             Assert.That(registrationResult.IsRequestSuccessful, Is.True);
-            Assert.That(registrationResult.CreatedUser.UserId, Is.EqualTo(registrationResponse.CreatedUser.UserId));
+            Assert.That(registrationResult.CreatedUser.Id, Is.EqualTo(registrationResponse.CreatedUser.Id));
         }
 
         [Test]
@@ -116,7 +117,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
             {
                 UserName = "user",
                 IsAdmin = true,
-                UserId = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             var deleteResponse = this.service.DeleteUser(userToDelete).Result;
@@ -124,7 +125,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
             Assert.That(deleteResponse.Errors, Is.Not.Empty);
 
             userToDelete.IsAdmin = false;
-            var request = this.httpMessageHandler.When(HttpMethod.Delete, $"/User/{userToDelete.UserId}");
+            var request = this.httpMessageHandler.When(HttpMethod.Delete, $"/User/{userToDelete.Id}");
 
             var httpResponse = new HttpResponseMessage();
             request.Respond(_ => httpResponse);

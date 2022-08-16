@@ -6,7 +6,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace UI_DSM.Server.Migrations
 {
-    public partial class Identity : Migration
+    using System.Diagnostics.CodeAnalysis;
+
+    [ExcludeFromCodeCoverage]
+    public partial class ProjectBaseMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -48,6 +51,23 @@ namespace UI_DSM.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Entity",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    EntityContainerId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Entity", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Entity_Entity_EntityContainerId",
+                        column: x => x.EntityContainerId,
+                        principalTable: "Entity",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -156,10 +176,68 @@ namespace UI_DSM.Server.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Project",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProjectName = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Project", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Project_Entity_Id",
+                        column: x => x.Id,
+                        principalTable: "Entity",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Participant",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    ProjectId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Participant", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Participant_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Participant_Entity_Id",
+                        column: x => x.Id,
+                        principalTable: "Entity",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Participant_Project_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Project",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[] { "AF8956F8-CA85-4DF2-8CB6-C46D0845B987", "77e42081-58b4-4ea2-9df7-1995c0591df0", "Administrator", "ADMINISTRATOR" });
+
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "IsAdmin", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7", 0, "6a3d2d13-515a-4f23-99db-2db886289644", null, false, true, false, null, null, "ADMIN", "AQAAAAEAACcQAAAAEGU3W5f+n3Rm/8tR1/E4wM5gtRQqdbJ+9ih4sIuYReTNbRMibL+YNq9U039HhFJVpg==", null, false, "8abfac94-8bde-445c-8cd1-7766f9277389", false, "admin" });
+                values: new object[] { "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7", 0, "f9e3bd0e-0186-4603-bb99-5dd4d551c714", null, false, true, false, null, null, "ADMIN", "AQAAAAEAACcQAAAAEB4zGIxFk7DMDglPndkZ+6x6+y0fTD1zJwZhKpm23xHjweDYJ3RM4e9nuWvrzznCbA==", null, false, "5933b6d7-af34-49c4-837c-500087566000", false, "admin" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { "AF8956F8-CA85-4DF2-8CB6-C46D0845B987", "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -197,6 +275,21 @@ namespace UI_DSM.Server.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Entity_EntityContainerId",
+                table: "Entity",
+                column: "EntityContainerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Participant_ProjectId",
+                table: "Participant",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Participant_UserId",
+                table: "Participant",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -217,10 +310,19 @@ namespace UI_DSM.Server.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Participant");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Project");
+
+            migrationBuilder.DropTable(
+                name: "Entity");
         }
     }
 }

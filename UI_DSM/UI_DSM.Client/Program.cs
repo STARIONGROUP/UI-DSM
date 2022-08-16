@@ -22,7 +22,6 @@ namespace UI_DSM.Client
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
-    using UI_DSM.Client.Services.Administration.UserService;
     using UI_DSM.Client.Services.AuthenticationService;
 
     /// <summary>
@@ -55,7 +54,7 @@ namespace UI_DSM.Client
         private static void AddViewModels(WebAssemblyHostBuilder builder)
         {
             var viewModelInterfaces = Assembly.GetCallingAssembly().GetExportedTypes()
-                .Where(x => x.IsInterface && x.Name.Contains("ViewModel")).ToList();
+                .Where(x => x.IsInterface && x.Name.EndsWith("ViewModel")).ToList();
 
             foreach (var viewModelInterface in viewModelInterfaces)
             {
@@ -81,8 +80,22 @@ namespace UI_DSM.Client
                 { BaseAddress = new Uri(builder.Configuration["apiUri"]) });
 
             builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProvider>();
-            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-            builder.Services.AddScoped<IUserService, UserService>();
+
+            var serviceInterfaces = Assembly.GetCallingAssembly().GetExportedTypes()
+                .Where(x => x.IsInterface && x.Name.EndsWith("Service")).ToList();
+
+            foreach (var serviceInterface in serviceInterfaces)
+            {
+                var service = Assembly.GetCallingAssembly().GetExportedTypes()
+                    .FirstOrDefault(x => x.IsClass
+                                         && x.Name == serviceInterface.Name.Remove(0, 1)
+                                         && x.GetInterface(serviceInterface.Name) == serviceInterface);
+
+                if (service != null)
+                {
+                    builder.Services.AddScoped(serviceInterface, service);
+                }
+            }
 
             builder.Services.AddAuthorizationCore();
 
