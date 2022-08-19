@@ -18,11 +18,11 @@ namespace UI_DSM.Client.Tests.Components
     using DevExpress.Blazor;
 
     using Microsoft.AspNetCore.Components;
-    using Microsoft.Extensions.DependencyInjection;
 
     using NUnit.Framework;
 
     using UI_DSM.Client.Components;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components;
 
     using TestContext = Bunit.TestContext;
@@ -38,8 +38,8 @@ namespace UI_DSM.Client.Tests.Components
         public void Setup()
         {
             this.context = new TestContext();
-            this.context.Services.AddDevExpressBlazor();
-            
+            this.context.ConfigureDevExpressBlazor();
+
             this.viewModel = new ConfirmCancelPopupViewModel()
             {
                 CancelRenderStyle = ButtonRenderStyle.Info,
@@ -55,7 +55,7 @@ namespace UI_DSM.Client.Tests.Components
         [TearDown]
         public void Teardown()
         {
-            this.context.Dispose();
+            this.context.CleanContext();
         }
 
         [Test]
@@ -64,13 +64,9 @@ namespace UI_DSM.Client.Tests.Components
             var renderer = this.context.RenderComponent<ConfirmCancelPopup>(
                 ComponentParameter.CreateParameter("ViewModel", this.viewModel));
 
-            var buttons = renderer.FindComponents<DxButton>();
-            Assert.That(buttons.Count, Is.EqualTo(2));
-            buttons[0].Instance.Click.InvokeAsync();
+            renderer.InvokeAsync(this.viewModel.OnCancel.InvokeAsync);
             Assert.That(this.callbackCallCount, Is.EqualTo(-1));
-            Assert.That(buttons[0].Instance.RenderStyle, Is.EqualTo(ButtonRenderStyle.Info));
-            Assert.That(buttons[1].Instance.RenderStyle, Is.EqualTo(ButtonRenderStyle.Danger));
-            buttons[1].Instance.Click.InvokeAsync();
+            renderer.InvokeAsync(this.viewModel.OnConfirm.InvokeAsync);
             Assert.That(this.callbackCallCount, Is.EqualTo(0));
         }
     }

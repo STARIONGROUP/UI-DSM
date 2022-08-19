@@ -14,7 +14,7 @@
 
 <div>
 	<DxButton Click="@this.ViewModel.OpenCreatePopup" Text="Create Project"/>
-	<DxPopup HeaderText="Create Project" @bind-Visible="@this.ViewModel.CreationPopupVisible">
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Create Project" @bind-Visible="@this.ViewModel.CreationPopupVisible">
 		<Content>
 			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
 				<ProjectCreation ViewModel="@this.ViewModel.ProjectCreationViewModel"/>

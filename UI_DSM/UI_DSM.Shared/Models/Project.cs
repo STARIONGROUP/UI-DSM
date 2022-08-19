@@ -67,5 +67,19 @@ namespace UI_DSM.Shared.Models
 
             return dto;
         }
+
+        /// <summary>
+        ///     Resolve the properties of the current <see cref="Project" /> from its <see cref="EntityDto" /> counter-part
+        /// </summary>
+        /// <param name="entityDto">The source <see cref="EntityDto" /></param>
+        public override void ResolveProperties(EntityDto entityDto)
+        {
+            if (entityDto is not ProjectDto projectDto)
+            {
+                throw new InvalidOperationException($"The DTO {entityDto.GetType()} does not match with the current Project POCO");
+            }
+
+            this.ProjectName = projectDto.ProjectName;
+        }
     }
 }

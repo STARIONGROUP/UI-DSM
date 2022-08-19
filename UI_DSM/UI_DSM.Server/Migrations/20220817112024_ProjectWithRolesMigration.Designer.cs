@@ -12,8 +12,8 @@ using UI_DSM.Server.Context;
 namespace UI_DSM.Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220811101950_ProjectBaseMigration")]
-    partial class ProjectBaseMigration
+    [Migration("20220817112024_ProjectWithRolesMigration")]
+    partial class ProjectWithRolesMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -53,7 +53,7 @@ namespace UI_DSM.Server.Migrations
                         new
                         {
                             Id = "AF8956F8-CA85-4DF2-8CB6-C46D0845B987",
-                            ConcurrencyStamp = "77e42081-58b4-4ea2-9df7-1995c0591df0",
+                            ConcurrencyStamp = "df3e327f-f326-4ed4-8890-0b2f8440a436",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -259,14 +259,14 @@ namespace UI_DSM.Server.Migrations
                         {
                             Id = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f9e3bd0e-0186-4603-bb99-5dd4d551c714",
+                            ConcurrencyStamp = "77f56b47-9a66-484a-9749-d81a80575fd7",
                             EmailConfirmed = false,
                             IsAdmin = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEB4zGIxFk7DMDglPndkZ+6x6+y0fTD1zJwZhKpm23xHjweDYJ3RM4e9nuWvrzznCbA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAELofQNBZUG4ZByLcdJk8duH13IEJUyFxeH/dJ04ka2nH/cdTisUH8Fr2r4vaWgp1IA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5933b6d7-af34-49c4-837c-500087566000",
+                            SecurityStamp = "351d62f5-32d1-479d-8617-06f8d10c9819",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -279,11 +279,16 @@ namespace UI_DSM.Server.Migrations
                     b.Property<Guid?>("ProjectId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasIndex("ProjectId");
+
+                    b.HasIndex("RoleId");
 
                     b.HasIndex("UserId");
 
@@ -299,6 +304,35 @@ namespace UI_DSM.Server.Migrations
                         .HasColumnType("text");
 
                     b.ToTable("Project");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Role", b =>
+                {
+                    b.HasBaseType("UI_DSM.Shared.Models.Entity");
+
+                    b.Property<int[]>("AccessRights")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.ToTable("Role");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("fd580a55-9666-4abe-a02b-3a99478996f7"),
+                            AccessRights = new[] { 0, 1, 2, 3 },
+                            RoleName = "Project Administrator"
+                        },
+                        new
+                        {
+                            Id = new Guid("28b83519-fb7c-4a9a-8279-194140bfcfbe"),
+                            AccessRights = new[] { 4 },
+                            RoleName = "Reviewer"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -373,11 +407,19 @@ namespace UI_DSM.Server.Migrations
                         .WithMany("Participants")
                         .HasForeignKey("ProjectId");
 
+                    b.HasOne("UI_DSM.Shared.Models.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("UI_DSM.Shared.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Role");
 
                     b.Navigation("User");
                 });
@@ -387,6 +429,15 @@ namespace UI_DSM.Server.Migrations
                     b.HasOne("UI_DSM.Shared.Models.Entity", null)
                         .WithOne()
                         .HasForeignKey("UI_DSM.Shared.Models.Project", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Role", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Entity", null)
+                        .WithOne()
+                        .HasForeignKey("UI_DSM.Shared.Models.Role", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

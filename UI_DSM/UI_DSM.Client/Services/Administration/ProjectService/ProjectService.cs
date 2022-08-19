@@ -55,7 +55,7 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
                 return projectDtos!.Select(x =>
                 {
                     var project = (Project)x.InstantiatePoco();
-                    project.ProjectName = x.ProjectName;
+                    project.ResolveProperties(x);
                     return project;
                 }).ToList();
             }
@@ -83,20 +83,13 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
 
                 if (!entityRequestResponse!.IsRequestSuccessful)
                 {
-                    return new EntityRequestResponse<Project>()
-                    {
-                        Errors = entityRequestResponse.Errors
-                    };
+                    return EntityRequestResponse<Project>.Fail(entityRequestResponse.Errors);
                 }
 
                 var project = (Project)entityRequestResponse.Entity.InstantiatePoco();
-                project.ProjectName = entityRequestResponse.Entity.ProjectName;
-                
-                return new EntityRequestResponse<Project>()
-                {
-                    Entity = project,
-                    IsRequestSuccessful = true
-                };
+                project.ResolveProperties(entityRequestResponse.Entity);
+
+                return EntityRequestResponse<Project>.Success(project);
             }
             catch (Exception exception)
             {
@@ -145,7 +138,7 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
 
                 var projectDto = JsonSerializer.Deserialize<ProjectDto>(getProjectContent, this.JsonSerializerOptions);
                 var project = (Project)projectDto!.InstantiatePoco();
-                project.ProjectName = projectDto.ProjectName;
+                project.ResolveProperties(projectDto);
                 return project;
             }
             catch (Exception exception)

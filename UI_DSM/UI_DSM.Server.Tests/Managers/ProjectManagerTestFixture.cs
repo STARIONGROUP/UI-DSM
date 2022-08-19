@@ -47,8 +47,13 @@ namespace UI_DSM.Server.Tests.Managers
 
             var dbSet = DbSetMockHelper.CreateMock(data);
             
-            this.context.Setup(x => x.Projects).Returns(dbSet);
+            var invalidGuid = Guid.NewGuid();
+            dbSet.Setup(x => x.FindAsync(invalidGuid)).ReturnsAsync((Project)null);
+            dbSet.Setup(x => x.FindAsync(data.Last().Id)).ReturnsAsync(data.Last());
+            this.context.Setup(x => x.Projects).Returns(dbSet.Object);
             Assert.That(this.manager.GetProjects().Result.Count(), Is.EqualTo(data.Count));
+            Assert.That(this.manager.GetProject(invalidGuid).Result, Is.Null);
+            Assert.That(this.manager.GetProject(data.Last().Id).Result, Is.Not.Null);
         }
 
         [Test]
@@ -63,7 +68,7 @@ namespace UI_DSM.Server.Tests.Managers
 
             var dbSet = DbSetMockHelper.CreateMock(data);
 
-            this.context.Setup(x => x.Projects).Returns(dbSet);
+            this.context.Setup(x => x.Projects).Returns(dbSet.Object);
 
             var newProject = new Project()
             {
@@ -88,7 +93,27 @@ namespace UI_DSM.Server.Tests.Managers
         [Test]
         public void VerifyUpdateProject()
         {
-            var project = new Project();
+            var data = new List<Project>
+            {
+                new(Guid.NewGuid()) { ProjectName = "P1" },
+                new(Guid.NewGuid()) { ProjectName = "P2" },
+                new(Guid.NewGuid()) { ProjectName = "P3" }
+            };
+
+            var dbSet = DbSetMockHelper.CreateMock(data);
+
+            this.context.Setup(x => x.Projects).Returns(dbSet.Object);
+
+            var project = new Project(data.First().Id)
+            {
+                ProjectName = data.Last().ProjectName
+            };
+
+            _ = this.manager.UpdateProject(project).Result;
+            this.context.Verify(x => x.Update(It.IsAny<Project>()), Times.Never);
+
+            project.ProjectName = "New Name";
+
             _ = this.manager.UpdateProject(project).Result;
 
             this.context.Verify(x => x.Update(It.IsAny<Project>()), Times.Once);

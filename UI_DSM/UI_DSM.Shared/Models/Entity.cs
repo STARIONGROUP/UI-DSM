@@ -56,5 +56,11 @@ namespace UI_DSM.Shared.Models
         /// </summary>
         /// <returns>A new <see cref="EntityDto" /></returns>
         public abstract EntityDto ToDto();
+
+        /// <summary>
+        ///     Resolve the properties of the current <see cref="Entity" /> from its <see cref="EntityDto" /> counter-part
+        /// </summary>
+        /// <param name="entityDto">The source <see cref="EntityDto" /></param>
+        public abstract void ResolveProperties(EntityDto entityDto);
     }
 }

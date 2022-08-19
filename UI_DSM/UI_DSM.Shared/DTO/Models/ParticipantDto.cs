@@ -41,9 +41,14 @@ namespace UI_DSM.Shared.DTO.Models
         public Guid User { get; set; }
 
         /// <summary>
-        /// Instantiate a <see cref="Participant"/> from a <see cref="ParticipantDto"/>
+        ///     Gets or sets the <see cref="Guid" /> of the given <see cref="Role" />
         /// </summary>
-        /// <returns>A new <see cref="Participant"/></returns>
+        public Guid Role { get; set; }
+
+        /// <summary>
+        ///     Instantiate a <see cref="Participant" /> from a <see cref="ParticipantDto" />
+        /// </summary>
+        /// <returns>A new <see cref="Participant" /></returns>
         public override Entity InstantiatePoco()
         {
             return new Participant(this.Id);

@@ -15,13 +15,15 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
 {
     using Bunit;
 
+    using DevExpress.Blazor;
+
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
-    using Microsoft.Extensions.DependencyInjection;
 
     using NUnit.Framework;
 
     using UI_DSM.Client.Components.Administration.UserManagement;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.Administration.UserManagement;
     using UI_DSM.Shared.DTO.UserManagement;
@@ -39,7 +41,8 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
         public void Setup()
         {
             this.testContext = new TestContext();
-            this.testContext.Services.AddDevExpressBlazor();
+            this.testContext.ConfigureDevExpressBlazor();
+
             this.errorMessage = new ErrorMessageViewModel();
 
             this.viewModel = new UserRegistrationViewModel()
@@ -52,7 +55,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
         [TearDown]
         public void Teardown()
         {
-            this.testContext.Dispose();
+            this.testContext.CleanContext();
         }
 
         [Test]
@@ -65,13 +68,13 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
                     parameters.AddCascadingValue(this.errorMessage);
                 });
 
-            var inputs = renderer.FindComponents<InputText>();
+            var inputs = renderer.FindComponents<DxTextBox>();
             Assert.That(inputs.Count(), Is.EqualTo(3));
 
             this.viewModel.Registration.UserName = "admin";
             
             renderer.Render();
-            Assert.That(inputs[0].Instance.Value, Is.EqualTo(this.viewModel.Registration.UserName));
+            Assert.That(inputs[0].Instance.Text, Is.EqualTo(this.viewModel.Registration.UserName));
 
             var formSubmit = renderer.FindComponent<EditForm>();
             formSubmit.Instance.OnValidSubmit.InvokeAsync();

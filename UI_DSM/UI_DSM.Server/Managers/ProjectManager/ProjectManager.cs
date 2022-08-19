@@ -22,7 +22,7 @@ namespace UI_DSM.Server.Managers.ProjectManager
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     This services handles operation to the Database for <see cref="Project" />s
+    ///     This manager handles operation to the Database for <see cref="Project" />s
     /// </summary>
     public class ProjectManager : IProjectManager
     {
@@ -88,6 +88,12 @@ namespace UI_DSM.Server.Managers.ProjectManager
         /// <returns>A <see cref="Task" /> with the result of the update</returns>
         public async Task<EntityOperationResult<Project>> UpdateProject(Project project)
         {
+            if (this.context.Projects.AsEnumerable().Any(x => x.ProjectName.Equals(project.ProjectName, StringComparison.InvariantCultureIgnoreCase) 
+                                                              && x.Id != project.Id))
+            {
+                return EntityOperationResult<Project>.Failed("A project with the same name already exists");
+            }
+
             var operationResult = new EntityOperationResult<Project>(this.context.Update(project), EntityState.Modified, EntityState.Unchanged);
 
             try
@@ -132,7 +138,7 @@ namespace UI_DSM.Server.Managers.ProjectManager
         /// <returns>A <see cref="Task" /> with the <see cref="Project" /> if existing</returns>
         public async Task<Project> GetProject(Guid id)
         {
-            return await this.context.Projects.FirstOrDefaultAsync(x => x.Id == id);
+            return await this.context.Projects.FindAsync(id);
         }
     }
 }

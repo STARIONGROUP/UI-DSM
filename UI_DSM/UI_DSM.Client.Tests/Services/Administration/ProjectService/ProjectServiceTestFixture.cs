@@ -101,7 +101,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
         }
 
         [Test]
-        public void DeleteProject()
+        public void VerifyDeleteProject()
         {
             var project = new Project(Guid.NewGuid());
             var httpResponse = new HttpResponseMessage();

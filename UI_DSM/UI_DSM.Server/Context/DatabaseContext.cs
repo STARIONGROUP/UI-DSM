@@ -48,6 +48,11 @@ namespace UI_DSM.Server.Context
         public virtual DbSet<Project> Projects { get; set; }
 
         /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="Role" />
+        /// </summary>
+        public virtual DbSet<Role> Roles { get; set; }
+
+        /// <summary>
         ///     Configures the schema needed for the identity framework.
         /// </summary>
         /// <param name="builder">
@@ -60,6 +65,7 @@ namespace UI_DSM.Server.Context
             builder.ApplyConfiguration(new UserConfiguration());
             builder.ApplyConfiguration(new RoleConfiguration());
             builder.ApplyConfiguration(new UserRoleConfiguration());
+            builder.ApplyConfiguration(new UiDsmRoleConfiguration());
         }
     }
 }
