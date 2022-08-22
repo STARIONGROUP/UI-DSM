@@ -16,6 +16,7 @@ namespace UI_DSM.Client.Tests.Helpers
     using Bunit;
 
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.JSInterop;
 
     /// <summary>
     ///     Helper class that configures a <see cref="TestContext" /> to be able to test DevExpress components
@@ -28,7 +29,8 @@ namespace UI_DSM.Client.Tests.Helpers
         /// <param name="context">The <see cref="TestContext" /></param>
         public static void ConfigureDevExpressBlazor(this TestContext context)
         {
-            context.Services.AddDevExpressBlazor(_ => ConfigureJSInterop(context.JSInterop));
+            context.Services.AddDevExpressBlazor();
+            context.Services.AddScoped<IJSRuntime>(_ => new MockIJSRuntime());
         }
 
         /// <summary>
@@ -37,19 +39,7 @@ namespace UI_DSM.Client.Tests.Helpers
         /// <param name="context">The <see cref="TestContext" /></param>
         public static void CleanContext(this TestContext context)
         {
-            context.JSInterop.Mode = JSRuntimeMode.Strict;
             context.Dispose();
-        }
-
-        /// <summary>
-        ///     Configure the <see cref="BunitJSInterop" /> for DevExpress
-        /// </summary>
-        /// <param name="interop">The <see cref="BunitJSInterop" /> to configure</param>
-        private static void ConfigureJSInterop(BunitJSInterop interop)
-        {
-            interop.Mode = JSRuntimeMode.Loose;
-            interop.SetupModule("DxBlazor.Modal.getReference", _ => true);
-            interop.SetupModule("./_content/DevExpress.Blazor/dx-blazor.js");
         }
     }
 }

@@ -81,6 +81,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             });
 
             renderer.InvokeAsync(this.viewModel.OnInitializedAsync);
+            renderer.Render();
             
             Assert.That(() => renderer.Find("#noRoleFound"), Throws.Exception);
             Assert.That(this.viewModel.Roles.Count, Is.EqualTo(1));
