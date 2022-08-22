@@ -18,7 +18,6 @@ namespace UI_DSM.Client.Tests.Helpers
     using DevExpress.Blazor.Internal;
 
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.JSInterop;
 
     /// <summary>
     ///     Helper class that configures a <see cref="TestContext" /> to be able to test DevExpress components
@@ -57,7 +56,7 @@ namespace UI_DSM.Client.Tests.Helpers
             rootModule.Setup<DeviceInfo>("getDeviceInfo", _ => true)
                 .SetResult(new DeviceInfo(false));
 
-            rootModule.Setup<IJSObjectReference>("getReference", _ => true);
+            rootModule.SetupModule("DxBlazor.Modal.getReference", _ => true);
         }
     }
 }
