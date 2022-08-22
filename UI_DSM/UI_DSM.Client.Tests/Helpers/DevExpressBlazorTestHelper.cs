@@ -15,6 +15,8 @@ namespace UI_DSM.Client.Tests.Helpers
 {
     using Bunit;
 
+    using DevExpress.Blazor.Internal;
+
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.JSInterop;
 
@@ -29,8 +31,7 @@ namespace UI_DSM.Client.Tests.Helpers
         /// <param name="context">The <see cref="TestContext" /></param>
         public static void ConfigureDevExpressBlazor(this TestContext context)
         {
-            context.Services.AddDevExpressBlazor();
-            context.Services.AddScoped<IJSRuntime>(_ => new MockIJSRuntime());
+            context.Services.AddDevExpressBlazor(_ => ConfigureJSInterop(context.JSInterop));
         }
 
         /// <summary>
@@ -39,7 +40,24 @@ namespace UI_DSM.Client.Tests.Helpers
         /// <param name="context">The <see cref="TestContext" /></param>
         public static void CleanContext(this TestContext context)
         {
+            context.JSInterop.Mode = JSRuntimeMode.Strict;
             context.Dispose();
+        }
+
+        /// <summary>
+        ///     Configure the <see cref="BunitJSInterop" /> for DevExpress
+        /// </summary>
+        /// <param name="interop">The <see cref="BunitJSInterop" /> to configure</param>
+        private static void ConfigureJSInterop(BunitJSInterop interop)
+        {
+            interop.Mode = JSRuntimeMode.Loose;
+            var rootModule = interop.SetupModule("./_content/DevExpress.Blazor/dx-blazor.js");
+            rootModule.Mode = JSRuntimeMode.Strict;
+            
+            rootModule.Setup<DeviceInfo>("getDeviceInfo", _ => true)
+                .SetResult(new DeviceInfo(false));
+
+            rootModule.Setup<IJSObjectReference>("getReference", _ => true);
         }
     }
 }
