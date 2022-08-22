@@ -22,6 +22,7 @@ namespace UI_DSM.Client
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
+    using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.AuthenticationService;
 
     /// <summary>
@@ -94,6 +95,7 @@ namespace UI_DSM.Client
                 if (service != null)
                 {
                     builder.Services.AddScoped(serviceInterface, service);
+                    ServiceBase.RegisterService(service);
                 }
             }
 

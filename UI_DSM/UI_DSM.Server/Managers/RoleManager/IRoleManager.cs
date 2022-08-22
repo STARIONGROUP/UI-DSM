@@ -13,47 +13,12 @@
 
 namespace UI_DSM.Server.Managers.RoleManager
 {
-    using UI_DSM.Server.Context;
-    using UI_DSM.Server.Types;
     using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     Interface definition for <see cref="RoleManager" />
     /// </summary>
-    public interface IRoleManager
+    public interface IRoleManager : IEntityManager<Role>
     {
-        /// <summary>
-        ///     Gets all existing <see cref="Role" />s
-        /// </summary>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="Role" /> as result</returns>
-        Task<IEnumerable<Role>> GetRoles();
-
-        /// <summary>
-        ///     Creates a new <see cref="Role" /> and store it into the <see cref="DatabaseContext" />
-        /// </summary>
-        /// <param name="role">The <see cref="Role" /> to create</param>
-        /// <returns>A <see cref="Task" /> with the result of the creation</returns>
-        Task<EntityOperationResult<Role>> CreateRole(Role role);
-
-        /// <summary>
-        ///     Updates a <see cref="Role" />
-        /// </summary>
-        /// <param name="role">The <see cref="Role" /> to update</param>
-        /// <returns>A <see cref="Task" /> with the result of the update</returns>
-        Task<EntityOperationResult<Role>> UpdateRole(Role role);
-
-        /// <summary>
-        ///     Delete a <see cref="Role" />
-        /// </summary>
-        /// <param name="role">The <see cref="Role" /> to delete</param>
-        /// <returns>A <see cref="Task" /> with the result of the deletion</returns>
-        Task<EntityOperationResult<Role>> DeleteRole(Role role);
-
-        /// <summary>
-        ///     Tries to get a <see cref="Role" /> based on its <see cref="Role.Id" />
-        /// </summary>
-        /// <param name="id">The <see cref="Guid" /> of the <see cref="Role" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="Role" /> if existing</returns>
-        Task<Role> GetRole(Guid id);
     }
 }

@@ -24,6 +24,7 @@ namespace UI_DSM.Client.Tests.Services.AuthenticationService
 
     using RichardSzalay.MockHttp;
 
+    using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.AuthenticationService;
     using UI_DSM.Shared.DTO.UserManagement;
 
@@ -43,6 +44,7 @@ namespace UI_DSM.Client.Tests.Services.AuthenticationService
             this.authenticationProvider = new Mock<AuthenticationProvider>(new HttpClient(), this.sessionStorage.Object);
             var httpClient = this.httpMessageHandler.ToHttpClient();
             httpClient.BaseAddress = new Uri("http://localhost/api");
+            ServiceBase.RegisterService<AuthenticationService>();
             this.service = new AuthenticationService(httpClient, this.authenticationProvider.Object, this.sessionStorage.Object);
         }
 

@@ -19,6 +19,7 @@ namespace UI_DSM.Client.Services.AuthenticationService
 
     using Blazored.SessionStorage;
 
+    using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
 
     using UI_DSM.Shared.DTO.UserManagement;
@@ -26,6 +27,7 @@ namespace UI_DSM.Client.Services.AuthenticationService
     /// <summary>
     ///     The <see cref="AuthenticationService" /> allow the user to login and logout to the UI-DSM data source
     /// </summary>
+    [Route("User")]
     public class AuthenticationService : ServiceBase, IAuthenticationService
     {
         /// <summary>
@@ -59,7 +61,9 @@ namespace UI_DSM.Client.Services.AuthenticationService
             var content = JsonSerializer.Serialize(authentication);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
-            var authenticationResult = await this.HttpClient.PostAsync("User/Login", bodyContent);
+            var authenticationResult = await this.HttpClient.PostAsync(Path.Combine(this.MainRoute, "Login"), 
+                bodyContent);
+
             var authenticationContent = await authenticationResult.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<AuthenticationResponseDto>(authenticationContent, this.JsonSerializerOptions);
 

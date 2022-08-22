@@ -46,10 +46,10 @@ namespace UI_DSM.Server.Managers.ProjectManager
         }
 
         /// <summary>
-        ///     Gets all projects contained insed the <see cref="DatabaseContext" />
+        ///     Gets a collection of all <see cref="Project" />s
         /// </summary>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Project" /> as result</returns>
-        public async Task<IEnumerable<Project>> GetProjects()
+        public async Task<IEnumerable<Project>> GetEntities()
         {
             return await this.context.Projects.ToListAsync();
         }
@@ -57,16 +57,16 @@ namespace UI_DSM.Server.Managers.ProjectManager
         /// <summary>
         ///     Creates a new <see cref="Project" /> and store it into the <see cref="DatabaseContext" />
         /// </summary>
-        /// <param name="project">The <see cref="Project" /> to create</param>
+        /// <param name="entity">The <see cref="Project" /> to create</param>
         /// <returns>A <see cref="Task" /> with the result of the creation</returns>
-        public async Task<EntityOperationResult<Project>> CreateProject(Project project)
+        public async Task<EntityOperationResult<Project>> CreateEntity(Project entity)
         {
-            if (this.context.Projects.AsEnumerable().Any(x => x.ProjectName.Equals(project.ProjectName, StringComparison.InvariantCultureIgnoreCase)))
+            if (this.context.Projects.AsEnumerable().Any(x => x.ProjectName.Equals(entity.ProjectName, StringComparison.InvariantCultureIgnoreCase)))
             {
                 return EntityOperationResult<Project>.Failed("A project with the same name already exists");
             }
 
-            var operationResult = new EntityOperationResult<Project>(this.context.Add(project), EntityState.Added);
+            var operationResult = new EntityOperationResult<Project>(this.context.Add(entity), EntityState.Added);
 
             try
             {
@@ -84,17 +84,17 @@ namespace UI_DSM.Server.Managers.ProjectManager
         /// <summary>
         ///     Updates a <see cref="Project" />
         /// </summary>
-        /// <param name="project">The <see cref="Project" /> to update</param>
+        /// <param name="entity">The <see cref="Project" /> to update</param>
         /// <returns>A <see cref="Task" /> with the result of the update</returns>
-        public async Task<EntityOperationResult<Project>> UpdateProject(Project project)
+        public async Task<EntityOperationResult<Project>> UpdateEntity(Project entity)
         {
-            if (this.context.Projects.AsEnumerable().Any(x => x.ProjectName.Equals(project.ProjectName, StringComparison.InvariantCultureIgnoreCase) 
-                                                              && x.Id != project.Id))
+            if (this.context.Projects.AsEnumerable().Any(x => x.ProjectName.Equals(entity.ProjectName, StringComparison.InvariantCultureIgnoreCase)
+                                                              && x.Id != entity.Id))
             {
                 return EntityOperationResult<Project>.Failed("A project with the same name already exists");
             }
 
-            var operationResult = new EntityOperationResult<Project>(this.context.Update(project), EntityState.Modified, EntityState.Unchanged);
+            var operationResult = new EntityOperationResult<Project>(this.context.Update(entity), EntityState.Modified, EntityState.Unchanged);
 
             try
             {
@@ -110,13 +110,13 @@ namespace UI_DSM.Server.Managers.ProjectManager
         }
 
         /// <summary>
-        ///     Delete a <see cref="Project" />
+        ///     Deletes a <see cref="Project" />
         /// </summary>
-        /// <param name="project">The <see cref="Project" /> to delete</param>
+        /// <param name="entity">The <see cref="Project" /> to delete</param>
         /// <returns>A <see cref="Task" /> with the result of the deletion</returns>
-        public async Task<EntityOperationResult<Project>> DeleteProject(Project project)
+        public async Task<EntityOperationResult<Project>> DeleteEntity(Project entity)
         {
-            var operationResult = new EntityOperationResult<Project>(this.context.Remove(project), EntityState.Deleted);
+            var operationResult = new EntityOperationResult<Project>(this.context.Remove(entity), EntityState.Deleted);
 
             try
             {
@@ -132,13 +132,13 @@ namespace UI_DSM.Server.Managers.ProjectManager
         }
 
         /// <summary>
-        ///     Tries to get a <see cref="Project" /> based on its <see cref="Project.Id" />
+        ///     Tries to get a <see cref="Project" /> based on its <see cref="Guid" />
         /// </summary>
-        /// <param name="id">The <see cref="Guid" /> of the <see cref="Project" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="Project" /> if existing</returns>
-        public async Task<Project> GetProject(Guid id)
+        /// <param name="entityId">The <see cref="Guid" /></param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Project" /> if found</returns>
+        public async Task<Project> GetEntity(Guid entityId)
         {
-            return await this.context.Projects.FindAsync(id);
+            return await this.context.Projects.FindAsync(entityId);
         }
     }
 }

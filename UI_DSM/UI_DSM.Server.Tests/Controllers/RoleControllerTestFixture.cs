@@ -43,18 +43,18 @@ namespace UI_DSM.Server.Tests.Controllers
         public void VerifyGetRoles()
         {
             var roles = new List<Role>();
-            this.roleManager.Setup(x => x.GetRoles()).ReturnsAsync(roles);
+            this.roleManager.Setup(x => x.GetEntities()).ReturnsAsync(roles);
 
-            var rolesReponses = this.controller.GetRoles().Result as OkObjectResult;
+            var rolesReponses = this.controller.GetEntities().Result as OkObjectResult;
             Assert.That(rolesReponses, Is.Not.Null);
             Assert.That((IEnumerable<RoleDto>)rolesReponses.Value, Is.Empty);
             roles.Add(new Role(Guid.NewGuid()));
-            rolesReponses = this.controller.GetRoles().Result as OkObjectResult;
+            rolesReponses = this.controller.GetEntities().Result as OkObjectResult;
             Assert.That(rolesReponses, Is.Not.Null);
             Assert.That(((IEnumerable<RoleDto>)rolesReponses.Value!).Count(), Is.EqualTo(1));
-            this.roleManager.Setup(x => x.GetRole(roles.First().Id)).ReturnsAsync(roles.First());
-            Assert.That(this.controller.GetRole(roles.First().Id).Result, Is.TypeOf<OkObjectResult>());
-            Assert.That(this.controller.GetRole(Guid.NewGuid()).Result, Is.TypeOf<NotFoundResult>());
+            this.roleManager.Setup(x => x.GetEntity(roles.First().Id)).ReturnsAsync(roles.First());
+            Assert.That(this.controller.GetEntity(roles.First().Id).Result, Is.TypeOf<OkObjectResult>());
+            Assert.That(this.controller.GetEntity(Guid.NewGuid()).Result, Is.TypeOf<NotFoundResult>());
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace UI_DSM.Server.Tests.Controllers
         {
             var newRole = new RoleDto(Guid.NewGuid());
 
-            var badRequestResponse = this.controller.CreateRole(newRole).Result as BadRequestObjectResult;
+            var badRequestResponse = this.controller.CreateEntity(newRole).Result as BadRequestObjectResult;
             Assert.That(badRequestResponse, Is.Not.Null);
 
             newRole = new RoleDto()
@@ -74,13 +74,13 @@ namespace UI_DSM.Server.Tests.Controllers
                 }
             };
 
-            this.roleManager.Setup(x => x.CreateRole(It.IsAny<Role>())).ReturnsAsync(EntityOperationResult<Role>.Failed());
-            Assert.That(this.controller.CreateRole(newRole).Result, Is.TypeOf<BadRequestObjectResult>());
+            this.roleManager.Setup(x => x.CreateEntity(It.IsAny<Role>())).ReturnsAsync(EntityOperationResult<Role>.Failed());
+            Assert.That(this.controller.CreateEntity(newRole).Result, Is.TypeOf<BadRequestObjectResult>());
 
             var role = (Role)newRole.InstantiatePoco();
             role.ResolveProperties(newRole);
-            this.roleManager.Setup(x => x.CreateRole(It.IsAny<Role>())).ReturnsAsync(EntityOperationResult<Role>.Success(role));
-            Assert.That(this.controller.CreateRole(newRole).Result, Is.TypeOf<OkObjectResult>());
+            this.roleManager.Setup(x => x.CreateEntity(It.IsAny<Role>())).ReturnsAsync(EntityOperationResult<Role>.Success(role));
+            Assert.That(this.controller.CreateEntity(newRole).Result, Is.TypeOf<OkObjectResult>());
         }
 
         [Test]
@@ -96,15 +96,15 @@ namespace UI_DSM.Server.Tests.Controllers
             };
 
             var roleDto = (RoleDto)role.ToDto();
-            this.roleManager.Setup(x => x.GetRole(role.Id)).ReturnsAsync((Role)null);
-            Assert.That(this.controller.UpdateRole(roleDto.Id, roleDto).Result, Is.TypeOf<NotFoundObjectResult>());
+            this.roleManager.Setup(x => x.GetEntity(role.Id)).ReturnsAsync((Role)null);
+            Assert.That(this.controller.UpdateEntity(roleDto.Id, roleDto).Result, Is.TypeOf<NotFoundObjectResult>());
 
-            this.roleManager.Setup(x => x.GetRole(role.Id)).ReturnsAsync(role);
-            this.roleManager.Setup(x => x.UpdateRole(role)).ReturnsAsync(EntityOperationResult<Role>.Failed());
-            Assert.That(this.controller.UpdateRole(roleDto.Id, roleDto).Result, Is.TypeOf<BadRequestObjectResult>());
+            this.roleManager.Setup(x => x.GetEntity(role.Id)).ReturnsAsync(role);
+            this.roleManager.Setup(x => x.UpdateEntity(role)).ReturnsAsync(EntityOperationResult<Role>.Failed());
+            Assert.That(this.controller.UpdateEntity(roleDto.Id, roleDto).Result, Is.TypeOf<BadRequestObjectResult>());
 
-            this.roleManager.Setup(x => x.UpdateRole(role)).ReturnsAsync(EntityOperationResult<Role>.Success(role));
-            Assert.That(this.controller.UpdateRole(roleDto.Id, roleDto).Result, Is.TypeOf<OkObjectResult>());
+            this.roleManager.Setup(x => x.UpdateEntity(role)).ReturnsAsync(EntityOperationResult<Role>.Success(role));
+            Assert.That(this.controller.UpdateEntity(roleDto.Id, roleDto).Result, Is.TypeOf<OkObjectResult>());
         }
 
         [Test]
@@ -119,13 +119,13 @@ namespace UI_DSM.Server.Tests.Controllers
                 }
             };
 
-            this.roleManager.Setup(x => x.GetRole(role.Id)).ReturnsAsync((Role)null);
-            Assert.That(this.controller.DeleteRole(role.Id).Result, Is.TypeOf<NotFoundObjectResult>());
-            this.roleManager.Setup(x => x.GetRole(role.Id)).ReturnsAsync(role);
-            this.roleManager.Setup(x => x.DeleteRole(role)).ReturnsAsync(EntityOperationResult<Role>.Failed());
-            Assert.That(((ObjectResult)this.controller.DeleteRole(role.Id).Result).StatusCode, Is.EqualTo(500));
-            this.roleManager.Setup(x => x.DeleteRole(role)).ReturnsAsync(EntityOperationResult<Role>.Success(role));
-            Assert.That(this.controller.DeleteRole(role.Id).Result, Is.TypeOf<OkObjectResult>());
+            this.roleManager.Setup(x => x.GetEntity(role.Id)).ReturnsAsync((Role)null);
+            Assert.That(this.controller.DeleteEntity(role.Id).Result, Is.TypeOf<NotFoundObjectResult>());
+            this.roleManager.Setup(x => x.GetEntity(role.Id)).ReturnsAsync(role);
+            this.roleManager.Setup(x => x.DeleteEntity(role)).ReturnsAsync(EntityOperationResult<Role>.Failed());
+            Assert.That(((ObjectResult)this.controller.DeleteEntity(role.Id).Result).StatusCode, Is.EqualTo(500));
+            this.roleManager.Setup(x => x.DeleteEntity(role)).ReturnsAsync(EntityOperationResult<Role>.Success(role));
+            Assert.That(this.controller.DeleteEntity(role.Id).Result, Is.TypeOf<OkObjectResult>());
         }
     }
 }

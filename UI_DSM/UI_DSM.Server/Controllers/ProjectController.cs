@@ -26,7 +26,7 @@ namespace UI_DSM.Server.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class ProjectController : ControllerBase
+    public class ProjectController : EntityController<Project, ProjectDto>
     {
         /// <summary>
         ///     The <see cref="IProjectManager" />
@@ -43,30 +43,39 @@ namespace UI_DSM.Server.Controllers
         }
 
         /// <summary>
-        ///     Gets a collections of all <see cref="Project" />
+        ///     Gets a collection of all <see cref="ProjectDto" />
         /// </summary>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="ProjectDto" /> as result</returns>
-        [HttpGet]
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="ProjectDto" />as result</returns>
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> GetProjects()
+        public override async Task<IActionResult> GetEntities()
         {
-            var projects = await this.projectManager.GetProjects();
-            var projectsDto = projects.Select(x => (ProjectDto)x.ToDto());
-            return this.Ok(projectsDto);
+            var roles = await this.projectManager.GetEntities();
+            return this.Ok(roles.Select(x => (ProjectDto)x.ToDto()));
         }
 
         /// <summary>
-        ///     Tries to create a new <see cref="Project" />
+        ///     Get a <see cref="ProjectDto" /> based on its <see cref="Guid" />
         /// </summary>
-        /// <param name="newProject">The <see cref="ProjectDto" /></param>
+        /// <param name="entityId">The <see cref="Guid" /></param>
+        /// <returns>A <see cref="Task" /> with the <see cref="ProjectDto" /> if found</returns>
+        [Authorize]
+        public override async Task<IActionResult> GetEntity(Guid entityId)
+        {
+            var project = await this.projectManager.GetEntity(entityId);
+            return project == null ? this.NotFound() : this.Ok((ProjectDto)project.ToDto());
+        }
+
+        /// <summary>
+        ///     Tries to create a new <see cref="Entity" /> based on its <see cref="ProjectDto" />
+        /// </summary>
+        /// <param name="dto">The <see cref="ProjectDto" /></param>
         /// <returns>A <see cref="Task" /> with the result of the creation</returns>
-        [HttpPost("Create")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> CreateProject([FromBody] ProjectDto newProject)
+        public override async Task<IActionResult> CreateEntity(ProjectDto dto)
         {
             var response = new EntityRequestResponseDto<ProjectDto>();
 
-            if (newProject.InstantiatePoco() is not Project project || project.Id != Guid.Empty)
+            if (dto.InstantiatePoco() is not Project project || project.Id != Guid.Empty)
             {
                 response.Errors = new List<string>
                 {
@@ -76,43 +85,33 @@ namespace UI_DSM.Server.Controllers
                 return this.BadRequest(response);
             }
 
-            project.ResolveProperties(newProject);
-            var identityResult = await this.projectManager.CreateProject(project);
-            response.IsRequestSuccessful = identityResult.Succeeded;
-
-            if (!identityResult.Succeeded)
-            {
-                response.Errors = identityResult.Errors;
-                return this.BadRequest(response);
-            }
-
-            response.Entity = identityResult.Entity.ToDto() as ProjectDto;
-            return this.Ok(response);
+            project.ResolveProperties(dto);
+            var identityResult = await this.projectManager.CreateEntity(project);
+            return this.HandleOperationResult(response, identityResult);
         }
 
         /// <summary>
-        ///     Tries to delete a <see cref="Project" /> defined by the given <see cref="projectId" />
+        ///     Tries to delete an <see cref="Entity" /> defined by the given <see cref="Guid" />
         /// </summary>
-        /// <param name="projectId">The <see cref="Guid" /> of the project to delete</param>
-        /// <returns>A <see cref="Task" /> with the result of the delete action</returns>
-        [HttpDelete("{projectId:guid}")]
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Entity" /> to delete</param>
+        /// <returns>A <see cref="Task" /> with the result of the operation</returns>
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> DeleteProject(Guid projectId)
+        public override async Task<IActionResult> DeleteEntity(Guid entityId)
         {
-            var project = await this.projectManager.GetProject(projectId);
+            var project = await this.projectManager.GetEntity(entityId);
             var response = new RequestResponseDto();
 
             if (project == null)
             {
                 response.Errors = new List<string>
                 {
-                    $"Project with the id {projectId} does not exist"
+                    $"Project with the id {entityId} does not exist"
                 };
 
                 return this.NotFound(response);
             }
 
-            var identityResult = await this.projectManager.DeleteProject(project);
+            var identityResult = await this.projectManager.DeleteEntity(project);
             response.IsRequestSuccessful = identityResult.Succeeded;
 
             if (identityResult.Succeeded)
@@ -125,16 +124,30 @@ namespace UI_DSM.Server.Controllers
         }
 
         /// <summary>
-        ///     Gets a <see cref="Project" /> based on its <see cref="Guid" />
+        ///     Tries to update an existing <see cref="Entity" />
         /// </summary>
-        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /> to get</param>
-        /// <returns>A <see cref="Task" /> with the <see cref="ProjectDto" /> if found </returns>
-        [HttpGet("{projectId:guid}")]
-        [Authorize]
-        public async Task<IActionResult> GetProject(Guid projectId)
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Entity" /> to update</param>
+        /// <param name="dto">The <see cref="ProjectDto" /> to update the <see cref="Entity" /></param>
+        /// <returns>A <see cref="Task" /> with the result of the operation</returns>
+        [Authorize(Roles = "Administrator")]
+        public override async Task<IActionResult> UpdateEntity(Guid entityId, ProjectDto dto)
         {
-            var project = await this.projectManager.GetProject(projectId);
-            return project == null ? this.NotFound() : this.Ok((ProjectDto)project.ToDto());
+            var existingProject = await this.projectManager.GetEntity(entityId);
+            var response = new EntityRequestResponseDto<ProjectDto>();
+
+            if (existingProject == null)
+            {
+                response.Errors = new List<string>
+                {
+                    $"Project with the id {entityId} does not exist"
+                };
+
+                return this.NotFound(response);
+            }
+
+            existingProject.ResolveProperties(dto);
+            var identityResult = await this.projectManager.UpdateEntity(existingProject);
+            return this.HandleOperationResult(response, identityResult);
         }
     }
 }

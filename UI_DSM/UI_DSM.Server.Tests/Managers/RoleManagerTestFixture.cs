@@ -65,9 +65,9 @@ namespace UI_DSM.Server.Tests.Managers
             dbSet.Setup(x => x.FindAsync(invalidGuid)).ReturnsAsync((Role)null);
             dbSet.Setup(x => x.FindAsync(this.data.Last().Id)).ReturnsAsync(this.data.Last());
             this.context.Setup(x => x.Roles).Returns(dbSet.Object);
-            Assert.That(this.manager.GetRoles().Result.Count(), Is.EqualTo(this.data.Count));
-            Assert.That(this.manager.GetRole(invalidGuid).Result, Is.Null);
-            Assert.That(this.manager.GetRole(this.data.Last().Id).Result, Is.Not.Null);
+            Assert.That(this.manager.GetEntities().Result.Count(), Is.EqualTo(this.data.Count));
+            Assert.That(this.manager.GetEntity(invalidGuid).Result, Is.Null);
+            Assert.That(this.manager.GetEntity(this.data.Last().Id).Result, Is.Not.Null);
         }
 
         [Test]
@@ -85,17 +85,17 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var creationResult = this.manager.CreateRole(newRole).Result;
+            var creationResult = this.manager.CreateEntity(newRole).Result;
             Assert.That(creationResult.Succeeded, Is.False);
 
             newRole.RoleName = "Task Manager";
-            _ = this.manager.CreateRole(newRole).Result;
+            _ = this.manager.CreateEntity(newRole).Result;
             this.context.Verify(x => x.Add(It.IsAny<Role>()), Times.Once);
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());
 
-            creationResult = this.manager.CreateRole(newRole).Result;
+            creationResult = this.manager.CreateEntity(newRole).Result;
             Assert.That(creationResult.Succeeded, Is.False);
         }
 
@@ -114,17 +114,17 @@ namespace UI_DSM.Server.Tests.Managers
                 RoleName = this.data.Last().RoleName
             };
 
-            _ = this.manager.UpdateRole(role).Result;
+            _ = this.manager.UpdateEntity(role).Result;
             this.context.Verify(x => x.Update(It.IsAny<Role>()), Times.Never);
 
             role.RoleName = "New Role name";
-            _ = this.manager.UpdateRole(role).Result;
+            _ = this.manager.UpdateEntity(role).Result;
             this.context.Verify(x => x.Update(It.IsAny<Role>()), Times.Once);
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());
 
-            var creationResult = this.manager.UpdateRole(role).Result;
+            var creationResult = this.manager.UpdateEntity(role).Result;
             Assert.That(creationResult.Succeeded, Is.False);
         }
 
@@ -132,14 +132,14 @@ namespace UI_DSM.Server.Tests.Managers
         public void VerifyDeleteRole()
         {
             var role = new Role();
-            _ = this.manager.DeleteRole(role).Result;
+            _ = this.manager.DeleteEntity(role).Result;
 
             this.context.Verify(x => x.Remove(It.IsAny<Role>()), Times.Once);
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());
 
-            var creationResult = this.manager.DeleteRole(role).Result;
+            var creationResult = this.manager.DeleteEntity(role).Result;
             Assert.That(creationResult.Succeeded, Is.False);
         }
     }
