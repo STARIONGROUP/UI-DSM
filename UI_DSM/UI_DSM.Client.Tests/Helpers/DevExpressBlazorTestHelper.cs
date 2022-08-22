@@ -15,8 +15,6 @@ namespace UI_DSM.Client.Tests.Helpers
 {
     using Bunit;
 
-    using DevExpress.Blazor.Internal;
-
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -50,7 +48,7 @@ namespace UI_DSM.Client.Tests.Helpers
         private static void ConfigureJSInterop(BunitJSInterop interop)
         {
             interop.Mode = JSRuntimeMode.Loose;
-            interop.SetupModule("DxBlazor.Modal.getReference");
+            interop.SetupModule("DxBlazor.Modal.getReference", _ => true);
             interop.SetupModule("./_content/DevExpress.Blazor/dx-blazor.js");
         }
     }
