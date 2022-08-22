@@ -51,9 +51,13 @@ namespace UI_DSM.Server.Tests.Managers
             dbSet.Setup(x => x.FindAsync(invalidGuid)).ReturnsAsync((Project)null);
             dbSet.Setup(x => x.FindAsync(data.Last().Id)).ReturnsAsync(data.Last());
             this.context.Setup(x => x.Projects).Returns(dbSet.Object);
-            Assert.That(this.manager.GetEntities().Result.Count(), Is.EqualTo(data.Count));
-            Assert.That(this.manager.GetEntity(invalidGuid).Result, Is.Null);
-            Assert.That(this.manager.GetEntity(data.Last().Id).Result, Is.Not.Null);
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.manager.GetEntities().Result.Count(), Is.EqualTo(data.Count));
+                Assert.That(this.manager.GetEntity(invalidGuid).Result, Is.Null);
+                Assert.That(this.manager.GetEntity(data.Last().Id).Result, Is.Not.Null);
+            });
         }
 
         [Test]

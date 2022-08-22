@@ -81,7 +81,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             await this.viewModel.OnInitializedAsync();
             renderer.Render();
 
-            var projectDivs = renderer.FindAll(".m-top-10px");
+            var projectDivs = renderer.FindAll(".m-top-10px").ToList();
             Assert.That(projectDivs.Count, Is.EqualTo(2));
             await renderer.InvokeAsync(() => projectDivs.First().Click());
             Assert.That(this.viewModel.NavigationManager.Uri, Is.EqualTo($"{this.viewModel.NavigationManager.BaseUri}Administration/Project/{this.projects.First().Id}"));

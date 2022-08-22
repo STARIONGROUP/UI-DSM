@@ -53,8 +53,12 @@ namespace UI_DSM.Server.Tests.Controllers
             Assert.That(rolesReponses, Is.Not.Null);
             Assert.That(((IEnumerable<RoleDto>)rolesReponses.Value!).Count(), Is.EqualTo(1));
             this.roleManager.Setup(x => x.GetEntity(roles.First().Id)).ReturnsAsync(roles.First());
-            Assert.That(this.controller.GetEntity(roles.First().Id).Result, Is.TypeOf<OkObjectResult>());
-            Assert.That(this.controller.GetEntity(Guid.NewGuid()).Result, Is.TypeOf<NotFoundResult>());
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.controller.GetEntity(roles.First().Id).Result, Is.TypeOf<OkObjectResult>());
+                Assert.That(this.controller.GetEntity(Guid.NewGuid()).Result, Is.TypeOf<NotFoundResult>());
+            });
         }
 
         [Test]
