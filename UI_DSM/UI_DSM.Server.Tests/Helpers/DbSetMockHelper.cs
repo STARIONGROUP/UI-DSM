@@ -24,7 +24,7 @@ namespace UI_DSM.Server.Tests.Helpers
     [ExcludeFromCodeCoverage]
     public static class DbSetMockHelper
     {
-        public static DbSet<TEntity> CreateMock<TEntity>(List<TEntity> entities) where TEntity : class
+        public static Mock<DbSet<TEntity>> CreateMock<TEntity>(List<TEntity> entities) where TEntity : class
         {
             var dbSet = new Mock<DbSet<TEntity>>();
 
@@ -37,7 +37,7 @@ namespace UI_DSM.Server.Tests.Helpers
             dbSet.As<IQueryable<TEntity>>().Setup(m => m.Expression).Returns(data.Expression);
             dbSet.As<IQueryable<TEntity>>().Setup(m => m.ElementType).Returns(data.ElementType);
             dbSet.As<IQueryable<TEntity>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
-            return dbSet.Object;
+            return dbSet;
         }
     }
 }

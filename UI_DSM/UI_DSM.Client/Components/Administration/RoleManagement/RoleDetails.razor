@@ -1,0 +1,30 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// RoleDetails.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Shared.Helpers
+@using UI_DSM.Shared.Wrappers
+@using Microsoft.AspNetCore.Components
+<DxFormLayout>
+	<DxFormLayoutItem Caption="Role Id:" ColSpanMd="12">
+		<label>@this.ViewModel.Role.Id</label>
+	</DxFormLayoutItem>
+	<DxFormLayoutItem Caption="Role Name:" ColSpanMd="12">
+		<DxTextBox @bind-Text="@this.ViewModel.Role.RoleName" Enabled="@this.ModificationEnabled"/>
+	</DxFormLayoutItem>
+	<DxFormLayoutItem Caption="Access Rights :" ColSpanMd="12">
+		<DxListBox Data="@AccessRightHelper.GetAccessRights()"
+		           @bind-Values="@this.ViewModel.CurrentAccessRights"
+		           ShowCheckboxes="true"
+		           SelectionMode="ListBoxSelectionMode.Multiple"
+		           TextFieldName="@nameof(AccessRightWrapper.AccessRightName)"
+		           Enabled="@this.ModificationEnabled"/>
+	</DxFormLayoutItem>
+</DxFormLayout>

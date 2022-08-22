@@ -15,12 +15,12 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
 {
     using Bunit;
 
-    using Microsoft.AspNetCore.Components.Forms;
-    using Microsoft.Extensions.DependencyInjection;
+    using DevExpress.Blazor;
 
     using NUnit.Framework;
 
     using UI_DSM.Client.Components.Administration.UserManagement;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components.Administration.UserManagement;
     using UI_DSM.Shared.DTO.Models;
 
@@ -36,8 +36,14 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
         public void Setup()
         {
             this.context = new TestContext();
-            this.context.Services.AddDevExpressBlazor();
+            this.context.ConfigureDevExpressBlazor();
             this.viewModel = new UserDetailsViewModel();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            this.context.CleanContext();
         }
 
         [Test]
@@ -53,9 +59,9 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
             var renderer = this.context.RenderComponent<UserDetails>(parameters => 
                 parameters.Add(p => p.ViewModel, this.viewModel));
 
-            var inputTexts = renderer.FindComponents<InputText>();
+            var inputTexts = renderer.FindComponents<DxTextBox>();
 
-            Assert.That(inputTexts[0].Instance.Value, Is.EqualTo(this.viewModel.User.UserName));
+            Assert.That(inputTexts[0].Instance.Text, Is.EqualTo(this.viewModel.User.UserName));
 
             var userId = renderer.Find("#userId");
             Assert.That(userId.TextContent, Is.EqualTo(this.viewModel.User.Id.ToString()));

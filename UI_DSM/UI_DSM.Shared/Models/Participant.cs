@@ -46,6 +46,12 @@ namespace UI_DSM.Shared.Models
         public User User { get; set; }
 
         /// <summary>
+        ///     The current <see cref="Role" /> for the <see cref="User" />
+        /// </summary>
+        [Required]
+        public Role Role { get; set; }
+
+        /// <summary>
         ///     Instantiate a <see cref="ParticipantDto" /> from a <see cref="Participant" />
         /// </summary>
         /// <returns>A new <see cref="ParticipantDto" /></returns>
@@ -53,10 +59,23 @@ namespace UI_DSM.Shared.Models
         {
             var dto = new ParticipantDto(this.Id)
             {
-                User = new Guid(this.User.Id)
+                User = new Guid(this.User.Id),
+                Role = this.Role.Id
             };
 
             return dto;
+        }
+
+        /// <summary>
+        ///     Resolve the properties of the current <see cref="Participant" /> from its <see cref="EntityDto" /> counter-part
+        /// </summary>
+        /// <param name="entityDto">The source <see cref="EntityDto" /></param>
+        public override void ResolveProperties(EntityDto entityDto)
+        {
+            if (entityDto is not ParticipantDto participantDto)
+            {
+                throw new InvalidOperationException($"The DTO {entityDto.GetType()} does not match with the current Participant POCO");
+            }
         }
     }
 }

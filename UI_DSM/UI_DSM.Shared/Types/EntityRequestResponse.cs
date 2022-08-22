@@ -26,5 +26,33 @@ namespace UI_DSM.Shared.Types
         ///     Gets or sets the <see cref="TEntity" />
         /// </summary>
         public TEntity Entity { get; set; }
+
+        /// <summary>
+        ///     Creates a new <see cref="EntityRequestResponse{TEntity}" /> in case of success
+        /// </summary>
+        /// <param name="entity">The <see cref="TEntity" /></param>
+        /// <returns>A new <see cref="EntityRequestResponse{TEntity}" /></returns>
+        public static EntityRequestResponse<TEntity> Success(TEntity entity)
+        {
+            return new EntityRequestResponse<TEntity>
+            {
+                Entity = entity,
+                IsRequestSuccessful = true
+            };
+        }
+
+        /// <summary>
+        ///     Creates a new <see cref="EntityRequestResponse{TEntity}" /> in case of failure
+        /// </summary>
+        /// <param name="errors">A collection of error message</param>
+        /// <returns>A new <see cref="EntityRequestResponse{TEntity}" /></returns>
+        public static EntityRequestResponse<TEntity> Fail(List<string> errors)
+        {
+            return new EntityRequestResponse<TEntity>
+            {
+                Errors = errors,
+                IsRequestSuccessful = false
+            };
+        }
     }
 }

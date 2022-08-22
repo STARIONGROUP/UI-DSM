@@ -36,10 +36,13 @@ namespace UI_DSM.Client.Pages.Administration
         [Inject]
         public IProjectManagementViewModel ViewModel { get; set; }
 
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+        /// <summary>
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             this.disposables.ForEach(x => x.Dispose());
+            this.disposables.Clear();
         }
 
         /// <summary>

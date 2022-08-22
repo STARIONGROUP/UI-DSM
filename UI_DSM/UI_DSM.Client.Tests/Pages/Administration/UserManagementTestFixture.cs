@@ -28,6 +28,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
 
     using UI_DSM.Client.Pages.Administration;
     using UI_DSM.Client.Services.Administration.UserService;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Pages.Administration;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -68,14 +69,14 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             this.viewModel = new UserManagementViewModel(this.userService.Object);
             this.context = new TestContext();
             this.context.Services.AddSingleton(this.viewModel);
-            this.context.Services.AddDevExpressBlazor();
+            this.context.ConfigureDevExpressBlazor();
             this.context.AddTestAuthorization();
         }
 
         [TearDown]
         public void Teardown()
         {
-            this.context.Dispose();
+            this.context.CleanContext();
         }
 
         [Test]

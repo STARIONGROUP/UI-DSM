@@ -26,6 +26,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
 
     using UI_DSM.Client.Pages.Administration;
     using UI_DSM.Client.Services.Administration.ProjectService;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Pages.Administration;
     using UI_DSM.Shared.Models;
     using UI_DSM.Shared.Types;
@@ -45,7 +46,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
         {
             this.projects = new List<Project>();
             this.context = new TestContext();
-            this.context.Services.AddDevExpressBlazor();
+            this.context.ConfigureDevExpressBlazor();
             this.projectService = new Mock<IProjectService>();
             this.projectService.Setup(x => x.GetProjects()).ReturnsAsync(this.projects);
             this.viewModel = new ProjectManagementViewModel(this.projectService.Object, null);
@@ -56,7 +57,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
         [TearDown]
         public void Teardown()
         {
-            this.context.Dispose();
+            this.context.CleanContext();
         }
 
         [Test]
@@ -96,21 +97,18 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             renderer.InvokeAsync(() => createButton.Instance.Click.InvokeAsync());
             Assert.That(this.viewModel.CreationPopupVisible, Is.True);
 
-            var createProjectResponse = new EntityRequestResponse<Project>
+            var createProjectResponse = EntityRequestResponse<Project>.Fail(new List<string>()
             {
-                Errors = new List<string>()
-                {
-                    "A project with the same name already exists"
-                }
-            };
+                "A project with the same name already exists"
+            });
 
             this.projectService.Setup(x => x.CreateProject(It.IsAny<Project>())).ReturnsAsync(createProjectResponse);
 
             renderer.InvokeAsync(() => this.viewModel.ProjectCreationViewModel.OnValidSubmit.InvokeAsync());
             Assert.That(this.viewModel.CreationPopupVisible, Is.True);
-            createProjectResponse.IsRequestSuccessful = true;
-            createProjectResponse.Errors.Clear();
-            createProjectResponse.Entity = new Project(Guid.NewGuid());
+            createProjectResponse = EntityRequestResponse<Project>.Success(new Project(Guid.NewGuid()));
+            this.projectService.Setup(x => x.CreateProject(It.IsAny<Project>())).ReturnsAsync(createProjectResponse);
+
             renderer.InvokeAsync(() => this.viewModel.ProjectCreationViewModel.OnValidSubmit.InvokeAsync());
             Assert.That(this.viewModel.CreationPopupVisible, Is.False);
             Assert.That(this.viewModel.Projects.Count, Is.EqualTo(1));

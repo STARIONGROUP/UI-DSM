@@ -13,10 +13,8 @@
 <EditForm Context="editFormContext" Model="@this.ViewModel.Project" OnValidSubmit="@this.ViewModel.OnValidSubmit">
 	<DataAnnotationsValidator />
 	<DxFormLayout>
-		<DxFormLayoutItem Caption="Project Name:" ColSpanMd="12" >
-			<Template>
-				<InputText @bind-Value="@this.ViewModel.Project.ProjectName" NullText="Enter the name of the project" class="form-control"/>
-			</Template>
+		<DxFormLayoutItem Caption="Project Name:" ColSpanMd="12">
+			<DxTextBox @bind-Text="@this.ViewModel.Project.ProjectName" NullText="Enter the name of the project"/>
 		</DxFormLayoutItem>
 	</DxFormLayout>
 	<ValidationSummary/>

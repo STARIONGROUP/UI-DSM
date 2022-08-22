@@ -13,19 +13,13 @@
 	<DataAnnotationsValidator />
 	<DxFormLayout>
 		<DxFormLayoutItem Caption="UserName:" ColSpanMd="12" >
-			<Template>
-				<InputText @bind-Value="@this.ViewModel.Registration.UserName" NullText="Enter username" class="form-control"/>
-			</Template>
+			<DxTextBox @bind-Text="@this.ViewModel.Registration.UserName" NullText="Enter username" />
 		</DxFormLayoutItem>
 		<DxFormLayoutItem Caption="Password:" ColSpanMd="12" BeginRow="true">
-			<Template>
-				<InputText type="password" @bind-Value="@this.ViewModel.Registration.Password" NullText="Enter password" class="form-control"/>
-			</Template>
+			<DxTextBox @bind-Text="@this.ViewModel.Registration.Password" NullText="Enter password" Password="true"/>
 		</DxFormLayoutItem>
 		<DxFormLayoutItem Caption="Confirm Password:" ColSpanMd="12" BeginRow="true">
-			<Template>
-				<InputText type="password" @bind-Value="@this.ViewModel.Registration.ConfirmPassword" class="form-control"/>
-			</Template>
+			<DxTextBox  @bind-Text="@this.ViewModel.Registration.ConfirmPassword" NullText="Confirm the password" Password="true"/>
 		</DxFormLayoutItem>
 	</DxFormLayout>
 	<ValidationSummary/>

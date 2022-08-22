@@ -9,7 +9,7 @@ namespace UI_DSM.Server.Migrations
     using System.Diagnostics.CodeAnalysis;
 
     [ExcludeFromCodeCoverage]
-    public partial class ProjectBaseMigration : Migration
+    public partial class ProjectWithRolesMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -195,11 +195,31 @@ namespace UI_DSM.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Role",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    RoleName = table.Column<string>(type: "text", nullable: false),
+                    AccessRights = table.Column<int[]>(type: "integer[]", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Role", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Role_Entity_Id",
+                        column: x => x.Id,
+                        principalTable: "Entity",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Participant",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
                     ProjectId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
@@ -222,22 +242,46 @@ namespace UI_DSM.Server.Migrations
                         column: x => x.ProjectId,
                         principalTable: "Project",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Participant_Role_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Role",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "AF8956F8-CA85-4DF2-8CB6-C46D0845B987", "77e42081-58b4-4ea2-9df7-1995c0591df0", "Administrator", "ADMINISTRATOR" });
+                values: new object[] { "AF8956F8-CA85-4DF2-8CB6-C46D0845B987", "df3e327f-f326-4ed4-8890-0b2f8440a436", "Administrator", "ADMINISTRATOR" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "IsAdmin", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7", 0, "f9e3bd0e-0186-4603-bb99-5dd4d551c714", null, false, true, false, null, null, "ADMIN", "AQAAAAEAACcQAAAAEB4zGIxFk7DMDglPndkZ+6x6+y0fTD1zJwZhKpm23xHjweDYJ3RM4e9nuWvrzznCbA==", null, false, "5933b6d7-af34-49c4-837c-500087566000", false, "admin" });
+                values: new object[] { "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7", 0, "77f56b47-9a66-484a-9749-d81a80575fd7", null, false, true, false, null, null, "ADMIN", "AQAAAAEAACcQAAAAELofQNBZUG4ZByLcdJk8duH13IEJUyFxeH/dJ04ka2nH/cdTisUH8Fr2r4vaWgp1IA==", null, false, "351d62f5-32d1-479d-8617-06f8d10c9819", false, "admin" });
+
+            migrationBuilder.InsertData(
+                table: "Entity",
+                columns: new[] { "Id", "EntityContainerId" },
+                values: new object[,]
+                {
+                    { new Guid("28b83519-fb7c-4a9a-8279-194140bfcfbe"), null },
+                    { new Guid("fd580a55-9666-4abe-a02b-3a99478996f7"), null }
+                });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
                 values: new object[] { "AF8956F8-CA85-4DF2-8CB6-C46D0845B987", "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7" });
+
+            migrationBuilder.InsertData(
+                table: "Role",
+                columns: new[] { "Id", "AccessRights", "RoleName" },
+                values: new object[,]
+                {
+                    { new Guid("28b83519-fb7c-4a9a-8279-194140bfcfbe"), new[] { 4 }, "Reviewer" },
+                    { new Guid("fd580a55-9666-4abe-a02b-3a99478996f7"), new[] { 0, 1, 2, 3 }, "Project Administrator" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -287,6 +331,11 @@ namespace UI_DSM.Server.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Participant_RoleId",
+                table: "Participant",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Participant_UserId",
                 table: "Participant",
                 column: "UserId");
@@ -320,6 +369,9 @@ namespace UI_DSM.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "Project");
+
+            migrationBuilder.DropTable(
+                name: "Role");
 
             migrationBuilder.DropTable(
                 name: "Entity");

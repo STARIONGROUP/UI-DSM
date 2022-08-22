@@ -15,12 +15,14 @@ namespace UI_DSM.Client.Tests.Components.Administration.ProjectManagement
 {
     using Bunit;
 
+    using DevExpress.Blazor;
+
     using Microsoft.AspNetCore.Components.Forms;
-    using Microsoft.Extensions.DependencyInjection;
 
     using NUnit.Framework;
 
     using UI_DSM.Client.Components.Administration.ProjectManagement;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement;
     using UI_DSM.Shared.Models;
 
@@ -36,7 +38,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ProjectManagement
         public void Setup()
         {
             this.context = new TestContext();
-            this.context.Services.AddDevExpressBlazor();
+            this.context.ConfigureDevExpressBlazor();
 
             this.viewModel = new ProjectDetailsViewModel()
             {
@@ -50,7 +52,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ProjectManagement
         [TearDown]
         public void Teardown()
         {
-            this.context.Dispose();
+            this.context.CleanContext();
         }
 
         [Test]
@@ -61,8 +63,8 @@ namespace UI_DSM.Client.Tests.Components.Administration.ProjectManagement
                 parameters.Add(p => p.ViewModel, this.viewModel);
             });
 
-            var inputText = renderer.FindComponent<InputText>();
-            Assert.That(inputText.Instance.Value, Is.EqualTo(this.viewModel.Project.ProjectName));
+            var inputText = renderer.FindComponent<DxTextBox>();
+            Assert.That(inputText.Instance.Text, Is.EqualTo(this.viewModel.Project.ProjectName));
         }
     }
 }

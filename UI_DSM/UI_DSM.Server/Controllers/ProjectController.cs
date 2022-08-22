@@ -76,7 +76,7 @@ namespace UI_DSM.Server.Controllers
                 return this.BadRequest(response);
             }
 
-            project.ProjectName = newProject.ProjectName;
+            project.ResolveProperties(newProject);
             var identityResult = await this.projectManager.CreateProject(project);
             response.IsRequestSuccessful = identityResult.Succeeded;
 
@@ -95,7 +95,7 @@ namespace UI_DSM.Server.Controllers
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the project to delete</param>
         /// <returns>A <see cref="Task" /> with the result of the delete action</returns>
-        [HttpDelete("{projectId}")]
+        [HttpDelete("{projectId:guid}")]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteProject(Guid projectId)
         {
@@ -128,7 +128,7 @@ namespace UI_DSM.Server.Controllers
         ///     Gets a <see cref="Project" /> based on its <see cref="Guid" />
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /> to get</param>
-        /// <returns>A <see cref="Task" /> with the <see cref="Project" /> if found </returns>
+        /// <returns>A <see cref="Task" /> with the <see cref="ProjectDto" /> if found </returns>
         [HttpGet("{projectId:guid}")]
         [Authorize]
         public async Task<IActionResult> GetProject(Guid projectId)
