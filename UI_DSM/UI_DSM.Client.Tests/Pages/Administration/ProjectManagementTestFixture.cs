@@ -61,7 +61,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
         }
 
         [Test]
-        public void VerifyOnInitialized()
+        public async Task VerifyOnInitialized()
         {
             var renderer = this.context.RenderComponent<ProjectManagement>();
 
@@ -78,23 +78,23 @@ namespace UI_DSM.Client.Tests.Pages.Administration
                 ProjectName = "Project 2"
             });
 
-            this.viewModel.OnInitializedAsync();
+            await this.viewModel.OnInitializedAsync();
             renderer.Render();
 
             var projectDivs = renderer.FindAll(".m-top-10px");
             Assert.That(projectDivs.Count, Is.EqualTo(2));
-            renderer.InvokeAsync(() => projectDivs.First().Click());
+            await renderer.InvokeAsync(() => projectDivs.First().Click());
             Assert.That(this.viewModel.NavigationManager.Uri, Is.EqualTo($"{this.viewModel.NavigationManager.BaseUri}Administration/Project/{this.projects.First().Id}"));
         }
 
         [Test]
-        public void VerifyCreateProject()
+        public async Task VerifyCreateProject()
         {
             var renderer = this.context.RenderComponent<ProjectManagement>();
             var createButton = renderer.FindComponent<DxButton>();
             Assert.That(this.viewModel.CreationPopupVisible, Is.False);
 
-            renderer.InvokeAsync(() => createButton.Instance.Click.InvokeAsync());
+            await renderer.InvokeAsync(() => createButton.Instance.Click.InvokeAsync());
             Assert.That(this.viewModel.CreationPopupVisible, Is.True);
 
             var createProjectResponse = EntityRequestResponse<Project>.Fail(new List<string>()
@@ -104,17 +104,17 @@ namespace UI_DSM.Client.Tests.Pages.Administration
 
             this.projectService.Setup(x => x.CreateProject(It.IsAny<Project>())).ReturnsAsync(createProjectResponse);
 
-            this.viewModel.ProjectCreationViewModel.OnValidSubmit.InvokeAsync();
+            await this.viewModel.ProjectCreationViewModel.OnValidSubmit.InvokeAsync();
             Assert.That(this.viewModel.CreationPopupVisible, Is.True);
             createProjectResponse = EntityRequestResponse<Project>.Success(new Project(Guid.NewGuid()));
             this.projectService.Setup(x => x.CreateProject(It.IsAny<Project>())).ReturnsAsync(createProjectResponse);
 
-             this.viewModel.ProjectCreationViewModel.OnValidSubmit.InvokeAsync();
+            await this.viewModel.ProjectCreationViewModel.OnValidSubmit.InvokeAsync();
             Assert.That(this.viewModel.CreationPopupVisible, Is.False);
             Assert.That(this.viewModel.Projects.Count, Is.EqualTo(1));
 
             this.projectService.Setup(x => x.CreateProject(It.IsAny<Project>())).ThrowsAsync(new HttpRequestException("http error"));
-            this.viewModel.ProjectCreationViewModel.OnValidSubmit.InvokeAsync();
+            await this.viewModel.ProjectCreationViewModel.OnValidSubmit.InvokeAsync();
             Assert.That(this.viewModel.ErrorMessageViewModel.Errors.Count, Is.EqualTo(1));
         }
     }

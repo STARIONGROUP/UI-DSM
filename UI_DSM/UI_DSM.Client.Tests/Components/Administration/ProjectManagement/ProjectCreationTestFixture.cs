@@ -58,7 +58,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ProjectManagement
         }
 
         [Test]
-        public void VerifyComponent()
+        public async Task VerifyComponent()
         {
             var renderer = this.context.RenderComponent<ProjectCreation>(parameters =>
             {
@@ -75,7 +75,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ProjectManagement
             Assert.That(inputs[0].Instance.Text, Is.EqualTo(this.viewModel.Project.ProjectName));
 
             var formSubmit = renderer.FindComponent<EditForm>();
-            formSubmit.Instance.OnValidSubmit.InvokeAsync();
+            await formSubmit.Instance.OnValidSubmit.InvokeAsync();
             Assert.That(this.viewModel.Project.ProjectName, Is.Null);
         }
     }

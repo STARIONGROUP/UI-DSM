@@ -59,7 +59,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
         }
 
         [Test]
-        public void VerifyComponent()
+        public async Task VerifyComponent()
         {
             var renderer = this.testContext
                 .RenderComponent<UserRegistration>(parameters =>
@@ -77,7 +77,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
             Assert.That(inputs[0].Instance.Text, Is.EqualTo(this.viewModel.Registration.UserName));
 
             var formSubmit = renderer.FindComponent<EditForm>();
-            formSubmit.Instance.OnValidSubmit.InvokeAsync();
+            await formSubmit.Instance.OnValidSubmit.InvokeAsync();
             Assert.That(this.viewModel.Registration.UserName, Is.Null);
         }
     }

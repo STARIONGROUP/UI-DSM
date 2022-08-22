@@ -64,7 +64,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
         }
 
         [Test]
-        public void VerifyOnInitialized()
+        public async Task VerifyOnInitialized()
         {
             var renderer = this.context.RenderComponent<RoleManagement>();
             var notFound = renderer.Find("#noRoleFound");
@@ -80,22 +80,21 @@ namespace UI_DSM.Client.Tests.Pages.Administration
                 }
             });
 
-            renderer.InvokeAsync(this.viewModel.OnInitializedAsync);
-            renderer.Render();
+            await renderer.InvokeAsync(this.viewModel.OnInitializedAsync);
             
             Assert.That(() => renderer.Find("#noRoleFound"), Throws.Exception);
             Assert.That(this.viewModel.Roles.Count, Is.EqualTo(1));
         }
 
         [Test]
-        public void VerifyOpenCreationPopupAndCreateRole()
+        public async Task VerifyOpenCreationPopupAndCreateRole()
         {
             var renderer = this.context.RenderComponent<RoleManagement>();
             var dxButton = renderer.FindComponent<DxButton>();
             var dxPopup = renderer.FindComponent<DxPopup>();
             var currentCreationRole = this.viewModel.RoleCreationViewModel.Role;
             Assert.That(dxPopup.Instance.Visible, Is.False);
-            renderer.InvokeAsync(dxButton.Instance.Click.InvokeAsync);
+            await renderer.InvokeAsync(dxButton.Instance.Click.InvokeAsync);
             Assert.That(dxPopup.Instance.Visible, Is.True);
             Assert.That(this.viewModel.RoleCreationViewModel.Role, Is.Not.EqualTo(currentCreationRole));
 
@@ -112,14 +111,14 @@ namespace UI_DSM.Client.Tests.Pages.Administration
                     "A role with the same name already exists"
                 }));
 
-            this.viewModel.RoleCreationViewModel.OnValidSubmit.InvokeAsync();
+            await this.viewModel.RoleCreationViewModel.OnValidSubmit.InvokeAsync();
             Assert.That(this.viewModel.ErrorMessageViewModel.Errors.Count, Is.EqualTo(1));
             Assert.That(dxPopup.Instance.Visible, Is.True);
 
             this.roleService.Setup(x => x.CreateRole(this.viewModel.RoleCreationViewModel.Role))
                 .ReturnsAsync(EntityRequestResponse<Role>.Success(new Role()));
 
-            this.viewModel.RoleCreationViewModel.OnValidSubmit.InvokeAsync();
+            await this.viewModel.RoleCreationViewModel.OnValidSubmit.InvokeAsync();
             Assert.That(this.viewModel.Roles.Count, Is.EqualTo(1));
             Assert.That(this.viewModel.IsCreationPopupVisible, Is.False);
             Assert.That(this.viewModel.ErrorMessageViewModel.Errors, Is.Empty);
@@ -127,7 +126,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             this.roleService.Setup(x => x.CreateRole(this.viewModel.RoleCreationViewModel.Role))
                 .ThrowsAsync(new HttpRequestException());
 
-            this.viewModel.RoleCreationViewModel.OnValidSubmit.InvokeAsync();
+            await this.viewModel.RoleCreationViewModel.OnValidSubmit.InvokeAsync();
             Assert.That(this.viewModel.ErrorMessageViewModel.Errors.Count, Is.EqualTo(1));
         }
 
