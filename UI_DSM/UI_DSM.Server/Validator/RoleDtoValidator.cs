@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IProjectManager.cs" company="RHEA System S.A.">
+// <copyright file="RoleDtoValidator.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -11,14 +11,23 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Server.Managers.ProjectManager
+namespace UI_DSM.Server.Validator
 {
-    using UI_DSM.Shared.Models;
+    using FluentValidation;
+
+    using UI_DSM.Shared.DTO.Models;
 
     /// <summary>
-    ///     Interface definition for <see cref="ProjectManager" />
+    ///     <see cref="AbstractValidator{T}" /> for the <see cref="RoleDto" />
     /// </summary>
-    public interface IProjectManager : IEntityManager<Project>
+    public class RoleDtoValidator : AbstractValidator<RoleDto>
     {
+        /// <summary>
+        ///     Initialize a new <see cref="RoleDtoValidator" />
+        /// </summary>
+        public RoleDtoValidator()
+        {
+            this.RuleFor(x => x.RoleName).NotEmpty();
+        }
     }
 }
