@@ -13,8 +13,6 @@
 
 namespace UI_DSM.Shared.DTO.Models
 {
-    using System.ComponentModel.DataAnnotations;
-
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -42,7 +40,6 @@ namespace UI_DSM.Shared.DTO.Models
         /// <summary>
         ///     Gets or sets the name of the <see cref="Project" />
         /// </summary>
-        [Required]
         public string ProjectName { get; set; }
 
         /// <summary>

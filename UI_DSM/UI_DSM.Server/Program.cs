@@ -17,6 +17,8 @@ namespace UI_DSM.Server
     using System.Reflection;
     using System.Text;
 
+    using Carter;
+
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
@@ -25,6 +27,7 @@ namespace UI_DSM.Server
     using NLog;
 
     using UI_DSM.Server.Context;
+    using UI_DSM.Server.Modules;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -34,7 +37,7 @@ namespace UI_DSM.Server
     public class Program
     {
         /// <summary>
-        /// The <see cref="NLog"/> logger
+        ///     The <see cref="NLog" /> logger
         /// </summary>
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -47,9 +50,8 @@ namespace UI_DSM.Server
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
-            builder.Services.AddControllersWithViews();
-            builder.Services.AddRazorPages();
+            builder.Services.AddCarter();
+            builder.Services.AddAuthorization();
 
             builder.Services.AddCors(policy =>
             {
@@ -59,14 +61,18 @@ namespace UI_DSM.Server
                     .AllowAnyMethod());
             });
 
-            builder.Services.AddDbContext<DatabaseContext>(opt => opt.UseNpgsql(builder.Configuration["DataBaseConnection"]));
-
+            builder.Services.AddDbContext<DatabaseContext>(opt =>
+            {
+                opt.UseNpgsql(builder.Configuration["DataBaseConnection"]);
+            });
+               
             builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DatabaseContext>();
 
             RegisterManagers(builder);
+            RegisterModules();
 
             var jwtSettings = builder.Configuration.GetSection("JWTSettings");
-            
+
             builder.Services.AddAuthentication(opt =>
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -111,13 +117,27 @@ namespace UI_DSM.Server
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.MapRazorPages();
-            app.MapControllers();
+            app.MapCarter();
+
             app.MapFallbackToFile("index.html");
 
             LogAppStart();
 
             app.Run();
+        }
+
+        /// <summary>
+        ///     Register all Modules for route computation
+        /// </summary>
+        private static void RegisterModules()
+        {
+            var modules = Assembly.GetCallingAssembly().GetExportedTypes()
+                .Where(x => x.IsClass && x.IsSubclassOf(typeof(ModuleBase)) && x.Name.EndsWith("Module")).ToList();
+
+            foreach (var module in modules)
+            {
+                ModuleBase.RegisterModule(module);
+            }
         }
 
         /// <summary>
@@ -139,12 +159,17 @@ namespace UI_DSM.Server
                 if (manager != null)
                 {
                     builder.Services.AddScoped(managerInterface, manager);
+
+                    foreach (var managerBaseInterface in managerInterface.GetInterfaces())
+                    {
+                        builder.Services.AddScoped(managerBaseInterface, manager);
+                    }
                 }
             }
         }
 
         /// <summary>
-        /// Add a header to the log file
+        ///     Add a header to the log file
         /// </summary>
         private static void LogAppStart()
         {
