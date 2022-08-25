@@ -16,6 +16,8 @@ namespace UI_DSM.Client.Services.Administration.UserService
     using System.Text;
     using System.Text.Json;
 
+    using Microsoft.AspNetCore.Components;
+
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
@@ -23,6 +25,7 @@ namespace UI_DSM.Client.Services.Administration.UserService
     /// <summary>
     ///     The <see cref="UserService" /> provide capability to manage users.
     /// </summary>
+    [Route("User")]
     public class UserService : ServiceBase, IUserService
     {
         /// <summary>Initializes a new instance of the <see cref="UserService" /> class.</summary>
@@ -37,7 +40,7 @@ namespace UI_DSM.Client.Services.Administration.UserService
         /// <returns>A task where the result is a collection of <see cref="UserDto" /></returns>
         public async Task<List<UserDto>> GetUsers()
         {
-            var response = await this.HttpClient.GetAsync("User");
+            var response = await this.HttpClient.GetAsync(this.MainRoute);
             var content = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)  
@@ -58,7 +61,7 @@ namespace UI_DSM.Client.Services.Administration.UserService
             var content = JsonSerializer.Serialize(newUser);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
-            var registerResponse = await this.HttpClient.PostAsync("User/Register", bodyContent);
+            var registerResponse = await this.HttpClient.PostAsync(Path.Combine(this.MainRoute, "Register"), bodyContent);
             var registerContent = await registerResponse.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<RegistrationResponseDto>(registerContent, this.JsonSerializerOptions);
         }
@@ -72,7 +75,7 @@ namespace UI_DSM.Client.Services.Administration.UserService
         {
             if (!userToDelete.IsAdmin)
             {
-                var url = Path.Combine("User", userToDelete.Id.ToString());
+                var url = Path.Combine(this.MainRoute, userToDelete.Id.ToString());
                 var deleteResponse = await this.HttpClient.DeleteAsync(url);
                 var deleteContent = await deleteResponse.Content.ReadAsStringAsync();
 

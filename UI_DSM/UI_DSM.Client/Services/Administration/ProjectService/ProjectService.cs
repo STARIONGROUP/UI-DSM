@@ -13,8 +13,7 @@
 
 namespace UI_DSM.Client.Services.Administration.ProjectService
 {
-    using System.Text;
-    using System.Text.Json;
+    using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -24,7 +23,8 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
     /// <summary>
     ///     The <see cref="ProjectService" /> provide capability to manage <see cref="Project" />s.
     /// </summary>
-    public class ProjectService : ServiceBase, IProjectService
+    [Route("Project")]
+    public class ProjectService : EntityServiceBase<Project, ProjectDto>, IProjectService
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectService" /> class.
@@ -42,22 +42,7 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
         {
             try
             {
-                var response = await this.HttpClient.GetAsync("Project");
-                var content = await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new HttpRequestException(content);
-                }
-
-                var projectDtos = JsonSerializer.Deserialize<List<ProjectDto>>(content, this.JsonSerializerOptions);
-
-                return projectDtos!.Select(x =>
-                {
-                    var project = (Project)x.InstantiatePoco();
-                    project.ResolveProperties(x);
-                    return project;
-                }).ToList();
+                return await this.GetEntities();
             }
             catch (Exception exception)
             {
@@ -74,22 +59,7 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
         {
             try
             {
-                var content = JsonSerializer.Serialize((ProjectDto)newProject.ToDto());
-                var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-
-                var response = await this.HttpClient.PostAsync("Project/Create", bodyContent);
-                var responseContent = await response.Content.ReadAsStringAsync();
-                var entityRequestResponse = JsonSerializer.Deserialize<EntityRequestResponseDto<ProjectDto>>(responseContent, this.JsonSerializerOptions);
-
-                if (!entityRequestResponse!.IsRequestSuccessful)
-                {
-                    return EntityRequestResponse<Project>.Fail(entityRequestResponse.Errors);
-                }
-
-                var project = (Project)entityRequestResponse.Entity.InstantiatePoco();
-                project.ResolveProperties(entityRequestResponse.Entity);
-
-                return EntityRequestResponse<Project>.Success(project);
+                return await this.CreateEntity(newProject);
             }
             catch (Exception exception)
             {
@@ -106,11 +76,7 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
         {
             try
             {
-                var url = Path.Combine("Project", projectToDelete.Id.ToString());
-                var deleteResponse = await this.HttpClient.DeleteAsync(url);
-                var deleteContent = await deleteResponse.Content.ReadAsStringAsync();
-
-                return JsonSerializer.Deserialize<RequestResponseDto>(deleteContent, this.JsonSerializerOptions);
+                return await this.DeleteEntity(projectToDelete);
             }
             catch (Exception exception)
             {
@@ -127,19 +93,7 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
         {
             try
             {
-                var url = Path.Combine("Project", projectGuid.ToString());
-                var getProjectResponse = await this.HttpClient.GetAsync(url);
-                var getProjectContent = await getProjectResponse.Content.ReadAsStringAsync();
-
-                if (!getProjectResponse.IsSuccessStatusCode)
-                {
-                    return null;
-                }
-
-                var projectDto = JsonSerializer.Deserialize<ProjectDto>(getProjectContent, this.JsonSerializerOptions);
-                var project = (Project)projectDto!.InstantiatePoco();
-                project.ResolveProperties(projectDto);
-                return project;
+                return await this.GetEntity(projectGuid);
             }
             catch (Exception exception)
             {

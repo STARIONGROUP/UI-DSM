@@ -20,40 +20,7 @@ namespace UI_DSM.Server.Managers.ProjectManager
     /// <summary>
     ///     Interface definition for <see cref="ProjectManager" />
     /// </summary>
-    public interface IProjectManager
+    public interface IProjectManager : IEntityManager<Project>
     {
-        /// <summary>
-        ///     Gets all projects contained insed the <see cref="DatabaseContext" />
-        /// </summary>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="Project" /> as result</returns>
-        Task<IEnumerable<Project>> GetProjects();
-
-        /// <summary>
-        ///     Creates a new <see cref="Project" /> and store it into the <see cref="DatabaseContext" />
-        /// </summary>
-        /// <param name="project">The <see cref="Project" /> to create</param>
-        /// <returns>A <see cref="Task" /> with the result of the creation</returns>
-        Task<EntityOperationResult<Project>> CreateProject(Project project);
-
-        /// <summary>
-        ///     Updates a <see cref="Project" />
-        /// </summary>
-        /// <param name="project">The <see cref="Project" /> to update</param>
-        /// <returns>A <see cref="Task" /> with the result of the update</returns>
-        Task<EntityOperationResult<Project>> UpdateProject(Project project);
-
-        /// <summary>
-        ///     Delete a <see cref="Project" />
-        /// </summary>
-        /// <param name="project">The <see cref="Project" /> to delete</param>
-        /// <returns>A <see cref="Task" /> with the result of the deletion</returns>
-        Task<EntityOperationResult<Project>> DeleteProject(Project project);
-
-        /// <summary>
-        ///     Tries to get a <see cref="Project" /> based on its <see cref="Project.Id" />
-        /// </summary>
-        /// <param name="id">The <see cref="Guid" /> of the <see cref="Project" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="Project" /> if existing</returns>
-        Task<Project> GetProject(Guid id);
     }
 }

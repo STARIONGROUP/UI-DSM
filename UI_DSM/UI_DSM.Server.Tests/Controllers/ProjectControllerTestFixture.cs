@@ -43,8 +43,8 @@ namespace UI_DSM.Server.Tests.Controllers
         public void VerifyGetProjects()
         {
             var projectsCollection = new List<Project>();
-            this.projectManager.Setup(x => x.GetProjects()).ReturnsAsync(projectsCollection);
-            var getProjectsReponse = this.controller.GetProjects().Result as OkObjectResult;
+            this.projectManager.Setup(x => x.GetEntities()).ReturnsAsync(projectsCollection);
+            var getProjectsReponse = this.controller.GetEntities().Result as OkObjectResult;
             Assert.That(getProjectsReponse, Is.Not.Null);
             var retrievedProjects = (IEnumerable<ProjectDto>)getProjectsReponse.Value;
             Assert.That(retrievedProjects, Is.Empty);
@@ -59,19 +59,19 @@ namespace UI_DSM.Server.Tests.Controllers
                 ProjectName = "Project 2"
             });
 
-            getProjectsReponse = this.controller.GetProjects().Result as OkObjectResult;
+            getProjectsReponse = this.controller.GetEntities().Result as OkObjectResult;
             retrievedProjects = (IEnumerable<ProjectDto>)getProjectsReponse!.Value;
             Assert.That(retrievedProjects!.Count(), Is.EqualTo(2));
 
             var unknownGuid = Guid.NewGuid();
-            this.projectManager.Setup(x => x.GetProject(projectsCollection[0].Id)).ReturnsAsync(projectsCollection[0]);
-            this.projectManager.Setup(x => x.GetProject(unknownGuid)).ReturnsAsync((Project)null);
+            this.projectManager.Setup(x => x.GetEntity(projectsCollection[0].Id)).ReturnsAsync(projectsCollection[0]);
+            this.projectManager.Setup(x => x.GetEntity(unknownGuid)).ReturnsAsync((Project)null);
 
-            var unknownProjectResult = this.controller.GetProject(unknownGuid).Result as NotFoundResult;
+            var unknownProjectResult = this.controller.GetEntity(unknownGuid).Result as NotFoundResult;
             Assert.That(unknownProjectResult, Is.Not.Null);
             Assert.That(unknownProjectResult.StatusCode, Is.EqualTo(404));
 
-            var knownProjectResult = this.controller.GetProject(projectsCollection[0].Id).Result as OkObjectResult;
+            var knownProjectResult = this.controller.GetEntity(projectsCollection[0].Id).Result as OkObjectResult;
             Assert.That(knownProjectResult, Is.Not.Null);
             var projectDto = (ProjectDto)knownProjectResult.Value;
             Assert.That(projectDto!.Id, Is.EqualTo(projectsCollection[0].Id));
@@ -81,15 +81,15 @@ namespace UI_DSM.Server.Tests.Controllers
         public void VerifyCreateProject()
         {
             var project = new ProjectDto(Guid.NewGuid());
-            var badRequest = this.controller.CreateProject(project).Result as BadRequestObjectResult;
+            var badRequest = this.controller.CreateEntity(project).Result as BadRequestObjectResult;
             Assert.That(badRequest, Is.Not.Null);
 
             project.Id = Guid.Empty;
 
-            this.projectManager.Setup(x => x.CreateProject(It.IsAny<Project>()))
+            this.projectManager.Setup(x => x.CreateEntity(It.IsAny<Project>()))
                 .ReturnsAsync(EntityOperationResult<Project>.Failed("Already exist"));
 
-            badRequest = this.controller.CreateProject(project).Result as BadRequestObjectResult;
+            badRequest = this.controller.CreateEntity(project).Result as BadRequestObjectResult;
             Assert.That(badRequest, Is.Not.Null);
 
             var createdProject = new Project(Guid.NewGuid())
@@ -97,10 +97,10 @@ namespace UI_DSM.Server.Tests.Controllers
                 ProjectName = "project"
             };
 
-            this.projectManager.Setup(x => x.CreateProject(It.IsAny<Project>()))
+            this.projectManager.Setup(x => x.CreateEntity(It.IsAny<Project>()))
                 .ReturnsAsync(EntityOperationResult<Project>.Success(createdProject));
 
-            var okRequest = this.controller.CreateProject(project).Result as OkObjectResult;
+            var okRequest = this.controller.CreateEntity(project).Result as OkObjectResult;
             Assert.That(okRequest, Is.Not.Null);
             var projectDto = (EntityRequestResponseDto<ProjectDto>)okRequest.Value;
             Assert.That(projectDto, Is.Not.Null);
@@ -112,21 +112,41 @@ namespace UI_DSM.Server.Tests.Controllers
         public void VerifyDeleteProject()
         {
             var project = new Project(Guid.NewGuid());
-            this.projectManager.Setup(x => x.GetProject(project.Id)).ReturnsAsync((Project)null);
+            this.projectManager.Setup(x => x.GetEntity(project.Id)).ReturnsAsync((Project)null);
 
-            var notFound = this.controller.DeleteProject(project.Id).Result as NotFoundObjectResult;
+            var notFound = this.controller.DeleteEntity(project.Id).Result as NotFoundObjectResult;
             Assert.That(notFound, Is.Not.Null);
 
-            this.projectManager.Setup(x => x.GetProject(project.Id)).ReturnsAsync(project);
-            this.projectManager.Setup(x => x.DeleteProject(project)).ReturnsAsync(EntityOperationResult<Project>.Failed());
+            this.projectManager.Setup(x => x.GetEntity(project.Id)).ReturnsAsync(project);
+            this.projectManager.Setup(x => x.DeleteEntity(project)).ReturnsAsync(EntityOperationResult<Project>.Failed());
             
-            var internalError = this.controller.DeleteProject(project.Id).Result as ObjectResult;
+            var internalError = this.controller.DeleteEntity(project.Id).Result as ObjectResult;
             Assert.That(internalError, Is.Not.Null);
             Assert.That(internalError.StatusCode, Is.EqualTo(500));
 
-            this.projectManager.Setup(x => x.DeleteProject(project)).ReturnsAsync(EntityOperationResult<Project>.Success(null));
-            var okResult = this.controller.DeleteProject(project.Id).Result as OkObjectResult;
+            this.projectManager.Setup(x => x.DeleteEntity(project)).ReturnsAsync(EntityOperationResult<Project>.Success(null));
+            var okResult = this.controller.DeleteEntity(project.Id).Result as OkObjectResult;
             Assert.That(okResult, Is.Not.Null);
+        }
+
+        [Test]
+        public void VerifyUpdateProject()
+        {
+            var project = new Project(Guid.NewGuid())
+            {
+                ProjectName = "Project 1"
+            };
+
+            var projectDto = (ProjectDto)project.ToDto();
+            this.projectManager.Setup(x => x.GetEntity(project.Id)).ReturnsAsync((Project)null);
+            Assert.That(this.controller.UpdateEntity(projectDto.Id, projectDto).Result, Is.TypeOf<NotFoundObjectResult>());
+
+            this.projectManager.Setup(x => x.GetEntity(project.Id)).ReturnsAsync(project);
+            this.projectManager.Setup(x => x.UpdateEntity(project)).ReturnsAsync(EntityOperationResult<Project>.Failed());
+            Assert.That(this.controller.UpdateEntity(projectDto.Id, projectDto).Result, Is.TypeOf<BadRequestObjectResult>());
+
+            this.projectManager.Setup(x => x.UpdateEntity(project)).ReturnsAsync(EntityOperationResult<Project>.Success(project));
+            Assert.That(this.controller.UpdateEntity(projectDto.Id, projectDto).Result, Is.TypeOf<OkObjectResult>());
         }
     }
 }

@@ -52,7 +52,11 @@ namespace UI_DSM.Client.Tests.Helpers
             interop.Mode = JSRuntimeMode.Loose;
             var rootModule = interop.SetupModule("./_content/DevExpress.Blazor/dx-blazor.js");
             rootModule.Mode = JSRuntimeMode.Strict;
-            rootModule.Setup<DeviceInfo>("getDeviceInfo", _ => true).SetResult(new DeviceInfo(false));
+            
+            rootModule.Setup<DeviceInfo>("getDeviceInfo", _ => true)
+                .SetResult(new DeviceInfo(false));
+
+            rootModule.SetupModule("DxBlazor.Modal.getReference", _ => true);
         }
     }
 }

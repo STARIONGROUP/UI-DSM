@@ -80,13 +80,13 @@ namespace UI_DSM.Client.Tests.Pages.Administration
         }
 
         [Test]
-        public void VerifyRegisterUser()
+        public async Task VerifyRegisterUser()
         {
             var renderer = this.context.RenderComponent<UserManagement>();
 
             var registrationDto = this.viewModel.UserRegistrationViewModel.Registration;
             var dxButton = renderer.FindComponent<DxButton>();
-            renderer.InvokeAsync(() => dxButton.Instance.Click.InvokeAsync());
+            await renderer.InvokeAsync(() => dxButton.Instance.Click.InvokeAsync());
             Assert.That(this.viewModel.RegistrationPopupVisible, Is.True);
             Assert.That(this.viewModel.UserRegistrationViewModel.Registration, Is.Not.EqualTo(registrationDto));
 
@@ -99,7 +99,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
                 }
             });
 
-            renderer.InvokeAsync(() => this.viewModel.UserRegistrationViewModel.OnValidSubmit.InvokeAsync());
+            await renderer.InvokeAsync(() => this.viewModel.UserRegistrationViewModel.OnValidSubmit.InvokeAsync());
             Assert.That(this.viewModel.RegistrationPopupVisible, Is.True);
 
             this.userService.Setup(x => x.RegisterUser(It.IsAny<RegistrationDto>())).ReturnsAsync(new RegistrationResponseDto()
@@ -111,7 +111,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
                 }
             });
             
-            renderer.InvokeAsync(() => this.viewModel.UserRegistrationViewModel.OnValidSubmit.InvokeAsync());
+            await renderer.InvokeAsync(() => this.viewModel.UserRegistrationViewModel.OnValidSubmit.InvokeAsync());
             Assert.That(this.viewModel.RegistrationPopupVisible, Is.False);
             Assert.That(this.viewModel.Users.Count, Is.EqualTo(3));
         }
@@ -136,7 +136,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
         }
 
         [Test]
-        public void VerifyDeleteUser()
+        public async Task VerifyDeleteUser()
         {
             var renderer = this.context.RenderComponent<UserManagement>();
 
@@ -144,7 +144,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
                 .FirstOrDefault(x => x.Instance.RenderStyle == ButtonRenderStyle.Danger);
 
             Assert.That(this.viewModel.ConfirmCancelPopup.IsVisible, Is.False);
-            renderer.InvokeAsync(() => deleteButton!.Instance.Click.InvokeAsync());
+            await renderer.InvokeAsync(() => deleteButton!.Instance.Click.InvokeAsync());
 
             Assert.That(this.viewModel.ConfirmCancelPopup.IsVisible, Is.True);
 
@@ -153,17 +153,17 @@ namespace UI_DSM.Client.Tests.Pages.Administration
                 IsRequestSuccessful = true
             });
 
-            renderer.InvokeAsync(() => this.viewModel.ConfirmCancelPopup.OnConfirm.InvokeAsync());
+            await renderer.InvokeAsync(() => this.viewModel.ConfirmCancelPopup.OnConfirm.InvokeAsync());
             Assert.That(this.viewModel.Users.Count, Is.EqualTo(1));
         }
 
         [Test]
-        public void VerifyOpenDetails()
+        public async Task VerifyOpenDetails()
         {
             var renderer = this.context.RenderComponent<UserManagement>();
             var detailsButtons = renderer.FindComponents<DxButton>().Where(x => x.Instance.Text == "View details");
 
-            renderer.InvokeAsync(() => detailsButtons.First().Instance.Click.InvokeAsync());
+            await renderer.InvokeAsync(() => detailsButtons.First().Instance.Click.InvokeAsync());
             Assert.That(this.viewModel.UserDetailsPopupVisible, Is.True);
         }
     }

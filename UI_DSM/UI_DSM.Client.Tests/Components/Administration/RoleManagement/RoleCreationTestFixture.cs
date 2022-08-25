@@ -59,7 +59,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.RoleManagement
         }
 
         [Test]
-        public void VerifyComponent()
+        public async Task VerifyComponent()
         {
             var renderer = this.context.RenderComponent<RoleCreation>(parameters =>
             {
@@ -78,7 +78,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.RoleManagement
             Assert.That(textBox.Instance.Text, Is.EqualTo(this.roleCreationViewModel.Role.RoleName));
 
             var dxButton = renderer.FindComponent<EditForm>();
-            renderer.InvokeAsync(dxButton.Instance.OnValidSubmit.InvokeAsync);
+            await renderer.InvokeAsync(dxButton.Instance.OnValidSubmit.InvokeAsync);
 
             Assert.That(this.roleCreationViewModel.Role.RoleName, Is.Null);
         }

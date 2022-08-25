@@ -51,9 +51,13 @@ namespace UI_DSM.Server.Tests.Managers
             dbSet.Setup(x => x.FindAsync(invalidGuid)).ReturnsAsync((Project)null);
             dbSet.Setup(x => x.FindAsync(data.Last().Id)).ReturnsAsync(data.Last());
             this.context.Setup(x => x.Projects).Returns(dbSet.Object);
-            Assert.That(this.manager.GetProjects().Result.Count(), Is.EqualTo(data.Count));
-            Assert.That(this.manager.GetProject(invalidGuid).Result, Is.Null);
-            Assert.That(this.manager.GetProject(data.Last().Id).Result, Is.Not.Null);
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.manager.GetEntities().Result.Count(), Is.EqualTo(data.Count));
+                Assert.That(this.manager.GetEntity(invalidGuid).Result, Is.Null);
+                Assert.That(this.manager.GetEntity(data.Last().Id).Result, Is.Not.Null);
+            });
         }
 
         [Test]
@@ -75,18 +79,18 @@ namespace UI_DSM.Server.Tests.Managers
                 ProjectName = data.First().ProjectName
             };
 
-            var creationResult = this.manager.CreateProject(newProject).Result;
+            var creationResult = this.manager.CreateEntity(newProject).Result;
             Assert.That(creationResult.Succeeded, Is.False);
 
             newProject.ProjectName = "A new project";
             
-            Task.Run(async () => await this.manager.CreateProject(newProject));
+            Task.Run(async () => await this.manager.CreateEntity(newProject));
             this.context.Verify(x => x.Add(It.IsAny<Project>()), Times.Once);
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());
 
-            creationResult = this.manager.CreateProject(newProject).Result;
+            creationResult = this.manager.CreateEntity(newProject).Result;
             Assert.That(creationResult.Succeeded, Is.False);
         }
 
@@ -109,19 +113,19 @@ namespace UI_DSM.Server.Tests.Managers
                 ProjectName = data.Last().ProjectName
             };
 
-            _ = this.manager.UpdateProject(project).Result;
+            _ = this.manager.UpdateEntity(project).Result;
             this.context.Verify(x => x.Update(It.IsAny<Project>()), Times.Never);
 
             project.ProjectName = "New Name";
 
-            _ = this.manager.UpdateProject(project).Result;
+            _ = this.manager.UpdateEntity(project).Result;
 
             this.context.Verify(x => x.Update(It.IsAny<Project>()), Times.Once);
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());
 
-            var creationResult = this.manager.UpdateProject(project).Result;
+            var creationResult = this.manager.UpdateEntity(project).Result;
             Assert.That(creationResult.Succeeded, Is.False);
         }
 
@@ -129,14 +133,14 @@ namespace UI_DSM.Server.Tests.Managers
         public void VerifyDeleteProject()
         {
             var project = new Project();
-            _ = this.manager.DeleteProject(project).Result;
+            _ = this.manager.DeleteEntity(project).Result;
 
             this.context.Verify(x => x.Remove(It.IsAny<Project>()), Times.Once);
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());
 
-            var creationResult = this.manager.DeleteProject(project).Result;
+            var creationResult = this.manager.DeleteEntity(project).Result;
             Assert.That(creationResult.Succeeded, Is.False);
         }
     }

@@ -13,8 +13,7 @@
 
 namespace UI_DSM.Client.Services.Administration.RoleService
 {
-    using System.Text;
-    using System.Text.Json;
+    using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -24,7 +23,8 @@ namespace UI_DSM.Client.Services.Administration.RoleService
     /// <summary>
     ///     The <see cref="RoleService" /> provide capability to manage <see cref="Role" />s.
     /// </summary>
-    public class RoleService : ServiceBase, IRoleService
+    [Route("Role")]
+    public class RoleService : EntityServiceBase<Role, RoleDto>, IRoleService
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="RoleService" /> class.
@@ -42,22 +42,7 @@ namespace UI_DSM.Client.Services.Administration.RoleService
         {
             try
             {
-                var response = await this.HttpClient.GetAsync("Role");
-                var content = await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new HttpRequestException(content);
-                }
-
-                var rolesDtos = JsonSerializer.Deserialize<List<RoleDto>>(content, this.JsonSerializerOptions);
-
-                return rolesDtos!.Select(x =>
-                {
-                    var role = (Role)x.InstantiatePoco();
-                    role.ResolveProperties(x);
-                    return role;
-                }).ToList();
+                return await this.GetEntities();
             }
             catch (Exception exception)
             {
@@ -74,19 +59,7 @@ namespace UI_DSM.Client.Services.Administration.RoleService
         {
             try
             {
-                var url = Path.Combine("Role", roleId.ToString());
-                var response = await this.HttpClient.GetAsync(url);
-                var responseContent = await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    return null;
-                }
-
-                var roleDto = JsonSerializer.Deserialize<RoleDto>(responseContent, this.JsonSerializerOptions);
-                var role = (Role)roleDto!.InstantiatePoco();
-                role.ResolveProperties(roleDto);
-                return role;
+                return await this.GetEntity(roleId);
             }
             catch (Exception exception)
             {
@@ -103,22 +76,7 @@ namespace UI_DSM.Client.Services.Administration.RoleService
         {
             try
             {
-                var content = JsonSerializer.Serialize((RoleDto)newRole.ToDto());
-                var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-
-                var response = await this.HttpClient.PostAsync("Role/Create", bodyContent);
-                var responseContent = await response.Content.ReadAsStringAsync();
-                var entityRequestResponse = JsonSerializer.Deserialize<EntityRequestResponseDto<RoleDto>>(responseContent, this.JsonSerializerOptions);
-
-                if (!entityRequestResponse!.IsRequestSuccessful)
-                {
-                    return EntityRequestResponse<Role>.Fail(entityRequestResponse.Errors);
-                }
-
-                var role = (Role)entityRequestResponse.Entity.InstantiatePoco();
-                role.ResolveProperties(entityRequestResponse.Entity);
-
-                return EntityRequestResponse<Role>.Success(role);
+                return await this.CreateEntity(newRole);
             }
             catch (Exception exception)
             {
@@ -135,23 +93,7 @@ namespace UI_DSM.Client.Services.Administration.RoleService
         {
             try
             {
-                var url = Path.Combine("Role", role.Id.ToString());
-                var content = JsonSerializer.Serialize((RoleDto)role.ToDto());
-                var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-
-                var response = await this.HttpClient.PutAsync(url, bodyContent);
-                var responseContent = await response.Content.ReadAsStringAsync();
-                var entityRequest = JsonSerializer.Deserialize<EntityRequestResponseDto<RoleDto>>(responseContent, this.JsonSerializerOptions);
-
-                if (!entityRequest!.IsRequestSuccessful)
-                {
-                    return EntityRequestResponse<Role>.Fail(entityRequest.Errors);
-                }
-
-                role = (Role)entityRequest.Entity.InstantiatePoco();
-                role.ResolveProperties(entityRequest.Entity);
-
-                return EntityRequestResponse<Role>.Success(role);
+                return await this.UpdateEntity(role);
             }
             catch (Exception exception)
             {
@@ -168,11 +110,7 @@ namespace UI_DSM.Client.Services.Administration.RoleService
         {
             try
             {
-                var url = Path.Combine("Role", roleToDelete.Id.ToString());
-                var deleteResponse = await this.HttpClient.DeleteAsync(url);
-                var deleteContent = await deleteResponse.Content.ReadAsStringAsync();
-
-                return JsonSerializer.Deserialize<RequestResponseDto>(deleteContent, this.JsonSerializerOptions);
+                return await this.DeleteEntity(roleToDelete);
             }
             catch (Exception exception)
             {

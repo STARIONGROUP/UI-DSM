@@ -46,10 +46,10 @@ namespace UI_DSM.Server.Managers.RoleManager
         }
 
         /// <summary>
-        ///     Gets all existing <see cref="Role" />s
+        ///     Gets a collection of all <see cref="Role" />s
         /// </summary>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Role" /> as result</returns>
-        public async Task<IEnumerable<Role>> GetRoles()
+        public async Task<IEnumerable<Role>> GetEntities()
         {
             return await this.context.Roles.ToListAsync();
         }
@@ -57,16 +57,16 @@ namespace UI_DSM.Server.Managers.RoleManager
         /// <summary>
         ///     Creates a new <see cref="Role" /> and store it into the <see cref="DatabaseContext" />
         /// </summary>
-        /// <param name="role">The <see cref="Role" /> to create</param>
+        /// <param name="entity">The <see cref="Role" /> to create</param>
         /// <returns>A <see cref="Task" /> with the result of the creation</returns>
-        public async Task<EntityOperationResult<Role>> CreateRole(Role role)
+        public async Task<EntityOperationResult<Role>> CreateEntity(Role entity)
         {
-            if (this.context.Roles.AsEnumerable().Any(x => x.RoleName.Equals(role.RoleName, StringComparison.InvariantCultureIgnoreCase)))
+            if (this.context.Roles.AsEnumerable().Any(x => x.RoleName.Equals(entity.RoleName, StringComparison.InvariantCultureIgnoreCase)))
             {
                 return EntityOperationResult<Role>.Failed("A role with the same name already exists");
             }
 
-            var operationResult = new EntityOperationResult<Role>(this.context.Add(role), EntityState.Added);
+            var operationResult = new EntityOperationResult<Role>(this.context.Add(entity), EntityState.Added);
 
             try
             {
@@ -84,19 +84,19 @@ namespace UI_DSM.Server.Managers.RoleManager
         /// <summary>
         ///     Updates a <see cref="Role" />
         /// </summary>
-        /// <param name="role">The <see cref="Role" /> to update</param>
+        /// <param name="entity">The <see cref="Role" /> to update</param>
         /// <returns>A <see cref="Task" /> with the result of the update</returns>
-        public async Task<EntityOperationResult<Role>> UpdateRole(Role role)
+        public async Task<EntityOperationResult<Role>> UpdateEntity(Role entity)
         {
-            if (this.context.Roles.AsEnumerable().Any(x => x.RoleName.Equals(role.RoleName, StringComparison.InvariantCultureIgnoreCase) 
-                                                           && x.Id != role.Id))
+            if (this.context.Roles.AsEnumerable().Any(x => x.RoleName.Equals(entity.RoleName, StringComparison.InvariantCultureIgnoreCase)
+                                                           && x.Id != entity.Id))
             {
                 return EntityOperationResult<Role>.Failed("A role with the same name already exists");
             }
 
-            role.AccessRights.Sort();
+            entity.AccessRights.Sort();
 
-            var operationResult = new EntityOperationResult<Role>(this.context.Update(role), EntityState.Modified, EntityState.Unchanged);
+            var operationResult = new EntityOperationResult<Role>(this.context.Update(entity), EntityState.Modified, EntityState.Unchanged);
 
             try
             {
@@ -112,13 +112,13 @@ namespace UI_DSM.Server.Managers.RoleManager
         }
 
         /// <summary>
-        ///     Delete a <see cref="Role" />
+        ///     Deletes a <see cref="Role" />
         /// </summary>
-        /// <param name="role">The <see cref="Role" /> to delete</param>
+        /// <param name="entity">The <see cref="Role" /> to delete</param>
         /// <returns>A <see cref="Task" /> with the result of the deletion</returns>
-        public async Task<EntityOperationResult<Role>> DeleteRole(Role role)
+        public async Task<EntityOperationResult<Role>> DeleteEntity(Role entity)
         {
-            var operationResult = new EntityOperationResult<Role>(this.context.Remove(role), EntityState.Deleted);
+            var operationResult = new EntityOperationResult<Role>(this.context.Remove(entity), EntityState.Deleted);
 
             try
             {
@@ -134,13 +134,13 @@ namespace UI_DSM.Server.Managers.RoleManager
         }
 
         /// <summary>
-        ///     Tries to get a <see cref="Role" /> based on its <see cref="Role.Id" />
+        ///     Tries to get a <see cref="Role" /> based on its <see cref="Guid" />
         /// </summary>
-        /// <param name="id">The <see cref="Guid" /> of the <see cref="Role" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="Role" /> if existing</returns>
-        public async Task<Role> GetRole(Guid id)
+        /// <param name="entityId">The <see cref="Guid" /></param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Role" /> if found</returns>
+        public async Task<Role> GetEntity(Guid entityId)
         {
-            return await this.context.Roles.FindAsync(id);
+            return await this.context.Roles.FindAsync(entityId);
         }
     }
 }

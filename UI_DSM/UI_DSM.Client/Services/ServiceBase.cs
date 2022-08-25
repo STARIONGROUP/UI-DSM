@@ -15,6 +15,8 @@ namespace UI_DSM.Client.Services
 {
     using System.Text.Json;
 
+    using Microsoft.AspNetCore.Components;
+
     /// <summary>
     ///     Base class for any service that needs to access to the API
     /// </summary>
@@ -38,6 +40,58 @@ namespace UI_DSM.Client.Services
         {
             this.HttpClient = httpClient;
             this.JsonSerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            this.MainRoute = this.GetRoute();
+        }
+
+        /// <summary>
+        ///     A <see cref="Dictionary{TKey,TValue}" /> that store the main route for all <see cref="ServiceBase" />
+        /// </summary>
+        private static Dictionary<Type, string> ServiceRoute { get; } = new();
+
+        /// <summary>
+        ///     Main Route for the <see cref="ServiceBase" />
+        /// </summary>
+        protected string MainRoute { get; private set; }
+
+        /// <summary>
+        ///     Register a <see cref="Type" /> if this <see cref="Type" /> derives from <see cref="ServiceBase" />
+        /// </summary>
+        /// <param name="serviceType">The <see cref="Type" /> to register</param>
+        public static void RegisterService(Type serviceType)
+        {
+            if (!serviceType.IsSubclassOf(typeof(ServiceBase)))
+            {
+                return;
+            }
+
+            var routeAttribute = (RouteAttribute)Attribute.GetCustomAttribute(serviceType, typeof(RouteAttribute));
+
+            if (routeAttribute == null)
+            {
+                ServiceRoute[serviceType] = serviceType.Name.Replace("Service", "");
+            }
+            else
+            {
+                ServiceRoute[serviceType] = routeAttribute.Template;
+            }
+        }
+
+        /// <summary>
+        ///     Register a <see cref="Type" /> if this <see cref="Type" /> derives from <see cref="ServiceBase" />
+        /// </summary>
+        public static void RegisterService<T>()
+        {
+            RegisterService(typeof(T));
+        }
+
+        /// <summary>
+        ///     Gets the main route for a service
+        /// </summary>
+        /// <returns>The main route</returns>
+        private string GetRoute()
+        {
+            var type = this.GetType();
+            return ServiceRoute.ContainsKey(type) ? ServiceRoute[type] : string.Empty;
         }
     }
 }

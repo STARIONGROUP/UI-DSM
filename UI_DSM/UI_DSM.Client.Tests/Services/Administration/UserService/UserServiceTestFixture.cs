@@ -20,6 +20,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
 
     using RichardSzalay.MockHttp;
 
+    using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.Administration.UserService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -38,6 +39,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
             var httpClient = this.httpMessageHandler.ToHttpClient();
             httpClient.BaseAddress = new Uri("http://localhost/api");
 
+            ServiceBase.RegisterService<UserService>();
             this.service = new UserService(httpClient);
         }
 
