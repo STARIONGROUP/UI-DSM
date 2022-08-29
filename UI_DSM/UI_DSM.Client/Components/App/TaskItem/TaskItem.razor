@@ -1,0 +1,24 @@
+@namespace AppComponents
+
+<div class="task-item">
+  <div class="task-item__header">
+    <h2 class="h4">@TaskTitle</h2>
+    @if (isDone) {
+      <FeatherCheckCircle Size="24" Color="#1FAB77" StrokeWidth="2" />
+    }
+  </div>
+  <div class="task-item__body">
+    @TaskDescription
+  </div>
+</div>
+
+@code {
+  [Parameter]
+  public string? TaskTitle { get; set; }
+
+  [Parameter]
+  public string? TaskDescription { get; set; }
+
+  [Parameter]
+  public bool isDone { get; set; }
+}

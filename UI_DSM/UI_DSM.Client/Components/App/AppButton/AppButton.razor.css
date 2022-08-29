@@ -1,0 +1,18 @@
+.app-button {
+  font-weight: bold;
+  padding: var(--spacing-2);
+  background: var(--colors-primary-500);
+  color: var(--colors-white);
+  border-radius: var(--radius-1);
+  transition: 0.15s ease-in-out;
+  height: var(--spacing-11);
+}
+
+
+.app-button:hover {
+  background: var(--colors-primary-700);
+}
+
+.app-button:focus {
+  outline: 2px solid var(--colors-secondary-500);
+}

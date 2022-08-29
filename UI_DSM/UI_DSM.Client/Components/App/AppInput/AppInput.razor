@@ -1,0 +1,28 @@
+@namespace AppComponents
+@inherits InputBase<string>
+
+<label id="@Id" class="app-input">
+  @if (!string.IsNullOrWhiteSpace(Label))
+  {
+    <span class="app-input__label">@Label</span>
+  }
+    <input class="app-input__input @CssClass" @bind="@CurrentValue" />
+
+  @if (!string.IsNullOrWhiteSpace(Note))
+  {
+    <span class="app-input__note">@Note</span>
+  }
+</label>
+
+@code {
+    [Parameter] public string? Id { get; set; }
+    [Parameter] public string? Label { get; set; } 
+    [Parameter] public string? Note { get; set; } 
+
+    protected override bool TryParseValueFromString(string? value, out string result, out string validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+}

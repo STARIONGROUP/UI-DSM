@@ -14,39 +14,31 @@
 <EditForm Model="this.ViewModel.Authentication" OnValidSubmit="this.ViewModel.ExecuteLogin">
 	<DataAnnotationsValidator/>
 	
-	<div class="input-group row m-top-10px">
-		<label for="username" class="text-align-start">Username:</label>
-		<InputText id="username" class="form-control" @bind-Value="this.ViewModel.Authentication.UserName"/>
-	</div>
-	
-	<div class="input-group row m-top-10px">
-		<label for="password" class="text-align-start">Password:</label>
-		<InputText id="password" type="password" class="form-control" @bind-Value="this.ViewModel.Authentication.Password"/>
-	</div>
-	
-	<ValidationSummary/>
-	
-	@if (this.ViewModel.AuthenticationStatus == AuthenticationStatus.Fail)
-	{
-		<div class="input-group row m-top-10px">
-			<label class="text-danger">@this.ViewModel.ErrorMessage</label>
-		</div>
-	}
+	<div class="login-form">	
+		<AppInput id="username" Label="Username" @bind-Value="this.ViewModel.Authentication.UserName" />
+		<AppInput id="password" Label="Password" type="password" @bind-Value="this.ViewModel.Authentication.Password" />
 
-	<div class="row">
-		<div class="col-md-12 text-center">
-			@switch (this.ViewModel.AuthenticationStatus)
-			{
-				case AuthenticationStatus.None:
-					<button id="connectbtn" type="submit" class="btn btn-connect m-top-10px">Connect</button>            
-					break;
-				case AuthenticationStatus.Authenticating:
-					<button id="connectbtn" type="submit" class="btn btn-connect m-top-10px" disabled>Connecting</button>            
-					break;
-				case AuthenticationStatus.Fail:
-					<button id="connectbtn" type="submit" class="btn btn-connect m-top-10px">Retry</button>            
-					break;
-			}
-		</div>
+
+		<ValidationSummary/>
+		
+		@if (this.ViewModel.AuthenticationStatus == AuthenticationStatus.Fail)
+		{
+			<div class="input-group row m-top-10px">
+				<label class="text-danger">@this.ViewModel.ErrorMessage</label>
+			</div>
+		}
+
+		@switch (this.ViewModel.AuthenticationStatus)
+		{
+			case AuthenticationStatus.None:
+				<AppButton Label="Login" Type="submit" />      
+				break;
+			case AuthenticationStatus.Authenticating:
+				<AppButton Label="Processing login" Type="submit" />             
+				break;
+			case AuthenticationStatus.Fail:
+				<AppButton Label="Retry login" Type="submit" />      
+				break;
+		}
 	</div>
 </EditForm>

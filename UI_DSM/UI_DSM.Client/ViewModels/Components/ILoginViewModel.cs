@@ -43,5 +43,7 @@ namespace UI_DSM.Client.ViewModels.Components
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>
         Task ExecuteLogin();
+
+        void NavigateIfLoggedIn();
     }
 }

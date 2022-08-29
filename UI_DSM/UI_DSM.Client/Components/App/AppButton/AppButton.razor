@@ -1,0 +1,8 @@
+@namespace AppComponents
+
+<button class="app-button" type="@Type">@Label</button>
+
+@code {
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? Type { get; set; }
+}

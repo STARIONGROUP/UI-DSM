@@ -1,0 +1,35 @@
+h1,
+.h1 {
+  font-weight: 700;
+  font-size: var(--text-4xl);
+  line-height: 110%;
+}
+
+h2,
+.h2 {
+  font-weight: 700;
+  font-size: var(--text-3xl);
+  line-height: 130%;
+
+  
+}
+
+h3,
+.h3 {
+  font-weight: 700;
+  font-size: var(--text-2xl);
+  line-height: 130%;
+}
+
+h4,
+.h4 {
+  font-weight: 700;
+  font-size: var(--text-base);
+  line-height: 130%;
+
+}
+
+p,
+body {
+  line-height: 160%;
+}

@@ -21,6 +21,7 @@ namespace UI_DSM.Client.ViewModels.Components
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Services.AuthenticationService;
     using UI_DSM.Shared.DTO.UserManagement;
+    using Microsoft.AspNetCore.Components;
 
     /// <summary>
     ///     View model for <see cref="Login" /> component
@@ -31,6 +32,11 @@ namespace UI_DSM.Client.ViewModels.Components
         ///     Gets or sets the <see cref="IAuthenticationService" />
         /// </summary>
         private readonly IAuthenticationService authenticationService;
+
+        /// <summary>
+        ///     Gets or sets the <see cref="NavigationManager" />
+        /// </summary>
+        private readonly NavigationManager navigationManager;
 
         /// <summary>
         ///     Backing field for <see cref="AuthenticationStatus" />
@@ -45,9 +51,12 @@ namespace UI_DSM.Client.ViewModels.Components
         /// <summary>
         ///     Initializes a new instance of the <see cref="LoginViewModel" /> class.
         /// </summary>
-        public LoginViewModel(IAuthenticationService authenticationService)
+        /// <param name="authenticationService">The <see cref="IAuthenticationService"/></param>
+        /// <param name="navigationManager">The <see cref="NavigationManager"/></param>
+        public LoginViewModel(IAuthenticationService authenticationService, NavigationManager navigationManager)
         {
             this.authenticationService = authenticationService;
+            this.navigationManager = navigationManager;
         }
 
         /// <summary>
@@ -85,10 +94,20 @@ namespace UI_DSM.Client.ViewModels.Components
             var response = await this.authenticationService.Login(this.Authentication);
             this.AuthenticationStatus = response.IsRequestSuccessful ? AuthenticationStatus.Success : AuthenticationStatus.Fail;
 
+            if(this.authenticationStatus == AuthenticationStatus.Success)
+            {
+                this.NavigateIfLoggedIn();
+            }
+
             if (response.Errors != null && response.Errors.Any())
             {
                 this.ErrorMessage = string.Join("\n", response.Errors);
             }
+        }
+
+        public void NavigateIfLoggedIn()
+        {
+            this.navigationManager.NavigateTo("/");
         }
     }
 }

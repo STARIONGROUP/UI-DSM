@@ -1,0 +1,41 @@
+@namespace AppComponents
+
+<nav class="top-menu">
+  <div class="top-menu__left">
+    <div class="top-menu__icon-group">
+
+      <NavLink class="nav-link" href="">
+        <FeatherHome Size="28" Color="#000" StrokeWidth="1.5f"  aria-label="home button"/>
+      </NavLink>
+
+      <button aria-label="open task panel">
+       <FeatherCheckCircle Size="28" Color="#000" StrokeWidth="1.5f" />
+      </button>
+    </div>
+
+
+    <div class="top-menu__icon-group">
+      <button aria-label="Previous page" onclick="history.back()">
+        <FeatherArrowLeft Size="28" Color="#000" StrokeWidth="1.5f"  />
+      </button>
+
+      <button aria-label="Previous page" onclick="history.forward()">
+        <FeatherArrowRight Size="28" Color="#000" StrokeWidth="1.5f" />
+      </button>
+    </div>
+  </div>
+
+  <SearchBar />
+
+  <div class="top-menu__right">
+    <div class="top-menu__icon-group">
+      <button aria-label="Previous page" onclick="history.forward()">
+        <FeatherMessageCircle Size="28" Color="#000" StrokeWidth="1.5f"  aria-label="Open chat"/>
+      </button>
+
+      <NavLink class="nav-link" href="account">
+        <UserAvatar UserInitials="MJ" />
+      </NavLink>
+    </div>
+  </div>
+</nav>
