@@ -33,7 +33,7 @@ namespace UI_DSM.Server.Types
         {
             if (entityEntry == null)
             {
-                this.Succeeded = true;
+                this.Succeeded = false;
                 return;
             }
 

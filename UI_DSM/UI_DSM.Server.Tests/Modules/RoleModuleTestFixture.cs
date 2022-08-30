@@ -53,29 +53,27 @@ namespace UI_DSM.Server.Tests.Modules
             };
 
             this.roleManager = new Mock<IEntityManager<Role>>();
-            this.roleManager.Setup(x => x.GetEntities()).ReturnsAsync(this.roles);
+            this.roleManager.Setup(x => x.GetEntities(0)).ReturnsAsync(this.roles);
 
-            ModuleTestHelper.Setup<RoleModule, RoleDto>(new RoleDtoValidator(), out this.httpContext, out this.httpResponse);
+            ModuleTestHelper.Setup<RoleModule, RoleDto>(new RoleDtoValidator(), out this.httpContext, out this.httpResponse, out _, out _);
             this.module = new RoleModule();
         }
 
         [Test]
         public async Task VerifyGetRoles()
         {
-            var request = await this.module.GetEntities(this.roleManager.Object);
-            Assert.That(request.Count, Is.EqualTo(this.roles.Count));
+            await this.module.GetEntities(this.roleManager.Object,this.httpContext.Object);
+            this.roleManager.Verify(x => x.GetEntities(0), Times.Once);
 
-            this.roleManager.Setup(x => x.GetEntity(this.roles.First().Id)).ReturnsAsync(this.roles.First());
+            this.roleManager.Setup(x => x.GetEntity(this.roles.First().Id,0)).ReturnsAsync(this.roles);
 
             var invalidGuid = Guid.NewGuid();
-            this.roleManager.Setup(x => x.GetEntity(invalidGuid)).ReturnsAsync((Role)null);
-            var entity = await this.module.GetEntity(this.roleManager.Object, invalidGuid, this.httpResponse.Object);
+            this.roleManager.Setup(x => x.GetEntity(invalidGuid,0)).ReturnsAsync(Enumerable.Empty<Role>());
+            await this.module.GetEntity(this.roleManager.Object, invalidGuid, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 404, Times.Once);
-            Assert.That(entity, Is.Null);
 
-            entity = await this.module.GetEntity(this.roleManager.Object, this.roles.First().Id, this.httpResponse.Object);
+            await this.module.GetEntity(this.roleManager.Object, this.roles.First().Id, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 404, Times.Once);
-            Assert.That(entity, Is.Not.Null);
         }
 
         [Test]
@@ -83,14 +81,12 @@ namespace UI_DSM.Server.Tests.Modules
         {
             var projectDto = new RoleDto();
 
-            var response = await this.module.CreateEntity(this.roleManager.Object, projectDto, this.httpContext.Object);
-            Assert.That(response.IsRequestSuccessful, Is.False);
+            await this.module.CreateEntity(this.roleManager.Object, projectDto, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Once);
             projectDto.RoleName = "Role";
             projectDto.Id = Guid.NewGuid();
 
-            response = await this.module.CreateEntity(this.roleManager.Object, projectDto, this.httpContext.Object);
-            Assert.That(response.IsRequestSuccessful, Is.False);
+            await this.module.CreateEntity(this.roleManager.Object, projectDto, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Exactly(2));
 
             projectDto.Id = Guid.Empty;
@@ -98,8 +94,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.roleManager.Setup(x => x.CreateEntity(It.IsAny<Role>()))
                 .ReturnsAsync(EntityOperationResult<Role>.Failed());
 
-            response = await this.module.CreateEntity(this.roleManager.Object, projectDto, this.httpContext.Object);
-            Assert.That(response.IsRequestSuccessful, Is.False);
+            await this.module.CreateEntity(this.roleManager.Object, projectDto, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
 
             this.roleManager.Setup(x => x.CreateEntity(It.IsAny<Role>()))
@@ -108,8 +103,7 @@ namespace UI_DSM.Server.Tests.Modules
                     RoleName = projectDto.RoleName
                 }));
 
-            response = await this.module.CreateEntity(this.roleManager.Object, projectDto, this.httpContext.Object);
-            Assert.That(response.IsRequestSuccessful, Is.True);
+            await this.module.CreateEntity(this.roleManager.Object, projectDto, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 201, Times.Once);
         }
 
@@ -117,53 +111,50 @@ namespace UI_DSM.Server.Tests.Modules
         public async Task VerifyDeleteRole()
         {
             var guid = Guid.NewGuid();
-            this.roleManager.Setup(x => x.GetEntity(guid)).ReturnsAsync((Role)null);
+            this.roleManager.Setup(x => x.FindEntity(guid)).ReturnsAsync((Role)null);
 
-            var response = await this.module.DeleteEntity(this.roleManager.Object, guid, this.httpResponse.Object);
+            var response = await this.module.DeleteEntity(this.roleManager.Object, guid, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 404, Times.Once);
 
-            var project = new Role(guid)
+            var role = new Role(guid)
             {
                 RoleName = "Role"
             };
 
-            this.roleManager.Setup(x => x.GetEntity(guid)).ReturnsAsync(project);
-            this.roleManager.Setup(x => x.DeleteEntity(project)).ReturnsAsync(EntityOperationResult<Role>.Failed());
-            response = await this.module.DeleteEntity(this.roleManager.Object, guid, this.httpResponse.Object);
+            this.roleManager.Setup(x => x.FindEntity(guid)).ReturnsAsync(role);
+            this.roleManager.Setup(x => x.DeleteEntity(role)).ReturnsAsync(EntityOperationResult<Role>.Failed());
+            response = await this.module.DeleteEntity(this.roleManager.Object, guid, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
 
-            this.roleManager.Setup(x => x.DeleteEntity(project)).ReturnsAsync(EntityOperationResult<Role>.Success(project));
-            response = await this.module.DeleteEntity(this.roleManager.Object, guid, this.httpResponse.Object);
+            this.roleManager.Setup(x => x.DeleteEntity(role)).ReturnsAsync(EntityOperationResult<Role>.Success(role));
+            response = await this.module.DeleteEntity(this.roleManager.Object, guid, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.True);
         }
 
         [Test]
         public async Task VerifyUpdateRole()
         {
-            var project = new Role(Guid.NewGuid());
+            var role = new Role(Guid.NewGuid());
 
-            this.roleManager.Setup(x => x.GetEntity(project.Id)).ReturnsAsync((Role)null);
-            var response = await this.module.UpdateEntity(this.roleManager.Object, project.Id, (RoleDto)project.ToDto(), this.httpContext.Object);
-            Assert.That(response.IsRequestSuccessful, Is.False);
+            this.roleManager.Setup(x => x.FindEntity(role.Id)).ReturnsAsync((Role)null);
+            await this.module.UpdateEntity(this.roleManager.Object, role.Id, (RoleDto)role.ToDto(), this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 404, Times.Once);
 
-            this.roleManager.Setup(x => x.GetEntity(project.Id)).ReturnsAsync(project);
-            response = await this.module.UpdateEntity(this.roleManager.Object, project.Id, (RoleDto)project.ToDto(), this.httpContext.Object);
-            Assert.That(response.IsRequestSuccessful, Is.False);
+            this.roleManager.Setup(x => x.FindEntity(role.Id)).ReturnsAsync(role);
+            await this.module.UpdateEntity(this.roleManager.Object, role.Id, (RoleDto)role.ToDto(), this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Once);
 
-            project.RoleName = "Role";
+            role.RoleName = "Role";
             this.roleManager.Setup(x => x.UpdateEntity(It.IsAny<Role>())).ReturnsAsync(EntityOperationResult<Role>.Failed());
 
-            response = await this.module.UpdateEntity(this.roleManager.Object, project.Id, (RoleDto)project.ToDto(), this.httpContext.Object);
-            Assert.That(response.IsRequestSuccessful, Is.False);
+            await this.module.UpdateEntity(this.roleManager.Object, role.Id, (RoleDto)role.ToDto(), this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
 
-            this.roleManager.Setup(x => x.UpdateEntity(It.IsAny<Role>())).ReturnsAsync(EntityOperationResult<Role>.Success(project));
-            response = await this.module.UpdateEntity(this.roleManager.Object, project.Id, (RoleDto)project.ToDto(), this.httpContext.Object);
-            Assert.That(response.IsRequestSuccessful, Is.True);
+            this.roleManager.Setup(x => x.UpdateEntity(It.IsAny<Role>())).ReturnsAsync(EntityOperationResult<Role>.Success(role));
+            await this.module.UpdateEntity(this.roleManager.Object, role.Id, (RoleDto)role.ToDto(), this.httpContext.Object);
+            this.httpResponse.VerifySet(x => x.StatusCode = 200, Times.Once);
         }
     }
 }

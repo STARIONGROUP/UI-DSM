@@ -13,6 +13,7 @@
 
 namespace UI_DSM.Server.Context
 {
+    using System.ComponentModel.DataAnnotations;
     using System.Diagnostics.CodeAnalysis;
 
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -48,9 +49,33 @@ namespace UI_DSM.Server.Context
         public virtual DbSet<Project> Projects { get; set; }
 
         /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="Participants" />
+        /// </summary>
+        public virtual DbSet<Participant> Participants { get; set; }
+
+        /// <summary>
         ///     A <see cref="DbSet{TEntity}" /> of <see cref="Role" />
         /// </summary>
-        public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<Role> UiDsmRoles { get; set; }
+
+        /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="UserEntity" />
+        /// </summary>
+        public virtual DbSet<UserEntity> UsersEntities { get; set; }
+
+        /// <summary>
+        ///     Tries to validate an object
+        /// </summary>
+        /// <param name="instance">The <see cref="object" /> to validate</param>
+        /// <returns>A collection of errors if any</returns>
+        public List<string> ValidateModel(object instance)
+        {
+            var errors = new List<ValidationResult>();
+            var validationContext = new ValidationContext(instance);
+            Validator.TryValidateObject(instance, validationContext, errors);
+
+            return errors.Select(x => x.ErrorMessage).ToList();
+        }
 
         /// <summary>
         ///     Configures the schema needed for the identity framework.
@@ -62,7 +87,18 @@ namespace UI_DSM.Server.Context
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<Project>().HasMany(p => p.Participants)
+                .WithOne(p => (Project)p.EntityContainer)
+                .HasForeignKey("EntityContainerId");
+
+            builder.Entity<Project>().Navigation(x => x.Participants).AutoInclude();
+
+            builder.Entity<Participant>().Navigation(x => x.Role).AutoInclude();
+            builder.Entity<Participant>().Navigation(x => x.User).AutoInclude();
+            builder.Entity<Participant>().Navigation(x => x.EntityContainer).AutoInclude();
+
             builder.ApplyConfiguration(new UserConfiguration());
+            builder.ApplyConfiguration(new UserEntityConfiguration());
             builder.ApplyConfiguration(new RoleConfiguration());
             builder.ApplyConfiguration(new UserRoleConfiguration());
             builder.ApplyConfiguration(new UiDsmRoleConfiguration());

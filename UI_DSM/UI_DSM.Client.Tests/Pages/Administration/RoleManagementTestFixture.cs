@@ -50,7 +50,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             this.context = new TestContext();
             this.context.ConfigureDevExpressBlazor();
             this.roleService = new Mock<IRoleService>();
-            this.roleService.Setup(x => x.GetRoles()).ReturnsAsync(this.roles);
+            this.roleService.Setup(x => x.GetRoles(0)).ReturnsAsync(this.roles);
             this.viewModel = new RoleManagementViewModel(this.roleService.Object, null);
             this.context.Services.AddSingleton(this.roleService);
             this.context.Services.AddSingleton(this.viewModel);

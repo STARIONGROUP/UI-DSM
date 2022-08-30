@@ -14,7 +14,7 @@
 namespace UI_DSM.Server.Modules
 {
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Mvc;
 
     using UI_DSM.Server.Managers;
     using UI_DSM.Shared.DTO.Common;
@@ -25,18 +25,20 @@ namespace UI_DSM.Server.Modules
     ///     The <see cref="RoleModule" /> is a <see cref="EntityModule{TEntity,TEntityDto}" /> to manage
     ///     <see cref="Role" />
     /// </summary>
-    [Route("api/Role")]
+    [Microsoft.AspNetCore.Components.Route("api/Role")]
     public class RoleModule : EntityModule<Role, RoleDto>
     {
         /// <summary>
-        ///     Gets a collection of all <see cref="RoleDto" />
+        ///     Gets a collection of all <see cref="Entity" />
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="RoleDto" /> as result</returns>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public override Task<IEnumerable<RoleDto>> GetEntities(IEntityManager<Role> manager)
+        public override Task GetEntities(IEntityManager<Role> manager, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.GetEntities(manager);
+            return base.GetEntities(manager, context, deepLevel);
         }
 
         /// <summary>
@@ -44,12 +46,13 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /></param>
-        /// <param name="response">The <see cref="HttpResponse" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="RoleDto" /> if found</returns>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public override Task<RoleDto> GetEntity(IEntityManager<Role> manager, Guid entityId, HttpResponse response)
+        public override Task GetEntity(IEntityManager<Role> manager, Guid entityId, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.GetEntity(manager, entityId, response);
+            return base.GetEntity(manager, entityId, context, deepLevel);
         }
 
         /// <summary>
@@ -58,11 +61,12 @@ namespace UI_DSM.Server.Modules
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="dto">The <see cref="RoleDto" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponseDto{TEntityDto}" /> as result</returns>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /></returns>
         [Authorize(Roles = "Administrator")]
-        public override Task<EntityRequestResponseDto<RoleDto>> CreateEntity(IEntityManager<Role> manager, RoleDto dto, HttpContext context)
+        public override Task CreateEntity(IEntityManager<Role> manager, RoleDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.CreateEntity(manager, dto, context);
+            return base.CreateEntity(manager, dto, context, deepLevel);
         }
 
         /// <summary>
@@ -70,12 +74,12 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Role" /> to delete</param>
-        /// <param name="response">The <see cref="HttpResponse" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
         [Authorize(Roles = "Administrator")]
-        public override Task<RequestResponseDto> DeleteEntity(IEntityManager<Role> manager, Guid entityId, HttpResponse response)
+        public override Task<RequestResponseDto> DeleteEntity(IEntityManager<Role> manager, Guid entityId, HttpContext context)
         {
-            return base.DeleteEntity(manager, entityId, response);
+            return base.DeleteEntity(manager, entityId, context);
         }
 
         /// <summary>
@@ -85,11 +89,12 @@ namespace UI_DSM.Server.Modules
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Role" /></param>
         /// <param name="dto">The <see cref="RoleDto" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
-        /// <returns>A <see cref="Task" /> with <see cref="EntityRequestResponseDto{TEntityDto}" /> as result</returns>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /></returns>
         [Authorize(Roles = "Administrator")]
-        public override Task<EntityRequestResponseDto<RoleDto>> UpdateEntity(IEntityManager<Role> manager, Guid entityId, RoleDto dto, HttpContext context)
+        public override Task UpdateEntity(IEntityManager<Role> manager, Guid entityId, RoleDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.UpdateEntity(manager, entityId, dto, context);
+            return base.UpdateEntity(manager, entityId, dto, context, deepLevel);
         }
     }
 }

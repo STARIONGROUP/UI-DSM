@@ -18,12 +18,11 @@ namespace UI_DSM.Shared.DTO.Common
     /// <summary>
     ///     Common DTO used to respond to all basic operation (creation/update/delete) request on <see cref="EntityDto" />
     /// </summary>
-    /// <typeparam name="TEntityDto">An <see cref="EntityDto" /></typeparam>
-    public class EntityRequestResponseDto<TEntityDto> : RequestResponseDto where TEntityDto : EntityDto
+    public class EntityRequestResponseDto: RequestResponseDto
     {
         /// <summary>
-        ///     Gets or sets the <see cref="TEntityDto" />
+        ///     Gets or sets the collection of <see cref="EntityDto" />
         /// </summary>
-        public TEntityDto Entity { get; set; }
+        public IEnumerable<EntityDto> Entities { get; set; }
     }
 }

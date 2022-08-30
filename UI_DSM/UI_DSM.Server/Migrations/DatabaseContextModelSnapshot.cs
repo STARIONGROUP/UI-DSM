@@ -54,7 +54,7 @@ namespace UI_DSM.Server.Migrations
                         new
                         {
                             Id = "AF8956F8-CA85-4DF2-8CB6-C46D0845B987",
-                            ConcurrencyStamp = "df3e327f-f326-4ed4-8890-0b2f8440a436",
+                            ConcurrencyStamp = "242de22f-979e-4dda-ba50-6d43bb9879ed",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -179,14 +179,9 @@ namespace UI_DSM.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("EntityContainerId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("EntityContainerId");
-
-                    b.ToTable("Entity");
+                    b.ToTable("Entity", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.User", b =>
@@ -260,14 +255,14 @@ namespace UI_DSM.Server.Migrations
                         {
                             Id = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "77f56b47-9a66-484a-9749-d81a80575fd7",
+                            ConcurrencyStamp = "ff125df3-1071-46bb-916b-5c0a0f0a57c8",
                             EmailConfirmed = false,
                             IsAdmin = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAELofQNBZUG4ZByLcdJk8duH13IEJUyFxeH/dJ04ka2nH/cdTisUH8Fr2r4vaWgp1IA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEDPmP3GeNUyV6vQEcAUv01xU83vN5t/wYla/NlnD+PxUAaJP32cSfER8lesUixDqNg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "351d62f5-32d1-479d-8617-06f8d10c9819",
+                            SecurityStamp = "58e3391e-3947-4636-a94f-b92157972f0b",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -277,34 +272,38 @@ namespace UI_DSM.Server.Migrations
                 {
                     b.HasBaseType("UI_DSM.Shared.Models.Entity");
 
-                    b.Property<Guid?>("ProjectId")
+                    b.Property<Guid?>("EntityContainerId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("EntityContainerId");
 
                     b.HasIndex("RoleId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Participant");
+                    b.ToTable("Participant", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Project", b =>
                 {
                     b.HasBaseType("UI_DSM.Shared.Models.Entity");
 
+                    b.Property<Guid?>("EntityContainerId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("ProjectName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.ToTable("Project");
+                    b.HasIndex("EntityContainerId");
+
+                    b.ToTable("Project", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Role", b =>
@@ -315,11 +314,16 @@ namespace UI_DSM.Server.Migrations
                         .IsRequired()
                         .HasColumnType("integer[]");
 
+                    b.Property<Guid?>("EntityContainerId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("RoleName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.ToTable("Role");
+                    b.HasIndex("EntityContainerId");
+
+                    b.ToTable("Role", (string)null);
 
                     b.HasData(
                         new
@@ -333,6 +337,38 @@ namespace UI_DSM.Server.Migrations
                             Id = new Guid("28b83519-fb7c-4a9a-8279-194140bfcfbe"),
                             AccessRights = new[] { 4 },
                             RoleName = "Reviewer"
+                        });
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.UserEntity", b =>
+                {
+                    b.HasBaseType("UI_DSM.Shared.Models.Entity");
+
+                    b.Property<Guid?>("EntityContainerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("text");
+
+                    b.HasIndex("EntityContainerId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserEntity", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("3503bf4c-1211-41eb-b369-aaa6bbdf5ff8"),
+                            IsAdmin = true,
+                            UserId = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7",
+                            UserName = "admin"
                         });
                 });
 
@@ -387,26 +423,17 @@ namespace UI_DSM.Server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("UI_DSM.Shared.Models.Entity", b =>
-                {
-                    b.HasOne("UI_DSM.Shared.Models.Entity", "EntityContainer")
-                        .WithMany()
-                        .HasForeignKey("EntityContainerId");
-
-                    b.Navigation("EntityContainer");
-                });
-
             modelBuilder.Entity("UI_DSM.Shared.Models.Participant", b =>
                 {
+                    b.HasOne("UI_DSM.Shared.Models.Project", "EntityContainer")
+                        .WithMany("Participants")
+                        .HasForeignKey("EntityContainerId");
+
                     b.HasOne("UI_DSM.Shared.Models.Entity", null)
                         .WithOne()
                         .HasForeignKey("UI_DSM.Shared.Models.Participant", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("UI_DSM.Shared.Models.Project", null)
-                        .WithMany("Participants")
-                        .HasForeignKey("ProjectId");
 
                     b.HasOne("UI_DSM.Shared.Models.Role", "Role")
                         .WithMany()
@@ -414,11 +441,13 @@ namespace UI_DSM.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UI_DSM.Shared.Models.User", "User")
+                    b.HasOne("UI_DSM.Shared.Models.UserEntity", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("EntityContainer");
 
                     b.Navigation("Role");
 
@@ -427,20 +456,53 @@ namespace UI_DSM.Server.Migrations
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Project", b =>
                 {
+                    b.HasOne("UI_DSM.Shared.Models.Entity", "EntityContainer")
+                        .WithMany()
+                        .HasForeignKey("EntityContainerId");
+
                     b.HasOne("UI_DSM.Shared.Models.Entity", null)
                         .WithOne()
                         .HasForeignKey("UI_DSM.Shared.Models.Project", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("EntityContainer");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Role", b =>
                 {
+                    b.HasOne("UI_DSM.Shared.Models.Entity", "EntityContainer")
+                        .WithMany()
+                        .HasForeignKey("EntityContainerId");
+
                     b.HasOne("UI_DSM.Shared.Models.Entity", null)
                         .WithOne()
                         .HasForeignKey("UI_DSM.Shared.Models.Role", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("EntityContainer");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.UserEntity", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Entity", "EntityContainer")
+                        .WithMany()
+                        .HasForeignKey("EntityContainerId");
+
+                    b.HasOne("UI_DSM.Shared.Models.Entity", null)
+                        .WithOne()
+                        .HasForeignKey("UI_DSM.Shared.Models.UserEntity", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UI_DSM.Shared.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("EntityContainer");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Project", b =>

@@ -48,7 +48,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             this.context = new TestContext();
             this.context.ConfigureDevExpressBlazor();
             this.projectService = new Mock<IProjectService>();
-            this.projectService.Setup(x => x.GetProjects()).ReturnsAsync(this.projects);
+            this.projectService.Setup(x => x.GetProjects(0)).ReturnsAsync(this.projects);
             this.viewModel = new ProjectManagementViewModel(this.projectService.Object, null);
             this.context.Services.AddSingleton(this.viewModel);
             this.viewModel.NavigationManager = this.context.Services.GetRequiredService<FakeNavigationManager>();

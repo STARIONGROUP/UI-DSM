@@ -14,7 +14,7 @@
 namespace UI_DSM.Server.Modules
 {
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Mvc;
 
     using UI_DSM.Server.Managers;
     using UI_DSM.Shared.DTO.Common;
@@ -25,17 +25,20 @@ namespace UI_DSM.Server.Modules
     ///     The <see cref="ProjectModule" /> is a <see cref="EntityModule{TEntity,TEntityDto}" /> to manage
     ///     <see cref="Project" />
     /// </summary>
-    [Route("api/Project")]
+    [Microsoft.AspNetCore.Components.Route("api/Project")]
     public class ProjectModule : EntityModule<Project, ProjectDto>
     {
         /// <summary>
-        ///     Gets a collection of all <see cref="Project" />
+        ///     Gets a collection of all <see cref="EntityDto" />
         /// </summary>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="Project" /> as result</returns>
+        /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /></returns>
         [Authorize(Roles = "Administrator")]
-        public override Task<IEnumerable<ProjectDto>> GetEntities(IEntityManager<Project> manager)
+        public override Task GetEntities(IEntityManager<Project> manager, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.GetEntities(manager);
+            return base.GetEntities(manager, context, deepLevel);
         }
 
         /// <summary>
@@ -43,12 +46,13 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /></param>
-        /// <param name="response">The <see cref="HttpResponse" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /> with the <see cref="ProjectDto" /> if found</returns>
         [Authorize]
-        public override Task<ProjectDto> GetEntity(IEntityManager<Project> manager, Guid entityId, HttpResponse response)
+        public override Task GetEntity(IEntityManager<Project> manager, Guid entityId, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.GetEntity(manager, entityId, response);
+            return base.GetEntity(manager, entityId, context, deepLevel);
         }
 
         /// <summary>
@@ -57,11 +61,12 @@ namespace UI_DSM.Server.Modules
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="dto">The <see cref="ProjectDto" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponseDto{ProjectDto}" /> as result</returns>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /></returns>
         [Authorize(Roles = "Administrator")]
-        public override Task<EntityRequestResponseDto<ProjectDto>> CreateEntity(IEntityManager<Project> manager, ProjectDto dto, HttpContext context)
+        public override Task CreateEntity(IEntityManager<Project> manager, ProjectDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.CreateEntity(manager, dto, context);
+            return base.CreateEntity(manager, dto, context, deepLevel);
         }
 
         /// <summary>
@@ -69,12 +74,12 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Project" /> to delete</param>
-        /// <param name="response">The <see cref="HttpResponse" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
         [Authorize(Roles = "Administrator")]
-        public override Task<RequestResponseDto> DeleteEntity(IEntityManager<Project> manager, Guid entityId, HttpResponse response)
+        public override Task<RequestResponseDto> DeleteEntity(IEntityManager<Project> manager, Guid entityId, HttpContext context)
         {
-            return base.DeleteEntity(manager, entityId, response);
+            return base.DeleteEntity(manager, entityId, context);
         }
 
         /// <summary>
@@ -84,11 +89,12 @@ namespace UI_DSM.Server.Modules
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Project" /></param>
         /// <param name="dto">The <see cref="ProjectDto" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
-        /// <returns>A <see cref="Task" /> with <see cref="EntityRequestResponseDto{TEntityDto}" /> as result</returns>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /></returns>
         [Authorize(Roles = "Administrator")]
-        public override Task<EntityRequestResponseDto<ProjectDto>> UpdateEntity(IEntityManager<Project> manager, Guid entityId, ProjectDto dto, HttpContext context)
+        public override Task UpdateEntity(IEntityManager<Project> manager, Guid entityId, ProjectDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.UpdateEntity(manager, entityId, dto, context);
+            return base.UpdateEntity(manager, entityId, dto, context,deepLevel);
         }
     }
 }

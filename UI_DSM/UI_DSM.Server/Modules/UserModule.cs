@@ -13,30 +13,31 @@
 
 namespace UI_DSM.Server.Modules
 {
-    using System.Diagnostics.CodeAnalysis;
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Text;
 
     using Carter.ModelBinding;
+    using Carter.Response;
 
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Identity;
-    using Microsoft.EntityFrameworkCore;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.IdentityModel.Tokens;
 
+    using UI_DSM.Server.Managers;
+    using UI_DSM.Server.Managers.UserManager;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     The <see cref="ProjectModule" /> is a <see cref="ModuleBase" /> to manage
-    ///     <see cref="User" />
+    ///     The <see cref="UserModule" /> is a <see cref="ModuleBase" /> to manage
+    ///     <see cref="UserEntity" />
     /// </summary>
-    [Route("api/User")]
-    public class UserModule : ModuleBase
+    [Microsoft.AspNetCore.Components.Route("api/User")]
+    public class UserModule : EntityModule<UserEntity, UserDto>
     {
         /// <summary>
         ///     The <see cref="IConfigurationSection" /> for JWT Authentication
@@ -56,9 +57,10 @@ namespace UI_DSM.Server.Modules
         ///     Adds routes to the <see cref="IEndpointRouteBuilder" />
         /// </summary>
         /// <param name="app">The <see cref="IEndpointRouteBuilder" /></param>
-        [ExcludeFromCodeCoverage]
         public override void AddRoutes(IEndpointRouteBuilder app)
         {
+            base.AddRoutes(app);
+
             app.MapPost($"{this.MainRoute}/Login", this.Login)
                 .Accepts<AuthenticationDto>("application/json")
                 .Produces<AuthenticationResponseDto>()
@@ -73,58 +75,6 @@ namespace UI_DSM.Server.Modules
                 .Produces<RegistrationResponseDto>(422)
                 .WithTags("User")
                 .WithName("User/Register");
-
-            app.MapGet(this.MainRoute, this.GetUsers)
-                .Produces<IEnumerable<UserDto>>()
-                .WithTags("User")
-                .WithName("User/GetUsers");
-
-            app.MapDelete(this.MainRoute + "/{userId}", this.DeleteUser)
-                .Produces<RequestResponseDto>()
-                .Produces<RequestResponseDto>(403)
-                .Produces<RequestResponseDto>(404)
-                .Produces<RequestResponseDto>(500)
-                .WithTags("User")
-                .WithName("User/Delete");
-        }
-
-        /// <summary>
-        ///     Tries to register a new user base on the provided <see cref="RegistrationDto" />
-        /// </summary>
-        /// <param name="manager">The <see cref="UserManager{TUser}" /></param>
-        /// <param name="dto">The <see cref="RegistrationDto" /></param>
-        /// <param name="context">The <see cref="HttpContext" /></param>
-        /// <returns>A <see cref="Task" /> with a <see cref="RegistrationResponseDto" /> as result</returns>
-        [Authorize(Roles = "Administrator")]
-        public async Task<RegistrationResponseDto> RegisterUser(UserManager<User> manager, RegistrationDto dto, HttpContext context)
-        {
-            var validationResult = context.Request.Validate(dto);
-            var authenticationResponse = new RegistrationResponseDto();
-
-            if (!validationResult.IsValid)
-            {
-                authenticationResponse.Errors = validationResult.Errors.Select(x => x.ErrorMessage).ToList();
-                context.Response.StatusCode = 422;
-                return authenticationResponse;
-            }
-
-            var user = new User
-                { UserName = dto.UserName };
-
-            var identityResult = await manager.CreateAsync(user, dto.Password);
-            authenticationResponse.IsRequestSuccessful = identityResult.Succeeded;
-
-            if (!identityResult.Succeeded)
-            {
-                authenticationResponse.Errors = identityResult.Errors.Select(e => e.Description).ToList();
-                context.Response.StatusCode = 422;
-                return authenticationResponse;
-            }
-
-            var createdUser = await manager.FindByNameAsync(user.UserName);
-            authenticationResponse.CreatedUser = createdUser.ToDto();
-            context.Response.StatusCode = 201;
-            return authenticationResponse;
         }
 
         /// <summary>
@@ -166,65 +116,105 @@ namespace UI_DSM.Server.Modules
         }
 
         /// <summary>
-        ///     Get the collections of registered users
+        ///     Tries to register a new user base on the provided <see cref="RegistrationDto" />
         /// </summary>
         /// <param name="manager">The <see cref="UserManager{TUser}" /></param>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="UserDto" /></returns>
+        /// <param name="dto">The <see cref="RegistrationDto" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns>A <see cref="Task" /> with a <see cref="RegistrationResponseDto" /> as result</returns>
         [Authorize(Roles = "Administrator")]
-        public async Task<IEnumerable<UserDto>> GetUsers(UserManager<User> manager)
+        public async Task<RegistrationResponseDto> RegisterUser(IUserManager manager, RegistrationDto dto, HttpContext context)
         {
-            var users = await manager.Users.ToListAsync();
-            return users.Select(x => x.ToDto());
-        }
+            var validationResult = context.Request.Validate(dto);
+            var authenticationResponse = new RegistrationResponseDto();
 
-        /// <summary>
-        ///     Tries to delete an <see cref="User" /> defined by the given <paramref name="userId" />
-        /// </summary>
-        /// <param name="manager">The <see cref="UserManager{TUser}" /></param>
-        /// <param name="userId">The <see cref="User.Id" /></param>
-        /// <param name="response">The <see cref="HttpResponse" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
-        [Authorize(Roles = "Administrator")]
-        public async Task<RequestResponseDto> DeleteUser(UserManager<User> manager, string userId, HttpResponse response)
-        {
-            var user = await manager.FindByIdAsync(userId);
-            var requestResponse = new RequestResponseDto();
-
-            if (user == null)
+            if (!validationResult.IsValid)
             {
-                response.StatusCode = 404;
-
-                requestResponse.Errors = new List<string>
-                {
-                    $"User with id {userId} not found"
-                };
-
-                return requestResponse;
+                authenticationResponse.Errors = validationResult.Errors.Select(x => x.ErrorMessage).ToList();
+                context.Response.StatusCode = 422;
+                return authenticationResponse;
             }
 
-            if (user.IsAdmin)
-            {
-                response.StatusCode = 403;
+            var user = new User
+                { UserName = dto.UserName };
 
-                requestResponse.Errors = new List<string>
-                {
-                    "Forbidden to delete an Administrator"
-                };
-
-                return requestResponse;
-            }
-
-            var identityResult = await manager.DeleteAsync(user);
-
-            requestResponse.IsRequestSuccessful = identityResult.Succeeded;
+            var identityResult = await manager.RegisterUser(user, dto.Password);
+            authenticationResponse.IsRequestSuccessful = identityResult.Succeeded;
 
             if (!identityResult.Succeeded)
             {
-                response.StatusCode = 500;
-                requestResponse.Errors = identityResult.Errors.Select(x => x.Description).ToList();
+                authenticationResponse.Errors = identityResult.Errors;
+                context.Response.StatusCode = 422;
+                return authenticationResponse;
             }
 
-            return requestResponse;
+            authenticationResponse.CreatedUser = (UserDto)identityResult.Entity.ToDto();
+            context.Response.StatusCode = 201;
+            return authenticationResponse;
+        }
+
+        /// <summary>
+        ///     Gets a collection of all <see cref="Entity" />
+        /// </summary>
+        /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /></returns>
+        [Authorize]
+        public override Task GetEntities(IEntityManager<UserEntity> manager, HttpContext context, [FromQuery] int deepLevel = 0)
+        {
+            return base.GetEntities(manager, context, deepLevel);
+        }
+
+        /// <summary>
+        ///     Get a <see cref="UserEntity" /> based on its <see cref="Guid" /> with all associated entities
+        /// </summary>
+        /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
+        /// <param name="entityId">The <see cref="Guid" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /></returns>
+        [Authorize]
+        public override Task GetEntity(IEntityManager<UserEntity> manager, Guid entityId, HttpContext context, [FromQuery] int deepLevel = 0)
+        {
+            return base.GetEntity(manager, entityId, context, deepLevel);
+        }
+
+        /// <summary>
+        ///     Tries to create a new <see cref="UserEntity" /> based on its <see cref="UserDto" />
+        /// </summary>
+        /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
+        /// <param name="dto">The <see cref="UserDto" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public override async Task CreateEntity(IEntityManager<UserEntity> manager, UserDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
+        {
+            await Task.CompletedTask;
+
+            context.Response.StatusCode = 405;
+
+            await context.Response.Negotiate(
+                new EntityRequestResponseDto
+                {
+                    Errors = new List<string>
+                    {
+                        "Invalid method for creating a user"
+                    }
+                });
+        }
+
+        /// <summary>
+        ///     Tries to delete an <see cref="UserEntity" /> defined by the given <see cref="Guid" />
+        /// </summary>
+        /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="UserEntity" /> to delete</param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
+        [Authorize(Roles = "Administrator")]
+        public override Task<RequestResponseDto> DeleteEntity(IEntityManager<UserEntity> manager, Guid entityId, HttpContext context)
+        {
+            return base.DeleteEntity(manager, entityId, context);
         }
 
         /// <summary>

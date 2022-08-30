@@ -58,27 +58,35 @@ namespace UI_DSM.Server.Tests.Managers
         }
 
         [Test]
-        public void VerifyGetRoles()
+        public async Task VerifyGetRoles()
         {
             var dbSet = DbSetMockHelper.CreateMock(this.data);
             var invalidGuid = Guid.NewGuid();
             dbSet.Setup(x => x.FindAsync(invalidGuid)).ReturnsAsync((Role)null);
             dbSet.Setup(x => x.FindAsync(this.data.Last().Id)).ReturnsAsync(this.data.Last());
-            this.context.Setup(x => x.Roles).Returns(dbSet.Object);
+            this.context.Setup(x => x.UiDsmRoles).Returns(dbSet.Object);
            
             Assert.Multiple(() =>
             {
                Assert.That(this.manager.GetEntities().Result.Count(), Is.EqualTo(this.data.Count));
-               Assert.That(this.manager.GetEntity(invalidGuid).Result, Is.Null);
+               Assert.That(this.manager.GetEntity(invalidGuid).Result, Is.Empty);
                Assert.That(this.manager.GetEntity(this.data.Last().Id).Result, Is.Not.Null);
             });
+
+            foreach (var role in this.data)
+            {
+                dbSet.Setup(x => x.FindAsync(role.Id)).ReturnsAsync(role);
+            }
+
+            var foundEntities = await this.manager.FindEntities(this.data.Select(x => x.Id));
+            Assert.That(foundEntities.Count(), Is.EqualTo(this.data.Count));
         }
 
         [Test]
         public void VerifyCreateRole()
         {
             var dbSet = DbSetMockHelper.CreateMock(this.data);
-            this.context.Setup(x => x.Roles).Returns(dbSet.Object);
+            this.context.Setup(x => x.UiDsmRoles).Returns(dbSet.Object);
 
             var newRole = new Role()
             {
@@ -107,7 +115,7 @@ namespace UI_DSM.Server.Tests.Managers
         public void VerifyUpdateRole()
         {
             var dbSet = DbSetMockHelper.CreateMock(this.data);
-            this.context.Setup(x => x.Roles).Returns(dbSet.Object);
+            this.context.Setup(x => x.UiDsmRoles).Returns(dbSet.Object);
 
             var role = new Role(this.data.First().Id)
             {

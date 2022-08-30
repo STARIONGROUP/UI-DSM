@@ -18,6 +18,7 @@ namespace UI_DSM.Server.Tests.Managers
     using NUnit.Framework;
 
     using UI_DSM.Server.Context;
+    using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ProjectManager;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Shared.Models;
@@ -25,18 +26,20 @@ namespace UI_DSM.Server.Tests.Managers
     [TestFixture]
     public class ProjectManagerTestFixture
     {
+        private ProjectManager manager;
+        private Mock<DatabaseContext> context;
+        private Mock<IParticipantManager> participantManager;
+
         [SetUp]
         public void Setup()
         {
             this.context = new Mock<DatabaseContext>();
-            this.manager = new ProjectManager(this.context.Object);
+            this.participantManager = new Mock<IParticipantManager>();
+            this.manager = new ProjectManager(this.context.Object, this.participantManager.Object);
         }
 
-        private ProjectManager manager;
-        private Mock<DatabaseContext> context;
-
         [Test]
-        public void VerifyGetProjects()
+        public async Task VerifyGetProjects()
         {
             var data = new List<Project>
             {
@@ -55,9 +58,17 @@ namespace UI_DSM.Server.Tests.Managers
             Assert.Multiple(() =>
             {
                 Assert.That(this.manager.GetEntities().Result.Count(), Is.EqualTo(data.Count));
-                Assert.That(this.manager.GetEntity(invalidGuid).Result, Is.Null);
+                Assert.That(this.manager.GetEntity(invalidGuid).Result, Is.Empty);
                 Assert.That(this.manager.GetEntity(data.Last().Id).Result, Is.Not.Null);
             });
+
+            foreach (var project in data)
+            {
+                dbSet.Setup(x => x.FindAsync(project.Id)).ReturnsAsync(project);
+            }
+
+            var foundEntities = await this.manager.FindEntities(data.Select(x => x.Id));
+            Assert.That(foundEntities.Count(), Is.EqualTo(3));
         }
 
         [Test]

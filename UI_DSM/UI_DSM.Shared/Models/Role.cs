@@ -80,7 +80,8 @@ namespace UI_DSM.Shared.Models
         ///     Resolve the properties of the current <see cref="Role" /> from its <see cref="EntityDto" /> counter-part
         /// </summary>
         /// <param name="entityDto">The source <see cref="EntityDto" /></param>
-        public override void ResolveProperties(EntityDto entityDto)
+        /// <param name="resolvedEntity">A <see cref="Dictionary{TKey,TValue}" /> of all <see cref="Entity" /></param>
+        public override void ResolveProperties(EntityDto entityDto, Dictionary<Guid, Entity> resolvedEntity)
         {
             if (entityDto is not RoleDto roleDto)
             {

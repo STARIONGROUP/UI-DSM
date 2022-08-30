@@ -22,6 +22,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
 
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.Administration.ProjectService;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -63,7 +64,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
                 }
             };
 
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(projectDtos));
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(projectDtos));
 
             var projects = this.service.GetProjects().Result;
             Assert.That(projects.Count, Is.EqualTo(1));
@@ -81,20 +82,25 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
 
             var httpResponse = new HttpResponseMessage();
             
-            var entityRequestResponse = new EntityRequestResponseDto<ProjectDto>()
+            var entityRequestResponse = new EntityRequestResponseDto()
             {
                 IsRequestSuccessful = false
             };
 
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(entityRequestResponse));
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
 
             var request = this.httpMessageHandler.When(HttpMethod.Post, "/Project/Create");
             request.Respond(_ => httpResponse);
             Assert.That(this.service.CreateProject(project).Result.IsRequestSuccessful, Is.False);
 
             entityRequestResponse.IsRequestSuccessful = true;
-            entityRequestResponse.Entity = project.ToDto() as ProjectDto;
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(entityRequestResponse));
+
+            entityRequestResponse.Entities = new List<EntityDto>()
+            {
+                project.ToDto()
+            }; 
+
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
             Assert.That(this.service.CreateProject(project).Result.IsRequestSuccessful, Is.True);
             Assert.That(this.service.CreateProject(project).Result.Entity, Is.Not.Null);
 
@@ -119,7 +125,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
         }
 
         [Test]
-        public void VerifyGetProject()
+        public async Task VerifyGetProject()
         {
             var guid = Guid.NewGuid();
             var httpResponse = new HttpResponseMessage();
@@ -127,7 +133,9 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
 
             var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Project/{guid}");
             request.Respond(_ => httpResponse);
-            Assert.That(this.service.GetProject(guid).Result, Is.Null);
+            var project = await this.service.GetProject(guid);
+
+            Assert.That(project, Is.Null);
 
             httpResponse.StatusCode = HttpStatusCode.OK;
 
@@ -136,11 +144,13 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
                 ProjectName = "Project"
             };
 
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(projectDto));
-            Assert.That(this.service.GetProject(guid).Result.Id, Is.EqualTo(guid));
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(new List<EntityDto>(){projectDto}));
+            project = await this.service.GetProject(guid);
+            Assert.That(project.Id, Is.EqualTo(guid));
 
             httpResponse.Content = new StringContent(string.Empty);
-            Assert.That(async () => await this.service.GetProject(guid), Throws.Exception);
+            project = await this.service.GetProject(guid);
+            Assert.That(project, Is.Null);
         }
     }
 }

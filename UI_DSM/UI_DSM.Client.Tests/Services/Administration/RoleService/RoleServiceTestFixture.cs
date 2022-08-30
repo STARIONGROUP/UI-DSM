@@ -22,6 +22,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
 
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.Administration.RoleService;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
@@ -68,7 +69,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
                 }
             };
 
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(rolesDtos));
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(rolesDtos));
 
             var roles = this.service.GetRoles().Result;
             Assert.That(roles.Count, Is.EqualTo(1));
@@ -77,7 +78,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
         }
 
         [Test]
-        public void VerifyGetRole()
+        public async Task VerifyGetRole()
         {
             var guid = Guid.NewGuid();
             var httpResponse = new HttpResponseMessage();
@@ -85,7 +86,9 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
 
             var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Role/{guid}");
             request.Respond(_ => httpResponse);
-            Assert.That(this.service.GetRole(guid).Result, Is.Null);
+            var role = await this.service.GetRole(guid);
+
+            Assert.That(role, Is.Null);
 
             httpResponse.StatusCode = HttpStatusCode.OK;
 
@@ -98,11 +101,15 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
                 }
             };
 
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(roleDto));
-            Assert.That(this.service.GetRole(guid).Result.Id, Is.EqualTo(guid));
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(new List<EntityDto>(){ roleDto }));
+            role = await this.service.GetRole(guid);
+
+            Assert.That(role.Id, Is.EqualTo(guid));
 
             httpResponse.Content = new StringContent(string.Empty);
-            Assert.That(async () => await this.service.GetRole(guid), Throws.Exception);
+            role = await this.service.GetRole(guid);
+
+            Assert.That(role, Is.Null);
         }
 
         [Test]
@@ -119,20 +126,25 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
 
             var httpResponse = new HttpResponseMessage();
 
-            var entityRequestResponse = new EntityRequestResponseDto<RoleDto>()
+            var entityRequestResponse = new EntityRequestResponseDto()
             {
                 IsRequestSuccessful = false
             };
 
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(entityRequestResponse));
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
 
             var request = this.httpMessageHandler.When(HttpMethod.Post, "/Role/Create");
             request.Respond(_ => httpResponse);
             Assert.That(this.service.CreateRole(role).Result.IsRequestSuccessful, Is.False);
 
             entityRequestResponse.IsRequestSuccessful = true;
-            entityRequestResponse.Entity = role.ToDto() as RoleDto;
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(entityRequestResponse));
+
+            entityRequestResponse.Entities = new List<EntityDto>()
+            {
+                role.ToDto()
+            };
+
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
             Assert.That(this.service.CreateRole(role).Result.IsRequestSuccessful, Is.True);
             Assert.That(this.service.CreateRole(role).Result.Entity, Is.Not.Null);
 
@@ -169,16 +181,21 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
             };
 
             var httpResponse = new HttpResponseMessage();
-            var requestResponse = new EntityRequestResponseDto<RoleDto>() { IsRequestSuccessful = false };
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(requestResponse));
+            var requestResponse = new EntityRequestResponseDto() { IsRequestSuccessful = false };
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
 
             var request = this.httpMessageHandler.When(HttpMethod.Put, $"/Role/{role.Id}");
             request.Respond(_ => httpResponse);
             Assert.That(this.service.UpdateRole(role).Result.IsRequestSuccessful, Is.False);
 
             requestResponse.IsRequestSuccessful = true;
-            requestResponse.Entity = role.ToDto() as RoleDto;
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(requestResponse));
+            
+            requestResponse.Entities = new List<EntityDto>()
+            {
+                role.ToDto()
+            }; 
+            
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
 
             Assert.That(this.service.UpdateRole(role).Result.IsRequestSuccessful, Is.True);
             httpResponse.Content = new StringContent(string.Empty);

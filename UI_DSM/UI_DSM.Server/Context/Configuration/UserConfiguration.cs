@@ -22,25 +22,25 @@ namespace UI_DSM.Server.Context.Configuration
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    /// The <see cref="IEntityTypeConfiguration{TEntity}"/> for the <see cref="User"/> entity
+    ///     The <see cref="IEntityTypeConfiguration{TEntity}" /> for the <see cref="User" /> entity
     /// </summary>
     [ExcludeFromCodeCoverage]
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         /// <summary>
-        /// The unique ID for the Admin user, to prevent loosing data on migration
+        ///     The unique ID for the Admin user, to prevent loosing data on migration
         /// </summary>
         public const string AdminId = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7";
-
+        
         /// <summary>
-        ///     Configures the entity of type <see cref="User"/>
+        ///     Configures the entity of type <see cref="User" />
         /// </summary>
         /// <param name="builder">The builder to be used to configure the entity type.</param>
         public void Configure(EntityTypeBuilder<User> builder)
         {
             var passwordHasher = new PasswordHasher<User>();
 
-            var adminUser = new User()
+            var adminUser = new User
             {
                 Id = AdminId,
                 UserName = "admin",
@@ -49,6 +49,7 @@ namespace UI_DSM.Server.Context.Configuration
             };
 
             adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, "pass");
+
             builder.HasData(adminUser);
         }
     }

@@ -58,7 +58,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.RolePages
         public void VerifyPage()
         {
             var roleId = Guid.NewGuid();
-            this.roleService.Setup(x => x.GetRole(roleId)).ReturnsAsync((Role)null);
+            this.roleService.Setup(x => x.GetRole(roleId,0)).ReturnsAsync((Role)null);
 
             var renderer = this.context.RenderComponent<RolePage>(parameters =>
             {
@@ -77,7 +77,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.RolePages
                 }
             };
 
-            this.roleService.Setup(x => x.GetRole(roleId)).ReturnsAsync(role);
+            this.roleService.Setup(x => x.GetRole(roleId,0)).ReturnsAsync(role);
             this.viewModel.OnInitializedAsync(roleId);
             renderer.Render();
             Assert.That(renderer.FindComponents<EditForm>().Count, Is.EqualTo(1));

@@ -88,5 +88,16 @@ namespace UI_DSM.Server.Modules
             var type = this.GetType();
             return ModuleRoute.ContainsKey(type) ? ModuleRoute[type] : string.Empty;
         }
+
+        /// <summary>
+        ///     Get a <see cref="Guid" /> based on a name from the <see cref="HttpRequest" />
+        /// </summary>
+        /// <param name="request">The <see cref="HttpRequest" /></param>
+        /// <param name="routeKey">The key where the <see cref="Guid" /> is stored</param>
+        /// <returns>The <see cref="Guid" /></returns>
+        protected Guid GetAdditionalRouteId(HttpRequest request, string routeKey)
+        {
+            return new Guid((string)request.RouteValues[routeKey] ?? string.Empty);
+        }
     }
 }
