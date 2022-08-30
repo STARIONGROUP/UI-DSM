@@ -61,12 +61,9 @@ namespace UI_DSM.Client.Tests.Components
         [Test]
         public async Task VerifyComponentsParameter()
         {
-            var renderer = this.context.RenderComponent<ConfirmCancelPopup>(
-                ComponentParameter.CreateParameter("ViewModel", this.viewModel));
-
-            await renderer.InvokeAsync(this.viewModel.OnCancel.InvokeAsync);
+            await this.viewModel.OnCancel.InvokeAsync();
             Assert.That(this.callbackCallCount, Is.EqualTo(-1));
-            await renderer.InvokeAsync(this.viewModel.OnConfirm.InvokeAsync);
+            await this.viewModel.OnConfirm.InvokeAsync();
             Assert.That(this.callbackCallCount, Is.EqualTo(0));
         }
     }
