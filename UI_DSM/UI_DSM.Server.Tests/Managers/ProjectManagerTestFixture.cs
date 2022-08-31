@@ -141,7 +141,7 @@ namespace UI_DSM.Server.Tests.Managers
             var updateResult = await this.manager.UpdateEntity(project);
 
             this.context.Verify(x => x.Update(It.IsAny<Project>()), Times.Exactly(2));
-            Assert.That(updateResult.Errors.First().Contains("already used"), Is.True);
+            Assert.That(updateResult.Errors.First(), Does.Contain("already used"));
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());

@@ -108,7 +108,7 @@ namespace UI_DSM.Server.Tests.Managers
                 .ThrowsAsync(new PostgresException("unique constraint", "High", "High", "23505"));
 
             creationResult = await this.manager.CreateEntity(newRole);
-            Assert.That(creationResult.Errors.First().Contains("already used"), Is.True);
+            Assert.That(creationResult.Errors.First(), Does.Contain("already used"));
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());
@@ -140,7 +140,7 @@ namespace UI_DSM.Server.Tests.Managers
 
             role.RoleName = this.data.First().RoleName;
             updateResult = await this.manager.UpdateEntity(role);
-            Assert.That(updateResult.Errors.First().Contains("already used"), Is.True);
+            Assert.That(updateResult.Errors.First(), Does.Contain("already used"));
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());
