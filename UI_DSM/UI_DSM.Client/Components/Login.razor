@@ -31,13 +31,19 @@
 		@switch (this.ViewModel.AuthenticationStatus)
 		{
 			case AuthenticationStatus.None:
-				<AppButton Label="Login" Type="submit" Variant="AppButton.VariantValue.secondary" />      
+				<AppButton Type="submit" Variant="AppButton.VariantValue.secondary">
+					Login
+				</AppButton>
 				break;
 			case AuthenticationStatus.Authenticating:
-				<AppButton Label="Processing login" Type="submit" />             
+				<AppButton Type="submit">
+					Processing login
+				</AppButton> 
 				break;
 			case AuthenticationStatus.Fail:
-				<AppButton Label="Retry login" Type="submit" />      
+				<AppButton Type="submit">
+					Retry login
+				</AppButton>
 				break;
 		}
 	</div>

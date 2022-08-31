@@ -15,7 +15,11 @@
 <div>
 	<div class="page-header">
 		<h1>All projects</h1>
-		<AppButton Click="@this.ViewModel.OpenCreatePopup" Label="Create Project" />
+
+
+    <AppButton Click="@this.ViewModel.OpenCreatePopup" Type="button">
+      <FeatherPlusCircle Size="20" Color="currentColor" StrokeWidth="2"  /> <span>Create project</span>
+		</AppButton>
 	</div>
 	<DxPopup CloseOnOutsideClick="false" HeaderText="Create Project" @bind-Visible="@this.ViewModel.IsOnCreationMode">
 	<DxButton Click="@this.ViewModel.OpenCreatePopup" Text="Create Project"/>
