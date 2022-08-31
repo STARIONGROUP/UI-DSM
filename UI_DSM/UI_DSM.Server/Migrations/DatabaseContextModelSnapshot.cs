@@ -54,7 +54,7 @@ namespace UI_DSM.Server.Migrations
                         new
                         {
                             Id = "AF8956F8-CA85-4DF2-8CB6-C46D0845B987",
-                            ConcurrencyStamp = "242de22f-979e-4dda-ba50-6d43bb9879ed",
+                            ConcurrencyStamp = "798efa39-ded8-429f-b4df-d4e1d8d82145",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -181,7 +181,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Entity", (string)null);
+                    b.ToTable("Entity");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.User", b =>
@@ -255,14 +255,14 @@ namespace UI_DSM.Server.Migrations
                         {
                             Id = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ff125df3-1071-46bb-916b-5c0a0f0a57c8",
+                            ConcurrencyStamp = "e5c0cf72-9d1f-46a8-b853-51b72e127f31",
                             EmailConfirmed = false,
                             IsAdmin = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDPmP3GeNUyV6vQEcAUv01xU83vN5t/wYla/NlnD+PxUAaJP32cSfER8lesUixDqNg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMlzq1qsJpsEi3f5Ky+93vFgnWS+2E4PIAarvvbBnxSy2/FshBWRrVgPH9ZINOLu6w==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "58e3391e-3947-4636-a94f-b92157972f0b",
+                            SecurityStamp = "785b2ce0-7ae3-48a8-a4a3-21ac0da08fde",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -287,7 +287,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Participant", (string)null);
+                    b.ToTable("Participant");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Project", b =>
@@ -303,7 +303,10 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("EntityContainerId");
 
-                    b.ToTable("Project", (string)null);
+                    b.HasIndex("ProjectName")
+                        .IsUnique();
+
+                    b.ToTable("Project");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Role", b =>
@@ -323,7 +326,10 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("EntityContainerId");
 
-                    b.ToTable("Role", (string)null);
+                    b.HasIndex("RoleName")
+                        .IsUnique();
+
+                    b.ToTable("Role");
 
                     b.HasData(
                         new
@@ -360,7 +366,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserEntity", (string)null);
+                    b.ToTable("UserEntity");
 
                     b.HasData(
                         new

@@ -18,6 +18,7 @@ namespace UI_DSM.Server.Managers.RoleManager
     using NLog;
 
     using UI_DSM.Server.Context;
+    using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -86,11 +87,6 @@ namespace UI_DSM.Server.Managers.RoleManager
         /// <returns>A <see cref="Task" /> with the result of the creation</returns>
         public async Task<EntityOperationResult<Role>> CreateEntity(Role entity)
         {
-            if (this.context.UiDsmRoles.AsEnumerable().Any(x => x.RoleName.Equals(entity.RoleName, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                return EntityOperationResult<Role>.Failed("A role with the same name already exists");
-            }
-
             var operationResult = new EntityOperationResult<Role>(this.context.Add(entity), EntityState.Added);
 
             try
@@ -99,8 +95,15 @@ namespace UI_DSM.Server.Managers.RoleManager
             }
             catch (Exception exception)
             {
-                operationResult.HandleExpection(exception);
-                this.logger.Error(exception.Message);
+                if (ExceptionHelper.IsUniqueConstraintViolation(exception))
+                {
+                    operationResult.HandleExpection($"The name {entity.RoleName} is already used");
+                }
+                else
+                {
+                    operationResult.HandleExpection(exception);
+                    this.logger.Error(exception.Message);
+                }
             }
 
             return operationResult;
@@ -113,12 +116,6 @@ namespace UI_DSM.Server.Managers.RoleManager
         /// <returns>A <see cref="Task" /> with the result of the update</returns>
         public async Task<EntityOperationResult<Role>> UpdateEntity(Role entity)
         {
-            if (this.context.UiDsmRoles.AsEnumerable().Any(x => x.RoleName.Equals(entity.RoleName, StringComparison.InvariantCultureIgnoreCase)
-                                                                && x.Id != entity.Id))
-            {
-                return EntityOperationResult<Role>.Failed("A role with the same name already exists");
-            }
-
             entity.AccessRights.Sort();
 
             var operationResult = new EntityOperationResult<Role>(this.context.Update(entity), EntityState.Modified, EntityState.Unchanged);
@@ -129,8 +126,15 @@ namespace UI_DSM.Server.Managers.RoleManager
             }
             catch (Exception exception)
             {
-                operationResult.HandleExpection(exception);
-                this.logger.Error(exception.Message);
+                if (ExceptionHelper.IsUniqueConstraintViolation(exception))
+                {
+                    operationResult.HandleExpection($"The name {entity.RoleName} is already used");
+                }
+                else
+                {
+                    operationResult.HandleExpection(exception);
+                    this.logger.Error(exception.Message);
+                }
             }
 
             return operationResult;

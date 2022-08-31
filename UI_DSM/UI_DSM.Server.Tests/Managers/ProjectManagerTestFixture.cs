@@ -15,6 +15,8 @@ namespace UI_DSM.Server.Tests.Managers
 {
     using Moq;
 
+    using Npgsql;
+
     using NUnit.Framework;
 
     using UI_DSM.Server.Context;
@@ -72,7 +74,7 @@ namespace UI_DSM.Server.Tests.Managers
         }
 
         [Test]
-        public void VerifyCreateProject()
+        public async Task VerifyCreateProject()
         {
             var data = new List<Project>
             {
@@ -87,16 +89,20 @@ namespace UI_DSM.Server.Tests.Managers
 
             var newProject = new Project()
             {
-                ProjectName = data.First().ProjectName
+                ProjectName = "A new project"
             };
+
+            await this.manager.CreateEntity(newProject);
+
+            this.context.Verify(x => x.Add(It.IsAny<Project>()), Times.Exactly(1));
+
+            this.context.Setup(x => x.SaveChangesAsync(default))
+                .ThrowsAsync(new PostgresException("unique constraint", "High", "High", "23505"));
 
             var creationResult = this.manager.CreateEntity(newProject).Result;
             Assert.That(creationResult.Succeeded, Is.False);
 
-            newProject.ProjectName = "A new project";
-            
-            Task.Run(async () => await this.manager.CreateEntity(newProject));
-            this.context.Verify(x => x.Add(It.IsAny<Project>()), Times.Once);
+            newProject.ProjectName = "P1";
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());
@@ -106,7 +112,7 @@ namespace UI_DSM.Server.Tests.Managers
         }
 
         [Test]
-        public void VerifyUpdateProject()
+        public async Task VerifyUpdateProject()
         {
             var data = new List<Project>
             {
@@ -121,17 +127,21 @@ namespace UI_DSM.Server.Tests.Managers
 
             var project = new Project(data.First().Id)
             {
-                ProjectName = data.Last().ProjectName
+                ProjectName = "New Name"
             };
 
-            _ = this.manager.UpdateEntity(project).Result;
-            this.context.Verify(x => x.Update(It.IsAny<Project>()), Times.Never);
-
-            project.ProjectName = "New Name";
-
-            _ = this.manager.UpdateEntity(project).Result;
-
+            await this.manager.UpdateEntity(project);
             this.context.Verify(x => x.Update(It.IsAny<Project>()), Times.Once);
+
+            project.ProjectName = "P2";
+
+            this.context.Setup(x => x.SaveChangesAsync(default))
+                .ThrowsAsync(new PostgresException("unique constraint", "High", "High", "23505"));
+
+            var updateResult = await this.manager.UpdateEntity(project);
+
+            this.context.Verify(x => x.Update(It.IsAny<Project>()), Times.Exactly(2));
+            Assert.That(updateResult.Errors.First().Contains("already used"), Is.True);
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());

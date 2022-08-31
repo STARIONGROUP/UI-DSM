@@ -15,6 +15,8 @@ namespace UI_DSM.Server.Tests.Managers
 {
     using Moq;
 
+    using Npgsql;
+
     using NUnit.Framework;
 
     using UI_DSM.Server.Context;
@@ -83,36 +85,40 @@ namespace UI_DSM.Server.Tests.Managers
         }
 
         [Test]
-        public void VerifyCreateRole()
+        public async Task VerifyCreateRole()
         {
             var dbSet = DbSetMockHelper.CreateMock(this.data);
             this.context.Setup(x => x.UiDsmRoles).Returns(dbSet.Object);
 
             var newRole = new Role()
             {
-                RoleName = this.data.Last().RoleName,
+                RoleName = "Task Manager",
                 AccessRights = new List<AccessRight>()
                 {
                     AccessRight.CreateTask
                 }
             };
 
-            var creationResult = this.manager.CreateEntity(newRole).Result;
-            Assert.That(creationResult.Succeeded, Is.False);
+            var creationResult = await this.manager.CreateEntity(newRole);
+            Assert.That(creationResult.Errors, Is.Empty);
 
-            newRole.RoleName = "Task Manager";
-            _ = this.manager.CreateEntity(newRole).Result;
-            this.context.Verify(x => x.Add(It.IsAny<Role>()), Times.Once);
+            newRole.RoleName = this.data.First().RoleName;
+
+            this.context.Setup(x => x.SaveChangesAsync(default))
+                .ThrowsAsync(new PostgresException("unique constraint", "High", "High", "23505"));
+
+            creationResult = await this.manager.CreateEntity(newRole);
+            Assert.That(creationResult.Errors.First().Contains("already used"), Is.True);
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());
 
             creationResult = this.manager.CreateEntity(newRole).Result;
-            Assert.That(creationResult.Succeeded, Is.False);
+            Assert.That(creationResult.Errors, Is.Not.Empty);
         }
 
         [Test]
-        public void VerifyUpdateRole()
+        public async Task VerifyUpdateRole()
         {
             var dbSet = DbSetMockHelper.CreateMock(this.data);
             this.context.Setup(x => x.UiDsmRoles).Returns(dbSet.Object);
@@ -123,21 +129,24 @@ namespace UI_DSM.Server.Tests.Managers
                 {
                     AccessRight.ManageParticipant
                 },
-                RoleName = this.data.Last().RoleName
+                RoleName = "New Role name"
             };
 
-            _ = this.manager.UpdateEntity(role).Result;
-            this.context.Verify(x => x.Update(It.IsAny<Role>()), Times.Never);
+            var updateResult =await this.manager.UpdateEntity(role);
+            Assert.That(updateResult.Errors, Is.Empty);
 
-            role.RoleName = "New Role name";
-            _ = this.manager.UpdateEntity(role).Result;
-            this.context.Verify(x => x.Update(It.IsAny<Role>()), Times.Once);
+            this.context.Setup(x => x.SaveChangesAsync(default))
+                .ThrowsAsync(new PostgresException("unique constraint", "High", "High", "23505"));
+
+            role.RoleName = this.data.First().RoleName;
+            updateResult = await this.manager.UpdateEntity(role);
+            Assert.That(updateResult.Errors.First().Contains("already used"), Is.True);
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());
 
-            var creationResult = this.manager.UpdateEntity(role).Result;
-            Assert.That(creationResult.Succeeded, Is.False);
+            updateResult = await this.manager.UpdateEntity(role);
+            Assert.That(updateResult.Errors, Is.Not.Empty);
         }
 
         [Test]

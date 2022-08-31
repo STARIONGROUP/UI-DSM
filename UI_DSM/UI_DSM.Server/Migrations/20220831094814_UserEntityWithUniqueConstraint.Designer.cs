@@ -12,8 +12,8 @@ using UI_DSM.Server.Context;
 namespace UI_DSM.Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220826091126_UserEntity")]
-    partial class UserEntity
+    [Migration("20220831094814_UserEntityWithUniqueConstraint")]
+    partial class UserEntityWithUniqueConstraint
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -53,7 +53,7 @@ namespace UI_DSM.Server.Migrations
                         new
                         {
                             Id = "AF8956F8-CA85-4DF2-8CB6-C46D0845B987",
-                            ConcurrencyStamp = "242de22f-979e-4dda-ba50-6d43bb9879ed",
+                            ConcurrencyStamp = "798efa39-ded8-429f-b4df-d4e1d8d82145",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -254,14 +254,14 @@ namespace UI_DSM.Server.Migrations
                         {
                             Id = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ff125df3-1071-46bb-916b-5c0a0f0a57c8",
+                            ConcurrencyStamp = "e5c0cf72-9d1f-46a8-b853-51b72e127f31",
                             EmailConfirmed = false,
                             IsAdmin = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDPmP3GeNUyV6vQEcAUv01xU83vN5t/wYla/NlnD+PxUAaJP32cSfER8lesUixDqNg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMlzq1qsJpsEi3f5Ky+93vFgnWS+2E4PIAarvvbBnxSy2/FshBWRrVgPH9ZINOLu6w==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "58e3391e-3947-4636-a94f-b92157972f0b",
+                            SecurityStamp = "785b2ce0-7ae3-48a8-a4a3-21ac0da08fde",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -302,6 +302,9 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("EntityContainerId");
 
+                    b.HasIndex("ProjectName")
+                        .IsUnique();
+
                     b.ToTable("Project");
                 });
 
@@ -321,6 +324,9 @@ namespace UI_DSM.Server.Migrations
                         .HasColumnType("text");
 
                     b.HasIndex("EntityContainerId");
+
+                    b.HasIndex("RoleName")
+                        .IsUnique();
 
                     b.ToTable("Role");
 

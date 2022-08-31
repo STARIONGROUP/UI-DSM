@@ -9,7 +9,7 @@ namespace UI_DSM.Server.Migrations
     using System.Diagnostics.CodeAnalysis;
 
     [ExcludeFromCodeCoverage]
-    public partial class UserEntity : Migration
+    public partial class UserEntityWithUniqueConstraint : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -290,12 +290,12 @@ namespace UI_DSM.Server.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "AF8956F8-CA85-4DF2-8CB6-C46D0845B987", "242de22f-979e-4dda-ba50-6d43bb9879ed", "Administrator", "ADMINISTRATOR" });
+                values: new object[] { "AF8956F8-CA85-4DF2-8CB6-C46D0845B987", "798efa39-ded8-429f-b4df-d4e1d8d82145", "Administrator", "ADMINISTRATOR" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "IsAdmin", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7", 0, "ff125df3-1071-46bb-916b-5c0a0f0a57c8", null, false, true, false, null, null, "ADMIN", "AQAAAAEAACcQAAAAEDPmP3GeNUyV6vQEcAUv01xU83vN5t/wYla/NlnD+PxUAaJP32cSfER8lesUixDqNg==", null, false, "58e3391e-3947-4636-a94f-b92157972f0b", false, "admin" });
+                values: new object[] { "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7", 0, "e5c0cf72-9d1f-46a8-b853-51b72e127f31", null, false, true, false, null, null, "ADMIN", "AQAAAAEAACcQAAAAEMlzq1qsJpsEi3f5Ky+93vFgnWS+2E4PIAarvvbBnxSy2/FshBWRrVgPH9ZINOLu6w==", null, false, "785b2ce0-7ae3-48a8-a4a3-21ac0da08fde", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "Entity",
@@ -384,9 +384,21 @@ namespace UI_DSM.Server.Migrations
                 column: "EntityContainerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Project_ProjectName",
+                table: "Project",
+                column: "ProjectName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Role_EntityContainerId",
                 table: "Role",
                 column: "EntityContainerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Role_RoleName",
+                table: "Role",
+                column: "RoleName",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserEntity_EntityContainerId",

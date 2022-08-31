@@ -95,11 +95,6 @@ namespace UI_DSM.Server.Managers.ProjectManager
         /// <returns>A <see cref="Task" /> with the result of the creation</returns>
         public async Task<EntityOperationResult<Project>> CreateEntity(Project entity)
         {
-            if (this.context.Projects.AsEnumerable().Any(x => x.ProjectName.Equals(entity.ProjectName, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                return EntityOperationResult<Project>.Failed("A project with the same name already exists");
-            }
-
             var operationResult = new EntityOperationResult<Project>(this.context.Add(entity), EntityState.Added);
 
             try
@@ -108,8 +103,15 @@ namespace UI_DSM.Server.Managers.ProjectManager
             }
             catch (Exception exception)
             {
-                operationResult.HandleExpection(exception);
-                this.logger.Error(exception.Message);
+                if (ExceptionHelper.IsUniqueConstraintViolation(exception))
+                {
+                    operationResult.HandleExpection($"The name {entity.ProjectName} is already used");
+                }
+                else
+                {
+                    operationResult.HandleExpection(exception);
+                    this.logger.Error(exception.Message);
+                }
             }
 
             return operationResult;
@@ -122,12 +124,6 @@ namespace UI_DSM.Server.Managers.ProjectManager
         /// <returns>A <see cref="Task" /> with the result of the update</returns>
         public async Task<EntityOperationResult<Project>> UpdateEntity(Project entity)
         {
-            if (this.context.Projects.AsEnumerable().Any(x => x.ProjectName.Equals(entity.ProjectName, StringComparison.InvariantCultureIgnoreCase)
-                                                              && x.Id != entity.Id))
-            {
-                return EntityOperationResult<Project>.Failed("A project with the same name already exists");
-            }
-
             var operationResult = new EntityOperationResult<Project>(this.context.Update(entity), EntityState.Modified, EntityState.Unchanged);
 
             try
@@ -136,8 +132,15 @@ namespace UI_DSM.Server.Managers.ProjectManager
             }
             catch (Exception exception)
             {
-                operationResult.HandleExpection(exception);
-                this.logger.Error(exception.Message);
+                if (ExceptionHelper.IsUniqueConstraintViolation(exception))
+                {
+                    operationResult.HandleExpection($"The name {entity.ProjectName} is already used");
+                }
+                else
+                {
+                    operationResult.HandleExpection(exception);
+                    this.logger.Error(exception.Message);
+                }
             }
 
             return operationResult;

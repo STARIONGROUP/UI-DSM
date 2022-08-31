@@ -108,7 +108,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
             httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entitiesDto));
 
             var participants = await this.service.GetParticipantsOfProject(projectId);
-            Assert.That(participants.Count, Is.EqualTo(2));
+            Assert.That(participants, Has.Count.EqualTo(2));
             httpResponse.Content = new StringContent(string.Empty);
             Assert.That(async () => await this.service.GetParticipantsOfProject(projectId), Throws.Exception);
         }

@@ -87,6 +87,9 @@ namespace UI_DSM.Server.Context
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<Project>().HasIndex(x => x.ProjectName).IsUnique();
+            builder.Entity<Role>().HasIndex(x => x.RoleName).IsUnique();
+
             builder.Entity<Project>().HasMany(p => p.Participants)
                 .WithOne(p => (Project)p.EntityContainer)
                 .HasForeignKey("EntityContainerId");
