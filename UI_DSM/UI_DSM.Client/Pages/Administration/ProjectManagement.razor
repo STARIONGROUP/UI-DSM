@@ -13,8 +13,12 @@
 @attribute [Authorize(Roles = "Administrator")]
 
 <div>
-	<DxButton Click="@this.ViewModel.OpenCreatePopup" Text="Create Project"/>
+	<div class="page-header">
+		<h1>All projects</h1>
+		<AppButton Click="@this.ViewModel.OpenCreatePopup" Label="Create Project" />
+	</div>
 	<DxPopup CloseOnOutsideClick="false" HeaderText="Create Project" @bind-Visible="@this.ViewModel.IsOnCreationMode">
+	<DxButton Click="@this.ViewModel.OpenCreatePopup" Text="Create Project"/>
 		<Content>
 			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
 				<ProjectCreation ViewModel="@this.ViewModel.ProjectCreationViewModel"/>

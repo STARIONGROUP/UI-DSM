@@ -2,7 +2,7 @@
 // Logout.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
-// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
 // 
 // This file is part of UI-DSM. 
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
@@ -10,4 +10,4 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
-<input type="submit" @onclick="this.ViewModel.ExecuteLogout" value="Logout"/>
+<button class="logout-button" type="submit" @onclick="this.ViewModel.ExecuteLogout"><FeatherLogOut Size="24" Color="currentColor" StrokeWidth="1.5f"  /> Logout</button>

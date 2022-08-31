@@ -18,19 +18,14 @@
         <TopMenu />
     </div>
 
-    <div class="default-layout__main default-layout__main">
+    <div class="default-layout__main default-layout__main @layoutClass">
         <aside class="default-layout__sidebar default-layout__sidebar__left">
 					<AuthorizeView>
 						<Authorized>
-							<div class="sidebar__header">Tasks</div>
-									
-								<NavLink class="nav-link" href="task">
-										<TaskItem TaskTitle="Check the requirements specification" isDone="true" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
-								</NavLink>
-
-								<TaskItem TaskTitle="Check the requirements specification" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
-
-								<TaskItem TaskTitle="Check the requirements specification" isDone="true" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+							<div class="sidebar__header">Tasks</div>	
+							<TaskItem TaskTitle="Check the requirements specification" isDone="true" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+							<TaskItem TaskTitle="Check the requirements specification" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+							<TaskItem TaskTitle="Check the requirements specification" isDone="true" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
 						</Authorized>
 					</AuthorizeView>
         </aside>
@@ -44,3 +39,49 @@
         </aside>
     </div>
 </div>
+
+@code {
+	@inject NavigationManager NavigationManager
+
+	[CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
+	protected async override Task OnInitializedAsync()
+	{
+			base.OnInitialized();
+			var user = (await AuthStat).User;
+			if(!user.Identity.IsAuthenticated)
+			{
+					NavigationManager.NavigateTo("/login");
+			}
+	}
+	
+	private bool tasksActive = false;
+	private bool commentsActive = false;
+	private string layoutClass = "";
+
+
+	protected override void OnInitialized()
+	{
+		this.GetLayoutClass();
+		base.OnInitialized();
+		this.StateHasChanged();
+	} 
+
+	private void GetLayoutClass() {
+		if(this.tasksActive && this.commentsActive)
+		{
+			this.layoutClass = "default-layout__main-both-sidebars";
+		}
+		else if(this.tasksActive)
+		{
+			this.layoutClass = "default-layout__main-left-sidebar";
+		}else if(this.commentsActive)
+		{
+			this.layoutClass = "default-layout__main-right-sidebar";
+		}
+		else
+		{
+			this.layoutClass = "default-layout__main--no-sidebars";
+		}
+	}
+}

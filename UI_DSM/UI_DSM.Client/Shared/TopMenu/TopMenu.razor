@@ -4,23 +4,23 @@
   <div class="top-menu__left">
     <div class="top-menu__icon-group">
 
-      <NavLink class="nav-link" href="">
-        <FeatherHome Size="28" Color="#000" StrokeWidth="1.5f"  aria-label="home button"/>
+      <NavLink href="/">
+        <FeatherHome Size="28" Color="currentColor" StrokeWidth="1.5f"  aria-label="home button"/>
       </NavLink>
 
       <button aria-label="open task panel">
-       <FeatherCheckCircle Size="28" Color="#000" StrokeWidth="1.5f" />
+       <FeatherCheckCircle Size="28" Color="currentColor" StrokeWidth="1.5f" />
       </button>
     </div>
 
 
     <div class="top-menu__icon-group">
       <button aria-label="Previous page" onclick="history.back()">
-        <FeatherArrowLeft Size="28" Color="#000" StrokeWidth="1.5f"  />
+        <FeatherArrowLeft Size="28" Color="currentColor" StrokeWidth="1.5f"  />
       </button>
 
       <button aria-label="Previous page" onclick="history.forward()">
-        <FeatherArrowRight Size="28" Color="#000" StrokeWidth="1.5f" />
+        <FeatherArrowRight Size="28" Color="currentColor" StrokeWidth="1.5f" />
       </button>
     </div>
   </div>
@@ -30,12 +30,42 @@
   <div class="top-menu__right">
     <div class="top-menu__icon-group">
       <button aria-label="Previous page" onclick="history.forward()">
-        <FeatherMessageCircle Size="28" Color="#000" StrokeWidth="1.5f"  aria-label="Open chat"/>
+        <FeatherMessageCircle Size="28" Color="currentColor" StrokeWidth="1.5f"  aria-label="Open chat"/>
       </button>
 
-      <NavLink class="nav-link" href="account">
-        <UserAvatar UserInitials="MJ" />
-      </NavLink>
+      <div id="user-icon-button">
+        <button @onclick="() => IsUserMenuOpen = !IsUserMenuOpen">
+          <UserAvatar UserInitials="MJ" />
+        </button>
+        
+        <DxDropDown
+          @bind-IsOpen="@IsUserMenuOpen"
+          PositionMode="DropDownPositionMode.Bottom"
+          PositionTarget="#user-icon-button"
+          CloseMode="DropDownCloseMode.Close"
+          PreventCloseOnPositionTargetClick="true"
+          BodyCssClass="account-dropdown"
+        >
+          <ul>
+            <li>
+              <NavLink class="account-dropdown__link" href="/Administration/ProjectManagement">
+                <FeatherToggleLeft Size="24" Color="currentColor" StrokeWidth="1.5f"  /> Project Management
+              </NavLink>
+            </li>
+            <li>
+              <Logout/>
+            </li>
+          </ul>
+
+        </DxDropDown>
+      </div>
     </div>
   </div>
 </nav>
+
+
+
+
+@code {
+  bool IsUserMenuOpen { get; set; } = false;
+}

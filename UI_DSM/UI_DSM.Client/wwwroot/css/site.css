@@ -93,3 +93,64 @@ a {
     align-items: center;
     background-color: #0071c1
 }
+
+
+/* Overwrites for devexpress & bootstrap */
+
+figure {
+    margin: 0;
+}
+
+.account-dropdown {
+    padding: 0;
+}
+
+.account-dropdown ul {
+    padding: 0;
+    width: 100%;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+.account-dropdown li {
+    border-bottom: 1px solid var(--colors-gray-100);
+}
+
+.account-dropdown button,
+.account-dropdown a {
+    display: block;
+    padding: var(--spacing-4) var(--spacing-6);
+    font-weight: 700;
+}
+
+.dropdown-menu {
+    border: none;
+}
+
+a,
+button {
+    color: inherit;
+    transition: 0.15s ease-in-out;
+}
+
+a:hover,
+button:hover {
+    color: var(--colors-primary-500);
+}
+
+.account-dropdown__link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: var(--spacing-2);
+    white-space: nowrap;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-2);
+    border-bottom: 1px solid var(--colors-gray-100);
+    padding-bottom: var(--spacing-2);
+}

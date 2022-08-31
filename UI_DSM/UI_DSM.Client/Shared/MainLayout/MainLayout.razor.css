@@ -22,9 +22,10 @@
 
 .sidebar__header {
     padding: var(--spacing-4) var(--spacing-6);
-    background: var(--colors-secondary-200);
+    background: var(--colors-gray-50);
     font-weight: 700;
     font-size: var(--text-lg);
+    color: var(--colors-gray-700);
 }
 
 .default-layout__body {
