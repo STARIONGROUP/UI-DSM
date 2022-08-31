@@ -15,6 +15,7 @@ namespace UI_DSM.Server.Managers
 {
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Types;
+    using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -24,17 +25,33 @@ namespace UI_DSM.Server.Managers
     public interface IEntityManager<TEntity> where TEntity : Entity
     {
         /// <summary>
-        ///     Gets a collection of all <see cref="TEntity" />s
+        ///     Gets a collection of all <see cref="Entity" />s and associated <see cref="Entity" />
         /// </summary>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="TEntity" /> as result</returns>
-        Task<IEnumerable<TEntity>> GetEntities();
+        /// <param name="deepLevel">The level of deepnest that we need to retrieve associated <see cref="Entity" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /> as result</returns>
+        Task<IEnumerable<Entity>> GetEntities(int deepLevel = 0);
+
+        /// <summary>
+        ///     Tries to get a <see cref="Entity" /> based on its <see cref="Guid" /> and its associated <see cref="Entity" />
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /></param>
+        /// <param name="deepLevel">The level of deepnest that we need to retrieve associated <see cref="Entity" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /> if found</returns>
+        Task<IEnumerable<Entity>> GetEntity(Guid entityId, int deepLevel = 0);
 
         /// <summary>
         ///     Tries to get a <see cref="TEntity" /> based on its <see cref="Guid" />
         /// </summary>
         /// <param name="entityId">The <see cref="Guid" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="TEntity" /> if found</returns>
-        Task<TEntity> GetEntity(Guid entityId);
+        Task<TEntity> FindEntity(Guid entityId);
+
+        /// <summary>
+        ///     Tries to get all <see cref="TEntity" /> based on their <see cref="Guid" />
+        /// </summary>
+        /// <param name="entitiesId">A collection of <see cref="Guid" /></param>
+        /// <returns>A collection of <see cref="TEntity" /></returns>
+        Task<IEnumerable<TEntity>> FindEntities(IEnumerable<Guid> entitiesId);
 
         /// <summary>
         ///     Creates a new <see cref="TEntity" /> and store it into the <see cref="DatabaseContext" />
@@ -56,5 +73,13 @@ namespace UI_DSM.Server.Managers
         /// <param name="entity">The <see cref="TEntity" /> to delete</param>
         /// <returns>A <see cref="Task" /> with the result of the deletion</returns>
         Task<EntityOperationResult<TEntity>> DeleteEntity(TEntity entity);
+
+        /// <summary>
+        ///     Resolve all properties for the <see cref="TEntity" />
+        /// </summary>
+        /// <param name="entity">The <see cref="TEntity" /></param>
+        /// <param name="dto">The <see cref="EntityDto" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        Task ResolveProperties(TEntity entity, EntityDto dto);
     }
 }

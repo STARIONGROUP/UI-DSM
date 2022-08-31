@@ -25,8 +25,9 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
         /// <summary>
         ///     Provide a collection of <see cref="Project" />
         /// </summary>
+        /// <param name="deepLevel">The deep level to get associated entities from the server</param>
         /// <returns>A <see cref="Task" /> where the result is a collection of <see cref="Project" /></returns>
-        Task<List<Project>> GetProjects();
+        Task<List<Project>> GetProjects(int deepLevel = 0);
 
         /// <summary>
         ///     Creates a new <see cref="Project" />
@@ -46,7 +47,8 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
         ///     Gets a <see cref="Project" /> based on its <see cref="Guid" />
         /// </summary>
         /// <param name="projectGuid">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="deepLevel">The deep level to get associated entities from the server</param>
         /// <returns>A <see cref="Task" /> with the <see cref="Project" /> if found</returns>
-        Task<Project> GetProject(Guid projectGuid);
+        Task<Project> GetProject(Guid projectGuid, int deepLevel = 0);
     }
 }

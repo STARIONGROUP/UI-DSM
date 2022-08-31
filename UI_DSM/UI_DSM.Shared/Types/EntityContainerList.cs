@@ -94,5 +94,23 @@ namespace UI_DSM.Shared.Types
                 this.Add(entity);
             }
         }
+
+        /// <summary>
+        ///     Resolve the <see cref="EntityContainerList{TEntity}" /> from the <see cref="IEnumerable{Guid}" />
+        /// </summary>
+        /// <param name="guids">A collection of <see cref="Guid" /> of <see cref="Entity" /> to find</param>
+        /// <param name="resolvedEntity">A <see cref="Dictionary{TKey,TValue}" /> of all <see cref="Entity" /></param>
+        public void ResolveList(IEnumerable<Guid> guids, Dictionary<Guid, Entity> resolvedEntity)
+        {
+            this.Clear();
+
+            foreach (var guid in guids)
+            {
+                if (resolvedEntity.TryGetValue(guid, out var entity) && entity is TEntity foundEntity)
+                {
+                    this.Add(foundEntity);
+                }
+            }
+        }
     }
 }

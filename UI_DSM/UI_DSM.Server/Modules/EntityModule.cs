@@ -16,6 +16,9 @@ namespace UI_DSM.Server.Modules
     using System.Diagnostics.CodeAnalysis;
 
     using Carter.ModelBinding;
+    using Carter.Response;
+
+    using Microsoft.AspNetCore.Mvc;
 
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Types;
@@ -51,21 +54,21 @@ namespace UI_DSM.Server.Modules
         public override void AddRoutes(IEndpointRouteBuilder app)
         {
             app.MapGet(this.MainRoute, this.GetEntities)
-                .Produces<IEnumerable<TEntityDto>>()
+                .Produces<IEnumerable<EntityDto>>()
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/GetEntities");
 
             app.MapGet(this.MainRoute + "/{entityId:guid}", this.GetEntity)
-                .Produces<TEntityDto>()
-                .Produces<TEntityDto>(404)
+                .Produces<IEnumerable<EntityDto>>()
+                .Produces<IEnumerable<EntityDto>>(404)
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/GetEntity");
 
             app.MapPost($"{this.MainRoute}/Create", this.CreateEntity)
                 .Accepts<TEntityDto>("application/json")
-                .Produces<EntityRequestResponseDto<TEntityDto>>(201)
-                .Produces<EntityRequestResponseDto<TEntityDto>>(422)
-                .Produces<EntityRequestResponseDto<TEntityDto>>(500)
+                .Produces<EntityRequestResponseDto>(201)
+                .Produces<EntityRequestResponseDto>(422)
+                .Produces<EntityRequestResponseDto>(500)
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/CreateEntity");
 
@@ -77,43 +80,47 @@ namespace UI_DSM.Server.Modules
                 .WithName($"{this.EntityName}/DeleteEntity");
 
             app.MapPut(this.MainRoute + "/{entityId:guid}", this.UpdateEntity)
-                .Produces<EntityRequestResponseDto<TEntityDto>>()
-                .Produces<EntityRequestResponseDto<TEntityDto>>(404)
-                .Produces<EntityRequestResponseDto<TEntityDto>>(422)
-                .Produces<EntityRequestResponseDto<TEntityDto>>(500)
+                .Produces<EntityRequestResponseDto>()
+                .Produces<EntityRequestResponseDto>(404)
+                .Produces<EntityRequestResponseDto>(422)
+                .Produces<EntityRequestResponseDto>(500)
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/UpdateEntity");
         }
 
         /// <summary>
-        ///     Gets a collection of all <see cref="TEntityDto" />
+        ///     Gets a collection of all <see cref="Entity" />
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="TEntityDto" /> as result</returns>
-        public virtual async Task<IEnumerable<TEntityDto>> GetEntities(IEntityManager<TEntity> manager)
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public virtual async Task GetEntities(IEntityManager<TEntity> manager, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            var entities = await manager.GetEntities();
-            return entities.Select(x => (TEntityDto)x.ToDto());
+            var entities = await manager.GetEntities(deepLevel);
+            var entitiesDto = entities.Select(x => x.ToDto()).ToList();
+            await context.Response.Negotiate(entitiesDto);
         }
 
         /// <summary>
-        ///     Get a <see cref="TEntityDto" /> based on its <see cref="Guid" />
+        ///     Get a <see cref="TEntityDto" /> based on its <see cref="Guid" /> with all associated entities
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /></param>
-        /// <param name="response">The <see cref="HttpResponse" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="TEntityDto" /> if found</returns>
-        public virtual async Task<TEntityDto> GetEntity(IEntityManager<TEntity> manager, Guid entityId, HttpResponse response)
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public virtual async Task GetEntity(IEntityManager<TEntity> manager, Guid entityId, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            var entity = await manager.GetEntity(entityId);
+            var entities = (await manager.GetEntity(entityId, deepLevel)).ToList();
 
-            if (entity == null)
+            if (entities.Count == 0)
             {
-                response.StatusCode = 404;
-                return null;
+                context.Response.StatusCode = 404;
+                return;
             }
 
-            return (TEntityDto)entity.ToDto();
+            await context.Response.Negotiate(entities.Select(x => x.ToDto()).ToList());
         }
 
         /// <summary>
@@ -122,20 +129,23 @@ namespace UI_DSM.Server.Modules
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="dto">The <see cref="TEntityDto" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponseDto{TEntityDto}" /> as result</returns>
-        public virtual async Task<EntityRequestResponseDto<TEntityDto>> CreateEntity(IEntityManager<TEntity> manager, TEntityDto dto, HttpContext context)
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public virtual async Task CreateEntity(IEntityManager<TEntity> manager, TEntityDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            var requestReponse = new EntityRequestResponseDto<TEntityDto>();
+            var requestReponse = new EntityRequestResponseDto();
             var entity = this.ValidateEntityDtoAndCreateEntity(dto, context, requestReponse);
 
             if (entity == null)
             {
-                return requestReponse;
+                 await context.Response.Negotiate(requestReponse);
+                 return;
             }
 
+            await manager.ResolveProperties(entity, dto);
             var identityResult = await manager.CreateEntity(entity);
-            this.HandleOperationResult(requestReponse, context.Response, identityResult, 201);
-            return requestReponse;
+            this.HandleOperationResult(requestReponse, context.Response, identityResult, 201, deepLevel);
+            await context.Response.Negotiate(requestReponse);
         }
 
         /// <summary>
@@ -143,48 +153,12 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="TEntity" /> to delete</param>
-        /// <param name="response">The <see cref="HttpResponse" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
-        public virtual async Task<RequestResponseDto> DeleteEntity(IEntityManager<TEntity> manager, Guid entityId, HttpResponse response)
-        {
-            var entity = await manager.GetEntity(entityId);
-            var requestResponse = new RequestResponseDto();
-
-            if (entity == null)
-            {
-                requestResponse.Errors = new List<string>
-                {
-                    $"{this.EntityName} with the id {entityId} does not exist"
-                };
-
-                response.StatusCode = 404;
-                return requestResponse;
-            }
-
-            var identityResult = await manager.DeleteEntity(entity);
-            requestResponse.IsRequestSuccessful = identityResult.Succeeded;
-
-            if (!identityResult.Succeeded)
-            {
-                requestResponse.Errors = identityResult.Errors;
-                response.StatusCode = 500;
-            }
-
-            return requestResponse;
-        }
-
-        /// <summary>
-        ///     Tries to update an existing <see cref="TEntity" />
-        /// </summary>
-        /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
-        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="TEntity" /></param>
-        /// <param name="dto">The <see cref="TEntityDto" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
-        /// <returns>A <see cref="Task" /> with <see cref="EntityRequestResponseDto{TEntityDto}" /> as result</returns>
-        public virtual async Task<EntityRequestResponseDto<TEntityDto>> UpdateEntity(IEntityManager<TEntity> manager, Guid entityId, TEntityDto dto, HttpContext context)
+        /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
+        public virtual async Task<RequestResponseDto> DeleteEntity(IEntityManager<TEntity> manager, Guid entityId, HttpContext context)
         {
-            var entity = await manager.GetEntity(entityId);
-            var requestResponse = new EntityRequestResponseDto<TEntityDto>();
+            var entity = await manager.FindEntity(entityId);
+            var requestResponse = new RequestResponseDto();
 
             if (entity == null)
             {
@@ -197,30 +171,70 @@ namespace UI_DSM.Server.Modules
                 return requestResponse;
             }
 
+            var identityResult = await manager.DeleteEntity(entity);
+            requestResponse.IsRequestSuccessful = identityResult.Succeeded;
+
+            if (!identityResult.Succeeded)
+            {
+                requestResponse.Errors = identityResult.Errors;
+                context.Response.StatusCode = 500;
+            }
+
+            return requestResponse;
+        }
+
+        /// <summary>
+        ///     Tries to update an existing <see cref="TEntity" />
+        /// </summary>
+        /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="TEntity" /></param>
+        /// <param name="dto">The <see cref="TEntityDto" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" />as result</returns>
+        public virtual async Task UpdateEntity(IEntityManager<TEntity> manager, Guid entityId, TEntityDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
+        {
+            var entity = await manager.FindEntity(entityId);
+            var requestResponse = new EntityRequestResponseDto();
+
+            if (entity == null)
+            {
+                requestResponse.Errors = new List<string>
+                {
+                    $"{this.EntityName} with the id {entityId} does not exist"
+                };
+
+                context.Response.StatusCode = 404;
+                await context.Response.Negotiate(requestResponse);
+                return;
+            }
+
             var validationResult = context.Request.Validate(dto);
 
             if (!validationResult.IsValid)
             {
                 requestResponse.Errors = validationResult.Errors.Select(x => x.ErrorMessage).ToList();
                 context.Response.StatusCode = 422;
-                return requestResponse;
+                await context.Response.Negotiate(requestResponse);
+                return;
             }
 
-            entity.ResolveProperties(dto);
+            await manager.ResolveProperties(entity, dto);
             var idendityResult = await manager.UpdateEntity(entity);
-            this.HandleOperationResult(requestResponse, context.Response, idendityResult);
-            return requestResponse;
+            this.HandleOperationResult(requestResponse, context.Response, idendityResult, deepLevel: deepLevel);
+            await context.Response.Negotiate(requestResponse);
         }
 
         /// <summary>
         ///     Handles the result of the <see cref="EntityOperationResult{TEntity}" />
         /// </summary>
-        /// <param name="requestReponse">The <see cref="EntityRequestResponseDto{TEntityDto}" /> to reply</param>
+        /// <param name="requestReponse">The <see cref="EntityRequestResponseDto" /> to reply</param>
         /// <param name="httpResponse">The <see cref="HttpResponse" /></param>
-        /// <param name="identityResult">The <see cref="EntityRequestResponseDto{TEntityDto}" /></param>
+        /// <param name="identityResult">The <see cref="EntityRequestResponseDto" /></param>
         /// <param name="successStatusCode">The <see cref="HttpResponse.StatusCode" /> in case of success</param>
-        protected void HandleOperationResult(EntityRequestResponseDto<TEntityDto> requestReponse,
-            HttpResponse httpResponse, EntityOperationResult<TEntity> identityResult, int successStatusCode = 200)
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        protected void HandleOperationResult(EntityRequestResponseDto requestReponse,
+            HttpResponse httpResponse, EntityOperationResult<TEntity> identityResult, int successStatusCode = 200, int deepLevel = 0)
         {
             requestReponse.IsRequestSuccessful = identityResult.Succeeded;
 
@@ -231,7 +245,9 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            requestReponse.Entity = identityResult.Entity.ToDto() as TEntityDto;
+            requestReponse.Entities = identityResult.Entity.GetAssociatedEntities(deepLevel)
+                .Select(x => x.ToDto()).ToList();
+
             httpResponse.StatusCode = successStatusCode;
         }
 
@@ -242,7 +258,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="requestResponse">The <see cref="requestResponse" /></param>
         /// <returns>The created <see cref="TEntity" /></returns>
-        protected TEntity ValidateEntityDtoAndCreateEntity(TEntityDto dto, HttpContext context, EntityRequestResponseDto<TEntityDto> requestResponse)
+        protected TEntity ValidateEntityDtoAndCreateEntity(TEntityDto dto, HttpContext context, EntityRequestResponseDto requestResponse)
         {
             var validationResult = context.Request.Validate(dto);
 
@@ -264,8 +280,43 @@ namespace UI_DSM.Server.Modules
                 return null;
             }
 
-            entity.ResolveProperties(dto);
             return entity;
+        }
+
+        /// <summary>
+        ///     Validates the <see cref="Entity" /> and its <see cref="Entity.EntityContainer" />
+        /// </summary>
+        /// <param name="entity">The <see cref="Entity" /></param>
+        /// <param name="keyId">The key identifier for the container</param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="requestResponse">The <see cref="RequestResponseDto" /></param>
+        /// <returns>A value indicating if the <see cref="Entity" /> and its container are valid</returns>
+        protected bool ValidateEntityAndContainer(Entity entity, string keyId, HttpContext context, RequestResponseDto requestResponse)
+        {
+            if (entity == null)
+            {
+                requestResponse.Errors = new List<string>
+                {
+                    $"{this.EntityName} with the id {this.GetAdditionalRouteId(context.Request, "entityId")} does not exist"
+                };
+
+                context.Response.StatusCode = 404;
+                return false;
+            }
+
+            if (entity.EntityContainer == null || entity.EntityContainer.Id != this.GetAdditionalRouteId(context.Request, keyId))
+            {
+                context.Response.StatusCode = 400;
+
+                requestResponse.Errors = new List<string>
+                {
+                    "Invalid container ID"
+                };
+
+                return false;
+            }
+
+            return true;
         }
     }
 }

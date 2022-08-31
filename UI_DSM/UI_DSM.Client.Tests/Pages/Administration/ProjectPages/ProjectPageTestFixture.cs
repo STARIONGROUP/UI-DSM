@@ -55,7 +55,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
         public void VerifyRenderer()
         {
             var projectGuid = Guid.NewGuid();
-            this.projectService.Setup(x => x.GetProject(projectGuid)).ReturnsAsync((Project)null);
+            this.projectService.Setup(x => x.GetProject(projectGuid, 0)).ReturnsAsync((Project)null);
 
             var renderer = this.context.RenderComponent<ProjectPage>(parameters =>
             {
@@ -64,7 +64,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
 
             Assert.That(() => renderer.FindComponent<ProjectDetails>(), Throws.Exception);
 
-            this.projectService.Setup(x => x.GetProject(projectGuid)).ReturnsAsync(new Project(projectGuid)
+            this.projectService.Setup(x => x.GetProject(projectGuid, 1)).ReturnsAsync(new Project(projectGuid)
             {
                 ProjectName = "Project"
             });

@@ -14,8 +14,12 @@
 namespace UI_DSM.Client.Services
 {
     using System.Text;
-    using System.Text.Json;
 
+    using Microsoft.AspNetCore.WebUtilities;
+
+    using Newtonsoft.Json;
+
+    using UI_DSM.Shared.Assembler;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -40,43 +44,46 @@ namespace UI_DSM.Client.Services
         ///     Tries to get an <see cref="TEntityDto" /> based on its <see cref="Guid" />
         /// </summary>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="EntityDto" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="TEntityDto" /> if found</returns>
-        protected async Task<TEntityDto> GetEntityDto(Guid entityId)
+        /// <param name="deepLevel">The deep level to get associated entities from the server</param>
+        /// <returns>A <see cref="Task" /> with the collection of <see cref="EntityDto" /> if found</returns>
+        protected async Task<IEnumerable<EntityDto>> GetEntityDto(Guid entityId, int deepLevel)
         {
-            var getResponse = await this.HttpClient.GetAsync(Path.Combine(this.MainRoute, entityId.ToString()));
+            var getResponse = await this.HttpClient.GetAsync(this.CreateUri(Path.Combine(this.MainRoute, entityId.ToString()), deepLevel));
             var getContent = await getResponse.Content.ReadAsStringAsync();
 
             return !getResponse.IsSuccessStatusCode
                 ? default
-                : JsonSerializer.Deserialize<TEntityDto>(getContent, this.JsonSerializerOptions);
+                : JsonConvert.DeserializeObject<IEnumerable<EntityDto>>(getContent, this.JsonSerializerOptions);
         }
 
         /// <summary>
         ///     Tries to get an <see cref="TEntity" /> based on its <see cref="Guid" />
         /// </summary>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="TEntity" /></param>
+        /// <param name="deepLevel">The deep level to get associated entities from the server</param>
         /// <returns>A <see cref="Task" /> with the <see cref="TEntity" /> if found</returns>
-        protected async Task<TEntity> GetEntity(Guid entityId)
+        protected async Task<TEntity> GetEntity(Guid entityId, int deepLevel)
         {
-            var dto = await this.GetEntityDto(entityId);
+            var dtos = await this.GetEntityDto(entityId, deepLevel);
 
-            if (dto == null)
+            if (dtos == null)
             {
                 return default;
             }
 
-            var poco = (TEntity)dto.InstantiatePoco();
-            poco.ResolveProperties(dto);
-            return poco;
+            var entities = Assembler.CreateEntities<TEntity>(dtos);
+
+            return entities.FirstOrDefault();
         }
 
         /// <summary>
-        ///     Gets a collection of all <see cref="TEntityDto" />
+        ///     Gets a collection of all <see cref="EntityDto" />
         /// </summary>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="TEntityDto" /></returns>
-        protected async Task<List<TEntityDto>> GetEntitiesDto()
+        /// <param name="deepLevel">The deep level to get associated entities from the server</param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="EntityDto" /></returns>
+        protected async Task<List<EntityDto>> GetEntitiesDto(int deepLevel)
         {
-            var response = await this.HttpClient.GetAsync(this.MainRoute);
+            var response = await this.HttpClient.GetAsync(this.CreateUri(this.MainRoute, deepLevel));
             var content = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
@@ -84,94 +91,94 @@ namespace UI_DSM.Client.Services
                 throw new HttpRequestException(content);
             }
 
-            return JsonSerializer.Deserialize<List<TEntityDto>>(content, this.JsonSerializerOptions);
+            return JsonConvert.DeserializeObject<IEnumerable<EntityDto>>(content, this.JsonSerializerOptions).ToList();
         }
 
         /// <summary>
         ///     Gets a collection of all <see cref="TEntity" />
         /// </summary>
+        /// <param name="deepLevel">The deep level to get associated entities from the server</param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="TEntity" /></returns>
-        protected async Task<List<TEntity>> GetEntities()
+        protected async Task<List<TEntity>> GetEntities(int deepLevel)
         {
-            var dtos = await this.GetEntitiesDto();
+            var dtos = await this.GetEntitiesDto(deepLevel);
 
-            return dtos.Select(x =>
-            {
-                var poco = (TEntity)x.InstantiatePoco();
-                poco.ResolveProperties(x);
-                return poco;
-            }).ToList();
+            return Assembler.CreateEntities<TEntity>(dtos).ToList();
         }
 
         /// <summary>
-        ///     Creates a <see cref="TEntity" /> and gets the <see cref="EntityRequestResponseDto{TEntityDto}" /> response
+        ///     Creates a <see cref="TEntity" /> and gets the <see cref="EntityRequestResponseDto" /> response
         /// </summary>
         /// <param name="entity">The <see cref="TEntity" /> to create</param>
-        /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponseDto{TEntityDto}" /></returns>
-        protected async Task<EntityRequestResponseDto<TEntityDto>> CreateEntityAndGetResponseDto(TEntity entity)
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponseDto" /></returns>
+        protected async Task<EntityRequestResponseDto> CreateEntityAndGetResponseDto(TEntity entity, int deepLevel)
         {
-            var content = JsonSerializer.Serialize((TEntityDto)entity.ToDto());
+            var content = JsonConvert.SerializeObject((TEntityDto)entity.ToDto(), this.JsonSerializerOptions);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-
-            var response = await this.HttpClient.PostAsync(Path.Combine(this.MainRoute, "Create"), bodyContent);
+            var response = await this.HttpClient.PostAsync(this.CreateUri(Path.Combine(this.MainRoute, "Create"), deepLevel), bodyContent);
             var responseContent = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<EntityRequestResponseDto<TEntityDto>>(responseContent, this.JsonSerializerOptions);
+            return JsonConvert.DeserializeObject<EntityRequestResponseDto>(responseContent, this.JsonSerializerOptions);
         }
 
         /// <summary>
         ///     Creates a <see cref="TEntity" /> and gets the <see cref="EntityRequestResponse{TEntity}" /> response
         /// </summary>
         /// <param name="entity">The <see cref="TEntity" /> to create</param>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{TEntity}" /></returns>
-        protected async Task<EntityRequestResponse<TEntity>> CreateEntity(TEntity entity)
+        protected async Task<EntityRequestResponse<TEntity>> CreateEntity(TEntity entity, int deepLevel)
         {
-            var entityRequest = await this.CreateEntityAndGetResponseDto(entity);
+            var entityRequest = await this.CreateEntityAndGetResponseDto(entity, deepLevel);
 
             if (!entityRequest!.IsRequestSuccessful)
             {
                 return EntityRequestResponse<TEntity>.Fail(entityRequest.Errors);
             }
 
-            var poco = (TEntity)entityRequest.Entity.InstantiatePoco();
-            poco.ResolveProperties(entityRequest.Entity);
+            var poco = Assembler.CreateEntities<TEntity>(entityRequest.Entities).FirstOrDefault();
 
-            return EntityRequestResponse<TEntity>.Success(poco);
+            return poco == null
+                ? EntityRequestResponse<TEntity>.Fail(new List<string> { "Error during the creation of the entity" })
+                : EntityRequestResponse<TEntity>.Success(poco);
         }
 
         /// <summary>
-        ///     Updates a <see cref="TEntity" /> and gets the <see cref="EntityRequestResponseDto{TEntityDto}" /> response
+        ///     Updates a <see cref="TEntity" /> and gets the <see cref="EntityRequestResponseDto" /> response
         /// </summary>
         /// <param name="entity">The <see cref="TEntity" /> to update</param>
-        /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponseDto{TEntityDto}" /></returns>
-        protected async Task<EntityRequestResponseDto<TEntityDto>> UpdateEntityAndGetResponseDto(TEntity entity)
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponseDto" /></returns>
+        protected async Task<EntityRequestResponseDto> UpdateEntityAndGetResponseDto(TEntity entity, int deepLevel)
         {
-            var url = Path.Combine(this.MainRoute, entity.Id.ToString());
-            var content = JsonSerializer.Serialize((TEntityDto)entity.ToDto());
+            var content = JsonConvert.SerializeObject((TEntityDto)entity.ToDto(), this.JsonSerializerOptions);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
-            var response = await this.HttpClient.PutAsync(url, bodyContent);
+            var response = await this.HttpClient.PutAsync(this.CreateUri(Path.Combine(this.MainRoute, entity.Id.ToString()), deepLevel), bodyContent);
             var responseContent = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<EntityRequestResponseDto<TEntityDto>>(responseContent, this.JsonSerializerOptions);
+            return JsonConvert.DeserializeObject<EntityRequestResponseDto>(responseContent, this.JsonSerializerOptions);
         }
 
         /// <summary>
         ///     Updates a <see cref="TEntity" /> and gets the <see cref="EntityRequestResponse{TEntity}" /> response
         /// </summary>
         /// <param name="entity">The <see cref="TEntity" /> to update</param>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{TEntity}" /></returns>
-        protected async Task<EntityRequestResponse<TEntity>> UpdateEntity(TEntity entity)
+        protected async Task<EntityRequestResponse<TEntity>> UpdateEntity(TEntity entity, int deepLevel)
         {
-            var entityRequest = await this.UpdateEntityAndGetResponseDto(entity);
+            var entityRequest = await this.UpdateEntityAndGetResponseDto(entity, deepLevel);
 
             if (!entityRequest!.IsRequestSuccessful)
             {
                 return EntityRequestResponse<TEntity>.Fail(entityRequest.Errors);
             }
 
-            var poco = (TEntity)entityRequest.Entity.InstantiatePoco();
-            poco.ResolveProperties(entityRequest.Entity);
+            var poco = Assembler.CreateEntities<TEntity>(entityRequest.Entities).FirstOrDefault();
 
-            return EntityRequestResponse<TEntity>.Success(poco);
+            return poco == null
+                ? EntityRequestResponse<TEntity>.Fail(new List<string> { "Error during the creation of the entity" })
+                : EntityRequestResponse<TEntity>.Success(poco);
         }
 
         /// <summary>
@@ -185,7 +192,39 @@ namespace UI_DSM.Client.Services
             var deleteResponse = await this.HttpClient.DeleteAsync(url);
             var deleteContent = await deleteResponse.Content.ReadAsStringAsync();
 
-            return JsonSerializer.Deserialize<RequestResponseDto>(deleteContent, this.JsonSerializerOptions);
+            var response = JsonConvert.DeserializeObject<RequestResponseDto>(deleteContent, this.JsonSerializerOptions);
+
+            if (response == null)
+            {
+                throw new HttpRequestException("Error during communication with the server");
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        ///     Verify that the <see cref="Entity" /> has a <see cref="Entity.EntityContainer" /> with a not empty
+        ///     <see cref="Guid" />
+        /// </summary>
+        /// <typeparam name="TEntityContainer">A <see cref="Entity" /> for the type of the container</typeparam>
+        /// <param name="entity">The <see cref="Entity" /> to verify</param>
+        protected void VerifyEntityAndContainer<TEntityContainer>(Entity entity) where TEntityContainer : Entity
+        {
+            if (entity.EntityContainer is not TEntityContainer container || container.Id == Guid.Empty)
+            {
+                throw new ArgumentException($"Invalid container for the entity with id {entity.Id}");
+            }
+        }
+
+        /// <summary>
+        ///     Computes the uri with the <see cref="deepLevel" />
+        /// </summary>
+        /// <param name="baseUri">The base uri</param>
+        /// <param name="deepLevel">The deep level</param>
+        /// <returns>The computed uri</returns>
+        private string CreateUri(string baseUri, int deepLevel)
+        {
+            return deepLevel > 0 ? QueryHelpers.AddQueryString(baseUri, "deepLevel", deepLevel.ToString()) : baseUri;
         }
     }
 }

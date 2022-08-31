@@ -47,9 +47,9 @@ namespace UI_DSM.Shared.Models
         ///     Instantiate a <see cref="UserDto" /> from a <see cref="User" />
         /// </summary>
         /// <returns>A new <see cref="UserDto" /></returns>
-        public UserDto ToDto()
+        public Entity ToEntity()
         {
-            return new UserDto(new Guid(this.Id))
+            return new UserEntity(new Guid(this.Id))
             {
                 UserName = this.UserName,
                 IsAdmin = this.IsAdmin

@@ -53,7 +53,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
         public async Task OnInitializedAsync(Guid projectGuid)
         {
-            var projectResponse = await this.projectService.GetProject(projectGuid);
+            var projectResponse = await this.projectService.GetProject(projectGuid, 1);
             this.ProjectDetailsViewModel.Project = projectResponse;
         }
     }

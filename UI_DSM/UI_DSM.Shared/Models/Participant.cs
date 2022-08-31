@@ -16,6 +16,7 @@ namespace UI_DSM.Shared.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
+    using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.DTO.Models;
 
     /// <summary>
@@ -43,12 +44,14 @@ namespace UI_DSM.Shared.Models
         ///     The represented <see cref="User" />
         /// </summary>
         [Required]
-        public User User { get; set; }
+        [DeepLevel(0)]
+        public UserEntity User { get; set; }
 
         /// <summary>
         ///     The current <see cref="Role" /> for the <see cref="User" />
         /// </summary>
         [Required]
+        [DeepLevel(0)]
         public Role Role { get; set; }
 
         /// <summary>
@@ -59,7 +62,7 @@ namespace UI_DSM.Shared.Models
         {
             var dto = new ParticipantDto(this.Id)
             {
-                User = new Guid(this.User.Id),
+                User = this.User.Id,
                 Role = this.Role.Id
             };
 
@@ -70,12 +73,16 @@ namespace UI_DSM.Shared.Models
         ///     Resolve the properties of the current <see cref="Participant" /> from its <see cref="EntityDto" /> counter-part
         /// </summary>
         /// <param name="entityDto">The source <see cref="EntityDto" /></param>
-        public override void ResolveProperties(EntityDto entityDto)
+        /// <param name="resolvedEntity">A <see cref="Dictionary{TKey,TValue}" /> of all <see cref="Entity" /></param>
+        public override void ResolveProperties(EntityDto entityDto, Dictionary<Guid, Entity> resolvedEntity)
         {
             if (entityDto is not ParticipantDto participantDto)
             {
                 throw new InvalidOperationException($"The DTO {entityDto.GetType()} does not match with the current Participant POCO");
             }
+
+            this.Role = this.GetEntity<Role>(participantDto.Role, resolvedEntity);
+            this.User = this.GetEntity<UserEntity>(participantDto.User, resolvedEntity);
         }
     }
 }

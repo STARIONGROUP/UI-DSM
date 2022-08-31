@@ -13,9 +13,9 @@
 
 namespace UI_DSM.Client.Services
 {
-    using System.Text.Json;
-
     using Microsoft.AspNetCore.Components;
+
+    using Newtonsoft.Json;
 
     /// <summary>
     ///     Base class for any service that needs to access to the API
@@ -30,7 +30,7 @@ namespace UI_DSM.Client.Services
         /// <summary>
         ///     The <see cref="JsonSerializerOptions" /> that is used for JSON action
         /// </summary>
-        protected JsonSerializerOptions JsonSerializerOptions;
+        protected JsonSerializerSettings JsonSerializerOptions;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ServiceBase" /> class.
@@ -39,7 +39,12 @@ namespace UI_DSM.Client.Services
         protected ServiceBase(HttpClient httpClient)
         {
             this.HttpClient = httpClient;
-            this.JsonSerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            this.JsonSerializerOptions = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            };
+
             this.MainRoute = this.GetRoute();
         }
 
@@ -82,6 +87,15 @@ namespace UI_DSM.Client.Services
         public static void RegisterService<T>()
         {
             RegisterService(typeof(T));
+        }
+
+        /// <summary>
+        ///     Computes the <see cref="MainRoute" /> to include custom <see cref="Guid" />
+        /// </summary>
+        /// <param name="guids">An array of <see cref="Guid" /></param>
+        protected void ComputeMainRoute(params Guid[] guids)
+        {
+            this.MainRoute = string.Format(this.GetRoute(), guids.Select(x => x.ToString()).ToArray());
         }
 
         /// <summary>

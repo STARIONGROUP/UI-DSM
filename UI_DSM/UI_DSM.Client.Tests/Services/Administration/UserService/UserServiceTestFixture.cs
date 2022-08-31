@@ -22,6 +22,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
 
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.Administration.UserService;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
@@ -70,7 +71,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
                 }
             };
 
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(users));
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(users));
             var retrievedUsers = this.service.GetUsers().Result;
 
             Assert.That(retrievedUsers.Count, Is.EqualTo(users.Count));

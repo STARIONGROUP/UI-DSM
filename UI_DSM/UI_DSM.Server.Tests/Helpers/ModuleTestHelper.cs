@@ -18,6 +18,7 @@ namespace UI_DSM.Server.Tests.Helpers
     using FluentValidation;
 
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Net.Http.Headers;
 
     using Moq;
 
@@ -37,25 +38,40 @@ namespace UI_DSM.Server.Tests.Helpers
         /// <param name="validator">A <see cref="AbstractValidator{T}" /> instance</param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="response">The <see cref="HttpResponse" /></param>
-        public static void Setup<TModule, TDto>(AbstractValidator<TDto> validator, out Mock<HttpContext> context, out Mock<HttpResponse> response) where TModule : ModuleBase, new() where TDto : EntityDto
+        /// <param name="request">The <see cref="HttpRequest" /></param>
+        /// <param name="serviceProvider">The <see cref="IServiceProvider"/></param>
+        public static void Setup<TModule, TDto>(AbstractValidator<TDto> validator, out Mock<HttpContext> context, 
+            out Mock<HttpResponse> response, out Mock<HttpRequest> request, out Mock<IServiceProvider> serviceProvider) where TModule : ModuleBase, new() where TDto : EntityDto
         {
             response = new Mock<HttpResponse>();
             response.SetupSet(response => response.StatusCode = It.IsAny<int>()).Verifiable();
             context = new Mock<HttpContext>();
 
-            var request = new Mock<HttpRequest>();
+            request = new Mock<HttpRequest>();
             request.Setup(x => x.HttpContext).Returns(context.Object);
 
             context.Setup(x => x.Request).Returns(request.Object);
             context.Setup(x => x.Response).Returns(response.Object);
+            var headers = new Mock<IHeaderDictionary>();
+            request.Setup(x => x.Headers).Returns(headers.Object);
+            response.Setup(x => x.HttpContext).Returns(context.Object);
 
             ModuleBase.RegisterModule<TModule>();
             var mockValidator = new Mock<IValidatorLocator>();
             mockValidator.Setup(x => x.GetValidator<TDto>()).Returns(validator);
 
-            var servicesMock = new Mock<IServiceProvider>();
-            servicesMock.Setup(x => x.GetService(typeof(IValidatorLocator))).Returns(mockValidator.Object);
-            context.Setup(x => x.RequestServices).Returns(servicesMock.Object);
+            serviceProvider = new Mock<IServiceProvider>();
+            serviceProvider.Setup(x => x.GetService(typeof(IValidatorLocator))).Returns(mockValidator.Object);
+
+            var negotiator = new Mock<IResponseNegotiator>();
+            negotiator.Setup(x => x.CanHandle(It.IsAny<MediaTypeHeaderValue>())).Returns(true);
+
+            serviceProvider.Setup(x => x.GetService(typeof(IEnumerable<IResponseNegotiator>))).Returns(new List<IResponseNegotiator>()
+            {
+                negotiator.Object
+            });
+
+            context.Setup(x => x.RequestServices).Returns(serviceProvider.Object);
         }
     }
 }

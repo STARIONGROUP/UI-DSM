@@ -16,6 +16,7 @@ namespace UI_DSM.Shared.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
+    using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Types;
 
@@ -51,6 +52,7 @@ namespace UI_DSM.Shared.Models
         /// <summary>
         ///     Gets or sets the collection of <see cref="Participant" />
         /// </summary>
+        [DeepLevel(1)]
         public EntityContainerList<Participant> Participants { get; protected set; }
 
         /// <summary>
@@ -72,7 +74,8 @@ namespace UI_DSM.Shared.Models
         ///     Resolve the properties of the current <see cref="Project" /> from its <see cref="EntityDto" /> counter-part
         /// </summary>
         /// <param name="entityDto">The source <see cref="EntityDto" /></param>
-        public override void ResolveProperties(EntityDto entityDto)
+        /// <param name="resolvedEntity">A <see cref="Dictionary{TKey,TValue}" /> of all <see cref="Entity" /></param>
+        public override void ResolveProperties(EntityDto entityDto, Dictionary<Guid, Entity> resolvedEntity)
         {
             if (entityDto is not ProjectDto projectDto)
             {
@@ -80,6 +83,7 @@ namespace UI_DSM.Shared.Models
             }
 
             this.ProjectName = projectDto.ProjectName;
+            this.Participants.ResolveList(projectDto.Participants, resolvedEntity);
         }
     }
 }

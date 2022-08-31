@@ -18,7 +18,7 @@ namespace UI_DSM.Shared.DTO.Models
     /// <summary>
     ///     DTO used to transfer non-private user data stored on the data base
     /// </summary>
-    public class UserDto
+    public class UserDto : EntityDto
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="UserDto" /> class.
@@ -31,15 +31,9 @@ namespace UI_DSM.Shared.DTO.Models
         ///     Initializes a new instance of the <see cref="UserDto" /> class.
         /// </summary>
         /// <param name="id">The <see cref="Guid" /></param>
-        public UserDto(Guid id)
+        public UserDto(Guid id) : base(id)
         {
-            this.Id = id;
         }
-
-        /// <summary>
-        ///     The unique id
-        /// </summary>
-        public Guid Id { get; set; }
 
         /// <summary>
         ///     The name of the user
@@ -55,9 +49,9 @@ namespace UI_DSM.Shared.DTO.Models
         ///     Instantiate a <see cref="User" /> from a <see cref="UserDto" />
         /// </summary>
         /// <returns>A new <see cref="User" /></returns>
-        public User InstantiatePoco()
+        public override Entity InstantiatePoco()
         {
-            return new User(this.Id);
+            return new UserEntity(this.Id);
         }
     }
 }

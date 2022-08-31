@@ -23,7 +23,10 @@ namespace UI_DSM.Server.Tests.Modules
 
     using NUnit.Framework;
 
+    using UI_DSM.Server.Managers;
+    using UI_DSM.Server.Managers.UserManager;
     using UI_DSM.Server.Modules;
+    using UI_DSM.Server.Types;
     using UI_DSM.Server.Validator;
     using UI_DSM.Shared.DTO.UserManagement;
     using UI_DSM.Shared.Models;
@@ -32,9 +35,11 @@ namespace UI_DSM.Server.Tests.Modules
     public class UserModuleTestFixture
     {
         private UserModule module;
-        private Mock<UserManager<User>> userManager;
+        private Mock<IEntityManager<UserEntity>> userManager;
+        private Mock<IUserManager> iUserManager;
         private Mock<HttpContext> httpContext;
         private Mock<HttpResponse> httpResponse;
+        private Mock<UserManager<User>> authenticationUserManager;
 
         [SetUp]
         public void Setup()
@@ -45,7 +50,7 @@ namespace UI_DSM.Server.Tests.Modules
             configurationSection.Setup(x => x["validIssuer"]).Returns("issuer");
             configurationSection.Setup(x => x["validAudience"]).Returns("audience");
 
-            this.userManager = new Mock<UserManager<User>>(new Mock<IUserStore<User>>().Object, null, null, null, null, null, null, null, null);
+            this.userManager = new Mock<IEntityManager<UserEntity>>();
             configuration.Setup(x => x.GetSection("JwtSettings")).Returns(configurationSection.Object);
 
             this.httpResponse = new Mock<HttpResponse>();
@@ -68,38 +73,34 @@ namespace UI_DSM.Server.Tests.Modules
 
             ModuleBase.RegisterModule<UserModule>();
             this.module = new UserModule(configuration.Object);
+
+            this.iUserManager = new Mock<IUserManager>();
+            this.authenticationUserManager = new Mock<UserManager<User>>(new Mock<IUserStore<User>>().Object, null, null, null, null, null, null, null, null);
         }
 
         [Test]
-        public async Task VerifyDeleteUser()
+        public async Task VerifyDeleteRole()
         {
-            var userId = Guid.NewGuid().ToString();
-            this.userManager.Setup(x => x.FindByIdAsync(userId)).ReturnsAsync((User)null);
+            var guid = Guid.NewGuid();
+            this.userManager.Setup(x => x.FindEntity(guid)).ReturnsAsync((UserEntity)null);
 
-            var response = await this.module.DeleteUser(this.userManager.Object, userId, this.httpResponse.Object);
+            var response = await this.module.DeleteEntity(this.userManager.Object, guid, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 404, Times.Once);
 
-            var user = new User
+            var user = new UserEntity(guid)
             {
-                IsAdmin = true,
-                Id = userId
+                UserName = "user"
             };
 
-            this.userManager.Setup(x => x.FindByIdAsync(userId)).ReturnsAsync(user);
-            response = await this.module.DeleteUser(this.userManager.Object, userId, this.httpResponse.Object);
-            Assert.That(response.IsRequestSuccessful, Is.False);
-            this.httpResponse.VerifySet(x => x.StatusCode = 403, Times.Once);
-
-            user.IsAdmin = false;
-            this.userManager.Setup(x => x.DeleteAsync(It.IsAny<User>())).ReturnsAsync(IdentityResult.Failed());
-
-            response = await this.module.DeleteUser(this.userManager.Object, userId, this.httpResponse.Object);
+            this.userManager.Setup(x => x.FindEntity(guid)).ReturnsAsync(user);
+            this.userManager.Setup(x => x.DeleteEntity(user)).ReturnsAsync(EntityOperationResult<UserEntity>.Failed());
+            response = await this.module.DeleteEntity(this.userManager.Object, guid, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
 
-            this.userManager.Setup(x => x.DeleteAsync(It.IsAny<User>())).ReturnsAsync(IdentityResult.Success);
-            response = await this.module.DeleteUser(this.userManager.Object, userId, this.httpResponse.Object);
+            this.userManager.Setup(x => x.DeleteEntity(user)).ReturnsAsync(EntityOperationResult<UserEntity>.Success(user));
+            response = await this.module.DeleteEntity(this.userManager.Object, guid, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.True);
         }
 
@@ -112,14 +113,14 @@ namespace UI_DSM.Server.Tests.Modules
                 Password = ""
             };
 
-            this.userManager.Setup(x => x.FindByNameAsync(authentication.UserName)).ReturnsAsync((User)null);
-            var response = await this.module.Login(this.userManager.Object, authentication, this.httpContext.Object);
+            this.authenticationUserManager.Setup(x => x.FindByNameAsync(authentication.UserName)).ReturnsAsync((User)null);
+            var response = await this.module.Login(this.authenticationUserManager.Object, authentication, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Once);
 
             authentication.Password = "pass";
 
-            response = await this.module.Login(this.userManager.Object, authentication, this.httpContext.Object);
+            response = await this.module.Login(this.authenticationUserManager.Object, authentication, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 401, Times.Once);
 
@@ -129,15 +130,15 @@ namespace UI_DSM.Server.Tests.Modules
                 UserName = "userName"
             };
 
-            this.userManager.Setup(x => x.FindByNameAsync(authentication.UserName)).ReturnsAsync(user);
-            this.userManager.Setup(x => x.CheckPasswordAsync(user, authentication.Password)).ReturnsAsync(false);
+            this.authenticationUserManager.Setup(x => x.FindByNameAsync(authentication.UserName)).ReturnsAsync(user);
+            this.authenticationUserManager.Setup(x => x.CheckPasswordAsync(user, authentication.Password)).ReturnsAsync(false);
 
-            response = await this.module.Login(this.userManager.Object, authentication, this.httpContext.Object);
+            response = await this.module.Login(this.authenticationUserManager.Object, authentication, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 401, Times.Exactly(2));
 
-            this.userManager.Setup(x => x.CheckPasswordAsync(user, authentication.Password)).ReturnsAsync(true);
-            response = await this.module.Login(this.userManager.Object, authentication, this.httpContext.Object);
+            this.authenticationUserManager.Setup(x => x.CheckPasswordAsync(user, authentication.Password)).ReturnsAsync(true);
+            response = await this.module.Login(this.authenticationUserManager.Object, authentication, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.True);
         }
 
@@ -151,33 +152,30 @@ namespace UI_DSM.Server.Tests.Modules
                 ConfirmPassword = "aPasswor"
             };
 
-            var response = await this.module.RegisterUser(this.userManager.Object, registration, this.httpContext.Object);
+            var response = await this.module.RegisterUser(this.iUserManager.Object, registration, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Once);
 
             registration.ConfirmPassword = registration.Password;
 
-            this.userManager.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
-                .ReturnsAsync(IdentityResult.Failed(new IdentityError
-                {
-                    Description = "User already exist"
-                }));
+            this.iUserManager.Setup(x => x.RegisterUser(It.IsAny<User>(), It.IsAny<string>()))
+                .ReturnsAsync(EntityOperationResult<UserEntity>.Failed("User already exist"));
 
-            response = await this.module.RegisterUser(this.userManager.Object, registration, this.httpContext.Object);
+            response = await this.module.RegisterUser(this.iUserManager.Object, registration, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Exactly(2));
-
-            this.userManager.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
-                .ReturnsAsync(IdentityResult.Success);
-
-            var user = new User()
+            
+            var user = new UserEntity()
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid(),
                 UserName = registration.UserName
             };
 
-            this.userManager.Setup(x => x.FindByNameAsync(user.UserName)).ReturnsAsync(user);
-            response = await this.module.RegisterUser(this.userManager.Object, registration, this.httpContext.Object);
+            this.iUserManager.Setup(x => x.RegisterUser(It.IsAny<User>(), It.IsAny<string>()))
+                .ReturnsAsync(EntityOperationResult<UserEntity>.Success(user));
+
+            response = await this.module.RegisterUser(this.iUserManager.Object, registration, this.httpContext.Object);
+
             Assert.That(response.IsRequestSuccessful, Is.True);
             this.httpResponse.VerifySet(x => x.StatusCode = 201, Times.Once);
         }

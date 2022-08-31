@@ -14,13 +14,16 @@
 namespace UI_DSM.Client.Services.Administration.UserService
 {
     using System.Text;
-    using System.Text.Json;
 
     using Microsoft.AspNetCore.Components;
+
+    using Newtonsoft.Json;
 
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
+
+    using JsonSerializer = System.Text.Json.JsonSerializer;
 
     /// <summary>
     ///     The <see cref="UserService" /> provide capability to manage users.
@@ -43,12 +46,13 @@ namespace UI_DSM.Client.Services.Administration.UserService
             var response = await this.HttpClient.GetAsync(this.MainRoute);
             var content = await response.Content.ReadAsStringAsync();
 
-            if (!response.IsSuccessStatusCode)  
+            if (!response.IsSuccessStatusCode)
             {
                 throw new HttpRequestException(content);
             }
 
-            return JsonSerializer.Deserialize<List<UserDto>>(content, this.JsonSerializerOptions);
+            var entities =  JsonConvert.DeserializeObject<IEnumerable<EntityDto>>(content, this.JsonSerializerOptions);
+            return entities.Where(x => x.GetType() == typeof(UserDto)).Cast<UserDto>().ToList();
         }
 
         /// <summary>
@@ -63,7 +67,7 @@ namespace UI_DSM.Client.Services.Administration.UserService
 
             var registerResponse = await this.HttpClient.PostAsync(Path.Combine(this.MainRoute, "Register"), bodyContent);
             var registerContent = await registerResponse.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<RegistrationResponseDto>(registerContent, this.JsonSerializerOptions);
+            return JsonConvert.DeserializeObject<RegistrationResponseDto>(registerContent, this.JsonSerializerOptions);
         }
 
         /// <summary>
@@ -79,12 +83,12 @@ namespace UI_DSM.Client.Services.Administration.UserService
                 var deleteResponse = await this.HttpClient.DeleteAsync(url);
                 var deleteContent = await deleteResponse.Content.ReadAsStringAsync();
 
-                return JsonSerializer.Deserialize<RequestResponseDto>(deleteContent,this.JsonSerializerOptions);
+                return JsonConvert.DeserializeObject<RequestResponseDto>(deleteContent, this.JsonSerializerOptions);
             }
 
-            return new RequestResponseDto()
+            return new RequestResponseDto
             {
-                Errors = new List<string>()
+                Errors = new List<string>
                 {
                     "This action is forbidden"
                 }

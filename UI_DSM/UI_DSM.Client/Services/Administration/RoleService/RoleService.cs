@@ -37,12 +37,13 @@ namespace UI_DSM.Client.Services.Administration.RoleService
         /// <summary>
         ///     Provide sa collection of <see cref="Role" />
         /// </summary>
+        /// <param name="deepLevel">The deep level to get associated entities from the server</param>
         /// <returns>A <see cref="Task" /> where the result is a collection of <see cref="Project" /></returns>
-        public async Task<List<Role>> GetRoles()
+        public async Task<List<Role>> GetRoles(int deepLevel = 0)
         {
             try
             {
-                return await this.GetEntities();
+                return await this.GetEntities(deepLevel);
             }
             catch (Exception exception)
             {
@@ -54,12 +55,13 @@ namespace UI_DSM.Client.Services.Administration.RoleService
         ///     Gets a <see cref="Role" /> based on its <see cref="Guid" />
         /// </summary>
         /// <param name="roleId">The <see cref="Guid" /> of the<see cref="Role" /></param>
+        /// <param name="deepLevel">The deep level to get associated entities from the server</param>
         /// <returns>A <see cref="Task" /> with the <see cref="Role" /> if found</returns>
-        public async Task<Role> GetRole(Guid roleId)
+        public async Task<Role> GetRole(Guid roleId, int deepLevel = 0)
         {
             try
             {
-                return await this.GetEntity(roleId);
+                return await this.GetEntity(roleId, deepLevel);
             }
             catch (Exception exception)
             {
@@ -76,7 +78,7 @@ namespace UI_DSM.Client.Services.Administration.RoleService
         {
             try
             {
-                return await this.CreateEntity(newRole);
+                return await this.CreateEntity(newRole,0);
             }
             catch (Exception exception)
             {
@@ -93,7 +95,7 @@ namespace UI_DSM.Client.Services.Administration.RoleService
         {
             try
             {
-                return await this.UpdateEntity(role);
+                return await this.UpdateEntity(role,0);
             }
             catch (Exception exception)
             {

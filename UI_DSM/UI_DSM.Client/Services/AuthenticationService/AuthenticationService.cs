@@ -15,12 +15,13 @@ namespace UI_DSM.Client.Services.AuthenticationService
 {
     using System.Net.Http.Headers;
     using System.Text;
-    using System.Text.Json;
 
     using Blazored.SessionStorage;
 
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
+
+    using Newtonsoft.Json;
 
     using UI_DSM.Shared.DTO.UserManagement;
 
@@ -58,14 +59,14 @@ namespace UI_DSM.Client.Services.AuthenticationService
         /// <returns>A <see cref="Task" /> with a <see cref="AuthenticationResponseDto" /> result </returns>
         public async Task<AuthenticationResponseDto> Login(AuthenticationDto authentication)
         {
-            var content = JsonSerializer.Serialize(authentication);
+            var content = JsonConvert.SerializeObject(authentication);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
-            var authenticationResult = await this.HttpClient.PostAsync(Path.Combine(this.MainRoute, "Login"), 
+            var authenticationResult = await this.HttpClient.PostAsync(Path.Combine(this.MainRoute, "Login"),
                 bodyContent);
 
             var authenticationContent = await authenticationResult.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<AuthenticationResponseDto>(authenticationContent, this.JsonSerializerOptions);
+            var result = JsonConvert.DeserializeObject<AuthenticationResponseDto>(authenticationContent, this.JsonSerializerOptions);
 
             if (!authenticationResult.IsSuccessStatusCode)
             {

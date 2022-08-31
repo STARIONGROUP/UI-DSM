@@ -33,7 +33,7 @@ namespace UI_DSM.Server.Types
         {
             if (entityEntry == null)
             {
-                this.Succeeded = true;
+                this.Succeeded = false;
                 return;
             }
 
@@ -101,6 +101,16 @@ namespace UI_DSM.Server.Types
         public void HandleExpection(Exception exception)
         {
             this.Errors.Add(exception.Message);
+            this.Succeeded = false;
+        }
+
+        /// <summary>
+        ///     Adds the <see cref="Exception.Message" /> to the errors list and unset <see cref="Succeeded" /> value
+        /// </summary>
+        /// <param name="errorMessage">The error message/param>
+        public void HandleExpection(string errorMessage)
+        {
+            this.Errors.Add(errorMessage);
             this.Succeeded = false;
         }
     }
