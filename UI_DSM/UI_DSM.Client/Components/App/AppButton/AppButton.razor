@@ -1,11 +1,36 @@
 @namespace AppComponents
 
-<button class="app-button" type="@Type" @onclick="Click">@Label</button>
+<button class="app-button @buttonVariant" type="@Type" @onclick="Click">@ChildContent</button>
 
 @code {
+    public enum VariantValue
+    {   
+        primary,
+        secondary,
+        tertiary,
+        danger,
+        success
+    }
+
     [Parameter] public string? Label { get; set; }
     [Parameter] public string? Type { get; set; }
+    [Parameter] public VariantValue Variant { get; set; } = VariantValue.primary;
+    private string buttonVariant { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
     
     [Parameter]
     public EventCallback Click { get; set; }
+
+    protected override void OnInitialized()
+    {
+        buttonVariant = Variant switch
+        {
+            VariantValue.success => "app-button--success",
+            VariantValue.secondary => "app-button--secondary",
+            VariantValue.tertiary => "app-button--tertiary",
+            VariantValue.danger => "app-button--danger",
+            _ => ""
+        };
+    }
 }

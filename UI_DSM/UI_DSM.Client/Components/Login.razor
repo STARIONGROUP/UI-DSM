@@ -31,7 +31,7 @@
 		@switch (this.ViewModel.AuthenticationStatus)
 		{
 			case AuthenticationStatus.None:
-				<AppButton Label="Login" Type="submit" />      
+				<AppButton Label="Login" Type="submit" Variant="AppButton.VariantValue.secondary" />      
 				break;
 			case AuthenticationStatus.Authenticating:
 				<AppButton Label="Processing login" Type="submit" />             

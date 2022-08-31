@@ -147,10 +147,16 @@ button:hover {
 }
 
 .page-header {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto;
     justify-content: space-between;
     align-items: center;
-    gap: var(--spacing-2);
+    gap: var(--spacing-8);
     border-bottom: 1px solid var(--colors-gray-100);
     padding-bottom: var(--spacing-2);
+}
+
+a:focus-visible,
+button:focus {
+    outline: 2px solid var(--colors-secondary-500);
 }

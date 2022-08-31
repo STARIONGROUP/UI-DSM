@@ -22,8 +22,12 @@
         <aside class="default-layout__sidebar default-layout__sidebar__left">
 					<AuthorizeView>
 						<Authorized>
-							<div class="sidebar__header">Tasks</div>	
-							<TaskItem TaskTitle="Check the requirements specification" isDone="true" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+							<div class="sidebar__header">Tasks</div>
+
+		    			<NavLink href="/review">
+								<TaskItem TaskTitle="Check the requirements specification" isDone="true" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+							</NavLink>
+							
 							<TaskItem TaskTitle="Check the requirements specification" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
 							<TaskItem TaskTitle="Check the requirements specification" isDone="true" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
 						</Authorized>

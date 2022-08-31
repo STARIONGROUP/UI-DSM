@@ -10,10 +10,15 @@
   display: grid;
   gap: var(--spacing-4);
   grid-template-columns: 1fr var(--spacing-6);
+  color: var(--colors-gray-900);
 }
 
 .task-item__body {
   font-size: var(--text-sm);
   color: var(--colors-gray-600);
+}
+
+.task-item:hover {
+  background: var(--colors-gray-50);
 }
 
