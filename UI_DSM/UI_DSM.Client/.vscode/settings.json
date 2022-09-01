@@ -1,9 +1,0 @@
-{
-  "editor.formatOnSave": true,
-  "emmet.includeLanguages": {
-    "aspnetcorerazor": "html"
-  },
-  "files.associations": {
-    "*.cshtml": "html"
-  }
-}
