@@ -1,3 +1,15 @@
+<!--------------------------------------------------------------------------------------------------------
+// ConfirmCancelPopup.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
 @namespace AppComponents
 
 <nav class="top-menu">
@@ -47,11 +59,25 @@
           BodyCssClass="account-dropdown"
         >
           <ul>
-            <li>
-              <NavLink class="account-dropdown__link" href="/Administration/ProjectManagement">
-                <FeatherToggleLeft Size="24" Color="currentColor" StrokeWidth="1.5f"  /> Project Management
-              </NavLink>
-            </li>
+            <AuthorizeView Roles="Administrator">
+              <Authorized>
+                <li>
+                  <NavLink href="/Administration/UserManagement" Match="NavLinkMatch.All">
+                    <FeatherUserPlus Size="24" Color="currentColor" StrokeWidth="1.5f"  /> Users
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink class="account-dropdown__link" href="/Administration/ProjectManagement">
+                    <FeatherToggleLeft Size="24" Color="currentColor" StrokeWidth="1.5f"  /> Project Management
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink href="/Administration/RoleManagement" Match="NavLinkMatch.All">
+                    <FeatherUsers Size="24" Color="currentColor" StrokeWidth="1.5f"  /> Roles
+                  </NavLink>
+                </li>
+              </Authorized>
+            </AuthorizeView>
             <li>
               <Logout/>
             </li>
@@ -62,9 +88,6 @@
     </div>
   </div>
 </nav>
-
-
-
 
 @code {
   bool IsUserMenuOpen { get; set; } = false;

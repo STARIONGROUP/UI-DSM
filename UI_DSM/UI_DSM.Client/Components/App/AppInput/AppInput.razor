@@ -15,12 +15,12 @@
 </label>
 
 @code {
-    [Parameter] public string? Id { get; set; }
-    [Parameter] public string? Label { get; set; } 
-    [Parameter] public string? Note { get; set; } 
-    [Parameter] public string? Type { get; set; } 
+    [Parameter] public string Id { get; set; }
+    [Parameter] public string Label { get; set; } 
+    [Parameter] public string Note { get; set; } 
+    [Parameter] public string Type { get; set; } 
 
-    protected override bool TryParseValueFromString(string? value, out string result, out string validationErrorMessage)
+    protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
     {
         result = value;
         validationErrorMessage = null;
