@@ -12,7 +12,12 @@
 @page "/Administration/RoleManagement"
 @attribute [Authorize(Roles = "Administrator")]
 <div>
-	<DxButton Click="@this.ViewModel.OpenCreationPopup" Text="Create Role"/>
+	<div class="page-header">
+		<h1>Role management</h1>
+    <AppButton Click="@this.ViewModel.OpenCreationPopup" Type="button">
+      <FeatherUserPlus Size="20" Color="currentColor" StrokeWidth="2"  /> <span>Create role</span>
+		</AppButton>
+	</div>
 	<DxPopup CloseOnOutsideClick="false" HeaderText="Create Role" @bind-Visible="@this.ViewModel.IsOnCreationMode">
 		<Content>
 			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
