@@ -1,36 +1,55 @@
 @namespace AppComponents
 
-<button class="app-button @buttonVariant" type="@Type" @onclick="Click">@ChildContent</button>
+<button class="app-button @buttonVariant" type="@Type" @onclick="Click" aria-label="@Label">@ChildContent</button>
 
 @code {
+    /// <summary>
+    ///     Different variants on the button, for styling purpose
+    /// </summary>
     public enum VariantValue
     {   
-        primary,
-        secondary,
-        tertiary,
-        danger,
-        success
+        Danger,
+        Primary,
+        Secondary,
+        Success,
+        Tertiary
     }
 
-    [Parameter] public string Label { get; set; }
-    [Parameter] public string Type { get; set; }
-    [Parameter] public VariantValue Variant { get; set; } = VariantValue.primary;
+    [Parameter] public VariantValue Variant { get; set; } = VariantValue.Primary;
     private string buttonVariant { get; set; }
-    [Parameter]
-    public RenderFragment ChildContent { get; set; }
-    
-    [Parameter]
-    public EventCallback Click { get; set; }
 
     protected override void OnInitialized()
     {
         buttonVariant = Variant switch
         {
-            VariantValue.success => "app-button--success",
-            VariantValue.secondary => "app-button--secondary",
-            VariantValue.tertiary => "app-button--tertiary",
-            VariantValue.danger => "app-button--danger",
+            VariantValue.Danger => "app-button--danger",
+            VariantValue.Primary => "app-button--primary",
+            VariantValue.Secondary => "app-button--secondary",
+            VariantValue.Success => "app-button--success",
+            VariantValue.Tertiary => "app-button--tertiary",
             _ => ""
         };
     }
+
+    /// <summary>
+    ///     Label used as aria label for a11y
+    /// </summary>
+    [Parameter] public string Label { get; set; }
+
+    /// <summary>
+    ///     HTML button type: submit, button, reset
+    /// </summary>
+    [Parameter] public string Type { get; set; }
+
+    /// <summary>
+    ///     HTML button type: submit, button, reset
+    /// </summary>
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    /// <summary>
+    ///     Render the innerhtml for the component
+    /// </summary>    
+    [Parameter]
+    public EventCallback Click { get; set; }
 }
