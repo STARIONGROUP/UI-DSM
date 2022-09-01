@@ -138,7 +138,7 @@ namespace UI_DSM.Server.Managers.ParticipantManager
                 return EntityOperationResult<Participant>.Failed(validations.ToArray());
             }
 
-            if (!(await this.VerifyContainer(entity)))
+            if (!await this.VerifyContainer(entity))
             {
                 return EntityOperationResult<Participant>.Failed($"Unable to compute the container the current entity with the id {entity.Id}");
             }
@@ -254,7 +254,7 @@ namespace UI_DSM.Server.Managers.ParticipantManager
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
         /// <param name="deepLevel">The deep level</param>
-        /// <returns>A collection of </returns>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
         public async Task<IEnumerable<Entity>> GetParticipantsOfProject(Guid projectId, int deepLevel = 0)
         {
             var participants = await this.context.Participants.Where(x => x.EntityContainer != null
@@ -264,13 +264,40 @@ namespace UI_DSM.Server.Managers.ParticipantManager
         }
 
         /// <summary>
+        ///     Gets all <see cref="Participant" /> where the <see cref="Participant.User" /> is the provided
+        ///     <see cref="UserEntity" />
+        /// </summary>
+        /// <param name="userName">The name of the <see cref="UserEntity" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Participant" /></returns>
+        public async Task<IEnumerable<Participant>> GetParticipants(string userName)
+        {
+            var userEntity = await this.userManager.GetUserByName(userName);
+
+            return userEntity == null ? Enumerable.Empty<Participant>() : this.context.Participants.Where(x => x.User.Id == userEntity.Id);
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="UserEntity" /> that are available for the creation of <see cref="Participant" /> inside a certain project
+        /// </summary>
+        /// <param name="projectId">The <see cref="projectId" /></param>
+        /// <returns>A <see cref="Task" /> collection of <see cref="UserEntity" /> as result</returns>
+        public async Task<IEnumerable<UserEntity>> GetAvailableUsersForParticipantCreation(Guid projectId)
+        {
+            var projectParticipant = this.context.Participants.Where(x => x.EntityContainer != null && x.EntityContainer.Id == projectId)
+                .Select(x => x.User.Id).ToList();
+
+            var users = await this.userManager.GetUsers(x => projectParticipant.All(userId => userId != x.Id));
+            return users;
+        }
+
+        /// <summary>
         ///     Check if the container of the <see cref="Entity" /> exists inside the database
         /// </summary>
         /// <param name="entity">The <see cref="Entity" /></param>
         /// <returns>A <see cref="Task" /> with the result of the check</returns>
         private async Task<bool> VerifyContainer(Entity entity)
         {
-            return entity.EntityContainer != null && (await this.context.Projects.FindAsync(entity.EntityContainer.Id) != null);
+            return entity.EntityContainer != null && await this.context.Projects.FindAsync(entity.EntityContainer.Id) != null;
         }
     }
 }

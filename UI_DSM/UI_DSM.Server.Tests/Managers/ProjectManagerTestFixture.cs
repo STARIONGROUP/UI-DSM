@@ -164,5 +164,62 @@ namespace UI_DSM.Server.Tests.Managers
             var creationResult = this.manager.DeleteEntity(project).Result;
             Assert.That(creationResult.Succeeded, Is.False);
         }
+
+        [Test]
+        public async Task GetAvailableProjectsForUser()
+        {
+            var user = new UserEntity()
+            {
+                UserName = "user"
+            };
+
+            var admin = new UserEntity()
+            {
+                UserName = "admin"
+            };
+
+            var participants = new List<Participant>()
+            {
+                new (Guid.NewGuid())
+                {
+                    User = user
+                },
+                new (Guid.NewGuid())
+                {
+                    User = admin
+                },
+                new (Guid.NewGuid())
+                {
+                    User = admin
+                }
+            };
+
+            _ = new List<Project>()
+            {
+                new (Guid.NewGuid())
+                {
+                    Participants = { participants[0], participants[1] }
+                },
+                new (Guid.NewGuid())
+                {
+                    Participants = { participants[2] }
+                },
+            };
+
+            this.participantManager.Setup(x => x.GetParticipants(user.UserName))
+                .ReturnsAsync(participants.Where(x => x.User.UserName == user.UserName));
+
+            this.participantManager.Setup(x => x.GetParticipants(admin.UserName))
+                .ReturnsAsync(participants.Where(x => x.User.UserName == admin.UserName));
+
+            var projectForUser = await this.manager.GetAvailableProjectsForUser(user.UserName);
+            var projectForAdmin = await this.manager.GetAvailableProjectsForUser(admin.UserName);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(projectForAdmin.ToList(), Has.Count.EqualTo(2));
+                Assert.That(projectForUser.ToList(), Has.Count.EqualTo(1));
+            });
+        }
     }
 }

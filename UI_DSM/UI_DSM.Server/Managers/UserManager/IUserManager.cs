@@ -28,5 +28,19 @@ namespace UI_DSM.Server.Managers.UserManager
         /// <param name="password">The <see cref="User" /> password</param>
         /// <returns>A <see cref="Task" /> with a <see cref="EntityOperationResult{TEntity}" /> as result</returns>
         Task<EntityOperationResult<UserEntity>> RegisterUser(User user, string password);
+
+        /// <summary>
+        ///     Gets a <see cref="UserEntity" /> by its name
+        /// </summary>
+        /// <param name="userName">The name of the <see cref="UserEntity" /></param>
+        /// <returns>A <see cref="Task" /> with the <see cref="UserEntity" /> if found</returns>
+        Task<UserEntity> GetUserByName(string userName);
+
+        /// <summary>
+        ///     Gets a collection of <see cref="UserEntity" /> by predicate
+        /// </summary>
+        /// <param name="predicate">The <see cref="Predicate{T}" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="UserEntity" /></returns>
+        Task<IEnumerable<UserEntity>> GetUsers(Func<UserEntity, bool> predicate);
     }
 }

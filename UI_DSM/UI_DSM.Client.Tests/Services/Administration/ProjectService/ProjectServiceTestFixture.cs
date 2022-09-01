@@ -13,6 +13,7 @@
 
 namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
 {
+    using System;
     using System.Net;
     using System.Text.Json;
 
@@ -25,6 +26,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
     [TestFixture]
@@ -151,6 +153,29 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
             httpResponse.Content = new StringContent(string.Empty);
             project = await this.service.GetProject(guid);
             Assert.That(project, Is.Null);
+        }
+
+        [Test]
+        public async Task VerifyGetUserParticipation()
+        {
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.NotFound;
+
+            var request = this.httpMessageHandler.When(HttpMethod.Get, "/Project/UserParticipation");
+            request.Respond(_ => httpResponse);
+
+            Assert.That(async () => await this.service.GetUserParticipation(), Throws.Exception);
+
+            var projects = new List<Project>()
+            {
+                new(Guid.NewGuid()),
+                new(Guid.NewGuid())
+            };
+
+            httpResponse.StatusCode = HttpStatusCode.OK;
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(projects.ToDtos()));
+            var foundProject = await this.service.GetUserParticipation();
+            Assert.That(foundProject, Has.Count.EqualTo(2));
         }
     }
 }

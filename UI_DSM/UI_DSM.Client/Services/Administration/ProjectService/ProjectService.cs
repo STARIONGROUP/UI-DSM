@@ -15,6 +15,9 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
 {
     using Microsoft.AspNetCore.Components;
 
+    using Newtonsoft.Json;
+
+    using UI_DSM.Shared.Assembler;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -96,6 +99,31 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
             try
             {
                 return await this.GetEntity(projectGuid, deepLevel);
+            }
+            catch (Exception exception)
+            {
+                throw new HttpRequestException(exception.Message);
+            }
+        }
+
+        /// <summary>
+        ///     Gets a collection of all <see cref="Project" /> where the current user is participating
+        /// </summary>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Project" /> as result</returns>
+        public async Task<List<Project>> GetUserParticipation()
+        {
+            try
+            {
+                var response = await this.HttpClient.GetAsync(Path.Combine(this.MainRoute, "UserParticipation"));
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new HttpRequestException(content);
+                }
+
+                var dtos = JsonConvert.DeserializeObject<IEnumerable<EntityDto>>(content, this.JsonSerializerOptions);
+                return Assembler.CreateEntities<Project>(dtos).ToList();
             }
             catch (Exception exception)
             {

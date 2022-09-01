@@ -50,5 +50,11 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
         /// <param name="deepLevel">The deep level to get associated entities from the server</param>
         /// <returns>A <see cref="Task" /> with the <see cref="Project" /> if found</returns>
         Task<Project> GetProject(Guid projectGuid, int deepLevel = 0);
+
+        /// <summary>
+        ///     Gets a collection of all <see cref="Project" /> where the current user is participating
+        /// </summary>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Project" /> as result</returns>
+        Task<List<Project>> GetUserParticipation();
     }
 }

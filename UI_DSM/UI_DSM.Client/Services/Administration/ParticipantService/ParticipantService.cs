@@ -15,6 +15,9 @@ namespace UI_DSM.Client.Services.Administration.ParticipantService
 {
     using Microsoft.AspNetCore.Components;
 
+    using Newtonsoft.Json;
+
+    using UI_DSM.Shared.Assembler;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -126,6 +129,34 @@ namespace UI_DSM.Client.Services.Administration.ParticipantService
             {
                 this.ComputeMainRoute(participant.EntityContainer.Id);
                 return await this.DeleteEntity(participant);
+            }
+            catch (Exception exception)
+            {
+                throw new HttpRequestException(exception.Message);
+            }
+        }
+
+        /// <summary>
+        ///     Gets a collection of <see cref="UserEntity" /> that can be used for the creation of <see cref="Participant" /> into a
+        ///     <see cref="Project" />
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        public async Task<List<UserEntity>> GetAvailableUsersForCreation(Guid projectId)
+        {
+            try
+            {
+                this.ComputeMainRoute(projectId);
+                var getResponse = await this.HttpClient.GetAsync(Path.Combine(this.MainRoute, "AvailableUsers"));
+                var getContent = await getResponse.Content.ReadAsStringAsync();
+
+                if (!getResponse.IsSuccessStatusCode)
+                {
+                    throw new HttpRequestException(getContent);
+                }
+
+                var dtos = JsonConvert.DeserializeObject<IEnumerable<EntityDto>>(getContent, this.JsonSerializerOptions);
+                return Assembler.CreateEntities<UserEntity>(dtos).ToList();
             }
             catch (Exception exception)
             {

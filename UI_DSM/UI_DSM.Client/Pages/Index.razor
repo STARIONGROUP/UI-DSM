@@ -23,4 +23,12 @@ The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
 	<NotAuthorized>
 		<Login/>
 	</NotAuthorized>
+	<Authorized>
+		@foreach (var project in this.ViewModel.AvailableProject.Items)
+		{
+			<div id="@project.ProjectName">
+				@project.ProjectName
+			</div>
+		}
+	</Authorized>
 </AuthorizeView>

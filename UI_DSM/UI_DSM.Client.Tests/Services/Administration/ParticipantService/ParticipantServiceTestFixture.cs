@@ -25,6 +25,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
     [TestFixture]
@@ -203,7 +204,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
 
             entityRequestResponse.IsRequestSuccessful = true;
 
-            entityRequestResponse.Entities = participant.GetAssociatedEntities().Select(x => x.ToDto()).ToList();
+            entityRequestResponse.Entities = participant.GetAssociatedEntities().ToDtos();
 
             httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
 
@@ -293,7 +294,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
 
             requestResponse.IsRequestSuccessful = true;
 
-            requestResponse.Entities = participant.GetAssociatedEntities().Select(x => x.ToDto()).ToList();
+            requestResponse.Entities = participant.GetAssociatedEntities().ToDtos();
 
             httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
 

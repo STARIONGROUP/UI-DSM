@@ -85,6 +85,33 @@ namespace UI_DSM.Shared.Models
         }
 
         /// <summary>
+        ///     Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the specified object  is equal to the current object; otherwise,
+        ///     <see langword="false" />.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if (obj is Entity userEntity)
+            {
+                return this.Id == userEntity.Id;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        ///     Serves as the default hash function.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        /// <summary>
         ///     Get a collection of all <see cref="Entity" /> that are associated to this <see cref="Entity" /> in the range of the
         ///     <see cref="deepLevel" />.
         /// </summary>

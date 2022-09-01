@@ -222,5 +222,27 @@ namespace UI_DSM.Server.Managers.UserManager
 
             return operationResult;
         }
+
+        /// <summary>
+        ///     Gets a <see cref="UserEntity" /> by its name
+        /// </summary>
+        /// <param name="userName">The name of the <see cref="UserEntity" /></param>
+        /// <returns>A <see cref="Task" /> with the <see cref="UserEntity" /> if found</returns>
+        public async Task<UserEntity> GetUserByName(string userName)
+        {
+            return await this.context.UsersEntities.FirstOrDefaultAsync(x => x.UserName == userName);
+        }
+
+        /// <summary>
+        ///     Gets a collection of <see cref="UserEntity" /> by predicate
+        /// </summary>
+        /// <param name="predicate">The <see cref="Predicate{T}" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="UserEntity" /></returns>
+        public async Task<IEnumerable<UserEntity>> GetUsers(Func<UserEntity, bool> predicate)
+        {
+            var users = this.context.UsersEntities.Where(predicate);
+            await Task.CompletedTask;
+            return users;
+        }
     }
 }

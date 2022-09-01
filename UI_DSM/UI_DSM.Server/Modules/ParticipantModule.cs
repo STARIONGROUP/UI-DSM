@@ -24,6 +24,7 @@ namespace UI_DSM.Server.Modules
     using UI_DSM.Server.Managers.ProjectManager;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -33,6 +34,44 @@ namespace UI_DSM.Server.Modules
     [Microsoft.AspNetCore.Components.Route("api/Project/{projectId:guid}/Participant")]
     public class ParticipantModule : EntityModule<Participant, ParticipantDto>
     {
+        /// <summary>
+        ///     Adds routes to the <see cref="IEndpointRouteBuilder" />
+        /// </summary>
+        /// <param name="app">The <see cref="IEndpointRouteBuilder" /></param>
+        public override void AddRoutes(IEndpointRouteBuilder app)
+        {
+            base.AddRoutes(app);
+
+            app.MapGet($"{this.MainRoute}/AvailableUsers", this.GetAvailableUsers)
+                .Produces<IEnumerable<EntityDto>>()
+                .Produces<IEnumerable<EntityDto>>(404)
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/AvailableUsers");
+        }
+
+        /// <summary>
+        ///     Get a collection of <see cref="UserEntity" /> that are not involved into the given project
+        /// </summary>
+        /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
+        /// <param name="projectManager">The <see cref="IProjectManager" /></param>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        [Authorize(Roles = "Administrator")]
+        public async Task GetAvailableUsers(IParticipantManager participantManager, IProjectManager projectManager, Guid projectId, HttpContext context)
+        {
+            var existingProject = await projectManager.FindEntity(projectId);
+
+            if (existingProject == null)
+            {
+                context.Response.StatusCode = 404;
+                return;
+            }
+
+            var availableUsers = await participantManager.GetAvailableUsersForParticipantCreation(projectId);
+            await context.Response.Negotiate(availableUsers.ToDtos());
+        }
+
         /// <summary>
         ///     Gets a collection of all <see cref="Entity" />
         /// </summary>
@@ -46,7 +85,7 @@ namespace UI_DSM.Server.Modules
             var participantManager = (IParticipantManager)manager;
             var projectId = this.GetAdditionalRouteId(context.Request, "projectId");
             var entities = await participantManager.GetParticipantsOfProject(projectId, deepLevel);
-            var entitiesDto = entities.Select(x => x.ToDto()).ToList();
+            var entitiesDto = entities.ToDtos();
             await context.Response.Negotiate(entitiesDto);
         }
 
@@ -78,7 +117,7 @@ namespace UI_DSM.Server.Modules
             }
 
             var entities = await manager.GetEntity(entityId, deepLevel);
-            await context.Response.Negotiate(entities.Select(x => x.ToDto()).ToList());
+            await context.Response.Negotiate(entities.ToDtos());
         }
 
         /// <summary>

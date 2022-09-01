@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="ProjectPage.razor.cs" company="RHEA System S.A.">
+// <copyright file="Index.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -11,36 +11,27 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Pages.Administration.ProjectPages
+namespace UI_DSM.Client.Pages
 {
     using Microsoft.AspNetCore.Components;
 
-    using ReactiveUI;
-
-    using UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages;
-    using UI_DSM.Shared.Models;
+    using UI_DSM.Client.ViewModels.Pages;
 
     /// <summary>
-    ///     This page provide management for a <see cref="Project" />
+    ///     Index page of the application
     /// </summary>
-    public partial class ProjectPage : IDisposable
+    public partial class Index : IDisposable
     {
         /// <summary>
-        ///     The collection of <see cref="IDisposable" />
+        ///     A collection of <see cref="IDisposable" />
         /// </summary>
         private readonly List<IDisposable> disposables = new();
 
         /// <summary>
-        ///     The <see cref="Guid" /> of the project
-        /// </summary>
-        [Parameter]
-        public string ProjectId { get; set; }
-
-        /// <summary>
-        ///     The <see cref="IProjectPageViewModel" /> for this page
+        ///     The <see cref="IIndexViewModel" />
         /// </summary>
         [Inject]
-        public IProjectPageViewModel ViewModel { get; set; }
+        public IIndexViewModel ViewModel { get; set; }
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -48,6 +39,7 @@ namespace UI_DSM.Client.Pages.Administration.ProjectPages
         public void Dispose()
         {
             this.disposables.ForEach(x => x.Dispose());
+            this.disposables.Clear();
         }
 
         /// <summary>
@@ -57,15 +49,22 @@ namespace UI_DSM.Client.Pages.Administration.ProjectPages
         ///     want the component to refresh when that operation is completed.
         /// </summary>
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
-        protected override async Task OnInitializedAsync()
+        protected override Task OnInitializedAsync()
         {
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ProjectDetailsViewModel.Project)
-                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+            this.disposables.Add(this.ViewModel);
+            this.disposables.Add(this.ViewModel.AvailableProject.CountChanged.Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+            this.ViewModel.PopulateAvailableProjects();
+            return base.OnInitializedAsync();
+        }
 
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.CreationPopupVisible)
-                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
-
-            await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId));
+        /// <summary>
+        /// Method invoked when the component is ready to start, having received its
+        /// initial parameters from its parent in the render tree.
+        /// </summary>
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            this.StateHasChanged();
         }
     }
 }

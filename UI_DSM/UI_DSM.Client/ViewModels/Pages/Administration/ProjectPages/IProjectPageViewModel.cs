@@ -13,7 +13,12 @@
 
 namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
 {
+    using DevExpress.Blazor;
+
+    using UI_DSM.Client.Components.Administration.ParticipantManagement;
     using UI_DSM.Client.Components.Administration.ProjectManagement;
+    using UI_DSM.Client.ViewModels.Components;
+    using UI_DSM.Client.ViewModels.Components.Administration.ParticipantManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement;
     using UI_DSM.Shared.Models;
 
@@ -28,6 +33,21 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         IProjectDetailsViewModel ProjectDetailsViewModel { get; }
 
         /// <summary>
+        ///     Value indicating if the <see cref="DxPopup" /> for the creation of <see cref="Participant" /> is visible
+        /// </summary>
+        bool CreationPopupVisible { get; set; }
+
+        /// <summary>
+        ///     Gets the <see cref="IErrorMessageViewModel" />
+        /// </summary>
+        IErrorMessageViewModel ErrorMessageViewModel { get; }
+
+        /// <summary>
+        ///     Gets the <see cref="IParticipantCreationViewModel" />
+        /// </summary>
+        IParticipantCreationViewModel ParticipantCreationViewModel { get; }
+
+        /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
         ///     Override this method if you will perform an asynchronous operation and
@@ -36,5 +56,10 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         /// <param name="projectGuid">The <see cref="Guid" /> of the <see cref="Project" /></param>
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
         Task OnInitializedAsync(Guid projectGuid);
+
+        /// <summary>
+        ///     Opens the <see cref="ParticipantCreation" /> popup
+        /// </summary>
+        Task OpenCreateParticipantPopup();
     }
 }
