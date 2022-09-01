@@ -6,7 +6,7 @@
 
 .default-layout__main {
     display: grid;
-    grid-template-columns: minmax(320px, 0.2fr) minmax(640px, 1fr) minmax(320px, 0.2fr);
+    grid-template-columns: 0.3fr 1fr 0.3fr;
     grid-template-areas: "a b c";
 }
 
