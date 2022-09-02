@@ -97,9 +97,6 @@ namespace UI_DSM.Client.Tests.Pages
 
             this.authenticationProvider.Setup(x => x.GetAuthenticationStateAsync()).ReturnsAsync(this.authenticationState);
             this.viewModel.PopulateAvailableProjects();
-
-            divProject1 = renderer.FindAll("div");
-            Assert.That(divProject1, Has.Count.EqualTo(2));
         }
     }
 }

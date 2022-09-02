@@ -73,16 +73,18 @@ namespace UI_DSM.Client.ViewModels.Pages
         ///     Populate the <see cref="AvailableProject" /> collection
         /// </summary>
         /// <param name="task">The <see cref="AuthenticationState" /> Task</param>
-        private async void PopulateAvailableProjects(Task<AuthenticationState> task)
+        private void PopulateAvailableProjects(Task<AuthenticationState> task)
         {
-            var state = await task;
-
-            this.AvailableProject.Clear();
-
-            if (state.User.Identity is { IsAuthenticated: true })
+            Task.Run(async () =>
             {
-                this.AvailableProject.AddRange(await this.projectService.GetUserParticipation());
-            }
+                var state = await task;
+                this.AvailableProject.Clear();
+
+                if (state.User.Identity is { IsAuthenticated: true })
+                {
+                    this.AvailableProject.AddRange(await this.projectService.GetUserParticipation());
+                }
+            });
         }
     }
 }
