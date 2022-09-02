@@ -303,5 +303,41 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
             httpResponse.Content = new StringContent(string.Empty);
             Assert.That(async () => await this.service.UpdateParticipant(participant), Throws.Exception);
         }
+
+        [Test]
+        public async Task VerifyGetAvailableUsersForCreation()
+        {
+            var projectId = Guid.NewGuid();
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.NotFound;
+
+            var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Project/{projectId}/Participant/AvailableUsers");
+            request.Respond(_ => httpResponse);
+
+            Assert.That(async () => await this.service.GetAvailableUsersForCreation(projectId), Throws.Exception);
+
+            httpResponse.StatusCode = HttpStatusCode.OK;
+
+            var usersEntities = new List<UserEntity>()
+            {
+                new (Guid.NewGuid())
+                {
+                    UserName = "admin",
+                    IsAdmin = true
+                },
+                new (Guid.NewGuid())
+                {
+                    UserName = "user1"
+                },
+                new (Guid.NewGuid())
+                {
+                    UserName = "user2"
+                }
+            };
+
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(usersEntities.ToDtos()));
+            var availableUsers = await this.service.GetAvailableUsersForCreation(projectId);
+            Assert.That(availableUsers, Has.Count.EqualTo(3));
+        }
     }
 }
