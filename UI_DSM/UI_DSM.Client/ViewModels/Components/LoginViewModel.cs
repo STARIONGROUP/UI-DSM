@@ -105,6 +105,9 @@ namespace UI_DSM.Client.ViewModels.Components
             }
         }
 
+        /// <summary>
+        ///     Method to navigate to the home page if the user is logged in
+        /// </summary>
         public void NavigateIfLoggedIn()
         {
             this.navigationManager.NavigateTo("/");

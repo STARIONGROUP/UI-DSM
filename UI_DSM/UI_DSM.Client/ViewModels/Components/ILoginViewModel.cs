@@ -44,6 +44,9 @@ namespace UI_DSM.Client.ViewModels.Components
         /// <returns>A <see cref="Task" /></returns>
         Task ExecuteLogin();
 
+        /// <summary>
+        ///     Method to navigate to the home page if the user is logged in
+        /// </summary>
         void NavigateIfLoggedIn();
     }
 }
