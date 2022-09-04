@@ -1,0 +1,10 @@
+.app-review-header {
+  padding: var(--spacing-6);
+  background-color: var(--colors-primary-100);
+  display: grid;
+  border-radius: var(--radius-2);
+}
+
+.app-review-header p {
+  margin-bottom: 0;
+}

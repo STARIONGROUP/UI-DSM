@@ -1,0 +1,4 @@
+.review-page {
+  display: grid;
+  gap: var(--spacing-8);
+}
