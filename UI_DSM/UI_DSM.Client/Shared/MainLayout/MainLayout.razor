@@ -45,10 +45,20 @@
 </div>
 
 @code {
+	/// <summary>
+	///     Inject NavigationManager for redirecting to the login page
+	/// </summary>   
 	@inject NavigationManager NavigationManager
 
+	/// <summary>
+	///    	Expose the authentication state as a cascading parameter
+	/// </summary>   
 	[CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
 
+
+	/// <summary>
+	///    	Redirect user if not authenticated
+	/// </summary>   
 	protected async override Task OnInitializedAsync()
 	{
 			base.OnInitialized();
@@ -59,11 +69,25 @@
 			}
 	}
 	
+	
+	/// <summary>
+	///    	Task sidebar active or not
+	/// </summary>  
 	private bool tasksActive = false;
+
+	/// <summary>
+	///    	Comments sidebar active or not
+	/// </summary>  
 	private bool commentsActive = false;
+	
+	/// <summary>
+	///    	Keep track of layoutClass for the layout css
+	/// </summary> 
 	private string layoutClass = "";
 
-
+	/// <summary>
+	///    	Get layout class based on the active sidebars
+	/// </summary> 
 	protected override void OnInitialized()
 	{
 		this.GetLayoutClass();
