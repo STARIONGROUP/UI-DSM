@@ -62,17 +62,17 @@
             <AuthorizeView Roles="Administrator">
               <Authorized>
                 <li>
-                  <NavLink href="/Administration/UserManagement" Match="NavLinkMatch.All">
+                  <NavLink href="/Administration/UserManagement" Match="NavLinkMatch.All" @onclick="() => IsUserMenuOpen = !IsUserMenuOpen">
                     <FeatherUserPlus Size="24" Color="currentColor" StrokeWidth="1.5f"  /> Users
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink class="account-dropdown__link" href="/Administration/ProjectManagement">
+                  <NavLink class="account-dropdown__link" href="/Administration/ProjectManagement" @onclick="() => IsUserMenuOpen = !IsUserMenuOpen">
                     <FeatherToggleLeft Size="24" Color="currentColor" StrokeWidth="1.5f"  /> Project Management
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink href="/Administration/RoleManagement" Match="NavLinkMatch.All">
+                  <NavLink href="/Administration/RoleManagement" Match="NavLinkMatch.All" @onclick="() => IsUserMenuOpen = !IsUserMenuOpen">
                     <FeatherUsers Size="24" Color="currentColor" StrokeWidth="1.5f"  /> Roles
                   </NavLink>
                 </li>

@@ -6,8 +6,26 @@
 
 .default-layout__main {
     display: grid;
-    grid-template-columns: 0.3fr 1fr 0.3fr;
     grid-template-areas: "a b c";
+}
+
+.default-layout__main-both-sidebars {
+    grid-template-columns: minmax(240px, 320px) 1fr minmax(240px, 320px);
+}
+
+.default-layout__main--no-sidebars {
+    grid-template-columns: 1fr;
+    grid-template-areas: "b";
+}
+
+.default-layout__main--left-sidebar {
+    grid-template-columns: minmax(240px, 320px) 1fr;
+    grid-template-areas: "a b";
+}
+
+.default-layout__main--right-sidebar {
+    grid-template-columns: minmax(240px, 320px) 1fr;
+    grid-template-areas: "b c";
 }
 
 .default-layout__sidebar__left {
