@@ -35,6 +35,8 @@ namespace UI_DSM.Client.Tests.Pages.Administration
 
     using TestContext = Bunit.TestContext;
 
+    using AppComponents;
+
     [TestFixture]
     public class RoleManagementTestFixture
     {
@@ -90,11 +92,11 @@ namespace UI_DSM.Client.Tests.Pages.Administration
         public async Task VerifyOpenCreationPopupAndCreateRole()
         {
             var renderer = this.context.RenderComponent<RoleManagement>();
-            var dxButton = renderer.FindComponent<DxButton>();
+            var appButton = renderer.FindComponent<AppButton>();
             var dxPopup = renderer.FindComponent<DxPopup>();
             var currentCreationRole = this.viewModel.RoleCreationViewModel.Role;
             Assert.That(dxPopup.Instance.Visible, Is.False);
-            await renderer.InvokeAsync(dxButton.Instance.Click.InvokeAsync);
+            await renderer.InvokeAsync(appButton.Instance.Click.InvokeAsync);
             Assert.That(dxPopup.Instance.Visible, Is.True);
             Assert.That(this.viewModel.RoleCreationViewModel.Role, Is.Not.EqualTo(currentCreationRole));
 

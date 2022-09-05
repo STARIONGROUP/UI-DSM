@@ -36,7 +36,7 @@ namespace UI_DSM.Client.ViewModels.Components
         /// <summary>
         ///     Gets or sets the <see cref="NavigationManager" />
         /// </summary>
-        private readonly NavigationManager navigationManager;
+        public NavigationManager NavigationManager {get; set;}
 
         /// <summary>
         ///     Backing field for <see cref="AuthenticationStatus" />
@@ -56,7 +56,7 @@ namespace UI_DSM.Client.ViewModels.Components
         public LoginViewModel(IAuthenticationService authenticationService, NavigationManager navigationManager)
         {
             this.authenticationService = authenticationService;
-            this.navigationManager = navigationManager;
+            this.NavigationManager = navigationManager;
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace UI_DSM.Client.ViewModels.Components
         /// </summary>
         public void NavigateIfLoggedIn()
         {
-            this.navigationManager.NavigateTo("/");
+            this.NavigationManager.NavigateTo("/");
         }
     }
 }

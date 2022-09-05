@@ -15,8 +15,8 @@
 	<DataAnnotationsValidator/>
 	
 	<div class="login-form">	
-		<AppInput id="username" Label="Username" @bind-Value="this.ViewModel.Authentication.UserName" />
-		<AppInput id="password" Label="Password" type="password" @bind-Value="this.ViewModel.Authentication.Password" />
+		<AppInput Id="username" Label="Username" @bind-Value="this.ViewModel.Authentication.UserName" />
+		<AppInput Id="password" Label="Password" type="password" @bind-Value="this.ViewModel.Authentication.Password" />
 
 
 		<ValidationSummary/>
@@ -31,17 +31,17 @@
 		@switch (this.ViewModel.AuthenticationStatus)
 		{
 			case AuthenticationStatus.None:
-				<AppButton Type="submit" Variant="AppButton.VariantValue.Secondary">
+				<AppButton Id="connectbtn" Type="submit" Variant="AppButton.VariantValue.Secondary">
 					Login
 				</AppButton>
 				break;
 			case AuthenticationStatus.Authenticating:
-				<AppButton Type="submit">
+				<AppButton Id="connectbtn" Type="submit">
 					Processing login
 				</AppButton> 
 				break;
 			case AuthenticationStatus.Fail:
-				<AppButton Type="submit">
+				<AppButton Id="connectbtn" Type="submit">
 					Retry login
 				</AppButton>
 				break;

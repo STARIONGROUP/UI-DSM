@@ -17,6 +17,7 @@ namespace UI_DSM.Client.ViewModels.Components
 
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Shared.DTO.UserManagement;
+    using Microsoft.AspNetCore.Components;
 
     /// <summary>
     ///     Interface definition for <see cref="LoginViewModel" />
@@ -37,6 +38,11 @@ namespace UI_DSM.Client.ViewModels.Components
         ///     Gets or sets the login error message
         /// </summary>
         string ErrorMessage { get; set; }
+
+         /// <summary>
+        ///     Gets or sets the <see cref="NavigationManager" />
+        /// </summary>
+        NavigationManager NavigationManager { get; set; }
 
         /// <summary>
         ///     Tries to authenticate to the server

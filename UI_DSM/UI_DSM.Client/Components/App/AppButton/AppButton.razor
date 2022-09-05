@@ -12,7 +12,7 @@
 
 @namespace AppComponents
 
-<button class="app-button @buttonVariant" type="@Type" @onclick="Click" aria-label="@Label">@ChildContent</button>
+<button id="@Id" class="app-button @buttonVariant" type="@Type" @onclick="Click" aria-label="@Label">@ChildContent</button>
 
 @code {
     /// <summary>
@@ -47,6 +47,12 @@
     ///     Label used as aria label for a11y
     /// </summary>
     [Parameter] public string Label { get; set; }
+
+
+    /// <summary>
+    ///     HTML ID for the button
+    /// </summary>
+    [Parameter] public string Id { get; set; }
 
     /// <summary>
     ///     HTML button type: submit, button, reset
