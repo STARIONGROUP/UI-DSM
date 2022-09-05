@@ -9,7 +9,7 @@
     grid-template-areas: "a b c";
 }
 
-.default-layout__main-both-sidebars {
+.default-layout__main--both-sidebars {
     grid-template-columns: minmax(240px, 320px) 1fr minmax(240px, 320px);
 }
 

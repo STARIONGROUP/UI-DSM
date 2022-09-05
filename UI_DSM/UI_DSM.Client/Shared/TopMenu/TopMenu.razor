@@ -15,14 +15,9 @@
 <nav class="top-menu">
   <div class="top-menu__left">
     <div class="top-menu__icon-group">
-
       <NavLink href="/">
         <FeatherHome Size="28" Color="currentColor" StrokeWidth="1.5f"  aria-label="home button"/>
       </NavLink>
-
-      <button aria-label="open task panel">
-       <FeatherCheckCircle Size="28" Color="currentColor" StrokeWidth="1.5f" />
-      </button>
     </div>
 
 
@@ -41,10 +36,6 @@
 
   <div class="top-menu__right">
     <div class="top-menu__icon-group">
-      <button aria-label="Previous page" onclick="history.forward()">
-        <FeatherMessageCircle Size="28" Color="currentColor" StrokeWidth="1.5f"  aria-label="Open chat"/>
-      </button>
-
       <div id="user-icon-button">
         <button @onclick="() => IsUserMenuOpen = !IsUserMenuOpen">
           <UserAvatar UserInitials="MJ" />
