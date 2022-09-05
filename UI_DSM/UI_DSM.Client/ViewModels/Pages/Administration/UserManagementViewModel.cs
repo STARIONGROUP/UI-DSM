@@ -28,6 +28,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
     using UI_DSM.Client.ViewModels.Components.Administration.UserManagement;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     View model for the <see cref="UserManagement" /> page
@@ -40,14 +41,14 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         private readonly IUserService userService;
 
         /// <summary>
-        ///     Backing field for <see cref="RegistrationPopupVisible" />
+        ///     Backing field for <see cref="IsOnCreationMode" />
         /// </summary>
-        private bool registrationPopupVisible;
+        private bool isOnCreationMode;
 
         /// <summary>
-        ///     Backing field for <see cref="UserDetailsPopupVisible" />
+        ///     Backing field for <see cref="IsOnDetailsViewMode" />
         /// </summary>
-        private bool userDetailsPopupVisible;
+        private bool isOnDetailsViewMode;
 
         /// <summary>
         ///     The user that the administrator is going to delete
@@ -91,21 +92,21 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         public IUserRegistrationViewModel UserRegistrationViewModel { get; private set; }
 
         /// <summary>
-        ///     Value indicating if the <see cref="UserRegistration" /> popup should be visible
+        ///     Value indicating the user is currently creating a new <see cref="User"/>
         /// </summary>
-        public bool RegistrationPopupVisible
+        public bool IsOnCreationMode
         {
-            get => this.registrationPopupVisible;
-            set => this.RaiseAndSetIfChanged(ref this.registrationPopupVisible, value);
+            get => this.isOnCreationMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnCreationMode, value);
         }
 
         /// <summary>
-        ///     Value indicating if the <see cref="UserDetails" /> popup should be visible
+        ///     Value indicating the user is currently visualizing details on a  <see cref="UserDto"/>
         /// </summary>
-        public bool UserDetailsPopupVisible
+        public bool IsOnDetailsViewMode
         {
-            get => this.userDetailsPopupVisible;
-            set => this.RaiseAndSetIfChanged(ref this.userDetailsPopupVisible, value);
+            get => this.isOnDetailsViewMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnDetailsViewMode, value);
         }
 
         /// <summary>
@@ -137,7 +138,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         {
             this.ErrorMessageViewModel.Errors.Clear();
             this.UserRegistrationViewModel.Registration = new RegistrationDto();
-            this.RegistrationPopupVisible = true;
+            this.IsOnCreationMode = true;
         }
 
         /// <summary>
@@ -158,7 +159,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         public void OpenDetailsPopup(UserDto user)
         {
             this.UserDetailsViewModel.User = user;
-            this.UserDetailsPopupVisible = true;
+            this.IsOnDetailsViewMode = true;
         }
 
         /// <summary>
@@ -168,7 +169,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         private async Task RegisterUser()
         {
             var registerResult = await this.userService.RegisterUser(this.UserRegistrationViewModel.Registration);
-            this.RegistrationPopupVisible = !registerResult.IsRequestSuccessful;
+            this.IsOnCreationMode = !registerResult.IsRequestSuccessful;
             this.ErrorMessageViewModel.Errors.Clear();
 
             if (registerResult.Errors != null)

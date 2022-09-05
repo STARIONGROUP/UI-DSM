@@ -120,7 +120,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
 
             await this.viewModel.RoleCreationViewModel.OnValidSubmit.InvokeAsync();
             Assert.That(this.viewModel.Roles.Count, Is.EqualTo(1));
-            Assert.That(this.viewModel.IsCreationPopupVisible, Is.False);
+            Assert.That(this.viewModel.IsOnCreationMode, Is.False);
             Assert.That(this.viewModel.ErrorMessageViewModel.Errors, Is.Empty);
 
             this.roleService.Setup(x => x.CreateRole(this.viewModel.RoleCreationViewModel.Role))

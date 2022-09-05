@@ -62,7 +62,7 @@ namespace UI_DSM.Client.Pages.Administration.ProjectPages
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ProjectDetailsViewModel.Project)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.CreationPopupVisible)
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCreationMode)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
             await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId));

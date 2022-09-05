@@ -15,14 +15,14 @@
 <ConfirmCancelPopup ViewModel="@this.ViewModel.ConfirmCancelPopup"/>
 <div>
 	<DxButton Click="@this.ViewModel.OpenRegisterPopup" Text="Add user"/>
-	<DxPopup CloseOnOutsideClick="false" HeaderText="User Registration" @bind-Visible="@this.ViewModel.RegistrationPopupVisible">
+	<DxPopup CloseOnOutsideClick="false" HeaderText="User Registration" @bind-Visible="@this.ViewModel.IsOnCreationMode">
 		<Content>
 			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
 				<UserRegistration ViewModel="@this.ViewModel.UserRegistrationViewModel"/>
 			</CascadingValue>
 		</Content>
 	</DxPopup>
-	<DxPopup CloseOnOutsideClick="false" HeaderText="User Details" @bind-Visible="@this.ViewModel.UserDetailsPopupVisible">
+	<DxPopup CloseOnOutsideClick="false" HeaderText="User Details" @bind-Visible="@this.ViewModel.IsOnDetailsViewMode">
 		<Content>
 			<UserDetails ViewModel="@this.ViewModel.UserDetailsViewModel" />
 		</Content>

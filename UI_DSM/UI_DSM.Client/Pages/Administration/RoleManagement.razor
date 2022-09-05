@@ -13,7 +13,7 @@
 @attribute [Authorize(Roles = "Administrator")]
 <div>
 	<DxButton Click="@this.ViewModel.OpenCreationPopup" Text="Create Role"/>
-	<DxPopup CloseOnOutsideClick="false" HeaderText="Create Role" @bind-Visible="@this.ViewModel.IsCreationPopupVisible">
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Create Role" @bind-Visible="@this.ViewModel.IsOnCreationMode">
 		<Content>
 			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
 				<RoleCreation ViewModel="@this.ViewModel.RoleCreationViewModel"/>

@@ -13,8 +13,6 @@
 
 namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
 {
-    using DevExpress.Blazor;
-
     using UI_DSM.Client.Components.Administration.ParticipantManagement;
     using UI_DSM.Client.Components.Administration.ProjectManagement;
     using UI_DSM.Client.ViewModels.Components;
@@ -33,9 +31,9 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         IProjectDetailsViewModel ProjectDetailsViewModel { get; }
 
         /// <summary>
-        ///     Value indicating if the <see cref="DxPopup" /> for the creation of <see cref="Participant" /> is visible
+        ///     Value indicating the user is currently creating a new <see cref="Participant"/>
         /// </summary>
-        bool CreationPopupVisible { get; set; }
+        bool IsOnCreationMode { get; set; }
 
         /// <summary>
         ///     Gets the <see cref="IErrorMessageViewModel" />

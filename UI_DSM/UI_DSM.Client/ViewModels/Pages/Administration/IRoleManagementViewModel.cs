@@ -35,9 +35,9 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         SourceList<Role> Roles { get; }
 
         /// <summary>
-        ///     Value indicating if the <see cref="DxPopup" /> for the <see cref="RoleCreation" /> component is visible
+        ///     Value indicating the user is currently creating a new <see cref="Role"/>
         /// </summary>
-        bool IsCreationPopupVisible { get; set; }
+        bool IsOnCreationMode { get; set; }
 
         /// <summary>
         ///     Gets the <see cref="IRoleCreationViewModel" />

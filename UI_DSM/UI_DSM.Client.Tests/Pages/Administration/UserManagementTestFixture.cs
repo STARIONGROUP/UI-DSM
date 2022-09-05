@@ -87,7 +87,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             var registrationDto = this.viewModel.UserRegistrationViewModel.Registration;
             var dxButton = renderer.FindComponent<DxButton>();
             await renderer.InvokeAsync(() => dxButton.Instance.Click.InvokeAsync());
-            Assert.That(this.viewModel.RegistrationPopupVisible, Is.True);
+            Assert.That(this.viewModel.IsOnCreationMode, Is.True);
             Assert.That(this.viewModel.UserRegistrationViewModel.Registration, Is.Not.EqualTo(registrationDto));
 
             this.userService.Setup(x => x.RegisterUser(It.IsAny<RegistrationDto>())).ReturnsAsync(new RegistrationResponseDto()
@@ -100,7 +100,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             });
 
             await renderer.InvokeAsync(() => this.viewModel.UserRegistrationViewModel.OnValidSubmit.InvokeAsync());
-            Assert.That(this.viewModel.RegistrationPopupVisible, Is.True);
+            Assert.That(this.viewModel.IsOnCreationMode, Is.True);
 
             this.userService.Setup(x => x.RegisterUser(It.IsAny<RegistrationDto>())).ReturnsAsync(new RegistrationResponseDto()
             {
@@ -112,7 +112,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             });
             
             await renderer.InvokeAsync(() => this.viewModel.UserRegistrationViewModel.OnValidSubmit.InvokeAsync());
-            Assert.That(this.viewModel.RegistrationPopupVisible, Is.False);
+            Assert.That(this.viewModel.IsOnCreationMode, Is.False);
             Assert.That(this.viewModel.Users.Count, Is.EqualTo(3));
         }
 
@@ -164,7 +164,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             var detailsButtons = renderer.FindComponents<DxButton>().Where(x => x.Instance.Text == "View details");
 
             await renderer.InvokeAsync(() => detailsButtons.First().Instance.Click.InvokeAsync());
-            Assert.That(this.viewModel.UserDetailsPopupVisible, Is.True);
+            Assert.That(this.viewModel.IsOnDetailsViewMode, Is.True);
         }
     }
 }

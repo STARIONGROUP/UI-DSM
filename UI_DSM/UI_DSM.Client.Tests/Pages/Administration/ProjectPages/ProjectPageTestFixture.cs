@@ -100,14 +100,14 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
             });
 
             await renderer.InvokeAsync(async () => await this.viewModel.OpenCreateParticipantPopup());
-            Assert.That(this.viewModel.CreationPopupVisible, Is.True);
+            Assert.That(this.viewModel.IsOnCreationMode, Is.True);
 
             this.participantService.Setup(x => x.CreateParticipant(projectGuid, It.IsAny<Participant>()))
                 .ReturnsAsync(EntityRequestResponse<Participant>.Fail(new List<string>()));
 
             await renderer.InvokeAsync(() => this.viewModel.ParticipantCreationViewModel.OnValidSubmit.InvokeAsync());
 
-            Assert.That(this.viewModel.CreationPopupVisible, Is.True);
+            Assert.That(this.viewModel.IsOnCreationMode, Is.True);
            
             this.participantService.Setup(x => x.CreateParticipant(projectGuid, It.IsAny<Participant>()))
                 .ReturnsAsync(EntityRequestResponse<Participant>.Success(new Participant()));
@@ -116,7 +116,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
 
             Assert.Multiple(() =>
             {
-                Assert.That(this.viewModel.CreationPopupVisible, Is.False);
+                Assert.That(this.viewModel.IsOnCreationMode, Is.False);
                 Assert.That(project.Participants, Has.Count.EqualTo(1));
             });
         }

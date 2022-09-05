@@ -39,9 +39,9 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         private readonly IProjectService projectService;
 
         /// <summary>
-        ///     Backing field for <see cref="CreationPopupVisible" />
+        ///     Backing field for <see cref="IsOnCreationMode" />
         /// </summary>
-        private bool creationPopupVisible;
+        private bool isOnCreationMode;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectManagementViewModel" /> class.
@@ -70,12 +70,12 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         public SourceList<Project> Projects { get; private set; } = new();
 
         /// <summary>
-        ///     Value indicating if the <see cref="DxPopup" /> for the creation is visible
+        ///     Value indicating the user is currently creating a new <see cref="Project"/>
         /// </summary>
-        public bool CreationPopupVisible
+        public bool IsOnCreationMode
         {
-            get => this.creationPopupVisible;
-            set => this.RaiseAndSetIfChanged(ref this.creationPopupVisible, value);
+            get => this.isOnCreationMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnCreationMode, value);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         {
             this.ProjectCreationViewModel.Project = new Project();
             this.ErrorMessageViewModel.Errors.Clear();
-            this.CreationPopupVisible = true;
+            this.IsOnCreationMode = true;
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
                     this.Projects.Add(creationResult.Entity);
                 }
 
-                this.CreationPopupVisible = !creationResult.IsRequestSuccessful;
+                this.IsOnCreationMode = !creationResult.IsRequestSuccessful;
             }
             catch (Exception exception)
             {

@@ -40,16 +40,16 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         private readonly IRoleService roleService;
 
         /// <summary>
-        ///     Backing field for <see cref="IsCreationPopupVisible" />
+        ///     Backing field for <see cref="IsOnCreationMode" />
         /// </summary>
-        private bool isCreationPopupVisible;
+        private bool isOnCreationMode;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="RoleManagementViewModel" /> class.
         /// </summary>
         /// <param name="roleService">The <see cref="IRoleService" /></param>
-        /// <param name="navigationManager">The <see cref="NavigationManager"/></param>
-        public RoleManagementViewModel(IRoleService roleService , NavigationManager navigationManager)
+        /// <param name="navigationManager">The <see cref="NavigationManager" /></param>
+        public RoleManagementViewModel(IRoleService roleService, NavigationManager navigationManager)
         {
             this.roleService = roleService;
 
@@ -72,12 +72,12 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         public IErrorMessageViewModel ErrorMessageViewModel { get; } = new ErrorMessageViewModel();
 
         /// <summary>
-        ///     Value indicating if the <see cref="DxPopup" /> for the <see cref="RoleCreation" /> component is visible
+        ///     Value indicating the user is currently creating a new <see cref="Role" />
         /// </summary>
-        public bool IsCreationPopupVisible
+        public bool IsOnCreationMode
         {
-            get => this.isCreationPopupVisible;
-            set => this.RaiseAndSetIfChanged(ref this.isCreationPopupVisible, value);
+            get => this.isOnCreationMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnCreationMode, value);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         {
             this.RoleCreationViewModel.Role = new Role();
             this.RoleCreationViewModel.SelectedAccessRights = new List<AccessRightWrapper>();
-            this.IsCreationPopupVisible = true;
+            this.IsOnCreationMode = true;
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
                     this.Roles.Add(creationResult.Entity);
                 }
 
-                this.IsCreationPopupVisible = !creationResult.IsRequestSuccessful;
+                this.IsOnCreationMode = !creationResult.IsRequestSuccessful;
             }
             catch (Exception exception)
             {

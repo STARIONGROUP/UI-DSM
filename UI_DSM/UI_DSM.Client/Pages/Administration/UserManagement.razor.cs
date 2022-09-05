@@ -46,10 +46,10 @@ namespace UI_DSM.Client.Pages.Administration
         {
             await this.ViewModel.OnInitializedAsync();
 
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.RegistrationPopupVisible)
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCreationMode)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.UserDetailsPopupVisible)
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnDetailsViewMode)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
             this.disposables.Add(this.ViewModel.Users.CountChanged.Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));

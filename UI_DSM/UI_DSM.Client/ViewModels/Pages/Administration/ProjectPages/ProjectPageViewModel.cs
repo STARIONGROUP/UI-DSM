@@ -48,9 +48,9 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         private readonly IProjectService projectService;
 
         /// <summary>
-        ///     Backing field for <see cref="CreationPopupVisible" />
+        ///     Backing field for <see cref="IsOnCreationMode" />
         /// </summary>
-        private bool creationPopupVisible;
+        private bool isOnCreationMode;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectPageViewModel" /> class.
@@ -75,12 +75,12 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         public IProjectDetailsViewModel ProjectDetailsViewModel { get; } = new ProjectDetailsViewModel();
 
         /// <summary>
-        ///     Value indicating if the <see cref="DxPopup" /> for the creation of <see cref="Participant" /> is visible
+        ///     Value indicating the user is currently creating a new <see cref="Participant"/>
         /// </summary>
-        public bool CreationPopupVisible
+        public bool IsOnCreationMode
         {
-            get => this.creationPopupVisible;
-            set => this.RaiseAndSetIfChanged(ref this.creationPopupVisible, value);
+            get => this.isOnCreationMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnCreationMode, value);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         public async Task OpenCreateParticipantPopup()
         {
             await this.ParticipantCreationViewModel.UpdateProperties(this.ProjectDetailsViewModel.Project.Id);
-            this.CreationPopupVisible = true;
+            this.IsOnCreationMode = true;
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
             if (requestResponse.IsRequestSuccessful)
             {
                 this.ProjectDetailsViewModel.Project.Participants.Add(requestResponse.Entity);
-                this.CreationPopupVisible = false;
+                this.IsOnCreationMode = false;
             }
             else
             {

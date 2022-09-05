@@ -141,7 +141,7 @@ namespace UI_DSM.Client.Services.Administration.ParticipantService
         ///     <see cref="Project" />
         /// </summary>
         /// <param name="projectId"></param>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="UserEntity" /></returns>
         public async Task<List<UserEntity>> GetAvailableUsersForCreation(Guid projectId)
         {
             try

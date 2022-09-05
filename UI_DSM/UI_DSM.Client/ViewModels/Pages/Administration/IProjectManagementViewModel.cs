@@ -35,9 +35,9 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         SourceList<Project> Projects { get; }
 
         /// <summary>
-        ///     Value indicating if the <see cref="DxPopup" /> for the creation is visible
+        ///     Value indicating the user is currently creating a new <see cref="Project"/>
         /// </summary>
-        bool CreationPopupVisible { get; set; }
+        bool IsOnCreationMode { get; set; }
 
         /// <summary>
         ///     The <see cref="IErrorMessageViewModel" />

@@ -92,10 +92,10 @@ namespace UI_DSM.Client.Tests.Pages.Administration
         {
             var renderer = this.context.RenderComponent<ProjectManagement>();
             var createButton = renderer.FindComponent<DxButton>();
-            Assert.That(this.viewModel.CreationPopupVisible, Is.False);
+            Assert.That(this.viewModel.IsOnCreationMode, Is.False);
 
             await renderer.InvokeAsync(() => createButton.Instance.Click.InvokeAsync());
-            Assert.That(this.viewModel.CreationPopupVisible, Is.True);
+            Assert.That(this.viewModel.IsOnCreationMode, Is.True);
 
             var createProjectResponse = EntityRequestResponse<Project>.Fail(new List<string>()
             {
@@ -105,12 +105,12 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             this.projectService.Setup(x => x.CreateProject(It.IsAny<Project>())).ReturnsAsync(createProjectResponse);
 
             await this.viewModel.ProjectCreationViewModel.OnValidSubmit.InvokeAsync();
-            Assert.That(this.viewModel.CreationPopupVisible, Is.True);
+            Assert.That(this.viewModel.IsOnCreationMode, Is.True);
             createProjectResponse = EntityRequestResponse<Project>.Success(new Project(Guid.NewGuid()));
             this.projectService.Setup(x => x.CreateProject(It.IsAny<Project>())).ReturnsAsync(createProjectResponse);
 
             await this.viewModel.ProjectCreationViewModel.OnValidSubmit.InvokeAsync();
-            Assert.That(this.viewModel.CreationPopupVisible, Is.False);
+            Assert.That(this.viewModel.IsOnCreationMode, Is.False);
             Assert.That(this.viewModel.Projects.Count, Is.EqualTo(1));
 
             this.projectService.Setup(x => x.CreateProject(It.IsAny<Project>())).ThrowsAsync(new HttpRequestException("http error"));

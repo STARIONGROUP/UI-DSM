@@ -19,6 +19,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.Administration.UserManagement;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     Interface definition for <see cref="UserManagementViewModel" />
@@ -31,14 +32,14 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         IUserRegistrationViewModel UserRegistrationViewModel { get; }
 
         /// <summary>
-        ///     Value indicating if the <see cref="UserRegistration" /> popup should be visible
+        ///     Value indicating the user is currently creating a new <see cref="User"/>
         /// </summary>
-        bool RegistrationPopupVisible { get; set; }
+        bool IsOnCreationMode { get; set; }
 
         /// <summary>
         ///     Value indicating if the <see cref="UserDetails" /> popup should be visible
         /// </summary>
-        bool UserDetailsPopupVisible { get; set; }
+        bool IsOnDetailsViewMode { get; set; }
 
         /// <summary>
         ///     The <see cref="IConfirmCancelPopupViewModel" />
