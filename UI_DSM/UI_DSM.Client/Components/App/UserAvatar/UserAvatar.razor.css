@@ -3,7 +3,6 @@
   height: var(--spacing-8);
   border-radius: var(--radius-circle);
   overflow: hidden;
-  display: block;
   background: var(--colors-primary-100);
   font-weight: bold;
   color: var(--colors-primary-700);
