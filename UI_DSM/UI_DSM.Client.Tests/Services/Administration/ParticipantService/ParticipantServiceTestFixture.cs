@@ -25,6 +25,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
     [TestFixture]
@@ -203,7 +204,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
 
             entityRequestResponse.IsRequestSuccessful = true;
 
-            entityRequestResponse.Entities = participant.GetAssociatedEntities().Select(x => x.ToDto()).ToList();
+            entityRequestResponse.Entities = participant.GetAssociatedEntities().ToDtos();
 
             httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
 
@@ -293,7 +294,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
 
             requestResponse.IsRequestSuccessful = true;
 
-            requestResponse.Entities = participant.GetAssociatedEntities().Select(x => x.ToDto()).ToList();
+            requestResponse.Entities = participant.GetAssociatedEntities().ToDtos();
 
             httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
 
@@ -301,6 +302,42 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
             Assert.That(requestResult.IsRequestSuccessful, Is.True);
             httpResponse.Content = new StringContent(string.Empty);
             Assert.That(async () => await this.service.UpdateParticipant(participant), Throws.Exception);
+        }
+
+        [Test]
+        public async Task VerifyGetAvailableUsersForCreation()
+        {
+            var projectId = Guid.NewGuid();
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.NotFound;
+
+            var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Project/{projectId}/Participant/AvailableUsers");
+            request.Respond(_ => httpResponse);
+
+            Assert.That(async () => await this.service.GetAvailableUsersForCreation(projectId), Throws.Exception);
+
+            httpResponse.StatusCode = HttpStatusCode.OK;
+
+            var usersEntities = new List<UserEntity>()
+            {
+                new (Guid.NewGuid())
+                {
+                    UserName = "admin",
+                    IsAdmin = true
+                },
+                new (Guid.NewGuid())
+                {
+                    UserName = "user1"
+                },
+                new (Guid.NewGuid())
+                {
+                    UserName = "user2"
+                }
+            };
+
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(usersEntities.ToDtos()));
+            var availableUsers = await this.service.GetAvailableUsersForCreation(projectId);
+            Assert.That(availableUsers, Has.Count.EqualTo(3));
         }
     }
 }

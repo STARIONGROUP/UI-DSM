@@ -222,7 +222,7 @@ namespace UI_DSM.Client.Services
         /// <param name="baseUri">The base uri</param>
         /// <param name="deepLevel">The deep level</param>
         /// <returns>The computed uri</returns>
-        private string CreateUri(string baseUri, int deepLevel)
+        protected string CreateUri(string baseUri, int deepLevel)
         {
             return deepLevel > 0 ? QueryHelpers.AddQueryString(baseUri, "deepLevel", deepLevel.ToString()) : baseUri;
         }

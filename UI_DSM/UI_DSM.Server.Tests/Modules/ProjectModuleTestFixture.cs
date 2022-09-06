@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Server.Tests.Modules
 {
+    using System.Security.Claims;
+
     using Microsoft.AspNetCore.Http;
 
     using Moq;
@@ -20,6 +22,7 @@ namespace UI_DSM.Server.Tests.Modules
     using NUnit.Framework;
 
     using UI_DSM.Server.Managers;
+    using UI_DSM.Server.Managers.ProjectManager;
     using UI_DSM.Server.Modules;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Server.Types;
@@ -150,6 +153,26 @@ namespace UI_DSM.Server.Tests.Modules
             this.projectManager.Setup(x => x.UpdateEntity(It.IsAny<Project>())).ReturnsAsync(EntityOperationResult<Project>.Success(project));
             await this.module.UpdateEntity(this.projectManager.Object, project.Id, (ProjectDto)project.ToDto(), this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 200, Times.Once);
+        }
+
+        [Test]
+        public async Task VerifyGetProjectsForUser()
+        {
+            var username = "user";
+
+            var claimPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>()
+            {
+                new (ClaimTypes.Name, username)
+            }));
+
+            this.httpContext.Setup(x => x.User).Returns(claimPrincipal);
+
+            this.projectManager.As<IProjectManager>().Setup(x => x.GetAvailableProjectsForUser(username))
+                .ReturnsAsync(this.projects);
+
+            await this.module.GetProjectsForUser(this.projectManager.As<IProjectManager>().Object, this.httpContext.Object);
+            
+            this.projectManager.As<IProjectManager>().Verify(x => x.GetAvailableProjectsForUser(username), Times.Once);
         }
     }
 }

@@ -44,17 +44,32 @@ namespace UI_DSM.Server.Tests.Managers
         [Test]
         public async Task VerifyGetEntities()
         {
+            var user = new UserEntity(Guid.NewGuid())
+            {
+                UserName = "user"
+            };
+
+            var admin = new UserEntity(Guid.NewGuid())
+            {
+                UserName = "admin"
+            };
+
             var data = new List<Participant>()
             {
                 new(Guid.NewGuid())
                 {
                     Role = new Role(Guid.NewGuid()),
-                    User = new UserEntity(Guid.NewGuid())
+                    User = admin
                 },
                 new(Guid.NewGuid())
                 {
                     Role = new Role(Guid.NewGuid()),
-                    User = new UserEntity(Guid.NewGuid())
+                    User = user
+                },
+                new(Guid.NewGuid())
+                {
+                    Role = new Role(Guid.NewGuid()),
+                    User = admin
                 }
             };
 
@@ -67,7 +82,7 @@ namespace UI_DSM.Server.Tests.Managers
             }
 
             var allEntities = await this.manager.GetEntities();
-            Assert.That(allEntities.Count(), Is.EqualTo(6));
+            Assert.That(allEntities.Count(), Is.EqualTo(9));
 
             var invalidGuid = Guid.NewGuid();
             dbSet.Setup(x => x.FindAsync(invalidGuid)).ReturnsAsync((Participant)null);
@@ -75,10 +90,23 @@ namespace UI_DSM.Server.Tests.Managers
             Assert.That(participant, Is.Null);
 
             var foundEntities = await this.manager.FindEntities(data.Select(x => x.Id));
-            Assert.That(foundEntities.Count(), Is.EqualTo(2));
+            Assert.That(foundEntities.Count(), Is.EqualTo(3));
 
             var deepEntity = await this.manager.GetEntity(data.First().Id);
             Assert.That(deepEntity.Count(), Is.EqualTo(3));
+
+            this.userManager.Setup(x => x.GetUserByName(user.UserName)).ReturnsAsync(user);
+            this.userManager.Setup(x => x.GetUserByName(admin.UserName)).ReturnsAsync(admin);
+            var nullParticipant = await this.manager.GetParticipants("aName");
+            var adminParticipants = await this.manager.GetParticipants(admin.UserName);
+            var userParticipants = await this.manager.GetParticipants(user.UserName);
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(nullParticipant, Is.Empty);
+                Assert.That(adminParticipants.ToList(), Has.Count.EqualTo(2));
+                Assert.That(userParticipants.ToList(), Has.Count.EqualTo(1));
+            });
         }
 
         [Test]
@@ -226,6 +254,53 @@ namespace UI_DSM.Server.Tests.Managers
             Assert.That(entities.Count(), Is.EqualTo(2));
             entities = await this.manager.GetParticipantsOfProject(Guid.NewGuid());
             Assert.That(entities, Is.Empty);
+        }
+
+        [Test]
+        public async Task VerifyGetAvailableUsersForParticipantCreation()
+        {
+            var users = new List<UserEntity>()
+            {
+                new (Guid.NewGuid())
+                {
+                    UserName = "user1"
+                },
+                new (Guid.NewGuid())
+                {
+                    UserName = "user2"
+                },
+                new (Guid.NewGuid())
+                {
+                    UserName = "user3"
+                }
+            };
+
+            var participants = new List<Participant>()
+            {
+                new(Guid.NewGuid())
+                {
+                    User = users[2]
+                }
+            };
+
+            var project = new Project(Guid.NewGuid())
+            {
+                Participants = { participants.First() }
+            };
+
+            var dbSet = DbSetMockHelper.CreateMock(participants);
+            this.context.Setup(x => x.Participants).Returns(dbSet.Object);
+
+            this.userManager.Setup(x => x.GetUsers(It.IsAny<Func<UserEntity, bool>>()))
+                .ReturnsAsync(users.Where(x => participants.All(p => p.User.Id != x.Id)));
+
+            var availableUsers = (await this.manager.GetAvailableUsersForParticipantCreation(project.Id)).ToList();
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(availableUsers, Has.Count.EqualTo(2));
+                Assert.That(availableUsers.All(x => x.Id != participants.First().User.Id), Is.True);
+            });
         }
     }
 }

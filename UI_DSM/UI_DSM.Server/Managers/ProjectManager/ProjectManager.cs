@@ -214,5 +214,16 @@ namespace UI_DSM.Server.Managers.ProjectManager
 
             entity.ResolveProperties(projectDto, relatedEntities);
         }
+
+        /// <summary>
+        ///     Get a collection of <see cref="Project" /> where a <see cref="UserEntity" /> is a <see cref="Participant" />
+        /// </summary>
+        /// <param name="userName">The name of the <see cref="UserEntity"/></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Project" /></returns>
+        public async Task<IEnumerable<Project>> GetAvailableProjectsForUser(string userName)
+        {
+            var participants = await this.participantManager.GetParticipants(userName);
+            return participants.Select(x => x.EntityContainer as Project);
+        }
     }
 }

@@ -24,6 +24,7 @@ namespace UI_DSM.Server.Modules
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -98,7 +99,7 @@ namespace UI_DSM.Server.Modules
         public virtual async Task GetEntities(IEntityManager<TEntity> manager, HttpContext context, [FromQuery] int deepLevel = 0)
         {
             var entities = await manager.GetEntities(deepLevel);
-            var entitiesDto = entities.Select(x => x.ToDto()).ToList();
+            var entitiesDto = entities.ToDtos();
             await context.Response.Negotiate(entitiesDto);
         }
 
@@ -120,7 +121,7 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            await context.Response.Negotiate(entities.Select(x => x.ToDto()).ToList());
+            await context.Response.Negotiate(entities.ToDtos());
         }
 
         /// <summary>
@@ -245,8 +246,7 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            requestReponse.Entities = identityResult.Entity.GetAssociatedEntities(deepLevel)
-                .Select(x => x.ToDto()).ToList();
+            requestReponse.Entities = identityResult.Entity.GetAssociatedEntities(deepLevel).ToDtos();
 
             httpResponse.StatusCode = successStatusCode;
         }

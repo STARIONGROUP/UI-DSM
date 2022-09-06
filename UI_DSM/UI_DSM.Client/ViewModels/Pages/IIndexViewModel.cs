@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IProjectManager.cs" company="RHEA System S.A.">
+// <copyright file="IIndexViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -11,20 +11,25 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Server.Managers.ProjectManager
+namespace UI_DSM.Client.ViewModels.Pages
 {
+    using DynamicData;
+
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     Interface definition for <see cref="ProjectManager" />
+    ///     Interface definition for <see cref="IndexViewModel" />
     /// </summary>
-    public interface IProjectManager : IEntityManager<Project>
+    public interface IIndexViewModel: IDisposable
     {
         /// <summary>
-        ///     Get a collection of <see cref="Project" /> where a <see cref="UserEntity" /> is a <see cref="Participant" />
+        ///     Populate the <see cref="AvailableProject" /> collection
         /// </summary>
-        /// <param name="userName">The name of the <see cref="UserEntity" /></param>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="Project" /></returns>
-        Task<IEnumerable<Project>> GetAvailableProjectsForUser(string userName);
+        void PopulateAvailableProjects();
+
+        /// <summary>
+        ///     A collection of available <see cref="Project" /> for the user
+        /// </summary>
+        SourceList<Project> AvailableProject { get; }
     }
 }

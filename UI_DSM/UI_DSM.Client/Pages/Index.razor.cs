@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="ProjectManagement.razor.cs" company="RHEA System S.A.">
+// <copyright file="Index.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -11,19 +11,16 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Pages.Administration
+namespace UI_DSM.Client.Pages
 {
     using Microsoft.AspNetCore.Components;
 
-    using ReactiveUI;
-
-    using UI_DSM.Client.ViewModels.Pages.Administration;
-    using UI_DSM.Shared.Models;
+    using UI_DSM.Client.ViewModels.Pages;
 
     /// <summary>
-    ///     This page enable the Administrator to manage all <see cref="Project" />
+    ///     Index page of the application
     /// </summary>
-    public partial class ProjectManagement : IDisposable
+    public partial class Index : IDisposable
     {
         /// <summary>
         ///     A collection of <see cref="IDisposable" />
@@ -31,10 +28,10 @@ namespace UI_DSM.Client.Pages.Administration
         private readonly List<IDisposable> disposables = new();
 
         /// <summary>
-        ///     Gets or sets the <see cref="IProjectManagementViewModel" />
+        ///     The <see cref="IIndexViewModel" />
         /// </summary>
         [Inject]
-        public IProjectManagementViewModel ViewModel { get; set; }
+        public IIndexViewModel ViewModel { get; set; }
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -52,15 +49,22 @@ namespace UI_DSM.Client.Pages.Administration
         ///     want the component to refresh when that operation is completed.
         /// </summary>
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
-        protected override async Task OnInitializedAsync()
+        protected override Task OnInitializedAsync()
         {
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.Projects.CountChanged)
-                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+            this.disposables.Add(this.ViewModel);
+            this.disposables.Add(this.ViewModel.AvailableProject.CountChanged.Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+            this.ViewModel.PopulateAvailableProjects();
+            return base.OnInitializedAsync();
+        }
 
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCreationMode)
-                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
-
-            await this.ViewModel.OnInitializedAsync();
+        /// <summary>
+        /// Method invoked when the component is ready to start, having received its
+        /// initial parameters from its parent in the render tree.
+        /// </summary>
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            this.StateHasChanged();
         }
     }
 }

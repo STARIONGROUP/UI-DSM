@@ -13,12 +13,16 @@
 
 namespace UI_DSM.Server.Modules
 {
+    using Carter.Response;
+
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     using UI_DSM.Server.Managers;
+    using UI_DSM.Server.Managers.ProjectManager;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -28,6 +32,34 @@ namespace UI_DSM.Server.Modules
     [Microsoft.AspNetCore.Components.Route("api/Project")]
     public class ProjectModule : EntityModule<Project, ProjectDto>
     {
+        /// <summary>
+        ///     Adds routes to the <see cref="IEndpointRouteBuilder" />
+        /// </summary>
+        /// <param name="app">The <see cref="IEndpointRouteBuilder" /></param>
+        public override void AddRoutes(IEndpointRouteBuilder app)
+        {
+            base.AddRoutes(app);
+
+            app.MapGet(this.MainRoute+"/UserParticipation", this.GetProjectsForUser)
+                .Produces<IEnumerable<EntityDto>>()
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/GetProjectsForUser");
+        }
+
+        /// <summary>
+        /// Gets a collection of <see cref="Project"/> where a user is participating
+        /// </summary>
+        /// <param name="projectManager">The <see cref="IProjectManager" /></param>
+        /// <param name="context">The <see cref="HttpContext"/></param>
+        /// <returns></returns>
+        [Authorize]
+        public async Task GetProjectsForUser(IProjectManager projectManager, HttpContext context)
+        {
+            var userName = context.User.Identity?.Name;
+            var projects = await projectManager.GetAvailableProjectsForUser(userName);
+            await context.Response.Negotiate(projects.ToDtos());
+        }
+
         /// <summary>
         ///     Gets a collection of all <see cref="EntityDto" />
         /// </summary>

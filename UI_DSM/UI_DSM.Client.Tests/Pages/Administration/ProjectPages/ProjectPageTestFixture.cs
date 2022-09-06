@@ -23,9 +23,12 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
 
     using UI_DSM.Client.Components.Administration.ProjectManagement;
     using UI_DSM.Client.Pages.Administration.ProjectPages;
+    using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.Administration.ProjectService;
+    using UI_DSM.Client.Services.Administration.RoleService;
     using UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages;
     using UI_DSM.Shared.Models;
+    using UI_DSM.Shared.Types;
 
     using TestContext = Bunit.TestContext;
 
@@ -35,13 +38,17 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
         private TestContext context;
         private IProjectPageViewModel viewModel;
         private Mock<IProjectService> projectService;
+        private Mock<IParticipantService> participantService;
+        private Mock<IRoleService> roleService;
 
         [SetUp]
         public void Setup()
         {
             this.context = new TestContext();
             this.projectService = new Mock<IProjectService>();
-            this.viewModel = new ProjectPageViewModel(this.projectService.Object);
+            this.participantService = new Mock<IParticipantService>();
+            this.roleService = new Mock<IRoleService>();
+            this.viewModel = new ProjectPageViewModel(this.projectService.Object, this.participantService.Object, this.roleService.Object);
             this.context.Services.AddSingleton(this.viewModel);
         }
 
@@ -52,7 +59,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
         }
 
         [Test]
-        public void VerifyRenderer()
+        public async Task VerifyRenderer()
         {
             var projectGuid = Guid.NewGuid();
             this.projectService.Setup(x => x.GetProject(projectGuid, 0)).ReturnsAsync((Project)null);
@@ -64,15 +71,54 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
 
             Assert.That(() => renderer.FindComponent<ProjectDetails>(), Throws.Exception);
 
-            this.projectService.Setup(x => x.GetProject(projectGuid, 1)).ReturnsAsync(new Project(projectGuid)
+            var project = new Project(projectGuid)
             {
                 ProjectName = "Project"
-            });
+            };
 
-            this.viewModel.OnInitializedAsync(projectGuid);
+            this.projectService.Setup(x => x.GetProject(projectGuid, 1)).ReturnsAsync(project);
+
+            await this.viewModel.OnInitializedAsync(projectGuid);
             renderer.Render();
 
             Assert.That(this.viewModel.ProjectDetailsViewModel.Project, Is.Not.Null);
+
+            this.roleService.Setup(x => x.GetRoles(0)).ReturnsAsync(new List<Role>()
+            {
+                new (Guid.NewGuid())
+                {
+                    RoleName = "Reviewer"
+                }
+            });
+
+            this.participantService.Setup(x => x.GetAvailableUsersForCreation(projectGuid)).ReturnsAsync(new List<UserEntity>()
+            {
+                new (Guid.NewGuid())
+                {
+                    UserName = "user"
+                }
+            });
+
+            await renderer.InvokeAsync(async () => await this.viewModel.OpenCreateParticipantPopup());
+            Assert.That(this.viewModel.IsOnCreationMode, Is.True);
+
+            this.participantService.Setup(x => x.CreateParticipant(projectGuid, It.IsAny<Participant>()))
+                .ReturnsAsync(EntityRequestResponse<Participant>.Fail(new List<string>()));
+
+            await renderer.InvokeAsync(() => this.viewModel.ParticipantCreationViewModel.OnValidSubmit.InvokeAsync());
+
+            Assert.That(this.viewModel.IsOnCreationMode, Is.True);
+           
+            this.participantService.Setup(x => x.CreateParticipant(projectGuid, It.IsAny<Participant>()))
+                .ReturnsAsync(EntityRequestResponse<Participant>.Success(new Participant()));
+
+            await renderer.InvokeAsync(() => this.viewModel.ParticipantCreationViewModel.OnValidSubmit.InvokeAsync());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.IsOnCreationMode, Is.False);
+                Assert.That(project.Participants, Has.Count.EqualTo(1));
+            });
         }
     }
 }

@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Tests.Helpers
 {
+    using System.Diagnostics.CodeAnalysis;
+
     using Bunit;
 
     using DevExpress.Blazor.Internal;
@@ -22,6 +24,7 @@ namespace UI_DSM.Client.Tests.Helpers
     /// <summary>
     ///     Helper class that configures a <see cref="TestContext" /> to be able to test DevExpress components
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class DevExpressBlazorTestHelper
     {
         /// <summary>

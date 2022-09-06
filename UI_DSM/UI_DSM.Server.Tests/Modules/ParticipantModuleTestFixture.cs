@@ -209,5 +209,33 @@ namespace UI_DSM.Server.Tests.Modules
             await this.module.DeleteEntity(this.participantManager.Object, participant.Id, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = It.IsAny<int>(), Times.Once);
         }
+
+        [Test]
+        public async Task VerifyGetAvailableUsers()
+        {
+            var users = new List<UserEntity>()
+            {
+                new (Guid.NewGuid())
+            };
+
+            var project = new Project(Guid.NewGuid());
+
+            this.projectManager.Setup(x => x.FindEntity(project.Id)).ReturnsAsync((Project)null);
+            
+            await this.module.GetAvailableUsers(this.participantManager.As<IParticipantManager>().Object, this.projectManager.Object, 
+                project.Id, this.context.Object);
+
+            this.response.VerifySet(x => x.StatusCode = 404, Times.Once);
+
+            this.projectManager.Setup(x => x.FindEntity(project.Id)).ReturnsAsync(project);
+
+            this.participantManager.As<IParticipantManager>().Setup(x => x.GetAvailableUsersForParticipantCreation(project.Id))
+                .ReturnsAsync(users);
+
+            await this.module.GetAvailableUsers(this.participantManager.As<IParticipantManager>().Object, this.projectManager.Object,
+                project.Id, this.context.Object);
+
+            this.response.VerifySet(x => x.StatusCode = 404, Times.Once);
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IProjectManager.cs" company="RHEA System S.A.">
+// <copyright file="EnumerableExtension.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -11,20 +11,24 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Server.Managers.ProjectManager
+namespace UI_DSM.Shared.Extensions
 {
+    using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     Interface definition for <see cref="ProjectManager" />
+    ///     Extension class for <see cref="IEnumerable{Entity}" />
     /// </summary>
-    public interface IProjectManager : IEntityManager<Project>
+    public static class EnumerableExtension
     {
         /// <summary>
-        ///     Get a collection of <see cref="Project" /> where a <see cref="UserEntity" /> is a <see cref="Participant" />
+        ///     Convert any <see cref="IEnumerable{Entity}" /> to a <see cref="List{EntityDto}" />
         /// </summary>
-        /// <param name="userName">The name of the <see cref="UserEntity" /></param>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="Project" /></returns>
-        Task<IEnumerable<Project>> GetAvailableProjectsForUser(string userName);
+        /// <param name="collection">A collection of <see cref="Entity" /></param>
+        /// <returns>A <see cref="List{EntityDto}" /></returns>
+        public static List<EntityDto> ToDtos(this IEnumerable<Entity> collection)
+        {
+            return collection.Select(x => x.ToDto()).ToList();
+        }
     }
 }

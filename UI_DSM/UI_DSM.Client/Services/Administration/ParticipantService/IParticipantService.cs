@@ -60,5 +60,13 @@ namespace UI_DSM.Client.Services.Administration.ParticipantService
         /// <param name="participant">The <see cref="Participant" /> to delete</param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /></returns>
         Task<RequestResponseDto> DeleteParticipant(Participant participant);
+
+        /// <summary>
+        ///     Gets a collection of <see cref="UserEntity" /> that can be used for the creation of <see cref="Participant" /> into a
+        ///     <see cref="Project" />
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="UserEntity" /></returns>
+        Task<List<UserEntity>> GetAvailableUsersForCreation(Guid projectId);
     }
 }

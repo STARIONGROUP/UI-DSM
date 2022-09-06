@@ -20,5 +20,15 @@
 }
 else
 {
+	<div>
+		<DxButton Click="@this.ViewModel.OpenCreateParticipantPopup" Text="Add participant"/>
+		<DxPopup CloseOnOutsideClick="false" HeaderText="Create Participant" @bind-Visible="@this.ViewModel.IsOnCreationMode">
+			<Content>
+				<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+					<ParticipantCreation ViewModel="@this.ViewModel.ParticipantCreationViewModel" />
+				</CascadingValue>
+			</Content>
+		</DxPopup>
+	</div>
 	<ProjectDetails ViewModel="@this.ViewModel.ProjectDetailsViewModel"/>
 }

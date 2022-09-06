@@ -44,8 +44,15 @@ namespace UI_DSM.Server.Tests.Managers
         {
             var users = new List<UserEntity>()
             {
-                new (Guid.NewGuid()),
                 new (Guid.NewGuid())
+                {
+                    UserName = "admin",
+                    IsAdmin = true
+                },
+                new (Guid.NewGuid())
+                {
+                    UserName = "user"
+                }
             };
 
             var dbSet = DbSetMockHelper.CreateMock(users);
@@ -64,6 +71,14 @@ namespace UI_DSM.Server.Tests.Managers
             Assert.That(getEntityResult, Is.Not.Empty);
             var foundEntities = await this.manager.FindEntities(users.Select(x => x.Id));
             Assert.That(foundEntities.Count(), Is.EqualTo(2));
+
+            var adminUser = (await this.manager.GetUsers(x => x.IsAdmin)).ToList();
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(adminUser.All(x => x.IsAdmin), Is.True);
+                Assert.That(adminUser, Has.Count.EqualTo(1));
+            });
         }
 
         [Test]
