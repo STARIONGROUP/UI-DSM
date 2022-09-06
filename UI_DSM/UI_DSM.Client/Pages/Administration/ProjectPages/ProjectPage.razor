@@ -21,11 +21,13 @@
 else
 {
 	<div>
-		<DxButton Click="@this.ViewModel.OpenCreateParticipantPopup" Text="Add participant"/>
+		<AppButton Click="@this.ViewModel.OpenCreateParticipantPopup" Type="button">
+			<FeatherUserPlus Size="20" Color="currentColor" StrokeWidth="2"  /> <span>Add participant</span>
+		</AppButton>
 		<DxPopup CloseOnOutsideClick="false" HeaderText="Create Participant" @bind-Visible="@this.ViewModel.IsOnCreationMode">
 			<Content>
 				<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
-					<ParticipantCreation ViewModel="@this.ViewModel.ParticipantCreationViewModel" />
+					<ParticipantCreation ViewModel="@this.ViewModel.ParticipantCreationViewModel"/>
 				</CascadingValue>
 			</Content>
 		</DxPopup>
