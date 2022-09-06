@@ -2,7 +2,7 @@
 // UserManagement.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
-// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
 // 
 // This file is part of UI-DSM. 
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
@@ -14,7 +14,13 @@
 
 <ConfirmCancelPopup ViewModel="@this.ViewModel.ConfirmCancelPopup"/>
 <div>
-	<DxButton Click="@this.ViewModel.OpenRegisterPopup" Text="Add user"/>
+	<div class="page-header">
+		<h1>User management</h1>
+		<AppButton Click="@this.ViewModel.OpenRegisterPopup" Type="button">
+			<FeatherUserPlus Size="20" Color="currentColor" StrokeWidth="2"  /> <span>Add user</span>
+		</AppButton>
+	</div>
+
 	<DxPopup CloseOnOutsideClick="false" HeaderText="User Registration" @bind-Visible="@this.ViewModel.IsOnCreationMode">
 		<Content>
 			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
@@ -24,7 +30,7 @@
 	</DxPopup>
 	<DxPopup CloseOnOutsideClick="false" HeaderText="User Details" @bind-Visible="@this.ViewModel.IsOnDetailsViewMode">
 		<Content>
-			<UserDetails ViewModel="@this.ViewModel.UserDetailsViewModel" />
+			<UserDetails ViewModel="@this.ViewModel.UserDetailsViewModel"/>
 		</Content>
 	</DxPopup>
 </div>

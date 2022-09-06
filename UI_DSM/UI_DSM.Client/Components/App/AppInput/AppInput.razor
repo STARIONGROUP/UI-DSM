@@ -1,0 +1,60 @@
+<!--------------------------------------------------------------------------------------------------------
+// AppInput.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+@namespace AppComponents
+@inherits InputBase<string>
+
+<label id="@Id" class="app-input">
+  @if (!string.IsNullOrWhiteSpace(Label))
+  {
+    <span class="app-input__label">@Label</span>
+  }
+    <input class="app-input__input @CssClass" @bind="@CurrentValue" type="@Type" />
+
+  @if (!string.IsNullOrWhiteSpace(Note))
+  {
+    <span class="app-input__note">@Note</span>
+  }
+</label>
+
+@code {
+    /// <summary>
+    ///     HTML ID for input component
+    /// </summary>
+    [Parameter] public string Id { get; set; }
+
+    /// <summary>
+    ///    Input label property
+    /// </summary>
+    [Parameter] public string Label { get; set; } 
+
+    /// <summary>
+    ///    Note text that will be shown below the input
+    /// </summary>
+    [Parameter] public string Note { get; set; } 
+
+    /// <summary>
+    ///    Iput type html property
+    /// </summary>
+    [Parameter] public string Type { get; set; } 
+
+    /// <summary>
+    ///    TryParseValueFromString coming from <see cref="InputBase{TValue}"/>
+    ///    Parses a string to create an instance of T. Derived classes can override this to change how CurrentValueAsString interprets incoming values.
+    /// </summary>
+    protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+}

@@ -1,5 +1,5 @@
-﻿<!--------------------------------------------------------------------------------------------------------
-// Logout.razor
+<!--------------------------------------------------------------------------------------------------------
+// SearchBar.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
@@ -10,4 +10,11 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
-<button class="logout-button" type="submit" @onclick="this.ViewModel.ExecuteLogout"><FeatherLogOut Size="24" Color="currentColor" StrokeWidth="1.5f"  /> Logout</button>
+@namespace AppComponents
+
+<label class="search-bar">
+  <span class="search-bar__icon">
+    <FeatherSearch Color="#5C6370" />
+  </span>
+  <input class="search-bar__input" placeholder="search" />
+</label>

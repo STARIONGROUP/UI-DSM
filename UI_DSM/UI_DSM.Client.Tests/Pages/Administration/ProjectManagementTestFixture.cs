@@ -32,6 +32,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
     using UI_DSM.Shared.Types;
 
     using TestContext = Bunit.TestContext;
+    using AppComponents;
 
     [TestFixture]
     public class ProjectManagementTestFixture
@@ -91,7 +92,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
         public async Task VerifyCreateProject()
         {
             var renderer = this.context.RenderComponent<ProjectManagement>();
-            var createButton = renderer.FindComponent<DxButton>();
+            var createButton = renderer.FindComponent<AppButton>();
             Assert.That(this.viewModel.IsOnCreationMode, Is.False);
 
             await renderer.InvokeAsync(() => createButton.Instance.Click.InvokeAsync());

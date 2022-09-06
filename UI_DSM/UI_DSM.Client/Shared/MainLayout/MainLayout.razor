@@ -1,0 +1,120 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// MainLayout.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+@inherits LayoutComponentBase
+@namespace AppComponents
+
+<div class="default-layout">
+    <div class="default-layout__top-bar">
+        <TopMenu />
+    </div>
+
+    <div class="default-layout__main default-layout__main @layoutClass">
+				@if (tasksActive)
+				{
+					<aside class="default-layout__sidebar default-layout__sidebar__left">
+						<AuthorizeView>
+							<Authorized>
+								<div class="sidebar__header">Tasks</div>
+
+								<NavLink href="/review">
+									<TaskItem TaskTitle="Check the requirements specification" isDone="true" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+								</NavLink>
+								
+								<TaskItem TaskTitle="Check the requirements specification" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+								<TaskItem TaskTitle="Check the requirements specification" isDone="true" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+							</Authorized>
+						</AuthorizeView>
+					</aside>
+				}
+
+        <div class="default-layout__body">
+            @(this.Body)
+        </div>
+        
+				@if (commentsActive) {
+					<aside  class="default-layout__sidebar default-layout__sidebar__right">
+							<div class="sidebar__header">Comments</div>
+					</aside>
+				}
+    </div>
+</div>
+
+@code {
+	/// <summary>
+	///     Inject NavigationManager for redirecting to the login page
+	/// </summary>   
+	@inject NavigationManager NavigationManager
+
+	/// <summary>
+	///    	Expose the authentication state as a cascading parameter
+	/// </summary>   
+	[CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
+
+	/// <summary>
+	///    	Redirect user if not authenticated
+	/// </summary>   
+	protected async override Task OnInitializedAsync()
+	{
+			base.OnInitialized();
+			var user = (await AuthStat).User;
+			if(!user.Identity.IsAuthenticated)
+			{
+					NavigationManager.NavigateTo("/login");
+			}
+	}
+	
+	
+	/// <summary>
+	///    	Task sidebar active or not
+	/// </summary>  
+	private bool tasksActive = true;
+
+	/// <summary>
+	///    	Comments sidebar active or not
+	/// </summary>  
+	private bool commentsActive = true;
+	
+	/// <summary>
+	///    	Keep track of layoutClass for the layout css
+	/// </summary> 
+	private string layoutClass = "";
+
+	/// <summary>
+	///    	Get layout class based on the active sidebars
+	/// </summary> 
+	protected override void OnInitialized()
+	{
+		this.GetLayoutClass();
+		base.OnInitialized();
+		this.StateHasChanged();
+	} 
+
+	private void GetLayoutClass() {
+		if(this.tasksActive && this.commentsActive)
+		{
+			this.layoutClass = "default-layout__main--both-sidebars";
+		}
+		else if(this.tasksActive)
+		{
+			this.layoutClass = "default-layout__main--left-sidebar";
+		}else if(this.commentsActive)
+		{
+			this.layoutClass = "default-layout__main--right-sidebar";
+		}
+		else
+		{
+			this.layoutClass = "default-layout__main--no-sidebars";
+		}
+	}
+}

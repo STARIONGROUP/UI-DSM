@@ -1,0 +1,23 @@
+.task-item {
+  padding: var(--spacing-4) var(--spacing-4) var(--spacing-4) var(--spacing-6);
+  display: grid;
+  gap: var(--spacing-1);
+  border-bottom: 1px solid var(--colors-gray-100);
+  text-decoration: none;
+}
+
+.task-item__header {
+  display: grid;
+  gap: var(--spacing-4);
+  grid-template-columns: 1fr var(--spacing-6);
+  color: var(--colors-gray-900);
+}
+
+.task-item__body {
+  font-size: var(--text-sm);
+  color: var(--colors-gray-600);
+}
+
+.task-item:hover {
+  background: var(--colors-gray-50);
+}

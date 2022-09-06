@@ -1,4 +1,4 @@
-﻿<!--------------------------------------------------------------------------------------------------------
+<!--------------------------------------------------------------------------------------------------------
 // MainLayout.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
@@ -11,19 +11,9 @@
 -------------------------------------------------------------------------------------------------------->
 
 @inherits LayoutComponentBase
+@namespace AppComponents
 
-<div class="page">
-	
-	<div class="sidebar">
-		<NavMenu/>
-	</div>
-	
-	<main>
-		<div class="top-row">
-			<Header/>
-		</div>
-		<article class="content px-4">
-			@(this.Body)
-		</article>
-	</main>
+
+<div class="clean-layout">
+    @Body
 </div>

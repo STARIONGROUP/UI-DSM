@@ -36,6 +36,8 @@ namespace UI_DSM.Client.Tests.Pages.Administration
 
     using TestContext = Bunit.TestContext;
 
+    using AppComponents;
+
     [TestFixture]
     public class UserManagementTestFixture
     {
@@ -85,7 +87,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             var renderer = this.context.RenderComponent<UserManagement>();
 
             var registrationDto = this.viewModel.UserRegistrationViewModel.Registration;
-            var dxButton = renderer.FindComponent<DxButton>();
+            var dxButton = renderer.FindComponent<AppButton>();
             await renderer.InvokeAsync(() => dxButton.Instance.Click.InvokeAsync());
             Assert.That(this.viewModel.IsOnCreationMode, Is.True);
             Assert.That(this.viewModel.UserRegistrationViewModel.Registration, Is.Not.EqualTo(registrationDto));

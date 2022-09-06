@@ -17,6 +17,7 @@ namespace UI_DSM.Client.ViewModels.Components
 
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Shared.DTO.UserManagement;
+    using Microsoft.AspNetCore.Components;
 
     /// <summary>
     ///     Interface definition for <see cref="LoginViewModel" />
@@ -38,10 +39,20 @@ namespace UI_DSM.Client.ViewModels.Components
         /// </summary>
         string ErrorMessage { get; set; }
 
+         /// <summary>
+        ///     Gets or sets the <see cref="NavigationManager" />
+        /// </summary>
+        NavigationManager NavigationManager { get; set; }
+
         /// <summary>
         ///     Tries to authenticate to the server
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>
         Task ExecuteLogin();
+
+        /// <summary>
+        ///     Method to navigate to the home page if the user is logged in
+        /// </summary>
+        void NavigateIfLoggedIn();
     }
 }

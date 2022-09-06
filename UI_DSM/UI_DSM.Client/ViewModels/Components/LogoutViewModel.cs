@@ -51,7 +51,7 @@ namespace UI_DSM.Client.ViewModels.Components
         public async Task ExecuteLogout()
         {
             await this.authenticationService.Logout();
-            this.NavigationManager.NavigateTo("/");
+            this.NavigationManager.NavigateTo("/login");
         }
     }
 }

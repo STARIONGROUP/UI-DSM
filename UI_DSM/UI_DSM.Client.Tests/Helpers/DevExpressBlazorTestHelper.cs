@@ -19,6 +19,7 @@ namespace UI_DSM.Client.Tests.Helpers
 
     using DevExpress.Blazor.Internal;
 
+    using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -55,11 +56,15 @@ namespace UI_DSM.Client.Tests.Helpers
             interop.Mode = JSRuntimeMode.Loose;
             var rootModule = interop.SetupModule("./_content/DevExpress.Blazor/dx-blazor.js");
             rootModule.Mode = JSRuntimeMode.Strict;
-            
+
+            rootModule.Setup<ElementReference>("getReference", _ => true);
+
             rootModule.Setup<DeviceInfo>("getDeviceInfo", _ => true)
                 .SetResult(new DeviceInfo(false));
 
-            rootModule.SetupModule("DxBlazor.Modal.getReference", _ => true);
+            var popupModule = interop.SetupModule("./_content/DevExpress.Blazor/popup.js");
+            popupModule.Setup<ElementReference>("getReference", _ => true);
+            popupModule.Mode = JSRuntimeMode.Strict;
         }
     }
 }

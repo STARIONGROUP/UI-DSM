@@ -1,0 +1,73 @@
+<!--------------------------------------------------------------------------------------------------------
+// AppButton.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+@namespace AppComponents
+
+<button id="@Id" class="app-button @buttonVariant" type="@Type" @onclick="Click" aria-label="@Label">@ChildContent</button>
+
+@code {
+    /// <summary>
+    ///     Different variants on the button, for styling purpose
+    /// </summary>
+    public enum VariantValue
+    {   
+        Danger,
+        Primary,
+        Secondary,
+        Success,
+        Tertiary
+    }
+
+    [Parameter] public VariantValue Variant { get; set; } = VariantValue.Primary;
+    private string buttonVariant { get; set; }
+
+    protected override void OnInitialized()
+    {
+        buttonVariant = Variant switch
+        {
+            VariantValue.Danger => "app-button--danger",
+            VariantValue.Primary => "app-button--primary",
+            VariantValue.Secondary => "app-button--secondary",
+            VariantValue.Success => "app-button--success",
+            VariantValue.Tertiary => "app-button--tertiary",
+            _ => ""
+        };
+    }
+
+    /// <summary>
+    ///     Label used as aria label for a11y
+    /// </summary>
+    [Parameter] public string Label { get; set; }
+
+
+    /// <summary>
+    ///     HTML ID for the button
+    /// </summary>
+    [Parameter] public string Id { get; set; }
+
+    /// <summary>
+    ///     HTML button type: submit, button, reset
+    /// </summary>
+    [Parameter] public string Type { get; set; }
+
+    /// <summary>
+    ///     HTML button type: submit, button, reset
+    /// </summary>
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    /// <summary>
+    ///     Render the innerhtml for the component
+    /// </summary>    
+    [Parameter]
+    public EventCallback Click { get; set; }
+}

@@ -1,0 +1,10 @@
+.logout-button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--spacing-2);
+}
+
+.logout-button:hover {
+  color: var(--colors-red-600);
+}

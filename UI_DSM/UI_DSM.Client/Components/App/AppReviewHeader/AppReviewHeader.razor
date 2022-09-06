@@ -1,0 +1,32 @@
+<!--------------------------------------------------------------------------------------------------------
+// AppReviewHeader.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+@namespace AppComponents
+
+<div class="app-review-header">
+  <h1 class="app-review-header__title">Review objective and task description</h1>
+  <p class="app-review-header__description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a leo tortor. Nullam dignissim lacus at massa auctor, quis tristique massa sollicitudin.</p>
+</div>
+
+@code {
+  /// <summary>
+  ///     Title prop for the review header
+  /// </summary>
+  [Parameter]
+  public string title { get; set; }
+
+  /// <summary>
+  ///     Description text for the review header
+  /// </summary>
+  [Parameter]
+  public string TaskDescription { get; set; }
+}

@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.Tests.Components
 {
     using Bunit;
+    using Bunit.TestDoubles;
 
     using Microsoft.Extensions.DependencyInjection;
 
@@ -40,9 +41,10 @@ namespace UI_DSM.Client.Tests.Components
         public void Setup()
         {
             this.authenticationService = new Mock<IAuthenticationService>();
-            this.viewModel = new LoginViewModel(this.authenticationService.Object);
+            this.viewModel = new LoginViewModel(this.authenticationService.Object, null);
             this.context = new TestContext();
             this.context.Services.AddSingleton(this.viewModel);
+            this.viewModel.NavigationManager = this.context.Services.GetRequiredService<FakeNavigationManager>();
         }
 
         [TearDown]
@@ -60,13 +62,13 @@ namespace UI_DSM.Client.Tests.Components
             this.viewModel.ErrorMessage = "Login fail.";
             renderComponent.Render();
 
-            Assert.That(renderComponent.Find(".text-danger").TextContent, Is.EqualTo("Login fail."));
-            Assert.That(renderComponent.Find("#connectbtn").TextContent, Is.EqualTo("Retry"));
+            Assert.That(renderComponent.Find(".text-danger").TextContent, Contains.Substring("Login fail."));
+            Assert.That(renderComponent.Find("#connectbtn").TextContent, Contains.Substring("Retry login"));
 
             this.viewModel.AuthenticationStatus = AuthenticationStatus.Authenticating;
             renderComponent.Render();
 
-            Assert.That(renderComponent.Find("#connectbtn").TextContent, Is.EqualTo("Connecting"));
+            Assert.That(renderComponent.Find("#connectbtn").TextContent, Contains.Substring("Processing login"));
         }
 
         [Test]
@@ -83,8 +85,8 @@ namespace UI_DSM.Client.Tests.Components
             
             loginButton.Click();
 
-            renderComponent.Find("#username").Change("a");
-            renderComponent.Find("#password").Change("b");
+            renderComponent.Find("#username input").Change("a");
+            renderComponent.Find("#password input").Change("b");
 
             loginButton.Click();
 

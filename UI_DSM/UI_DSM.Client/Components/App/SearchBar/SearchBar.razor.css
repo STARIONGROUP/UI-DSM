@@ -1,0 +1,21 @@
+.search-bar {
+  background: rgba(0,0,0,0.05);
+  border-radius: var(--radius-1);
+  margin: auto;
+  position: relative;
+}
+
+.search-bar__input {
+  padding: var(--spacing-2) var(--spacing-2) var(--spacing-2) var(--spacing-10);
+  border-radius: var(--radius-1);
+}
+
+.search-bar__icon {
+  position: absolute;
+  top: var(--spacing-2);
+  left: var(--spacing-2);
+}
+
+.search-bar__input:focus {
+  outline: 2px solid var(--colors-secondary-500);
+}

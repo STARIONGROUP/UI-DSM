@@ -1,0 +1,32 @@
+.app-button {
+  font-weight: bold;
+  padding: var(--spacing-1) var(--spacing-4);
+  background: var(--colors-primary-500);
+  color: var(--colors-white);
+  border-radius: var(--radius-1);
+  transition: 0.15s ease-in-out;
+  height: var(--spacing-11);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  justify-content: center;
+}
+
+
+.app-button:hover {
+  background: var(--colors-primary-700);
+}
+
+.app-button:focus {
+  outline: 2px solid var(--colors-secondary-500);
+}
+
+.app-button--success {
+  background: var(--colors-green-50);
+  color: var(--colors-green-800);
+} 
+
+.app-button--success:hover {
+  background: var(--colors-green-300);
+  color: var(--colors-green-900);
+}

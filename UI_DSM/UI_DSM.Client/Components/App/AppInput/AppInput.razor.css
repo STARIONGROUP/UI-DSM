@@ -1,0 +1,26 @@
+.app-input {
+  display: grid;
+  gap: var(--spacing-1);
+}
+
+.app-input__label {
+  font-size: var(--text-sm);
+  font-weight: bold;
+}
+
+.app-input__input {
+  border: 2px solid var(--colors-gray-800);
+  padding: var(--spacing-2);
+  border-radius: var(--radius-1);
+  transition: 0.15s ease-in-out;
+  height: var(--spacing-11);
+}
+
+.app-input__input:focus {
+  outline: 2px solid var(--colors-secondary-500);
+}
+
+.app-input__note {
+  font-size: var(--text-sm);
+  color: var(--colors-gray-600);
+}
