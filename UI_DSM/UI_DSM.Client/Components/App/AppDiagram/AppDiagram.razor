@@ -1,0 +1,88 @@
+<!--------------------------------------------------------------------------------------------------------
+// AppDiagram.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+@namespace AppComponents
+@using Blazor.Diagrams.Core
+@using Blazor.Diagrams.Core.Geometry
+@using Blazor.Diagrams.Core.Models
+
+<!-- required to resolve DiagramCanvas component -->
+@using Blazor.Diagrams.Components
+
+<div class="app-diagram">
+  <AppButton Click="() => Diagram.ZoomToFit(50)">aaa</AppButton>
+  <div class="diagram-container">
+    <CascadingValue Value="Diagram">
+      <DiagramCanvas>
+        <Widgets>
+            <NavigatorWidget Width="200" Height="150" DefaultStyle="true"></NavigatorWidget>
+        </Widgets>
+      </DiagramCanvas>
+    </CascadingValue>
+  </div>
+</div>
+
+@code {
+  private Diagram Diagram { get; set; }
+
+  protected override void OnInitialized()
+  {
+    base.OnInitialized();
+
+    var options = new DiagramOptions
+    {
+      DeleteKey = "Delete", // What key deletes the selected nodes/links
+      Links = new DiagramLinkOptions
+      {
+        DefaultRouter = Routers.Orthogonal,
+        DefaultPathGenerator = PathGenerators.Straight
+      },
+      Zoom = new DiagramZoomOptions
+      {
+        Minimum = 0.5, // Minimum zoom value
+        Inverse = false, // Whether to inverse the direction of the zoom when using the wheel
+      }
+    };
+
+    Diagram = new Diagram(options);
+
+    Setup();
+  }
+
+  private void Setup()
+  {
+    var node1 = NewNode(300, 50);
+    var node2 = NewNode(150, 300);
+    var node3 = NewNode(300, 300);
+    var node4 = NewNode(450, 300);
+
+    Diagram.Nodes.Add(new [] { node1, node2, node3, node4 });
+
+    var link1 = new LinkModel(node1.GetPort(PortAlignment.Bottom), node2.GetPort(PortAlignment.Top));
+    var link2 = new LinkModel(node1.GetPort(PortAlignment.Bottom), node3.GetPort(PortAlignment.Top));
+    var link3 = new LinkModel(node1.GetPort(PortAlignment.Bottom), node4.GetPort(PortAlignment.Top));
+
+    Diagram.Links.Add(new[] { link1, link2, link3 });
+    Diagram.ZoomToFit(50);
+  }
+
+  private static NodeModel NewNode(double x, double y)
+  {
+    var node = new NodeModel(new Point(x, y));
+    node.AddPort(PortAlignment.Bottom);
+    node.AddPort(PortAlignment.Top);
+    node.AddPort(PortAlignment.Left);
+    node.AddPort(PortAlignment.Right);
+    node.Locked = true;
+    return node;
+  }
+}

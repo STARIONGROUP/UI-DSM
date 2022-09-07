@@ -1,12 +1,12 @@
 <!--------------------------------------------------------------------------------------------------------
 // Index.razor
 // Copyright (c) 2022 RHEA System S.A.
-// 
+//
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
-// 
-// This file is part of UI-DSM. 
+//
+// This file is part of UI-DSM.
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
@@ -16,12 +16,18 @@
 <PageTitle>Review | UI-DSM</PageTitle>
 
 <div class="review-page">
-	<AppReviewHeader />
-	<div class="page-header">
-		<h1>Review objective and description</h1>
-    <AppButton Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success">
-      <FeatherCheckCircle Size="20" Color="currentColor" StrokeWidth="2"  /> <span>Mark as done</span>
-		</AppButton>
+	<div class="review-page__head">
+		<AppReviewHeader />
+		<div class="page-header">
+			<h1>Review objective and description</h1>
+			<AppButton Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success">
+				<FeatherCheckCircle Size="20" Color="currentColor" StrokeWidth="2"  /> <span>Mark as done</span>
+			</AppButton>
+		</div>
+	</div>
+
+	<div class="review-page__content">
+			<AppDiagram />
 	</div>
 </div>
 

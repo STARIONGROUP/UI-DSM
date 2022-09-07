@@ -2,3 +2,8 @@
   display: grid;
   gap: var(--spacing-8);
 }
+
+.review-page__head {
+  display: grid;
+  gap: var(--spacing-8);
+}
