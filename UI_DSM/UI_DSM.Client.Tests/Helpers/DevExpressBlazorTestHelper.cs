@@ -55,17 +55,14 @@ namespace UI_DSM.Client.Tests.Helpers
         {
             interop.Mode = JSRuntimeMode.Loose;
 
-            interop.Setup<ElementReference>("DxBlazor.Modal.getReference", _ => true)
-                .SetResult(new ElementReference());
+            var referenceModule = interop.SetupModule("DxBlazor.Modal.getReference", _ => true);
+            referenceModule.Mode=JSRuntimeMode.Loose;
             
             var rootModule = interop.SetupModule("./_content/DevExpress.Blazor/dx-blazor.js");
             rootModule.Mode = JSRuntimeMode.Strict;
 
             rootModule.Setup<DeviceInfo>("getDeviceInfo", _ => true)
                 .SetResult(new DeviceInfo(false));
-            
-            rootModule.Setup<ElementReference>("DxBlazor.Modal.getReference", _ => true)
-                .SetResult(new ElementReference());
         }
     }
 }
