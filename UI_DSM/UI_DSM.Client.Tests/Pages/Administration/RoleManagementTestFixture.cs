@@ -15,8 +15,6 @@ namespace UI_DSM.Client.Tests.Pages.Administration
 {
     using Bunit;
 
-    using DevExpress.Blazor;
-
     using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -93,11 +91,10 @@ namespace UI_DSM.Client.Tests.Pages.Administration
         {
             var renderer = this.context.RenderComponent<RoleManagement>();
             var appButton = renderer.FindComponent<AppButton>();
-            var dxPopup = renderer.FindComponent<DxPopup>();
             var currentCreationRole = this.viewModel.RoleCreationViewModel.Role;
-            Assert.That(dxPopup.Instance.Visible, Is.False);
+            Assert.That(this.viewModel.IsOnCreationMode, Is.False);
             await renderer.InvokeAsync(appButton.Instance.Click.InvokeAsync);
-            Assert.That(dxPopup.Instance.Visible, Is.True);
+            Assert.That(this.viewModel.IsOnCreationMode, Is.True);
             Assert.That(this.viewModel.RoleCreationViewModel.Role, Is.Not.EqualTo(currentCreationRole));
 
             this.viewModel.RoleCreationViewModel.SelectedAccessRights = new List<AccessRightWrapper>()
@@ -115,7 +112,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
 
             await this.viewModel.RoleCreationViewModel.OnValidSubmit.InvokeAsync();
             Assert.That(this.viewModel.ErrorMessageViewModel.Errors.Count, Is.EqualTo(1));
-            Assert.That(dxPopup.Instance.Visible, Is.True);
+            Assert.That(this.viewModel.IsOnCreationMode, Is.True);
 
             this.roleService.Setup(x => x.CreateRole(this.viewModel.RoleCreationViewModel.Role))
                 .ReturnsAsync(EntityRequestResponse<Role>.Success(new Role()));
