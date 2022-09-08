@@ -210,6 +210,21 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
+            await this.ValidateAndUpdateEntity(manager, entity, dto, context, requestResponse, deepLevel);
+        }
+
+        /// <summary>
+        /// Validates the found <see cref="TEntityDto"/> and tries to update the <see cref="TEntity"/>
+        /// </summary>
+        /// <param name="manager">The <see cref="IEntityManager{TEntity}"/></param>
+        /// <param name="entity">The <see cref="TEntity"/></param>
+        /// <param name="dto">The <see cref="TEntityDto"/></param>
+        /// <param name="context">The <see cref="HttpContext"/></param>
+        /// <param name="requestResponse">The <see cref="EntityRequestResponseDto"/></param>
+        /// <param name="deepLevel">The deep level</param>
+        /// <returns>A <see cref="Task"/></returns>
+        protected async Task ValidateAndUpdateEntity(IEntityManager<TEntity> manager, TEntity entity, TEntityDto dto, HttpContext context,  EntityRequestResponseDto requestResponse, int deepLevel)
+        {
             var validationResult = context.Request.Validate(dto);
 
             if (!validationResult.IsValid)

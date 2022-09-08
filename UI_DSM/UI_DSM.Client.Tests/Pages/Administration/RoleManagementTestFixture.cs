@@ -91,7 +91,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             {
                 // On GitHub, exception is thrown even if the JSRuntime has been configured
             }
-            }
+        }
 
         [Test]
         public async Task VerifyOpenCreationPopupAndCreateRole()
@@ -103,13 +103,17 @@ namespace UI_DSM.Client.Tests.Pages.Administration
                 var currentCreationRole = this.viewModel.RoleCreationViewModel.Role;
                 Assert.That(this.viewModel.IsOnCreationMode, Is.False);
                 await renderer.InvokeAsync(appButton.Instance.Click.InvokeAsync);
-                Assert.That(this.viewModel.IsOnCreationMode, Is.True);
-                Assert.That(this.viewModel.RoleCreationViewModel.Role, Is.Not.EqualTo(currentCreationRole));
 
+                Assert.Multiple(() =>
+                {
+                    Assert.That(this.viewModel.IsOnCreationMode, Is.True);
+                    Assert.That(this.viewModel.RoleCreationViewModel.Role, Is.Not.EqualTo(currentCreationRole));
+                });
+               
                 this.viewModel.RoleCreationViewModel.SelectedAccessRights = new List<AccessRightWrapper>()
-            {
-                new(AccessRight.ManageParticipant)
-            };
+                {
+                    new(AccessRight.ManageParticipant)
+                };
 
                 this.viewModel.RoleCreationViewModel.Role.RoleName = "Project manager";
 
@@ -120,16 +124,24 @@ namespace UI_DSM.Client.Tests.Pages.Administration
                     }));
 
                 await this.viewModel.RoleCreationViewModel.OnValidSubmit.InvokeAsync();
-                Assert.That(this.viewModel.ErrorMessageViewModel.Errors.Count, Is.EqualTo(1));
-                Assert.That(this.viewModel.IsOnCreationMode, Is.True);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(this.viewModel.ErrorMessageViewModel.Errors.Count, Is.EqualTo(1));
+                    Assert.That(this.viewModel.IsOnCreationMode, Is.True);
+                });
 
                 this.roleService.Setup(x => x.CreateRole(this.viewModel.RoleCreationViewModel.Role))
                     .ReturnsAsync(EntityRequestResponse<Role>.Success(new Role()));
 
                 await this.viewModel.RoleCreationViewModel.OnValidSubmit.InvokeAsync();
-                Assert.That(this.viewModel.Roles.Count, Is.EqualTo(1));
-                Assert.That(this.viewModel.IsOnCreationMode, Is.False);
-                Assert.That(this.viewModel.ErrorMessageViewModel.Errors, Is.Empty);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(this.viewModel.Roles.Count, Is.EqualTo(1));
+                    Assert.That(this.viewModel.IsOnCreationMode, Is.False);
+                    Assert.That(this.viewModel.ErrorMessageViewModel.Errors, Is.Empty);
+                });
 
                 this.roleService.Setup(x => x.CreateRole(this.viewModel.RoleCreationViewModel.Role))
                     .ThrowsAsync(new HttpRequestException());

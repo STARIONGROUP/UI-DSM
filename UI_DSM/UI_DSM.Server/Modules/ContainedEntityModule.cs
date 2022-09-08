@@ -13,7 +13,6 @@
 
 namespace UI_DSM.Server.Modules
 {
-    using Carter.ModelBinding;
     using Carter.Response;
 
     using Microsoft.AspNetCore.Components;
@@ -257,28 +256,15 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            var entity = await containedManager.FindEntityWithContainer(entityId);
+            var entityWithContainer = await containedManager.FindEntityWithContainer(entityId);
 
-            if (!this.ValidateEntityAndContainer(entity, this.ContainerRouteKey, context, requestResponse))
+            if (!this.ValidateEntityAndContainer(entityWithContainer, this.ContainerRouteKey, context, requestResponse))
             {
                 await context.Response.Negotiate(requestResponse);
                 return;
             }
 
-            var validationResult = context.Request.Validate(dto);
-
-            if (!validationResult.IsValid)
-            {
-                requestResponse.Errors = validationResult.Errors.Select(x => x.ErrorMessage).ToList();
-                context.Response.StatusCode = 422;
-                await context.Response.Negotiate(requestResponse);
-                return;
-            }
-
-            await manager.ResolveProperties(entity, dto);
-            var idendityResult = await manager.UpdateEntity(entity);
-            this.HandleOperationResult(requestResponse, context.Response, idendityResult, deepLevel: deepLevel);
-            await context.Response.Negotiate(requestResponse);
+            await this.ValidateAndUpdateEntity(manager, entityWithContainer, dto, context, requestResponse, deepLevel);
         }
 
         /// <summary>
