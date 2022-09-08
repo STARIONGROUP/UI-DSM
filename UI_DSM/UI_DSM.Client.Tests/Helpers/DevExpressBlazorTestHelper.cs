@@ -55,8 +55,7 @@ namespace UI_DSM.Client.Tests.Helpers
         {
             interop.Mode = JSRuntimeMode.Loose;
 
-            var referenceModule = interop.SetupModule("DxBlazor.Modal.getReference", _ => true);
-            referenceModule.Mode=JSRuntimeMode.Loose;
+            interop.SetupVoid("DxBlazor.Modal.getReference");
             
             var rootModule = interop.SetupModule("./_content/DevExpress.Blazor/dx-blazor.js");
             rootModule.Mode = JSRuntimeMode.Strict;
