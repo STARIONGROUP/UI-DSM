@@ -18,28 +18,29 @@ namespace UI_DSM.Server.Managers.ParticipantManager
     /// <summary>
     ///     Interface definition for <see cref="ParticipantManager" />
     /// </summary>
-    public interface IParticipantManager : IEntityManager<Participant>
+    public interface IParticipantManager : IContainedEntityManager<Participant>
     {
         /// <summary>
-        ///     Gets all <see cref="Participant" /> that are inside a <see cref="Project" /> and associated <see cref="Entity" />
+        ///     Gets all <see cref="Participant" /> where the <see cref="Participant.User" /> is the provided
+        ///     <see cref="UserEntity" />
         /// </summary>
-        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
-        /// <param name="deepLevel">The deep level</param>
-        /// <returns>A <see cref="Task"/> with a collection of <see cref="Entity"/></returns>
-        Task<IEnumerable<Entity>> GetParticipantsOfProject(Guid projectId, int deepLevel = 0);
-
-        /// <summary>
-        /// Gets all <see cref="Participant"/> where the <see cref="Participant.User"/> is the provided <see cref="UserEntity"/>
-        /// </summary>
-        /// <param name="userName">The name of the <see cref="UserEntity"/></param>
-        /// <returns>A <see cref="Task"/> with a collection of <see cref="Participant"/></returns>
+        /// <param name="userName">The name of the <see cref="UserEntity" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Participant" /></returns>
         Task<IEnumerable<Participant>> GetParticipants(string userName);
 
         /// <summary>
-        /// Gets all <see cref="UserEntity"/> that are available for the creation of <see cref="Participant"/> inside a certain project
+        ///     Gets all <see cref="UserEntity" /> that are available for the creation of <see cref="Participant" /> inside a certain project
         /// </summary>
-        /// <param name="projectId">The <see cref="projectId"/></param>
-        /// <returns>A <see cref="Task"/> collection of <see cref="UserEntity"/> as result</returns>
+        /// <param name="projectId">The <see cref="projectId" /></param>
+        /// <returns>A <see cref="Task" /> collection of <see cref="UserEntity" /> as result</returns>
         Task<IEnumerable<UserEntity>> GetAvailableUsersForParticipantCreation(Guid projectId);
+
+        /// <summary>
+        ///     Gets a <see cref="Participant" /> by his name and his <see cref="Project" /> where he is involed
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="userName">The name of the <see cref="Participant" /></param>
+        /// <returns>A <see cref="Task" />with the <see cref="Participant" /> if found</returns>
+        Task<Participant> GetParticipantForProject(Guid projectId, string userName);
     }
 }

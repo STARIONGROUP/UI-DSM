@@ -31,7 +31,7 @@ namespace UI_DSM.Shared.Models
         /// </summary>
         public Project()
         {
-            this.Participants = new EntityContainerList<Participant>(this);
+            this.InitializeCollections();
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace UI_DSM.Shared.Models
         /// <param name="id">The <see cref="Guid" /> of the <see cref="Project" /></param>
         public Project(Guid id) : base(id)
         {
-            this.Participants = new EntityContainerList<Participant>(this);
+            this.InitializeCollections();
         }
 
         /// <summary>
@@ -56,6 +56,12 @@ namespace UI_DSM.Shared.Models
         public EntityContainerList<Participant> Participants { get; protected set; }
 
         /// <summary>
+        ///     Gets or sets the collection of <see cref="Review" />
+        /// </summary>
+        [DeepLevel(1)]
+        public EntityContainerList<Review> Reviews { get; protected set; }
+
+        /// <summary>
         ///     Instantiate a <see cref="EntityDto" /> from a <see cref="Entity" />
         /// </summary>
         /// <returns>A new <see cref="EntityDto" /></returns>
@@ -64,7 +70,8 @@ namespace UI_DSM.Shared.Models
             var dto = new ProjectDto(this.Id)
             {
                 ProjectName = this.ProjectName,
-                Participants = new List<Guid>(this.Participants.Select(x => x.Id))
+                Participants = new List<Guid>(this.Participants.Select(x => x.Id)),
+                Reviews = new List<Guid>(this.Reviews.Select(x => x.Id))
             };
 
             return dto;
@@ -84,6 +91,16 @@ namespace UI_DSM.Shared.Models
 
             this.ProjectName = projectDto.ProjectName;
             this.Participants.ResolveList(projectDto.Participants, resolvedEntity);
+            this.Reviews.ResolveList(projectDto.Reviews, resolvedEntity);
+        }
+
+        /// <summary>
+        ///     Initializes all collections for this <see cref="Entity" />
+        /// </summary>
+        private void InitializeCollections()
+        {
+            this.Participants = new EntityContainerList<Participant>(this);
+            this.Reviews = new EntityContainerList<Review>(this);
         }
     }
 }

@@ -99,7 +99,7 @@ namespace UI_DSM.Client.Services.Administration.ParticipantService
         /// <summary>
         ///     Updates a <see cref="Participant" />
         /// </summary>
-        /// <param name="participant">The <see cref="Participant" />to create</param>
+        /// <param name="participant">The <see cref="Participant" />to update</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{Participant}" /></returns>
         public async Task<EntityRequestResponse<Participant>> UpdateParticipant(Participant participant)
         {

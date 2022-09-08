@@ -25,7 +25,7 @@ namespace UI_DSM.Shared.DTO.Models
         /// </summary>
         public ProjectDto()
         {
-            this.Participants = new List<Guid>();
+            this.InitializeCollections();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace UI_DSM.Shared.DTO.Models
         /// <param name="id">The <see cref="Guid" /> of the represented <see cref="Project" /></param>
         public ProjectDto(Guid id) : base(id)
         {
-            this.Participants = new List<Guid>();
+            this.InitializeCollections();
         }
 
         /// <summary>
@@ -48,12 +48,26 @@ namespace UI_DSM.Shared.DTO.Models
         public List<Guid> Participants { get; set; }
 
         /// <summary>
+        ///     Gets or sets the collection of <see cref="Guid" /> that represents <see cref="Review" />s
+        /// </summary>
+        public List<Guid> Reviews { get; set; }
+
+        /// <summary>
         ///     Instantiate a <see cref="Project" /> from a <see cref="ProjectDto" />
         /// </summary>
         /// <returns>A new <see cref="Project" /></returns>
         public override Entity InstantiatePoco()
         {
             return new Project(this.Id);
+        }
+
+        /// <summary>
+        ///     Initializes all collections for this <see cref="EntityDto" />
+        /// </summary>
+        private void InitializeCollections()
+        {
+            this.Participants = new List<Guid>();
+            this.Reviews = new List<Guid>();
         }
     }
 }

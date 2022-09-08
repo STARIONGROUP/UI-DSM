@@ -84,12 +84,7 @@ namespace UI_DSM.Server.Managers.ParticipantManager
         {
             var participant = await this.FindEntity(entityId);
 
-            if (participant == null)
-            {
-                return Enumerable.Empty<Entity>();
-            }
-
-            return participant.GetAssociatedEntities(deepLevel);
+            return participant == null ? Enumerable.Empty<Entity>() : participant.GetAssociatedEntities(deepLevel);
         }
 
         /// <summary>
@@ -145,7 +140,7 @@ namespace UI_DSM.Server.Managers.ParticipantManager
 
             var project = entity.EntityContainer as Project;
             var existingParticipant = project!.Participants.FirstOrDefault(x => x.Id != Guid.Empty && x.User.Id == entity.User.Id);
-
+             
             if (existingParticipant != null)
             {
                 project.Participants.Remove(entity);
@@ -250,17 +245,41 @@ namespace UI_DSM.Server.Managers.ParticipantManager
         }
 
         /// <summary>
-        ///     Gets all <see cref="Participant" /> that are inside a <see cref="Project" /> and associated <see cref="Entity" />
+        ///     Finds an <see cref="Participant" /> and includes his <see cref="Entity" /> container
         /// </summary>
-        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="entityId">The <see cref="Entity" /> id</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Participant" /></returns>
+        public async Task<Participant> FindEntityWithContainer(Guid entityId)
+        {
+            return await this.context.Participants.Where(x => x.Id == entityId)
+                .Include(x => x.EntityContainer).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Entity" /> that are contained by the <see cref="Entity" /> with the Id
+        ///     <see cref="containerId" /> and associated <see cref="Entity" />
+        /// </summary>
+        /// <param name="containerId">The <see cref="Guid" /> of the container</param>
         /// <param name="deepLevel">The deep level</param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
-        public async Task<IEnumerable<Entity>> GetParticipantsOfProject(Guid projectId, int deepLevel = 0)
+        public async Task<IEnumerable<Entity>> GetContainedEntities(Guid containerId, int deepLevel = 0)
         {
             var participants = await this.context.Participants.Where(x => x.EntityContainer != null
-                                                                          && x.EntityContainer.Id == projectId).ToListAsync();
+                                                                          && x.EntityContainer.Id == containerId).ToListAsync();
 
             return participants.SelectMany(x => x.GetAssociatedEntities(deepLevel)).ToList();
+        }
+
+        /// <summary>
+        ///     Verifies if the container of the <see cref="Entity" /> has the given <see cref="Guid" />
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Entity" /></param>
+        /// <param name="containerId">The <see cref="Guid" /> of the container</param>
+        /// <returns>A <see cref="Task" /> with the value of the check</returns>
+        public async Task<bool> EntityIsContainedBy(Guid entityId, Guid containerId)
+        {
+            var participant = await this.FindEntityWithContainer(entityId);
+            return participant != null && participant.EntityContainer.Id == containerId;
         }
 
         /// <summary>
@@ -273,7 +292,10 @@ namespace UI_DSM.Server.Managers.ParticipantManager
         {
             var userEntity = await this.userManager.GetUserByName(userName);
 
-            return userEntity == null ? Enumerable.Empty<Participant>() : this.context.Participants.Where(x => x.User.Id == userEntity.Id);
+            return userEntity == null
+                ? Enumerable.Empty<Participant>() 
+                : this.context.Participants.Where(x => x.User.Id == userEntity.Id)
+                    .Include(x => x.EntityContainer);
         }
 
         /// <summary>
@@ -288,6 +310,20 @@ namespace UI_DSM.Server.Managers.ParticipantManager
 
             var users = await this.userManager.GetUsers(x => projectParticipant.All(userId => userId != x.Id));
             return users;
+        }
+
+        /// <summary>
+        ///     Gets a <see cref="Participant" /> by his name and his <see cref="Project" /> where he is involed
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="userName">The name of the <see cref="Participant" /></param>
+        /// <returns>A <see cref="Task" />with the <see cref="Participant" /> if found</returns>
+        public async Task<Participant> GetParticipantForProject(Guid projectId, string userName)
+        {
+            var participant = await this.context.Participants.Where(x => x.EntityContainer != null && x.EntityContainer.Id == projectId && x.User.UserName == userName)
+                .ToListAsync();
+
+            return participant.FirstOrDefault();
         }
 
         /// <summary>

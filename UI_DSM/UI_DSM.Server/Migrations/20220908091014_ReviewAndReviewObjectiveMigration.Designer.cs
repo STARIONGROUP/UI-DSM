@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UI_DSM.Server.Context;
@@ -10,13 +11,11 @@ using UI_DSM.Server.Context;
 
 namespace UI_DSM.Server.Migrations
 {
-    using System.Diagnostics.CodeAnalysis;
-
-    [ExcludeFromCodeCoverage]
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20220908091014_ReviewAndReviewObjectiveMigration")]
+    partial class ReviewAndReviewObjectiveMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -181,7 +180,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Entity", (string)null);
+                    b.ToTable("Entity");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.User", b =>
@@ -287,7 +286,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Participant", (string)null);
+                    b.ToTable("Participant");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Project", b =>
@@ -306,7 +305,7 @@ namespace UI_DSM.Server.Migrations
                     b.HasIndex("ProjectName")
                         .IsUnique();
 
-                    b.ToTable("Project", (string)null);
+                    b.ToTable("Project");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Review", b =>
@@ -344,7 +343,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("EntityContainerId");
 
-                    b.ToTable("Review", (string)null);
+                    b.ToTable("Review");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.ReviewObjective", b =>
@@ -382,7 +381,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("EntityContainerId");
 
-                    b.ToTable("ReviewObjective", (string)null);
+                    b.ToTable("ReviewObjective");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Role", b =>
@@ -405,7 +404,7 @@ namespace UI_DSM.Server.Migrations
                     b.HasIndex("RoleName")
                         .IsUnique();
 
-                    b.ToTable("Role", (string)null);
+                    b.ToTable("Role");
 
                     b.HasData(
                         new
@@ -442,7 +441,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserEntity", (string)null);
+                    b.ToTable("UserEntity");
 
                     b.HasData(
                         new

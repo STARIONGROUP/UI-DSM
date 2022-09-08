@@ -250,9 +250,9 @@ namespace UI_DSM.Server.Tests.Managers
             allParticipants.AddRange(project2.Participants);
             var dbSet = DbSetMockHelper.CreateMock(allParticipants);
             this.context.Setup(x => x.Participants).Returns(dbSet.Object);
-            var entities = await this.manager.GetParticipantsOfProject(project1.Id);
+            var entities = await this.manager.GetContainedEntities(project1.Id);
             Assert.That(entities.Count(), Is.EqualTo(2));
-            entities = await this.manager.GetParticipantsOfProject(Guid.NewGuid());
+            entities = await this.manager.GetContainedEntities(Guid.NewGuid());
             Assert.That(entities, Is.Empty);
         }
 
@@ -301,6 +301,9 @@ namespace UI_DSM.Server.Tests.Managers
                 Assert.That(availableUsers, Has.Count.EqualTo(2));
                 Assert.That(availableUsers.All(x => x.Id != participants.First().User.Id), Is.True);
             });
+
+            var participant = await this.manager.GetParticipantForProject(project.Id, "user3");
+            Assert.That(participant, Is.EqualTo(participants.First()));
         }
     }
 }

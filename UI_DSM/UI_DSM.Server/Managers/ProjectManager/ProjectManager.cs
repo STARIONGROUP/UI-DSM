@@ -20,6 +20,7 @@ namespace UI_DSM.Server.Managers.ProjectManager
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.ParticipantManager;
+    using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -45,14 +46,21 @@ namespace UI_DSM.Server.Managers.ProjectManager
         private readonly IParticipantManager participantManager;
 
         /// <summary>
+        ///     The <see cref="IReviewManager" />
+        /// </summary>
+        private readonly IReviewManager reviewManager;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectManager" /> class.
         /// </summary>
         /// <param name="context">The <see cref="DatabaseContext" /></param>
         /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
-        public ProjectManager(DatabaseContext context, IParticipantManager participantManager)
+        /// <param name="reviewManager">The <see cref="IReviewManager"/></param>
+        public ProjectManager(DatabaseContext context, IParticipantManager participantManager, IReviewManager reviewManager)
         {
             this.context = context;
             this.participantManager = participantManager;
+            this.reviewManager = reviewManager;
         }
 
         /// <summary>
@@ -211,6 +219,7 @@ namespace UI_DSM.Server.Managers.ProjectManager
 
             var relatedEntities = new Dictionary<Guid, Entity>();
             relatedEntities.InsertEntityCollection(await this.participantManager.FindEntities(projectDto.Participants));
+            relatedEntities.InsertEntityCollection(await this.reviewManager.FindEntities(projectDto.Reviews));
 
             entity.ResolveProperties(projectDto, relatedEntities);
         }

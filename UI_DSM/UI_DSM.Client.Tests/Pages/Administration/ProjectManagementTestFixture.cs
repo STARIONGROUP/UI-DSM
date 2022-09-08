@@ -16,8 +16,6 @@ namespace UI_DSM.Client.Tests.Pages.Administration
     using Bunit;
     using Bunit.TestDoubles;
 
-    using DevExpress.Blazor;
-
     using Microsoft.Extensions.DependencyInjection;
 
     using Moq;
@@ -32,6 +30,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
     using UI_DSM.Shared.Types;
 
     using TestContext = Bunit.TestContext;
+
     using AppComponents;
 
     [TestFixture]

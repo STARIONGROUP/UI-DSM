@@ -22,6 +22,7 @@ namespace UI_DSM.Server.Tests.Managers
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ProjectManager;
+    using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Shared.Models;
 
@@ -31,13 +32,15 @@ namespace UI_DSM.Server.Tests.Managers
         private ProjectManager manager;
         private Mock<DatabaseContext> context;
         private Mock<IParticipantManager> participantManager;
+        private Mock<IReviewManager> reviewManager;
 
         [SetUp]
         public void Setup()
         {
             this.context = new Mock<DatabaseContext>();
             this.participantManager = new Mock<IParticipantManager>();
-            this.manager = new ProjectManager(this.context.Object, this.participantManager.Object);
+            this.reviewManager = new Mock<IReviewManager>();
+            this.manager = new ProjectManager(this.context.Object, this.participantManager.Object, this.reviewManager.Object);
         }
 
         [Test]
