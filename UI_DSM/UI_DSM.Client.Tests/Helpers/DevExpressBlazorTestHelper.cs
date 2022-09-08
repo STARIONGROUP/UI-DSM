@@ -19,6 +19,7 @@ namespace UI_DSM.Client.Tests.Helpers
 
     using DevExpress.Blazor.Internal;
 
+    using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -56,6 +57,8 @@ namespace UI_DSM.Client.Tests.Helpers
 
             var reference = interop.SetupModule("DxBlazor.Modal.getReference",_ => true);
             reference.Mode = JSRuntimeMode.Loose;
+
+            interop.Setup<ElementReference>("DxBlazor.Modal.getReference", _ => true);
 
             var rootModule = interop.SetupModule("./_content/DevExpress.Blazor/dx-blazor.js");
             rootModule.Mode = JSRuntimeMode.Strict;
