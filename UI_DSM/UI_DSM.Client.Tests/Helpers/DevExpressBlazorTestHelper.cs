@@ -64,7 +64,7 @@ namespace UI_DSM.Client.Tests.Helpers
 
             var popupModule = interop.SetupModule("./_content/DevExpress.Blazor/popup.js");
             popupModule.Setup<ElementReference>("getReference", _ => true);
-            popupModule.Mode = JSRuntimeMode.Loose;
+            popupModule.Mode = JSRuntimeMode.Strict;
         }
     }
 }
