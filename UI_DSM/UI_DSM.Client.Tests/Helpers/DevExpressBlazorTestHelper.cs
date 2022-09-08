@@ -54,17 +54,12 @@ namespace UI_DSM.Client.Tests.Helpers
         private static void ConfigureJSInterop(BunitJSInterop interop)
         {
             interop.Mode = JSRuntimeMode.Loose;
+            interop.Setup<ElementReference>("DxBlazor.Modal.getReference", _ => true);
             var rootModule = interop.SetupModule("./_content/DevExpress.Blazor/dx-blazor.js");
             rootModule.Mode = JSRuntimeMode.Strict;
 
-            rootModule.Setup<ElementReference>("DxBlazor.Modal.getReference", _ => true);
-
             rootModule.Setup<DeviceInfo>("getDeviceInfo", _ => true)
                 .SetResult(new DeviceInfo(false));
-
-            var popupModule = interop.SetupModule("./_content/DevExpress.Blazor/popup.js");
-            popupModule.Setup<ElementReference>("DxBlazor.Modal.getReference", _ => true);
-            popupModule.Mode = JSRuntimeMode.Strict;
         }
     }
 }
