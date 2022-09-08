@@ -21,6 +21,7 @@ namespace UI_DSM.Client.Tests.Helpers
 
     using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.JSInterop;
 
     /// <summary>
     ///     Helper class that configures a <see cref="TestContext" /> to be able to test DevExpress components
@@ -55,8 +56,9 @@ namespace UI_DSM.Client.Tests.Helpers
         {
             interop.Mode = JSRuntimeMode.Loose;
 
-            interop.SetupVoid("DxBlazor.Modal.getReference");
-            
+            var reference = interop.SetupModule("DxBlazor.Modal.getReference",_ => true);
+            reference.Mode = JSRuntimeMode.Loose;
+
             var rootModule = interop.SetupModule("./_content/DevExpress.Blazor/dx-blazor.js");
             rootModule.Mode = JSRuntimeMode.Strict;
 
