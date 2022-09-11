@@ -24,14 +24,13 @@
 					<aside class="default-layout__sidebar default-layout__sidebar__left">
 						<AuthorizeView>
 							<Authorized>
-								<div class="sidebar__header">Tasks</div>
-
-								<NavLink href="/review">
+								<AppAccordion Label="Tasks">
+									<NavLink href="/review">
+										<TaskItem TaskTitle="Check the requirements specification" isDone="true" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+									</NavLink>									
+									<TaskItem TaskTitle="Check the requirements specification" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
 									<TaskItem TaskTitle="Check the requirements specification" isDone="true" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
-								</NavLink>
-								
-								<TaskItem TaskTitle="Check the requirements specification" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
-								<TaskItem TaskTitle="Check the requirements specification" isDone="true" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+								</AppAccordion>
 							</Authorized>
 						</AuthorizeView>
 					</aside>
@@ -43,7 +42,8 @@
         
 				@if (commentsActive) {
 					<aside  class="default-layout__sidebar default-layout__sidebar__right">
-							<div class="sidebar__header">Comments</div>
+						<AppAccordion Label="Comments">
+						</AppAccordion>
 					</aside>
 				}
     </div>
@@ -60,7 +60,6 @@
 	/// </summary>   
 	[CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
 
-
 	/// <summary>
 	///    	Redirect user if not authenticated
 	/// </summary>   
@@ -73,7 +72,6 @@
 					NavigationManager.NavigateTo("/login");
 			}
 	}
-	
 	
 	/// <summary>
 	///    	Task sidebar active or not

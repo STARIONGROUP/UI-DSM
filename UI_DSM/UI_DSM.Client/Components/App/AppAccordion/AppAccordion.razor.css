@@ -1,0 +1,35 @@
+.app-accordion__button {
+  padding: var(--spacing-4);
+  background: var(--colors-gray-50);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  color: var(--colors-gray-700);
+  width: 100%;
+  text-align: left;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--spacing-2);
+  align-items: center;
+  color: var(--colors-primary-500);
+}
+
+.app-accordion__panel {
+  max-height: 0vh;
+  overflow: hidden;
+}
+
+.app-accordion__panel--is-open {
+  max-height: 100vh;
+}
+
+.app-accordion__icon {
+  line-height: 0;
+  transform-origin: center center;
+  transition: transform 0.1s ease-in-out;
+}
+
+.app-accordion__button--is-active .app-accordion__icon {
+  transform: rotate(180deg);
+}
+
+
