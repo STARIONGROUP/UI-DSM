@@ -135,7 +135,7 @@ namespace UI_DSM.Shared.Models
                 if (propertyInfo.GetValue(this) is Entity entity)
                 {
                     entities.Add(entity);
-                    entities.AddRange(entity.GetAssociatedProperties(deepLevel - 1));
+                    entities.AddRange(entity.GetAssociatedProperties(deepLevel == 0 ? 0 : deepLevel - 1));
                 }
                 else if (propertyInfo.GetValue(this) is IEnumerable<Entity> entityCollection)
                 {

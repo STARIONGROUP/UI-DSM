@@ -64,6 +64,16 @@ namespace UI_DSM.Server.Context
         public virtual DbSet<UserEntity> UsersEntities { get; set; }
 
         /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="Review" />
+        /// </summary>
+        public virtual DbSet<Review> Reviews { get; set; }
+
+        /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="ReviewObjective" />
+        /// </summary>
+        public virtual DbSet<ReviewObjective> ReviewObjectives { get; set; }
+
+        /// <summary>
         ///     Tries to validate an object
         /// </summary>
         /// <param name="instance">The <see cref="object" /> to validate</param>
@@ -92,13 +102,29 @@ namespace UI_DSM.Server.Context
 
             builder.Entity<Project>().HasMany(p => p.Participants)
                 .WithOne(p => (Project)p.EntityContainer)
-                .HasForeignKey("EntityContainerId");
+                .HasForeignKey("EntityContainerId")
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Project>().HasMany(p => p.Reviews)
+                .WithOne(p => (Project)p.EntityContainer)
+                .HasForeignKey("EntityContainerId")
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Project>().Navigation(x => x.Participants).AutoInclude();
+            builder.Entity<Project>().Navigation(x => x.Reviews).AutoInclude();
 
             builder.Entity<Participant>().Navigation(x => x.Role).AutoInclude();
             builder.Entity<Participant>().Navigation(x => x.User).AutoInclude();
-            builder.Entity<Participant>().Navigation(x => x.EntityContainer).AutoInclude();
+
+            builder.Entity<Review>().Navigation(x => x.Author).AutoInclude();
+            builder.Entity<Review>().Navigation(x => x.ReviewObjectives).AutoInclude();
+
+            builder.Entity<Review>().HasMany(x => x.ReviewObjectives)
+                .WithOne(ro => (Review)ro.EntityContainer)
+                .HasForeignKey("EntityContainerId")
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ReviewObjective>().Navigation(x => x.Author).AutoInclude();
 
             builder.ApplyConfiguration(new UserConfiguration());
             builder.ApplyConfiguration(new UserEntityConfiguration());
