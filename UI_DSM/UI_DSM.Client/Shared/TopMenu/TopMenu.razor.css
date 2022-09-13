@@ -1,5 +1,5 @@
 .top-menu {
-  padding: var(--spacing-3) var(--spacing-6);
+  padding: var(--spacing-3) var(--spacing-4);
   border-bottom: 1px solid var(--colors-gray-100);
   display: grid;
   gap: var(--spacing-12);
