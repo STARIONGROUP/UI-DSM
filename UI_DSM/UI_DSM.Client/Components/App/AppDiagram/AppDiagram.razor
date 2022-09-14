@@ -25,7 +25,7 @@
     <CascadingValue Value="Diagram">
       <DiagramCanvas>
         <Widgets>
-            <NavigatorWidget Width="200" Height="150" DefaultStyle="true"></NavigatorWidget>
+          <NavigatorWidget Width="200" Height="150" DefaultStyle="true"></NavigatorWidget>
         </Widgets>
       </DiagramCanvas>
     </CascadingValue>
@@ -41,7 +41,6 @@
 
     var options = new DiagramOptions
     {
-      DeleteKey = "Delete", // What key deletes the selected nodes/links
       Links = new DiagramLinkOptions
       {
         DefaultRouter = Routers.Orthogonal,
@@ -62,49 +61,83 @@
 
   private void Setup()
   {
-	  var nodeWidth = 150;
-	  var nodeSpacing = 50;
-	  var requirementsSpecification = RequirementsSpecificationMockData.GetRequirementsSpecification();
-	  var requirementsGroupWidth = requirementsSpecification.Group.Count * (nodeWidth+nodeSpacing);
-	  var requirementsSpecificationNode = NewNode(requirementsGroupWidth/2, 50);
-	  requirementsSpecificationNode.Title = requirementsSpecification.Name;
-      this.Diagram.Nodes.Add(requirementsSpecificationNode);
+    var nodeWidth = 150;
+    var nodeSpacing = 25;
+    var requirementsSpecification = RequirementsSpecificationMockData.GetRequirementsSpecification();
 
-	  var startingGroupX = 50;
-	  var startingRequirementX = 0;
-	  foreach (var group in requirementsSpecification.Group)
-	  {
-		/*var nodeGroup = NewNode(startingGroupX, 150);
-		  nodeGroup.Title = group.Name;
-		  this.Diagram.Nodes.Add(nodeGroup);
-		  var link = new LinkModel(requirementsSpecificationNode.GetPort(PortAlignment.Bottom), nodeGroup.GetPort(PortAlignment.Top));
-          this.Diagram.Links.Add(link);*/
-		  var groupNodes = new List<NodeModel>();
+    // We should multiply this by the amount of groups I guess?
+    var requirementsGroupWidth = requirementsSpecification.Group.Count * (nodeWidth + nodeSpacing);
+    
+    var requirementsSpecificationNode = NewNode(requirementsGroupWidth / 2, 50);
+    requirementsSpecificationNode.Title = requirementsSpecification.Name;
+    this.Diagram.Nodes.Add(requirementsSpecificationNode);
 
-		  var requirements = requirementsSpecification.Requirement.Where(x => x.Group.Iid == group.Iid).ToList();
-		  foreach (var requirement in requirements)
-		  {
-			  var requirementNode = NewNode(startingRequirementX, 250);
-                requirementNode.Title = requirement.Name;
-              this.Diagram.Nodes.Add(requirementNode);
-                groupNodes.Add(requirementNode);
-               
-			  startingRequirementX += 250;
-		  }
+    var startingGroupX = 0;
+    var groupIndex = 0;
 
-		  var groupModel = new GroupModel(groupNodes)
-		  {
-			  Title = group.Name
-		  };
+    var startingRequirementX = 0;
+    var requirementIndex = 0;
+    var startingRequirementY = 300;
 
-		  groupModel.AddPort(PortAlignment.Bottom);
-		  groupModel.AddPort(PortAlignment.Top);
-		  var requirementLink = new LinkModel(requirementsSpecificationNode.GetPort(PortAlignment.Bottom), groupModel.GetPort(PortAlignment.Top));
-		  this.Diagram.Links.Add(requirementLink);
 
-		  this.Diagram.AddGroup(groupModel);
-		  startingGroupX += 150;
-	  }
+    foreach (var group in requirementsSpecification.Group)
+    {
+      /*var nodeGroup = NewNode(startingGroupX, 150);
+      nodeGroup.Title = group.Name;
+      this.Diagram.Nodes.Add(nodeGroup);
+      var link = new LinkModel(requirementsSpecificationNode.GetPort(PortAlignment.Bottom),
+      nodeGroup.GetPort(PortAlignment.Top));
+      this.Diagram.Links.Add(link);*/
+      var groupNodes = new List<NodeModel>();
+      var requirements = requirementsSpecification.Requirement.Where(x => x.Group.Iid == group.Iid).ToList();
+
+      foreach (var requirement in requirements)
+      {
+
+        var requirementNode = NewNode(startingRequirementX, startingRequirementY);
+        requirementNode.Title = requirement.Name;
+        this.Diagram.Nodes.Add(requirementNode);
+        groupNodes.Add(requirementNode);
+
+        startingRequirementX += nodeWidth + nodeSpacing;
+        requirementIndex++;
+
+
+        // We should also add a reset on new group
+        if (requirementIndex % 4 == 0)
+        {
+          startingRequirementX = startingGroupX;
+          startingRequirementY += 150;
+        }
+      }
+
+      var groupModel = new GroupModel(groupNodes)
+      {
+        Title = group.Name
+      };
+
+      groupModel.AddPort(PortAlignment.Bottom);
+      groupModel.AddPort(PortAlignment.Top);
+      var requirementLink = new LinkModel(requirementsSpecificationNode.GetPort(PortAlignment.Bottom),
+      groupModel.GetPort(PortAlignment.Top));
+      this.Diagram.Links.Add(requirementLink);
+      this.Diagram.AddGroup(groupModel);
+
+      var groupWidth = requirements.Count * (nodeWidth + nodeSpacing) + 50;
+
+      if (groupWidth > 700)
+      {
+        groupWidth = 750;
+      }
+
+      startingGroupX += groupWidth;
+      startingRequirementY = 300;
+
+      startingRequirementX = startingGroupX;
+      requirementIndex = 0;
+      groupIndex++;
+
+    }
   }
 
   private static NodeModel NewNode(double x, double y)
@@ -114,7 +147,7 @@
     node.AddPort(PortAlignment.Top);
     node.AddPort(PortAlignment.Left);
     node.AddPort(PortAlignment.Right);
-   // node.Locked = true;
+    // node.Locked = true;
     return node;
   }
 }

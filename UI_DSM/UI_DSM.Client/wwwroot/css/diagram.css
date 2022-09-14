@@ -5,7 +5,7 @@
 }
 
 .default-node {
-  width: auto;
+  width: 150px;
   height: auto;
   padding: var(--spacing-3) var(--spacing-4);
   border-radius: 0;
@@ -97,13 +97,12 @@
   padding: 20px;
   background-color: #fff;
 }
+
 .group.default {
-  outline: 2px solid #000;
-  background: #c6c6c6;
+  outline: 1px solid var(--colors-primary-200);
+  background: var(--colors-primary-100);
 }
-.group.default.selected {
-  /* outline: 2px solid #6e9fd4; */
-}
+
 .link .link-label {
   display: inline-block;
   color: #fff;
