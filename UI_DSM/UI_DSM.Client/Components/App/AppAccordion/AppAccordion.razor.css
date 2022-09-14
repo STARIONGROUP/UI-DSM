@@ -1,15 +1,10 @@
 .app-accordion__button {
-  padding: var(--spacing-4);
-  background: var(--colors-gray-50);
-  font-weight: 700;
-  font-size: var(--text-lg);
   width: 100%;
   text-align: left;
   display: grid;
   grid-template-columns: 1fr auto;
   gap: var(--spacing-2);
   align-items: center;
-  color: var(--colors-primary-500);
 }
 
 .app-accordion__panel {
@@ -31,4 +26,15 @@
   transform: rotate(180deg);
 }
 
+.app-accordion__button--default {
+  padding: var(--spacing-4);
+  background: var(--colors-gray-50);
+  color: var(--colors-primary-500);
+  font-weight: 700;
+  font-size: var(--text-lg);
+}
 
+.app-accordion__button--small {
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--text-base);
+}

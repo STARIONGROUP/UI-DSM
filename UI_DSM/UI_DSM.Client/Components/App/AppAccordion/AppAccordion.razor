@@ -1,19 +1,19 @@
 <!--------------------------------------------------------------------------------------------------------
 // AppAccordion.razor
 // Copyright (c) 2022 RHEA System S.A.
-// 
+//
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
-// 
-// This file is part of UI-DSM. 
+//
+// This file is part of UI-DSM.
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
 @namespace AppComponents
 
 <div id="@Id" class="app-accordion">
-  <button class="app-accordion__button @ButtonClass" @onclick="TogglePanel" aria-label="@Label">
+  <button class="app-accordion__button @ButtonClass @accordionVariant" @onclick="TogglePanel" aria-label="@Label">
     <span>@Label</span>
     <span class="app-accordion__icon">
       <FeatherChevronUp Size="24" Color="currentColor" StrokeWidth="2" />
@@ -27,6 +27,29 @@
 @code {
   private string PanelClass => PanelOpen ? "app-accordion__panel--is-open" : null;
   private string ButtonClass => PanelOpen ? "app-accordion__button--is-active" : null;
+
+
+  /// <summary>
+  ///     Different variants on the button, for styling purpose
+  /// </summary>
+  public enum VariantValue
+  {
+    Default,
+    Small
+  }
+
+  [Parameter] public VariantValue Variant { get; set; } = VariantValue.Default;
+  private string accordionVariant { get; set; }
+
+  protected override void OnInitialized()
+  {
+    accordionVariant = Variant switch
+    {
+      VariantValue.Default => "app-accordion__button--default",
+      VariantValue.Small => "app-accordion__button--small",
+      _ => ""
+    };
+  }
 
   /// <summary>
   /// Button label used as aria label and innerhtml
