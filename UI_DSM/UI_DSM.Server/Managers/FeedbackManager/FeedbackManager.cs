@@ -254,10 +254,10 @@ namespace UI_DSM.Server.Managers.FeedbackManager
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
         public async Task<IEnumerable<Entity>> GetContainedEntities(Guid containerId, int deepLevel = 0)
         {
-            var comments = await this.context.Feedbacks.Where(x => x.EntityContainer != null
+            var feedbacks = await this.context.Feedbacks.Where(x => x.EntityContainer != null
                                                                   && x.EntityContainer.Id == containerId).ToListAsync();
 
-            return comments.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
+            return feedbacks.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
         }
 
         /// <summary>
@@ -268,8 +268,8 @@ namespace UI_DSM.Server.Managers.FeedbackManager
         /// <returns>A <see cref="Task" /> with the value of the check</returns>
         public async Task<bool> EntityIsContainedBy(Guid entityId, Guid containerId)
         {
-            var comment = await this.FindEntityWithContainer(entityId);
-            return comment != null && comment.EntityContainer.Id == containerId;
+            var feedback = await this.FindEntityWithContainer(entityId);
+            return feedback != null && feedback.EntityContainer.Id == containerId;
         }
 
         /// <summary>

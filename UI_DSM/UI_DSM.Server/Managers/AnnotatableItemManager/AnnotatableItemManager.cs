@@ -105,7 +105,7 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
         /// <returns>A <see cref="Task" /> with the result of the creation</returns>
         public Task<EntityOperationResult<AnnotatableItem>> CreateEntity(AnnotatableItem entity)
         {
-            return this.HandleNotSupportedOperation();
+            return HandleNotSupportedOperation();
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
         /// <returns>A <see cref="Task" /> with the result of the update</returns>
         public Task<EntityOperationResult<AnnotatableItem>> UpdateEntity(AnnotatableItem entity)
         {
-            return this.HandleNotSupportedOperation();
+            return HandleNotSupportedOperation();
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
         /// <returns>A <see cref="Task" /> with the result of the deletion</returns>
         public Task<EntityOperationResult<AnnotatableItem>> DeleteEntity(AnnotatableItem entity)
         {
-            return this.HandleNotSupportedOperation();
+            return HandleNotSupportedOperation();
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
         ///     Provides the correct returns values on unsupported operation
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>
-        private async Task<EntityOperationResult<AnnotatableItem>> HandleNotSupportedOperation()
+        private static async Task<EntityOperationResult<AnnotatableItem>> HandleNotSupportedOperation()
         {
             await Task.CompletedTask;
             return EntityOperationResult<AnnotatableItem>.Failed("Operation not supported");
