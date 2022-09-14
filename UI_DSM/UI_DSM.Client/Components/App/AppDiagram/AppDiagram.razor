@@ -19,7 +19,6 @@
 @using Blazor.Diagrams.Components
 
 <div class="app-diagram">
-  <AppButton Click="() => Diagram.ZoomToFit(50)">aaa</AppButton>
   <div class="diagram-container">
     <CascadingValue Value="Diagram">
       <DiagramCanvas>
@@ -56,6 +55,7 @@
     Diagram = new Diagram(options);
 
     Setup();
+    Diagram.ReconnectLinksToClosestPorts();
   }
 
   private void Setup()
@@ -69,10 +69,9 @@
 
     var link1 = new LinkModel(node1.GetPort(PortAlignment.Bottom), node2.GetPort(PortAlignment.Top));
     var link2 = new LinkModel(node1.GetPort(PortAlignment.Bottom), node3.GetPort(PortAlignment.Top));
-    var link3 = new LinkModel(node1.GetPort(PortAlignment.Bottom), node4.GetPort(PortAlignment.Top));
+    var link3 = new LinkModel(node1.GetPort(PortAlignment.Right), node4.GetPort(PortAlignment.Bottom));
 
     Diagram.Links.Add(new[] { link1, link2, link3 });
-    Diagram.ZoomToFit(50);
   }
 
   private static NodeModel NewNode(double x, double y)
