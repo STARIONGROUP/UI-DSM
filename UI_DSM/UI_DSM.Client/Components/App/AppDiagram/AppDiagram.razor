@@ -17,6 +17,8 @@
 
 <!-- required to resolve DiagramCanvas component -->
 @using Blazor.Diagrams.Components
+@using UI_DSM.Client.Pages.Administration
+@using UI_DSM.Client.Utilities
 
 <div class="app-diagram">
   <div class="diagram-container">
@@ -60,18 +62,49 @@
 
   private void Setup()
   {
-    var node1 = NewNode(300, 50);
-    var node2 = NewNode(150, 300);
-    var node3 = NewNode(300, 300);
-    var node4 = NewNode(450, 300);
+	  var nodeWidth = 150;
+	  var nodeSpacing = 50;
+	  var requirementsSpecification = RequirementsSpecificationMockData.GetRequirementsSpecification();
+	  var requirementsGroupWidth = requirementsSpecification.Group.Count * (nodeWidth+nodeSpacing);
+	  var requirementsSpecificationNode = NewNode(requirementsGroupWidth/2, 50);
+	  requirementsSpecificationNode.Title = requirementsSpecification.Name;
+      this.Diagram.Nodes.Add(requirementsSpecificationNode);
 
-    Diagram.Nodes.Add(new [] { node1, node2, node3, node4 });
+	  var startingGroupX = 50;
+	  var startingRequirementX = 0;
+	  foreach (var group in requirementsSpecification.Group)
+	  {
+		/*var nodeGroup = NewNode(startingGroupX, 150);
+		  nodeGroup.Title = group.Name;
+		  this.Diagram.Nodes.Add(nodeGroup);
+		  var link = new LinkModel(requirementsSpecificationNode.GetPort(PortAlignment.Bottom), nodeGroup.GetPort(PortAlignment.Top));
+          this.Diagram.Links.Add(link);*/
+		  var groupNodes = new List<NodeModel>();
 
-    var link1 = new LinkModel(node1.GetPort(PortAlignment.Bottom), node2.GetPort(PortAlignment.Top));
-    var link2 = new LinkModel(node1.GetPort(PortAlignment.Bottom), node3.GetPort(PortAlignment.Top));
-    var link3 = new LinkModel(node1.GetPort(PortAlignment.Right), node4.GetPort(PortAlignment.Bottom));
+		  var requirements = requirementsSpecification.Requirement.Where(x => x.Group.Iid == group.Iid).ToList();
+		  foreach (var requirement in requirements)
+		  {
+			  var requirementNode = NewNode(startingRequirementX, 250);
+                requirementNode.Title = requirement.Name;
+              this.Diagram.Nodes.Add(requirementNode);
+                groupNodes.Add(requirementNode);
+               
+			  startingRequirementX += 250;
+		  }
 
-    Diagram.Links.Add(new[] { link1, link2, link3 });
+		  var groupModel = new GroupModel(groupNodes)
+		  {
+			  Title = group.Name
+		  };
+
+		  groupModel.AddPort(PortAlignment.Bottom);
+		  groupModel.AddPort(PortAlignment.Top);
+		  var requirementLink = new LinkModel(requirementsSpecificationNode.GetPort(PortAlignment.Bottom), groupModel.GetPort(PortAlignment.Top));
+		  this.Diagram.Links.Add(requirementLink);
+
+		  this.Diagram.AddGroup(groupModel);
+		  startingGroupX += 150;
+	  }
   }
 
   private static NodeModel NewNode(double x, double y)
@@ -81,7 +114,7 @@
     node.AddPort(PortAlignment.Top);
     node.AddPort(PortAlignment.Left);
     node.AddPort(PortAlignment.Right);
-    node.Locked = true;
+   // node.Locked = true;
     return node;
   }
 }
