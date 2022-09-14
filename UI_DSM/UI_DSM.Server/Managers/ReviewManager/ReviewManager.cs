@@ -72,7 +72,7 @@ namespace UI_DSM.Server.Managers.ReviewManager
         public async Task<IEnumerable<Entity>> GetEntities(int deepLevel = 0)
         {
             var reviews = await this.context.Reviews.ToListAsync();
-            return reviews.SelectMany(x => x.GetAssociatedEntities(deepLevel));
+            return reviews.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace UI_DSM.Server.Managers.ReviewManager
         public async Task<IEnumerable<Entity>> GetContainedEntities(Guid containerId, int deepLevel = 0)
         {
             var reviews = await this.context.Reviews.Where(x => x.EntityContainer != null && x.EntityContainer.Id == containerId).ToListAsync();
-            return reviews.SelectMany(x => x.GetAssociatedEntities(deepLevel)).ToList();
+            return reviews.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
         }
 
         /// <summary>

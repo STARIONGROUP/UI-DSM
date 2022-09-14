@@ -55,7 +55,7 @@ namespace UI_DSM.Server.Managers.RoleManager
         public async Task<IEnumerable<Entity>> GetEntities(int deepLevel = 0)
         {
             var roles = await this.context.UiDsmRoles.ToListAsync();
-            return roles.SelectMany(x => x.GetAssociatedEntities(deepLevel));
+            return roles.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
         }
 
         /// <summary>

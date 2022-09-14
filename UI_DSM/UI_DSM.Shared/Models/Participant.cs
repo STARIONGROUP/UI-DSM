@@ -45,6 +45,7 @@ namespace UI_DSM.Shared.Models
         /// </summary>
         [Required]
         [DeepLevel(0)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public UserEntity User { get; set; }
 
         /// <summary>

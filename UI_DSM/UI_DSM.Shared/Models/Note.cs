@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="AnnotableItem.cs" company="RHEA System S.A.">
+// <copyright file="Note.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
@@ -15,42 +15,39 @@ namespace UI_DSM.Shared.Models
 {
     using System.ComponentModel.DataAnnotations.Schema;
 
-    using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.DTO.Models;
 
     /// <summary>
-    ///     Represents an <see cref="Entity" /> that can be annotated
+    ///     A <see cref="Note" /> <see cref="Annotation" />
     /// </summary>
-    [Table(nameof(AnnotableItem))]
-    public abstract class AnnotableItem : Entity
+    [Table(nameof(Note))]
+    public class Note : Annotation
     {
         /// <summary>
-        ///     Initializes a new <see cref="AnnotableItem" />
+        ///     Initializes a new <see cref="Note" />
         /// </summary>
-        protected AnnotableItem()
+        public Note()
         {
         }
 
         /// <summary>
-        ///     Inilializes a new <see cref="AnnotableItem" />
+        ///     Inilializes a new <see cref="Note" />
         /// </summary>
-        /// <param name="id">The <see cref="Guid" /> of the <see cref="AnnotableItem" /></param>
-        protected AnnotableItem(Guid id) : base(id)
+        /// <param name="id">The <see cref="Guid" /> of the <see cref="Note" /></param>
+        public Note(Guid id) : base(id)
         {
         }
 
         /// <summary>
-        ///     Gets or sets the author of the <see cref="AnnotableItem" />
+        ///     Instantiate a <see cref="EntityDto" /> from a <see cref="Entity" />
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [DeepLevel(0)]
-        public Participant Author { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the <see cref="DateTime" /> for the creation of the <see cref="AnnotableItem" />
-        /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime CreatedOn { get; set; }
+        /// <returns>A new <see cref="EntityDto" /></returns>
+        public override EntityDto ToDto()
+        {
+            var dto = new NoteDto(this.Id);
+            dto.IncludeCommonProperties(this);
+            return dto;
+        }
 
         /// <summary>
         ///     Resolve the properties of the current <see cref="Entity" /> from its <see cref="EntityDto" /> counter-part
@@ -59,13 +56,12 @@ namespace UI_DSM.Shared.Models
         /// <param name="resolvedEntity">A <see cref="Dictionary{TKey,TValue}" /> of all others <see cref="Entity" /></param>
         public override void ResolveProperties(EntityDto entityDto, Dictionary<Guid, Entity> resolvedEntity)
         {
-            if (entityDto is not AnnotableItemDto annotableItemDto)
-            {
-                throw new InvalidOperationException($"The DTO {entityDto.GetType()} does not match with the current AnnotableItem POCO");
-            }
+            base.ResolveProperties(entityDto, resolvedEntity);
 
-            this.Author = this.GetEntity<Participant>(annotableItemDto.Author, resolvedEntity);
-            this.CreatedOn = annotableItemDto.CreatedOn;
+            if (entityDto is not NoteDto)
+            {
+                throw new InvalidOperationException($"The DTO {entityDto.GetType()} does not match with the current Note POCO");
+            }
         }
     }
 }

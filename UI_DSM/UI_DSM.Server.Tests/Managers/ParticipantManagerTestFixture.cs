@@ -82,7 +82,7 @@ namespace UI_DSM.Server.Tests.Managers
             }
 
             var allEntities = await this.manager.GetEntities();
-            Assert.That(allEntities.Count(), Is.EqualTo(9));
+            Assert.That(allEntities.Count(), Is.EqualTo(8));
 
             var invalidGuid = Guid.NewGuid();
             dbSet.Setup(x => x.FindAsync(invalidGuid)).ReturnsAsync((Participant)null);

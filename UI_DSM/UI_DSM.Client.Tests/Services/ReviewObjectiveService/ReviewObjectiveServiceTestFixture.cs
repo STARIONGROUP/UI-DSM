@@ -91,8 +91,8 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
             httpResponse.StatusCode = HttpStatusCode.OK;
 
             httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(this.entitiesDto));
-            var reviews = await this.service.GetReviewsObjectivesOfReview(projectId, reviewId);
-            Assert.That(reviews, Has.Count.EqualTo(1));
+            var reviewObjectives = await this.service.GetReviewsObjectivesOfReview(projectId, reviewId);
+            Assert.That(reviewObjectives, Has.Count.EqualTo(1));
             httpResponse.Content = new StringContent(string.Empty);
             Assert.That(async () => await this.service.GetReviewsObjectivesOfReview(projectId, reviewId), Throws.Exception);
         }
@@ -108,20 +108,20 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
 
             var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Project/{projectId}/Review/{reviewId}/ReviewObjective/{guid}");
             request.Respond(_ => httpResponse);
-            var review = await this.service.GetReviewObjectiveOfReview(projectId, reviewId, guid);
+            var reviewObjective = await this.service.GetReviewObjectiveOfReview(projectId, reviewId, guid);
 
-            Assert.That(review, Is.Null);
+            Assert.That(reviewObjective, Is.Null);
 
             httpResponse.StatusCode = HttpStatusCode.OK;
 
             httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(this.entitiesDto));
-            review = await this.service.GetReviewObjectiveOfReview(projectId, reviewId, guid);
-            Assert.That(review.Id, Is.EqualTo(guid));
+            reviewObjective = await this.service.GetReviewObjectiveOfReview(projectId, reviewId, guid);
+            Assert.That(reviewObjective.Id, Is.EqualTo(guid));
 
             httpResponse.Content = new StringContent(string.Empty);
-            review = await this.service.GetReviewObjectiveOfReview(projectId, reviewId, guid);
+            reviewObjective = await this.service.GetReviewObjectiveOfReview(projectId, reviewId, guid);
 
-            Assert.That(review, Is.Null);
+            Assert.That(reviewObjective, Is.Null);
         }
 
         [Test]

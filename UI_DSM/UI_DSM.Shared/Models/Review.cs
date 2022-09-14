@@ -19,6 +19,7 @@ namespace UI_DSM.Shared.Models
     using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Types;
 
     /// <summary>

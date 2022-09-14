@@ -18,6 +18,7 @@ namespace UI_DSM.Shared.Models
 
     using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Types;
 
     /// <summary>
@@ -62,6 +63,12 @@ namespace UI_DSM.Shared.Models
         public EntityContainerList<Review> Reviews { get; protected set; }
 
         /// <summary>
+        ///     A collection of contained <see cref="Annotations" />
+        /// </summary>
+        [DeepLevel(1)]
+        public EntityContainerList<Annotation> Annotations { get; set; }
+
+        /// <summary>
         ///     Instantiate a <see cref="EntityDto" /> from a <see cref="Entity" />
         /// </summary>
         /// <returns>A new <see cref="EntityDto" /></returns>
@@ -71,7 +78,8 @@ namespace UI_DSM.Shared.Models
             {
                 ProjectName = this.ProjectName,
                 Participants = new List<Guid>(this.Participants.Select(x => x.Id)),
-                Reviews = new List<Guid>(this.Reviews.Select(x => x.Id))
+                Reviews = new List<Guid>(this.Reviews.Select(x => x.Id)),
+                Annotations = new List<Guid>(this.Annotations.Select(x => x.Id))
             };
 
             return dto;
@@ -92,6 +100,7 @@ namespace UI_DSM.Shared.Models
             this.ProjectName = projectDto.ProjectName;
             this.Participants.ResolveList(projectDto.Participants, resolvedEntity);
             this.Reviews.ResolveList(projectDto.Reviews, resolvedEntity);
+            this.Annotations.ResolveList(projectDto.Annotations, resolvedEntity);
         }
 
         /// <summary>
@@ -101,6 +110,7 @@ namespace UI_DSM.Shared.Models
         {
             this.Participants = new EntityContainerList<Participant>(this);
             this.Reviews = new EntityContainerList<Review>(this);
+            this.Annotations = new EntityContainerList<Annotation>(this);
         }
     }
 }

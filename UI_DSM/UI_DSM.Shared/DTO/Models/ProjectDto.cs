@@ -53,6 +53,11 @@ namespace UI_DSM.Shared.DTO.Models
         public List<Guid> Reviews { get; set; }
 
         /// <summary>
+        ///     Gets or sets the collection of <see cref="Guid" /> that represents <see cref="Annotation" />s
+        /// </summary>
+        public List<Guid> Annotations { get; set; }
+
+        /// <summary>
         ///     Instantiate a <see cref="Project" /> from a <see cref="ProjectDto" />
         /// </summary>
         /// <returns>A new <see cref="Project" /></returns>
@@ -68,6 +73,7 @@ namespace UI_DSM.Shared.DTO.Models
         {
             this.Participants = new List<Guid>();
             this.Reviews = new List<Guid>();
+            this.Annotations = new List<Guid>();
         }
     }
 }

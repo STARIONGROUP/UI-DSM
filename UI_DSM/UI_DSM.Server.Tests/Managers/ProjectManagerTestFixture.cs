@@ -20,6 +20,7 @@ namespace UI_DSM.Server.Tests.Managers
     using NUnit.Framework;
 
     using UI_DSM.Server.Context;
+    using UI_DSM.Server.Managers.AnnotationManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ProjectManager;
     using UI_DSM.Server.Managers.ReviewManager;
@@ -33,6 +34,7 @@ namespace UI_DSM.Server.Tests.Managers
         private Mock<DatabaseContext> context;
         private Mock<IParticipantManager> participantManager;
         private Mock<IReviewManager> reviewManager;
+        private Mock<IAnnotationManager> annotationManager;
 
         [SetUp]
         public void Setup()
@@ -40,7 +42,8 @@ namespace UI_DSM.Server.Tests.Managers
             this.context = new Mock<DatabaseContext>();
             this.participantManager = new Mock<IParticipantManager>();
             this.reviewManager = new Mock<IReviewManager>();
-            this.manager = new ProjectManager(this.context.Object, this.participantManager.Object, this.reviewManager.Object);
+            this.annotationManager = new Mock<IAnnotationManager>();
+            this.manager = new ProjectManager(this.context.Object, this.participantManager.Object, this.reviewManager.Object, this.annotationManager.Object);
         }
 
         [Test]

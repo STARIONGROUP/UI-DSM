@@ -79,9 +79,8 @@ namespace UI_DSM.Shared.Models
             }
 
             var entities = new List<Entity> { this };
-            entities.AddRange(this.GetAssociatedProperties(deepLevel));
-
-            return entities;
+            this.GetAssociatedProperties(deepLevel, entities);
+            return entities.DistinctBy(x => x.Id).ToList();
         }
 
         /// <summary>
@@ -116,15 +115,13 @@ namespace UI_DSM.Shared.Models
         ///     <see cref="deepLevel" />.
         /// </summary>
         /// <param name="deepLevel">The deep level</param>
-        /// <returns>The collection of <see cref="Entity" /></returns>
-        protected IEnumerable<Entity> GetAssociatedProperties(int deepLevel)
+        /// <param name="relatedEntities">A collection of related <see cref="Entity" /></param>
+        protected void GetAssociatedProperties(int deepLevel, List<Entity> relatedEntities)
         {
             if (deepLevel < 0)
             {
-                return Enumerable.Empty<Entity>();
+                return;
             }
-
-            var entities = new List<Entity>();
 
             var properties = this.GetType().GetProperties()
                 .Where(prop => prop.IsDefined(typeof(DeepLevelAttribute), false))
@@ -134,22 +131,23 @@ namespace UI_DSM.Shared.Models
             {
                 if (propertyInfo.GetValue(this) is Entity entity)
                 {
-                    entities.Add(entity);
-                    entities.AddRange(entity.GetAssociatedProperties(deepLevel == 0 ? 0 : deepLevel - 1));
+                    if (relatedEntities.All(x => x.Id != entity.Id))
+                    {
+                        relatedEntities.Add(entity);
+                        entity.GetAssociatedProperties(deepLevel == 0 ? 0 : deepLevel - 1, relatedEntities);
+                    }
                 }
                 else if (propertyInfo.GetValue(this) is IEnumerable<Entity> entityCollection)
                 {
                     var entityList = entityCollection.ToList();
-                    entities.AddRange(entityList);
 
-                    foreach (var containedEntity in entityList)
+                    foreach (var containedEntity in entityList.Where(containedEntity => relatedEntities.All(x => x.Id != containedEntity.Id)))
                     {
-                        entities.AddRange(containedEntity.GetAssociatedProperties(deepLevel - 1));
+                        relatedEntities.Add(containedEntity);
+                        containedEntity.GetAssociatedProperties(deepLevel == 0 ? 0 : deepLevel - 1, relatedEntities);
                     }
                 }
             }
-
-            return entities;
         }
 
         /// <summary>
