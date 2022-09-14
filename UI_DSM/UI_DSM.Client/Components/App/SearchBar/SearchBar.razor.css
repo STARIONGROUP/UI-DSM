@@ -1,5 +1,5 @@
 .search-bar {
-  background: rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.05);
   border-radius: var(--radius-1);
   margin: auto;
   position: relative;
@@ -17,5 +17,5 @@
 }
 
 .search-bar__input:focus {
-  outline: 2px solid var(--colors-secondary-500);
+  outline: 2px solid var(--colors-primary-500);
 }

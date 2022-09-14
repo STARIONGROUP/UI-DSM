@@ -1,6 +1,6 @@
 .app-review-header {
   padding: var(--spacing-6);
-  background-color: var(--colors-primary-100);
+  background-color: var(--colors-primary-50);
   display: grid;
   border-radius: var(--radius-2);
 }

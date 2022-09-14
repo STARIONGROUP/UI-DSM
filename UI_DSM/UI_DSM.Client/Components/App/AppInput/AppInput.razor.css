@@ -16,8 +16,18 @@
   height: var(--spacing-11);
 }
 
+.app-input__input.invalid {
+  border-color: var(--colors-red-500);
+  outline: none;
+}
+
+.app-input__input.valid.modified:not([type="checkbox"]) {
+  border-color: var(--colors-green-600);
+  outline: none;
+}
+
 .app-input__input:focus {
-  outline: 2px solid var(--colors-secondary-500);
+  border-color: var(--colors-primary-500);
 }
 
 .app-input__note {
