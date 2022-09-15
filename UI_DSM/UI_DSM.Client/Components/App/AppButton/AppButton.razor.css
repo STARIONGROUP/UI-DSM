@@ -12,21 +12,24 @@
   justify-content: center;
 }
 
-
 .app-button:hover {
   background: var(--colors-primary-700);
 }
 
 .app-button:focus {
-  outline: 2px solid var(--colors-secondary-500);
+  outline: 2px solid var(--colors-primary-900);
 }
 
 .app-button--success {
-  background: var(--colors-green-50);
+  background: var(--colors-green-100);
   color: var(--colors-green-800);
-} 
+}
+
+.app-button--success:focus {
+  outline: 2px solid var(--colors-green-800);
+}
 
 .app-button--success:hover {
-  background: var(--colors-green-300);
-  color: var(--colors-green-900);
+  background: var(--colors-green-600);
+  color: var(--colors-white);
 }
