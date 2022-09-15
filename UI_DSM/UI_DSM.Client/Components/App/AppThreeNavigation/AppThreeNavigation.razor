@@ -13,7 +13,7 @@
 @namespace AppComponents
 
 <div>
-  <DxTreeView AllowSelectNodes="true" SelectionChanged="@SelectionChanged">
+  <DxTreeView AllowSelectNodes="true" SelectionChanged="@this.SelectionChanged">
     <Nodes>
       <DxTreeViewNode Text="Metals">
         <Nodes>
@@ -42,9 +42,17 @@
 </div>
 
 @code  {
-  string SelectedGroup = "none";
+    /// <summary>
+    /// The current selected group 
+    /// </summary>
+	string SelectedGroup = "none";
+
+    /// <summary>
+    /// Behaviour to apply when the current selection change
+    /// </summary>
+    /// <param name="e">The event argumennt</param>
   protected void SelectionChanged(TreeViewNodeEventArgs e) {
-    SelectedGroup = e.NodeInfo?.Text;
-    InvokeAsync(StateHasChanged);
+    this.SelectedGroup = e.NodeInfo?.Text;
+    this.InvokeAsync(this.StateHasChanged);
   }
 }
