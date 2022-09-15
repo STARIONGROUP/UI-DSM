@@ -13,8 +13,10 @@
 
 namespace UI_DSM.Shared.Models
 {
+    using System.Collections.Immutable;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Reflection;
 
     using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.DTO.Models;
@@ -25,10 +27,16 @@ namespace UI_DSM.Shared.Models
     public abstract class Entity
     {
         /// <summary>
+        ///     A collection of <see cref="PropertyInfo" />
+        /// </summary>
+        private ImmutableList<PropertyInfo> entityProperties;
+
+        /// <summary>
         ///     Initializes a new <see cref="Entity" />
         /// </summary>
         protected Entity()
         {
+            this.InitializesPropertiesCollection();
         }
 
         /// <summary>
@@ -38,6 +46,7 @@ namespace UI_DSM.Shared.Models
         protected Entity(Guid id)
         {
             this.Id = id;
+            this.InitializesPropertiesCollection();
         }
 
         /// <summary>
@@ -79,9 +88,8 @@ namespace UI_DSM.Shared.Models
             }
 
             var entities = new List<Entity> { this };
-            entities.AddRange(this.GetAssociatedProperties(deepLevel));
-
-            return entities;
+            this.GetAssociatedProperties(deepLevel, entities);
+            return entities.DistinctBy(x => x.Id).ToList();
         }
 
         /// <summary>
@@ -116,40 +124,34 @@ namespace UI_DSM.Shared.Models
         ///     <see cref="deepLevel" />.
         /// </summary>
         /// <param name="deepLevel">The deep level</param>
-        /// <returns>The collection of <see cref="Entity" /></returns>
-        protected IEnumerable<Entity> GetAssociatedProperties(int deepLevel)
+        /// <param name="relatedEntities">A collection of related <see cref="Entity" /></param>
+        protected void GetAssociatedProperties(int deepLevel, List<Entity> relatedEntities)
         {
             if (deepLevel < 0)
             {
-                return Enumerable.Empty<Entity>();
+                return;
             }
 
-            var entities = new List<Entity>();
+            var scopedProperties = this.entityProperties
+                .Where(x => x.GetCustomAttributes(typeof(DeepLevelAttribute), false)
+                .Cast<DeepLevelAttribute>().First().Level <= deepLevel);
 
-            var properties = this.GetType().GetProperties()
-                .Where(prop => prop.IsDefined(typeof(DeepLevelAttribute), false))
-                .Where(x => x.GetCustomAttributes(typeof(DeepLevelAttribute), false).Cast<DeepLevelAttribute>().First().Level <= deepLevel);
-
-            foreach (var propertyInfo in properties)
+            foreach (var propertyInfo in scopedProperties)
             {
                 if (propertyInfo.GetValue(this) is Entity entity)
                 {
-                    entities.Add(entity);
-                    entities.AddRange(entity.GetAssociatedProperties(deepLevel == 0 ? 0 : deepLevel - 1));
+                    TryToAddAssociatedEntity(entity, relatedEntities, deepLevel);
                 }
                 else if (propertyInfo.GetValue(this) is IEnumerable<Entity> entityCollection)
                 {
                     var entityList = entityCollection.ToList();
-                    entities.AddRange(entityList);
 
                     foreach (var containedEntity in entityList)
                     {
-                        entities.AddRange(containedEntity.GetAssociatedProperties(deepLevel - 1));
+                        TryToAddAssociatedEntity(containedEntity, relatedEntities, deepLevel);
                     }
                 }
             }
-
-            return entities;
         }
 
         /// <summary>
@@ -167,6 +169,30 @@ namespace UI_DSM.Shared.Models
             }
 
             return null;
+        }
+
+        /// <summary>
+        ///     Retrieved all <see cref="Entity" /> property linked to this <see cref="Entity" />
+        /// </summary>
+        private void InitializesPropertiesCollection()
+        {
+            this.entityProperties = this.GetType().GetProperties()
+                .Where(prop => prop.IsDefined(typeof(DeepLevelAttribute), false)).ToImmutableList();
+        }
+
+        /// <summary>
+        ///     Tries to add an associated entity to the current collection
+        /// </summary>
+        /// <param name="entity">The <see cref="Entity" /> to add</param>
+        /// <param name="relatedEntities">The collection of related <see cref="Entity" /></param>
+        /// <param name="deepLevel">The deep level</param>
+        private static void TryToAddAssociatedEntity(Entity entity, List<Entity> relatedEntities, int deepLevel)
+        {
+            if (relatedEntities.All(x => x.Id != entity.Id))
+            {
+                relatedEntities.Add(entity);
+                entity.GetAssociatedProperties(deepLevel == 0 ? 0 : deepLevel - 1, relatedEntities);
+            }
         }
     }
 }

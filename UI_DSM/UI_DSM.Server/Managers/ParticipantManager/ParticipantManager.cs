@@ -71,7 +71,7 @@ namespace UI_DSM.Server.Managers.ParticipantManager
         public async Task<IEnumerable<Entity>> GetEntities(int deepLevel = 0)
         {
             var participants = await this.context.Participants.ToListAsync();
-            return participants.SelectMany(x => x.GetAssociatedEntities(deepLevel));
+            return participants.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
         }
 
         /// <summary>
@@ -176,14 +176,7 @@ namespace UI_DSM.Server.Managers.ParticipantManager
                 return EntityOperationResult<Participant>.Failed(validations.ToArray());
             }
 
-            var entityEntry = this.context.Update(entity);
-
-            if (entityEntry != null)
-            {
-                entityEntry.Reference(x => x.User).IsModified = false;
-            }
-
-            var operationResult = new EntityOperationResult<Participant>(entityEntry, EntityState.Modified, EntityState.Unchanged);
+            var operationResult = new EntityOperationResult<Participant>(this.context.Update(entity), EntityState.Modified, EntityState.Unchanged);
 
             try
             {
@@ -267,7 +260,7 @@ namespace UI_DSM.Server.Managers.ParticipantManager
             var participants = await this.context.Participants.Where(x => x.EntityContainer != null
                                                                           && x.EntityContainer.Id == containerId).ToListAsync();
 
-            return participants.SelectMany(x => x.GetAssociatedEntities(deepLevel)).ToList();
+            return participants.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
         }
 
         /// <summary>

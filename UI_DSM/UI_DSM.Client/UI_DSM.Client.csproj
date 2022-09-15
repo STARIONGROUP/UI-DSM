@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.SessionStorage" Version="2.2.0" />
+    <PackageReference Include="CDP4Common-CE" Version="8.3.0" />
     <PackageReference Include="DevExpress.Blazor" Version="22.1.4" />
     <PackageReference Include="Feather.Blazor" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.0" />

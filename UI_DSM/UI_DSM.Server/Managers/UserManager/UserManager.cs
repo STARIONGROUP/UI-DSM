@@ -62,7 +62,7 @@ namespace UI_DSM.Server.Managers.UserManager
         public async Task<IEnumerable<Entity>> GetEntities(int deepLevel = 0)
         {
             var users = await this.context.UsersEntities.ToListAsync();
-            return users.SelectMany(x => x.GetAssociatedEntities(deepLevel));
+            return users.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
         }
 
         /// <summary>

@@ -19,6 +19,7 @@ namespace UI_DSM.Server.Managers.ProjectManager
 
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
+    using UI_DSM.Server.Managers.AnnotationManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Server.Types;
@@ -51,16 +52,23 @@ namespace UI_DSM.Server.Managers.ProjectManager
         private readonly IReviewManager reviewManager;
 
         /// <summary>
+        /// The <see cref="IAnnotationManager"/>
+        /// </summary>
+        private readonly IAnnotationManager annotationManager;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectManager" /> class.
         /// </summary>
         /// <param name="context">The <see cref="DatabaseContext" /></param>
         /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
         /// <param name="reviewManager">The <see cref="IReviewManager"/></param>
-        public ProjectManager(DatabaseContext context, IParticipantManager participantManager, IReviewManager reviewManager)
+        /// <param name="annotationManager">The <see cref="IAnnotationManager"/></param>
+        public ProjectManager(DatabaseContext context, IParticipantManager participantManager, IReviewManager reviewManager, IAnnotationManager annotationManager)
         {
             this.context = context;
             this.participantManager = participantManager;
             this.reviewManager = reviewManager;
+            this.annotationManager = annotationManager;
         }
 
         /// <summary>
@@ -71,7 +79,7 @@ namespace UI_DSM.Server.Managers.ProjectManager
         public async Task<IEnumerable<Entity>> GetEntities(int deepLevel = 0)
         {
             var projects = await this.context.Projects.ToListAsync();
-            return projects.SelectMany(x => x.GetAssociatedEntities(deepLevel));
+            return projects.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
         }
 
         /// <summary>
@@ -220,7 +228,7 @@ namespace UI_DSM.Server.Managers.ProjectManager
             var relatedEntities = new Dictionary<Guid, Entity>();
             relatedEntities.InsertEntityCollection(await this.participantManager.FindEntities(projectDto.Participants));
             relatedEntities.InsertEntityCollection(await this.reviewManager.FindEntities(projectDto.Reviews));
-
+            relatedEntities.InsertEntityCollection(await this.annotationManager.FindEntities(projectDto.Annotations));
             entity.ResolveProperties(projectDto, relatedEntities);
         }
 

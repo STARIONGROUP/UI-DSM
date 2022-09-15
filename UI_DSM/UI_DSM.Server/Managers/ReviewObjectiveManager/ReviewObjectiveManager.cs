@@ -19,7 +19,9 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
 
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
+    using UI_DSM.Server.Managers.AnnotationManager;
     using UI_DSM.Server.Managers.ParticipantManager;
+    using UI_DSM.Server.Managers.ReviewTaskManager;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
@@ -46,14 +48,29 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         private readonly IParticipantManager participantManager;
 
         /// <summary>
+        ///     The <see cref="IReviewTaskManager" />
+        /// </summary>
+        private readonly IReviewTaskManager reviewTaskManager;
+
+        /// <summary>
+        /// The <see cref="IAnnotationManager"/>
+        /// </summary>
+        private readonly IAnnotationManager annotationManager;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ReviewObjectiveManager" /> class.
         /// </summary>
         /// <param name="context">The <see cref="DatabaseContext" /></param>
         /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
-        public ReviewObjectiveManager(DatabaseContext context, IParticipantManager participantManager)
+        /// <param name="reviewTaskManager">The <see cref="IReviewTaskManager" /></param>
+        /// <param name="annotationManager">The <see cref="IAnnotationManager"/></param>
+        public ReviewObjectiveManager(DatabaseContext context, IParticipantManager participantManager, IReviewTaskManager reviewTaskManager,
+            IAnnotationManager annotationManager)
         {
             this.context = context;
             this.participantManager = participantManager;
+            this.reviewTaskManager = reviewTaskManager;
+            this.annotationManager = annotationManager;
         }
 
         /// <summary>
@@ -64,7 +81,7 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         public async Task<IEnumerable<Entity>> GetEntities(int deepLevel = 0)
         {
             var reviewObjectives = await this.context.ReviewObjectives.ToListAsync();
-            return reviewObjectives.SelectMany(x => x.GetAssociatedEntities(deepLevel));
+            return reviewObjectives.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
         }
 
         /// <summary>
@@ -223,6 +240,8 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
 
             var relatedEntities = new Dictionary<Guid, Entity>();
             relatedEntities.InsertEntity(await this.participantManager.FindEntity(reviewObjectiveDto.Author));
+            relatedEntities.InsertEntityCollection(await this.reviewTaskManager.FindEntities(reviewObjectiveDto.ReviewTasks));
+            relatedEntities.InsertEntityCollection(await this.annotationManager.FindEntities(reviewObjectiveDto.Annotations));
             entity.ResolveProperties(reviewObjectiveDto, relatedEntities);
         }
 
@@ -247,7 +266,7 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         public async Task<IEnumerable<Entity>> GetContainedEntities(Guid containerId, int deepLevel = 0)
         {
             var reviews = await this.context.ReviewObjectives.Where(x => x.EntityContainer != null && x.EntityContainer.Id == containerId).ToListAsync();
-            return reviews.SelectMany(x => x.GetAssociatedEntities(deepLevel)).ToList();
+            return reviews.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
         }
 
         /// <summary>

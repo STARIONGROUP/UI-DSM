@@ -16,20 +16,24 @@ namespace UI_DSM.Shared.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
+    using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Extensions;
+    using UI_DSM.Shared.Types;
 
     /// <summary>
     ///     A <see cref="ReviewObjective" /> represents a review object for a <see cref="Review" />
     /// </summary>
     [Table(nameof(ReviewObjective))]
-    public class ReviewObjective : AnnotableItem
+    public class ReviewObjective : AnnotatableItem
     {
         /// <summary>
         ///     Initializes a new <see cref="ReviewObjective" />
         /// </summary>
         public ReviewObjective()
         {
+            this.InitializeCollections();
         }
 
         /// <summary>
@@ -38,6 +42,7 @@ namespace UI_DSM.Shared.Models
         /// <param name="id">The <see cref="Guid" /> of the <see cref="Entity" /></param>
         public ReviewObjective(Guid id) : base(id)
         {
+            this.InitializeCollections();
         }
 
         /// <summary>
@@ -64,6 +69,12 @@ namespace UI_DSM.Shared.Models
         public StatusKind Status { get; set; }
 
         /// <summary>
+        ///     A collection of <see cref="ReviewTasks" />
+        /// </summary>
+        [DeepLevel(1)]
+        public EntityContainerList<ReviewTask> ReviewTasks { get; protected set; }
+
+        /// <summary>
         ///     Instantiate a <see cref="EntityDto" /> from a <see cref="Entity" />
         /// </summary>
         /// <returns>A new <see cref="EntityDto" /></returns>
@@ -74,7 +85,8 @@ namespace UI_DSM.Shared.Models
                 Title = this.Title,
                 Description = this.Description,
                 ReviewObjectiveNumber = this.ReviewObjectiveNumber,
-                Status = this.Status
+                Status = this.Status,
+                ReviewTasks = this.ReviewTasks.Select(x => x.Id).ToList()
             };
 
             dto.IncludeCommonProperties(this);
@@ -99,6 +111,15 @@ namespace UI_DSM.Shared.Models
             this.Status = reviewObjectiveDto.Status;
             this.Title = reviewObjectiveDto.Title;
             this.ReviewObjectiveNumber = reviewObjectiveDto.ReviewObjectiveNumber;
+            this.ReviewTasks.ResolveList(reviewObjectiveDto.ReviewTasks, resolvedEntity);
+        }
+
+        /// <summary>
+        ///     Initializes all collections of this <see cref="ReviewObjective" />
+        /// </summary>
+        private void InitializeCollections()
+        {
+            this.ReviewTasks = new EntityContainerList<ReviewTask>(this);
         }
     }
 }

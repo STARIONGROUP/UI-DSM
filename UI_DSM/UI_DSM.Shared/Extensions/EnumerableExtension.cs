@@ -30,5 +30,25 @@ namespace UI_DSM.Shared.Extensions
         {
             return collection.Select(x => x.ToDto()).ToList();
         }
+
+        /// <summary>
+        ///     Resolve the <see cref="List{TEntity}" /> from the <see cref="IEnumerable{Guid}" />
+        /// </summary>
+        /// <param name="collection">The collection of <see cref="TEntity"/></param>
+        /// <param name="guids">A collection of <see cref="Guid" /> of <see cref="Entity" /> to find</param>
+        /// <param name="resolvedEntity">A <see cref="Dictionary{TKey,TValue}" /> of all <see cref="Entity" /></param>
+        /// <typeparam name="TEntity">An <see cref="Entity"/></typeparam>
+        public static void ResolveList<TEntity>(this List<TEntity> collection, IEnumerable<Guid> guids, Dictionary<Guid, Entity> resolvedEntity) where TEntity: Entity
+        {
+            collection.Clear();
+
+            foreach (var guid in guids)
+            {
+                if (resolvedEntity.TryGetValue(guid, out var entity) && entity is TEntity foundEntity)
+                {
+                    collection.Add(foundEntity);
+                }
+            }
+        }
     }
 }

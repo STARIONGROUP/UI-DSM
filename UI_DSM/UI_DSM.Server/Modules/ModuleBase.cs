@@ -17,8 +17,6 @@ namespace UI_DSM.Server.Modules
 
     using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Client.Services;
-
     /// <summary>
     ///     Base class for all <see cref="ICarterModule" /> for this REST Api
     /// </summary>
@@ -33,12 +31,12 @@ namespace UI_DSM.Server.Modules
         }
 
         /// <summary>
-        ///     A <see cref="Dictionary{TKey,TValue}" /> that store the main route for all <see cref="ServiceBase" />
+        ///     A <see cref="Dictionary{TKey,TValue}" /> that store the main route for all <see cref="ModuleBase" />
         /// </summary>
         private static Dictionary<Type, string> ModuleRoute { get; } = new();
 
         /// <summary>
-        ///     Main Route for the <see cref="ServiceBase" />
+        ///     Main Route for the <see cref="ModuleBase" />
         /// </summary>
         protected string MainRoute { get; private set; }
 

@@ -74,6 +74,31 @@ namespace UI_DSM.Server.Context
         public virtual DbSet<ReviewObjective> ReviewObjectives { get; set; }
 
         /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="ReviewTask" />
+        /// </summary>
+        public virtual DbSet<ReviewTask> ReviewTasks { get; set; }
+
+        /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="Comment" />
+        /// </summary>
+        public virtual DbSet<Comment> Comments { get; set; }
+
+        /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="Reply" />
+        /// </summary>
+        public virtual DbSet<Reply> Replies { get; set; }
+
+        /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="Feedback" />
+        /// </summary>
+        public virtual DbSet<Feedback> Feedbacks { get; set; }
+
+        /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="Note" />
+        /// </summary>
+        public virtual DbSet<Note> Notes { get; set; }
+
+        /// <summary>
         ///     Tries to validate an object
         /// </summary>
         /// <param name="instance">The <see cref="object" /> to validate</param>
@@ -110,8 +135,14 @@ namespace UI_DSM.Server.Context
                 .HasForeignKey("EntityContainerId")
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<Project>().HasMany(p => p.Annotations)
+                .WithOne(p => (Project)p.EntityContainer)
+                .HasForeignKey("EntityContainerId")
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.Entity<Project>().Navigation(x => x.Participants).AutoInclude();
             builder.Entity<Project>().Navigation(x => x.Reviews).AutoInclude();
+            builder.Entity<Project>().Navigation(x => x.Annotations).AutoInclude();
 
             builder.Entity<Participant>().Navigation(x => x.Role).AutoInclude();
             builder.Entity<Participant>().Navigation(x => x.User).AutoInclude();
@@ -125,6 +156,29 @@ namespace UI_DSM.Server.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<ReviewObjective>().Navigation(x => x.Author).AutoInclude();
+            builder.Entity<ReviewObjective>().Navigation(x => x.ReviewTasks).AutoInclude();
+
+            builder.Entity<ReviewObjective>().HasMany(x => x.ReviewTasks)
+                .WithOne(ro => (ReviewObjective)ro.EntityContainer)
+                .HasForeignKey("EntityContainerId")
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ReviewTask>().Navigation(x => x.Author).AutoInclude();
+            builder.Entity<ReviewTask>().Navigation(x => x.IsAssignedTo).AutoInclude();
+
+            builder.Entity<AnnotatableItem>().HasMany(x => x.Annotations);
+            builder.Entity<AnnotatableItem>().Navigation(x => x.Annotations).AutoInclude();
+            
+            builder.Entity<Annotation>().HasMany(a => a.AnnotatableItems);
+            builder.Entity<Annotation>().Navigation(x => x.Author).AutoInclude();
+            builder.Entity<Annotation>().Navigation(x => x.AnnotatableItems).AutoInclude();
+
+            builder.Entity<Comment>().HasMany(x => x.Replies)
+                .WithOne(reply => (Comment)reply.EntityContainer)
+                .HasForeignKey("EntityContainerId")
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Reply>().Navigation(x => x.Author).AutoInclude();
 
             builder.ApplyConfiguration(new UserConfiguration());
             builder.ApplyConfiguration(new UserEntityConfiguration());

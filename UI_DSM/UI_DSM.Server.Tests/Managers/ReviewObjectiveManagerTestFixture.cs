@@ -18,8 +18,10 @@ namespace UI_DSM.Server.Tests.Managers
     using NUnit.Framework;
 
     using UI_DSM.Server.Context;
+    using UI_DSM.Server.Managers.AnnotationManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
+    using UI_DSM.Server.Managers.ReviewTaskManager;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
@@ -31,13 +33,19 @@ namespace UI_DSM.Server.Tests.Managers
         private ReviewObjectiveManager manager;
         private Mock<DatabaseContext> context;
         private Mock<IParticipantManager> participantManager;
+        private Mock<IReviewTaskManager> reviewTaskManager;
+        private Mock<IAnnotationManager> annotationManager;
 
         [SetUp]
         public void Setup()
         {
             this.context = new Mock<DatabaseContext>();
             this.participantManager = new Mock<IParticipantManager>();
-            this.manager = new ReviewObjectiveManager(this.context.Object, this.participantManager.Object);
+            this.reviewTaskManager = new Mock<IReviewTaskManager>();
+            this.annotationManager = new Mock<IAnnotationManager>();
+
+            this.manager = new ReviewObjectiveManager(this.context.Object, this.participantManager.Object, this.reviewTaskManager.Object,
+                this.annotationManager.Object);
         }
 
         [Test]
@@ -80,7 +88,7 @@ namespace UI_DSM.Server.Tests.Managers
             }
 
             var allEntities = await this.manager.GetEntities(1);
-            Assert.That(allEntities.ToList(), Has.Count.EqualTo(8));
+            Assert.That(allEntities.ToList(), Has.Count.EqualTo(5));
 
             var invalidGuid = Guid.NewGuid();
             dbSet.Setup(x => x.FindAsync(invalidGuid)).ReturnsAsync((ReviewObjective)null);
@@ -191,17 +199,43 @@ namespace UI_DSM.Server.Tests.Managers
             var participant = new Participant(Guid.NewGuid());
             this.participantManager.Setup(x => x.FindEntity(participant.Id)).ReturnsAsync(participant);
 
+            var tasks = new List<ReviewTask>
+            {
+                new(Guid.NewGuid()),
+                new(Guid.NewGuid()),
+                new(Guid.NewGuid())
+            };
+
+            this.reviewTaskManager.Setup(x => x.FindEntities(It.IsAny<List<Guid>>())).ReturnsAsync(tasks);
+
+            var annotations = new List<Annotation>()
+            {
+                new Comment(Guid.NewGuid()),
+                new Feedback(Guid.NewGuid()),
+                new Note(Guid.NewGuid())
+            };
+
+            this.annotationManager.Setup(x => x.FindEntities(It.IsAny<List<Guid>>())).ReturnsAsync(annotations);
+
             var reviewObjective = new ReviewObjective();
             await this.manager.ResolveProperties(reviewObjective, new UserDto());
             Assert.That(reviewObjective.Author, Is.Null);
 
             var reviewDto = new ReviewObjectiveDto()
             {
-                Author = participant.Id
+                Author = participant.Id,
+                ReviewTasks = tasks.Select(x => x.Id).ToList(),
+                Annotations = annotations.Select(x => x.Id).ToList()
             };
 
             await this.manager.ResolveProperties(reviewObjective, reviewDto);
-            Assert.That(reviewObjective.Author, Is.EqualTo(participant));
+           
+            Assert.Multiple(() =>
+            {
+                Assert.That(reviewObjective.Author, Is.EqualTo(participant));
+                Assert.That(reviewObjective.ReviewTasks, Has.Count.EqualTo(3));
+                Assert.That(reviewObjective.Annotations, Has.Count.EqualTo(3));
+            });
         }
     }
 }

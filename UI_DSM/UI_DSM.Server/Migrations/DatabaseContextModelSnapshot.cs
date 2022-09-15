@@ -25,6 +25,21 @@ namespace UI_DSM.Server.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("AnnotatableItemAnnotation", b =>
+                {
+                    b.Property<Guid>("AnnotatableItemsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AnnotationsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("AnnotatableItemsId", "AnnotationsId");
+
+                    b.HasIndex("AnnotationsId");
+
+                    b.ToTable("AnnotatableItemAnnotation");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -54,7 +69,7 @@ namespace UI_DSM.Server.Migrations
                         new
                         {
                             Id = "AF8956F8-CA85-4DF2-8CB6-C46D0845B987",
-                            ConcurrencyStamp = "c1a9421c-4176-4acb-b473-ebc03780f807",
+                            ConcurrencyStamp = "9a2b04bc-fbf1-4bbb-aef3-214084843ecd",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -181,7 +196,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Entity", (string)null);
+                    b.ToTable("Entity");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.User", b =>
@@ -255,17 +270,58 @@ namespace UI_DSM.Server.Migrations
                         {
                             Id = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "172b3dd7-4ed4-4b2f-be64-206637a544be",
+                            ConcurrencyStamp = "4a038e0b-f742-4b04-95fd-2de6f7895f23",
                             EmailConfirmed = false,
                             IsAdmin = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEA8NqgZEzQJQBXCNn8kdGlZ+LCKDV9ScuiZIXaJJXZ/Eo5lIHa3BLffcJk/tAPBv5Q==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEDQkHLx6aVgzvBDau1UCK8kmQ9nCCLdpmx/7Daop5C5Oo5ntq+2S7l3+WTFjSp0rug==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "662edb1d-3e9c-4bdf-91de-0a9050e42dfa",
+                            SecurityStamp = "ef330ed2-78fa-47d2-b15d-f94b6e75a9c1",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.AnnotatableItem", b =>
+                {
+                    b.HasBaseType("UI_DSM.Shared.Models.Entity");
+
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("AnnotatableItem");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Annotation", b =>
+                {
+                    b.HasBaseType("UI_DSM.Shared.Models.Entity");
+
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("EntityContainerId")
+                        .HasColumnType("uuid");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("EntityContainerId");
+
+                    b.ToTable("Annotation");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Participant", b =>
@@ -287,7 +343,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Participant", (string)null);
+                    b.ToTable("Participant");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Project", b =>
@@ -306,7 +362,32 @@ namespace UI_DSM.Server.Migrations
                     b.HasIndex("ProjectName")
                         .IsUnique();
 
-                    b.ToTable("Project", (string)null);
+                    b.ToTable("Project");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Reply", b =>
+                {
+                    b.HasBaseType("UI_DSM.Shared.Models.Entity");
+
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("EntityContainerId")
+                        .HasColumnType("uuid");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("EntityContainerId");
+
+                    b.ToTable("Reply");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Review", b =>
@@ -344,10 +425,10 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("EntityContainerId");
 
-                    b.ToTable("Review", (string)null);
+                    b.ToTable("Review");
                 });
 
-            modelBuilder.Entity("UI_DSM.Shared.Models.ReviewObjective", b =>
+            modelBuilder.Entity("UI_DSM.Shared.Models.ReviewTask", b =>
                 {
                     b.HasBaseType("UI_DSM.Shared.Models.Entity");
 
@@ -365,14 +446,17 @@ namespace UI_DSM.Server.Migrations
                     b.Property<Guid?>("EntityContainerId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("ReviewObjectiveNumber")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ReviewObjectiveNumber"));
+                    b.Property<Guid?>("IsAssignedToId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
+
+                    b.Property<int>("TaskNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TaskNumber"));
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -382,7 +466,9 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("EntityContainerId");
 
-                    b.ToTable("ReviewObjective", (string)null);
+                    b.HasIndex("IsAssignedToId");
+
+                    b.ToTable("ReviewTask");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Role", b =>
@@ -405,7 +491,7 @@ namespace UI_DSM.Server.Migrations
                     b.HasIndex("RoleName")
                         .IsUnique();
 
-                    b.ToTable("Role", (string)null);
+                    b.ToTable("Role");
 
                     b.HasData(
                         new
@@ -442,7 +528,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserEntity", (string)null);
+                    b.ToTable("UserEntity");
 
                     b.HasData(
                         new
@@ -452,6 +538,71 @@ namespace UI_DSM.Server.Migrations
                             UserId = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7",
                             UserName = "admin"
                         });
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Comment", b =>
+                {
+                    b.HasBaseType("UI_DSM.Shared.Models.Annotation");
+
+                    b.ToTable("Comment");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Feedback", b =>
+                {
+                    b.HasBaseType("UI_DSM.Shared.Models.Annotation");
+
+                    b.ToTable("Feedback");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Note", b =>
+                {
+                    b.HasBaseType("UI_DSM.Shared.Models.Annotation");
+
+                    b.ToTable("Note");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.ReviewObjective", b =>
+                {
+                    b.HasBaseType("UI_DSM.Shared.Models.AnnotatableItem");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("EntityContainerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ReviewObjectiveNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ReviewObjectiveNumber"));
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasIndex("EntityContainerId");
+
+                    b.ToTable("ReviewObjective");
+                });
+
+            modelBuilder.Entity("AnnotatableItemAnnotation", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.AnnotatableItem", null)
+                        .WithMany()
+                        .HasForeignKey("AnnotatableItemsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UI_DSM.Shared.Models.Annotation", null)
+                        .WithMany()
+                        .HasForeignKey("AnnotationsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -505,6 +656,43 @@ namespace UI_DSM.Server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("UI_DSM.Shared.Models.AnnotatableItem", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Participant", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("UI_DSM.Shared.Models.Entity", null)
+                        .WithOne()
+                        .HasForeignKey("UI_DSM.Shared.Models.AnnotatableItem", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Annotation", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Participant", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("UI_DSM.Shared.Models.Project", "EntityContainer")
+                        .WithMany("Annotations")
+                        .HasForeignKey("EntityContainerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("UI_DSM.Shared.Models.Entity", null)
+                        .WithOne()
+                        .HasForeignKey("UI_DSM.Shared.Models.Annotation", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("EntityContainer");
+                });
+
             modelBuilder.Entity("UI_DSM.Shared.Models.Participant", b =>
                 {
                     b.HasOne("UI_DSM.Shared.Models.Project", "EntityContainer")
@@ -552,6 +740,28 @@ namespace UI_DSM.Server.Migrations
                     b.Navigation("EntityContainer");
                 });
 
+            modelBuilder.Entity("UI_DSM.Shared.Models.Reply", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Participant", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("UI_DSM.Shared.Models.Comment", "EntityContainer")
+                        .WithMany("Replies")
+                        .HasForeignKey("EntityContainerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("UI_DSM.Shared.Models.Entity", null)
+                        .WithOne()
+                        .HasForeignKey("UI_DSM.Shared.Models.Reply", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("EntityContainer");
+                });
+
             modelBuilder.Entity("UI_DSM.Shared.Models.Review", b =>
                 {
                     b.HasOne("UI_DSM.Shared.Models.Participant", "Author")
@@ -574,26 +784,32 @@ namespace UI_DSM.Server.Migrations
                     b.Navigation("EntityContainer");
                 });
 
-            modelBuilder.Entity("UI_DSM.Shared.Models.ReviewObjective", b =>
+            modelBuilder.Entity("UI_DSM.Shared.Models.ReviewTask", b =>
                 {
                     b.HasOne("UI_DSM.Shared.Models.Participant", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId");
 
-                    b.HasOne("UI_DSM.Shared.Models.Review", "EntityContainer")
-                        .WithMany("ReviewObjectives")
+                    b.HasOne("UI_DSM.Shared.Models.ReviewObjective", "EntityContainer")
+                        .WithMany("ReviewTasks")
                         .HasForeignKey("EntityContainerId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("UI_DSM.Shared.Models.Entity", null)
                         .WithOne()
-                        .HasForeignKey("UI_DSM.Shared.Models.ReviewObjective", "Id")
+                        .HasForeignKey("UI_DSM.Shared.Models.ReviewTask", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("UI_DSM.Shared.Models.Participant", "IsAssignedTo")
+                        .WithMany()
+                        .HasForeignKey("IsAssignedToId");
 
                     b.Navigation("Author");
 
                     b.Navigation("EntityContainer");
+
+                    b.Navigation("IsAssignedTo");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Role", b =>
@@ -632,8 +848,53 @@ namespace UI_DSM.Server.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("UI_DSM.Shared.Models.Comment", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Annotation", null)
+                        .WithOne()
+                        .HasForeignKey("UI_DSM.Shared.Models.Comment", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Feedback", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Annotation", null)
+                        .WithOne()
+                        .HasForeignKey("UI_DSM.Shared.Models.Feedback", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Note", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Annotation", null)
+                        .WithOne()
+                        .HasForeignKey("UI_DSM.Shared.Models.Note", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.ReviewObjective", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Review", "EntityContainer")
+                        .WithMany("ReviewObjectives")
+                        .HasForeignKey("EntityContainerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("UI_DSM.Shared.Models.AnnotatableItem", null)
+                        .WithOne()
+                        .HasForeignKey("UI_DSM.Shared.Models.ReviewObjective", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EntityContainer");
+                });
+
             modelBuilder.Entity("UI_DSM.Shared.Models.Project", b =>
                 {
+                    b.Navigation("Annotations");
+
                     b.Navigation("Participants");
 
                     b.Navigation("Reviews");
@@ -642,6 +903,16 @@ namespace UI_DSM.Server.Migrations
             modelBuilder.Entity("UI_DSM.Shared.Models.Review", b =>
                 {
                     b.Navigation("ReviewObjectives");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Comment", b =>
+                {
+                    b.Navigation("Replies");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.ReviewObjective", b =>
+                {
+                    b.Navigation("ReviewTasks");
                 });
 #pragma warning restore 612, 618
         }

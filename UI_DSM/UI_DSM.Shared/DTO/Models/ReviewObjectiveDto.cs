@@ -19,13 +19,14 @@ namespace UI_DSM.Shared.DTO.Models
     /// <summary>
     ///     The Data Transfer Object representing the <see cref="ReviewObjective" /> class.
     /// </summary>
-    public class ReviewObjectiveDto : AnnotableItemDto
+    public class ReviewObjectiveDto : AnnotatableItemDto
     {
         /// <summary>
         ///     Initiazes a new <see cref="EntityDto" />
         /// </summary>
         public ReviewObjectiveDto()
         {
+            this.InitializeCollections();
         }
 
         /// <summary>
@@ -34,6 +35,7 @@ namespace UI_DSM.Shared.DTO.Models
         /// <param name="id">The <see cref="Guid" /> of the represented <see cref="Entity" /></param>
         public ReviewObjectiveDto(Guid id) : base(id)
         {
+            this.InitializeCollections();
         }
 
         /// <summary>
@@ -57,12 +59,25 @@ namespace UI_DSM.Shared.DTO.Models
         public StatusKind Status { get; set; }
 
         /// <summary>
+        ///     A collection of <see cref="Guid" /> that represents <see cref="ReviewTask" />
+        /// </summary>
+        public List<Guid> ReviewTasks { get; set; }
+
+        /// <summary>
         ///     Instantiate a <see cref="Entity" /> from a <see cref="EntityDto" />
         /// </summary>
         /// <returns>A new <see cref="Entity" /></returns>
         public override Entity InstantiatePoco()
         {
             return new ReviewObjective(this.Id);
+        }
+
+        /// <summary>
+        ///     Initializes all collections for this <see cref="EntityDto" />
+        /// </summary>
+        private void InitializeCollections()
+        {
+            this.ReviewTasks = new List<Guid>();
         }
     }
 }

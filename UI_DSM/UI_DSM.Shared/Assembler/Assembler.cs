@@ -43,7 +43,9 @@ namespace UI_DSM.Shared.Assembler
                 entitiesDictionary[id].ResolveProperties(entitiesDtoDictionary[id], entitiesDictionary);
             }
 
-            return entitiesDictionary.Values.Where(x => x.GetType() == typeof(TEntity)).Cast<TEntity>().ToList();
+            return typeof(TEntity).IsAbstract 
+                ? entitiesDictionary.Values.Where(x => x.GetType().BaseType == typeof(TEntity)).Cast<TEntity>().ToList() 
+                : entitiesDictionary.Values.Where(x => x.GetType() == typeof(TEntity)).Cast<TEntity>().ToList();
         }
     }
 }
