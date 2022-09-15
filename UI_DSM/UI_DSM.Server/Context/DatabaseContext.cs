@@ -171,7 +171,6 @@ namespace UI_DSM.Server.Context
             
             builder.Entity<Annotation>().HasMany(a => a.AnnotatableItems);
             builder.Entity<Annotation>().Navigation(x => x.Author).AutoInclude();
-            builder.Entity<Annotation>().Navigation(x => x.AnnotatableItems).AutoInclude();
 
             builder.Entity<Comment>().HasMany(x => x.Replies)
                 .WithOne(reply => (Comment)reply.EntityContainer)
