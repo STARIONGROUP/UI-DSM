@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\UI_DSM.Serializer.Json\UI_DSM.Serializer.Json.csproj" />
+    <ProjectReference Include="..\UI_DSM.Server\UI_DSM.Server.csproj" />
   </ItemGroup>
 
   <ItemGroup>

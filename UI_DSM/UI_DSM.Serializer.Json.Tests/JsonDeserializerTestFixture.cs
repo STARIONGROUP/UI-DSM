@@ -38,10 +38,10 @@ namespace UI_DSM.Serializer.Json.Tests
             
             Assert.Multiple(() =>
             {
-                Assert.That(data, Has.Count.EqualTo(4));
+                Assert.That(data, Has.Count.EqualTo(11));
                 Assert.That(data.OfType<ProjectDto>(), Is.Not.Empty);
-                Assert.That(data.OfType<ProjectDto>().First().Id, Is.EqualTo(Guid.Parse("dab15f9d-6dc8-428b-ba8f-dfb47d66fc1e")));
-                Assert.That(data.OfType<ParticipantDto>().FirstOrDefault(x => x.Id == Guid.Parse("3a7f765a-af83-47da-8098-38dda7aaae1e")), Is.Not.Null);
+                Assert.That(data.OfType<ProjectDto>().First().Id, Is.EqualTo(Guid.Parse("9417d7ea-ce53-4187-897f-f1a1cc2d104e")));
+                Assert.That(data.OfType<ParticipantDto>().FirstOrDefault(x => x.Id == Guid.Parse("3542293d-cdcd-4143-a546-436bc9d9a118")), Is.Not.Null);
             });
         }
     }

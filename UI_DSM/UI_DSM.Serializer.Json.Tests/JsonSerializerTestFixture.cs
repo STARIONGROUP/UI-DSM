@@ -59,15 +59,88 @@ namespace UI_DSM.Serializer.Json.Tests
                 Role = role.Id
             };
 
+            var reviewTask = new ReviewTaskDto(Guid.NewGuid())
+            {
+                Author = participant.Id,
+                Description = "review objective description",
+                Title = "review objective Title",
+                CreatedOn = DateTime.UtcNow,
+                TaskNumber = 2,
+                IsAssignedTo = participant.Id,
+                Status = StatusKind.Open
+            };
+
+            var reviewObjectiveGuid = Guid.NewGuid();
+            var commentGuid = Guid.NewGuid();
+            var noteGuid = Guid.NewGuid();
+            var feedbackGuid = Guid.NewGuid();
+
+            var reviewObjective = new ReviewObjectiveDto(reviewObjectiveGuid)
+            {
+                Author = participant.Id,
+                Description = "review objective description",
+                Title = "review objective Title",
+                CreatedOn = DateTime.UtcNow,
+                ReviewObjectiveNumber = 2,
+                Status = StatusKind.Open,
+                Annotations = new List<Guid>{commentGuid, feedbackGuid, noteGuid},
+                ReviewTasks = new List<Guid>{reviewTask.Id}
+            };
+
+            var reply = new ReplyDto(Guid.NewGuid())
+            {
+                Content = "Reply content",
+                CreatedOn = DateTime.UtcNow,
+                Author = participant.Id
+            };
+
+            var comment = new CommentDto(commentGuid)
+            {
+                AnnotatableItems = new List<Guid> { reviewObjectiveGuid },
+                Author = participant.Id,
+                Content = "Comment content",
+                CreatedOn = DateTime.UtcNow,
+                Replies = new List<Guid> { reply.Id }
+            };
+
+            var feedback = new FeedbackDto(feedbackGuid)
+            {
+                AnnotatableItems = new List<Guid> { reviewObjectiveGuid },
+                Author = participant.Id,
+                Content = "feedback content",
+                CreatedOn = DateTime.UtcNow
+            };
+
+            var note = new NoteDto(noteGuid)
+            {
+                AnnotatableItems = new List<Guid> { reviewObjectiveGuid },
+                Author = participant.Id,
+                Content = "note content",
+                CreatedOn = DateTime.UtcNow
+            };
+
+            var review = new ReviewDto(Guid.NewGuid())
+            {
+                Author = participant.Id,
+                Description = "review description",
+                Title = "review Title",
+                CreatedOn = DateTime.UtcNow,
+                ReviewNumber = 2,
+                Status = StatusKind.Open,
+                ReviewObjectives = new List<Guid>{reviewObjective.Id}
+            };
+
             var project = new ProjectDto(Guid.NewGuid())
             {
                 ProjectName = "Project",
-                Participants = new List<Guid>{participant.Id}
+                Participants = new List<Guid>{participant.Id},
+                Reviews = new List<Guid>{review.Id},
+                Annotations = new List<Guid>{commentGuid, noteGuid, feedbackGuid}
             };
 
             var dtos = new List<EntityDto>
             {
-                project, participant, user, role
+                project, participant, user, role, reply, comment, feedback, note, review, reviewObjective, reviewTask
             };
 
             var stream = new MemoryStream();
