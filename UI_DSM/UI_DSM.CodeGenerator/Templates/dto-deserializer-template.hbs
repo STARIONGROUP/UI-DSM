@@ -1,0 +1,163 @@
+// --------------------------------------------------------------------------------------------------------
+// <copyright file="{{this.Name}}Deserializer.cs" company="RHEA System S.A.">
+//  Copyright (c) 2022 RHEA System S.A.
+//
+//  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+//
+//  This file is part of UI-DSM.
+//  The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+//  The UI-DSM application is provided to the community under the Apache License 2.0.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------------------------------
+// ------------THIS IS AN AUTOMATICALLY GENERATED FILE. ANY MANUAL CHANGES WILL BE OVERWRITTEN!------------
+// --------------------------------------------------------------------------------------------------------
+
+namespace UI_DSM.Serializer.Json
+{
+    using System.Text.Json;
+
+    using UI_DSM.Shared.DTO.Models;
+
+    /// <summary>
+    ///     The purpose of the <see cref="{{ this.Name }}Deserializer" /> is to provide deserialization capabilities
+    /// </summary>
+    internal static class {{ this.Name }}Deserializer
+    {
+        /// <summary>
+        ///     Deserializes an instance of <see cref="{{ this.Name }}" /> using an <see cref="JsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">The <see cref="JsonElement"/> that contains the <see cref="{{ this.Name }}"/> json object</param>
+        /// <returns>An instance of <see cref="{{ this.Name }}"/></returns>
+        internal static {{this.Name}} Deserialize(JsonElement jsonElement)
+        {
+            if (!jsonElement.TryGetProperty("@type", out var type))
+            {
+                throw new InvalidOperationException("The @type property is not available, the {{ this.Name }}DeSerializer cannot be used to deserialize this JsonElement");
+            }
+
+            if (type.GetString() != "{{ this.Name }}")
+            {
+                throw new InvalidOperationException($"The {{ this.Name }}Deserializer can only be used to deserialize objects of type {{ this.Name }}, a  {type.GetString()} was provided");
+            }
+
+            var dto = new {{ this.Name }}();
+
+            if (jsonElement.TryGetProperty("id", out var idProperty))
+            {
+                var propertyValue = idProperty.GetString();
+
+                if (propertyValue == null)
+                {
+                    throw new JsonException("The id property is not present, the {{ this.Name }} cannot be deserialized");
+                }
+                
+                dto.Id = Guid.Parse(propertyValue);
+            }
+            {{#each (PropertyReflection.GetAllPropertiesExceptId this) as | property |}}
+
+                if(jsonElement.TryGetProperty("{{ #String.LowerCaseFirstLetter property.Name }}", out var {{ #String.LowerCaseFirstLetter property.Name }}Property))
+                {
+                    {{#if (PropertyReflection.IsReference property)}}
+                        {{#if (PropertyReflection.IsEnumerable property)}}
+                            foreach (var item in {{ #String.LowerCaseFirstLetter property.Name }}Property.EnumerateArray())
+                            {
+                                var propertyValue = item.GetString();
+
+                                if(propertyValue != null)
+                                {
+                                    dto.{{ property.Name }}.Add(Guid.Parse(propertyValue));
+                                }
+                            }
+                        {{else}}
+                            var propertyValue = {{ #String.LowerCaseFirstLetter property.Name }}Property.GetString();
+
+                            if(propertyValue != null)
+                            {
+                                dto.{{ property.Name }} = Guid.Parse(propertyValue);
+                            }
+                        {{/if}}
+                    {{else}}
+                        {{#if (PropertyReflection.IsEnumerable property)}}
+                            foreach (var item in {{ #String.LowerCaseFirstLetter property.Name }}Property.EnumerateArray())
+                            {
+                                {{#if (PropertyReflection.IsBool property)}}
+                                    var propertyValue = item.GetBoolean();
+
+                                    if(propertyValue != null)
+                                    {
+                                        dto.{{ property.Name }}.Add(propertyValue);
+                                    }
+                                {{else if (PropertyReflection.IsNumeric property)}}
+                                    {{#if (PropertyReflection.IsInteger property)}}
+                                        var propertyValue = item.GetInt32();
+
+                                        if(propertyValue != null)
+                                        {
+                                            dto.{{ property.Name }}.Add(propertyValue);
+                                        }
+                                    {{else if (PropertyReflection.IsDouble property)}}
+                                        var propertyValue = item.GetDouble();
+
+                                        if(propertyValue != null)
+                                        {
+                                            dto.{{ property.Name }}.Add(propertyValue);
+                                        }
+                                    {{/if}}
+                                {{else if (PropertyReflection.IsEnum property)}}
+                                        var propertyValue = item.GetString();
+
+                                        if(propertyValue != null)
+                                        {
+                                            dto.{{ property.Name }}.Add({{ #PropertyReflection.GetTypeName property }}Deserializer.Deserialize(propertyValue));
+                                        }
+                                {{else}}
+                                    var propertyValue = item.GetString();
+
+                                    if(propertyValue != null)
+                                    {
+                                        dto.{{ property.Name }}.Add(propertyValue);
+                                    }
+                                {{/if}}
+                            }
+                        {{else}}
+                            {{#if (PropertyReflection.IsBool property)}}
+                                dto.{{ property.Name }} = {{ #String.LowerCaseFirstLetter property.Name }}Property.GetBoolean();
+                            {{else if (PropertyReflection.IsNumeric property)}}
+                                {{#if (PropertyReflection.IsInteger property)}}
+                                    dto.{{ property.Name }} = {{ #String.LowerCaseFirstLetter property.Name }}Property.GetInt32();
+                                {{else if (PropertyReflection.IsDouble property)}}
+                                    dto.{{ property.Name }} = {{ #String.LowerCaseFirstLetter property.Name }}Property.GetDouble();
+                                {{/if}}
+                            {{else if (PropertyReflection.IsEnum property)}}
+                                var propertyValue = {{ #String.LowerCaseFirstLetter property.Name }}Property.GetString();
+
+                                if(propertyValue != null)
+                                {
+                                    dto.{{ property.Name }} = {{ #PropertyReflection.GetTypeName property }}Deserializer.Deserialize(propertyValue);
+                                }
+                            {{else if (PropertyReflection.IsDateTime property)}}
+                                var propertyValue = {{ #String.LowerCaseFirstLetter property.Name }}Property.GetString();
+
+                                if(propertyValue != null)
+                                {
+                                    dto.{{ property.Name }} = DateTime.Parse(propertyValue);
+                                }
+                            {{else}}
+                                dto.{{ property.Name }} = {{ #String.LowerCaseFirstLetter property.Name }}Property.GetString();
+                            {{/if}}
+                        {{/if}}
+                    {{/if}}
+                }
+            {{/each}}
+
+            return dto;
+        }
+    }
+}
+
+// ------------------------------------------------------------------------------------------------
+// --------THIS IS AN AUTOMATICALLY GENERATED FILE. ANY MANUAL CHANGES WILL BE OVERWRITTEN!--------
+// ------------------------------------------------------------------------------------------------

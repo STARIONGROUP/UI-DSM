@@ -1,0 +1,33 @@
+﻿[
+  {
+    "@type": "ProjectDto",
+    "projectName": "Project",
+    "participants": [
+      "3a7f765a-af83-47da-8098-38dda7aaae1e"
+    ],
+    "reviews": [],
+    "annotations": [],
+    "id": "dab15f9d-6dc8-428b-ba8f-dfb47d66fc1e"
+  },
+  {
+    "@type": "ParticipantDto",
+    "user": "2a3351ff-e44a-4532-8aaa-c58d51661a35",
+    "role": "50c434ea-4bfa-4783-ac43-d588a8e803b1",
+    "id": "3a7f765a-af83-47da-8098-38dda7aaae1e"
+  },
+  {
+    "@type": "UserEntityDto",
+    "userName": "admin",
+    "isAdmin": true,
+    "id": "2a3351ff-e44a-4532-8aaa-c58d51661a35"
+  },
+  {
+    "@type": "RoleDto",
+    "roleName": "A role",
+    "accessRights": [
+      "CREATETASK",
+      "REVIEWTASK"
+    ],
+    "id": "50c434ea-4bfa-4783-ac43-d588a8e803b1"
+  }
+]

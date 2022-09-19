@@ -47,9 +47,9 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         IConfirmCancelPopupViewModel ConfirmCancelPopup { get; }
 
         /// <summary>
-        ///     A collections of <see cref="UserDto" />
+        ///     A collections of <see cref="UserEntityDto" />
         /// </summary>
-        SourceList<UserDto> Users { get; }
+        SourceList<UserEntityDto> Users { get; }
 
         /// <summary>
         ///     The <see cref="ErrorMessageViewModel" />
@@ -78,13 +78,13 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         /// <summary>
         ///     Opens a popup to confirm to delete a registered user
         /// </summary>
-        /// <param name="user">The <see cref="UserDto" /> to remove</param>
-        void AskConfirmDeleteUser(UserDto user);
+        /// <param name="userEntity">The <see cref="UserEntityDto" /> to remove</param>
+        void AskConfirmDeleteUser(UserEntityDto userEntity);
 
         /// <summary>
-        ///     Opens a popup to provide informations for the given <see cref="UserDto" />
+        ///     Opens a popup to provide informations for the given <see cref="UserEntityDto" />
         /// </summary>
-        /// <param name="user">The <see cref="UserDto" /></param>
-        void OpenDetailsPopup(UserDto user);
+        /// <param name="userEntity">The <see cref="UserEntityDto" /></param>
+        void OpenDetailsPopup(UserEntityDto userEntity);
     }
 }

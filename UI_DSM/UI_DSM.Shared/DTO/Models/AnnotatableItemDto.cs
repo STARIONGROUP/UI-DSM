@@ -18,40 +18,8 @@ namespace UI_DSM.Shared.DTO.Models
     /// <summary>
     ///     The Data Transfer Object representing the <see cref="AnnotatableItem" /> class.
     /// </summary>
-    public abstract class AnnotatableItemDto : EntityDto
+    public partial class AnnotatableItemDto
     {
-        /// <summary>
-        ///     Initiazes a new <see cref="AnnotatableItemDto" />
-        /// </summary>
-        protected AnnotatableItemDto()
-        {
-            this.InitializeCollections();
-        }
-
-        /// <summary>
-        ///     Initiazes a new <see cref="AnnotatableItemDto" />
-        /// </summary>
-        /// <param name="id">The <see cref="Guid" /> of the represented <see cref="AnnotatableItemDto" /></param>
-        protected AnnotatableItemDto(Guid id) : base(id)
-        {
-            this.InitializeCollections();
-        }
-
-        /// <summary>
-        ///     Gets or sets the <see cref="Guid" /> of the represented Author
-        /// </summary>
-        public Guid Author { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the <see cref="DateTime" /> for the creation of the <see cref="AnnotatableItemDto" />
-        /// </summary>
-        public DateTime CreatedOn { get; set; }
-
-        /// <summary>
-        ///     A collection of <see cref="Guid" /> that represents <see cref="Annotation" />
-        /// </summary>
-        public List<Guid> Annotations { get; set; }
-
         /// <summary>
         ///     Includes common properties for <see cref="AnnotatableItemDto" /> from an <see cref="AnnotatableItem" />
         /// </summary>
@@ -61,14 +29,6 @@ namespace UI_DSM.Shared.DTO.Models
             this.Author = annotatableItem.Author?.Id ?? Guid.Empty;
             this.CreatedOn = annotatableItem.CreatedOn;
             this.Annotations = annotatableItem.Annotations.Select(x => x.Id).ToList();
-        }
-
-        /// <summary>
-        ///     Initializes all collection of this <see cref="Entity" />
-        /// </summary>
-        private void InitializeCollections()
-        {
-            this.Annotations = new List<Guid>();
         }
     }
 }

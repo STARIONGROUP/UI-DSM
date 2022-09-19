@@ -87,7 +87,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
                     Role = roleId,
                     User = userId
                 },
-                new UserDto(userId)
+                new UserEntityDto(userId)
                 {
                     UserName = "User"
                 },

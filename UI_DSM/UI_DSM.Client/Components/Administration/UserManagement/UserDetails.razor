@@ -9,16 +9,16 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-<EditForm Context="editFormContext" Model="@this.ViewModel.User">
+<EditForm Context="editFormContext" Model="@this.ViewModel.UserEntity">
 	<DxFormLayout>
 		<DxFormLayoutItem Caption="User Id:" ColSpanMd="12">
-			<label id="userId">@this.ViewModel.User.Id</label>
+			<label id="userId">@this.ViewModel.UserEntity.Id</label>
 		</DxFormLayoutItem>
 		<DxFormLayoutItem Caption="UserName:" ColSpanMd="12">
-			<DxTextBox @bind-Text="@this.ViewModel.User.UserName" Enabled="false" />
+			<DxTextBox @bind-Text="@this.ViewModel.UserEntity.UserName" Enabled="false" />
 		</DxFormLayoutItem>
 		<DxFormLayoutItem Caption="Is Administrator:" ColSpanMd="12">
-			<DxCheckBox @bind-Checked="@this.ViewModel.User.IsAdmin" Enabled="false"/>
+			<DxCheckBox @bind-Checked="@this.ViewModel.UserEntity.IsAdmin" Enabled="false"/>
 		</DxFormLayoutItem>
 	</DxFormLayout>
 </EditForm>

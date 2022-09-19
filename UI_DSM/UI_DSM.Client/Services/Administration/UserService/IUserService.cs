@@ -23,10 +23,10 @@ namespace UI_DSM.Client.Services.Administration.UserService
     public interface IUserService
     {
         /// <summary>
-        ///     Provide a collection of registered <see cref="UserDto" />
+        ///     Provide a collection of registered <see cref="UserEntityDto" />
         /// </summary>
-        /// <returns>A task where the result is a collection of <see cref="UserDto" /></returns>
-        Task<List<UserDto>> GetUsers();
+        /// <returns>A task where the result is a collection of <see cref="UserEntityDto" /></returns>
+        Task<List<UserEntityDto>> GetUsers();
 
         /// <summary>
         ///     Register a new user based on <see cref="RegistrationDto" />
@@ -38,8 +38,8 @@ namespace UI_DSM.Client.Services.Administration.UserService
         /// <summary>
         ///     Delete a registered user
         /// </summary>
-        /// <param name="userToDelete">The user to delete</param>
+        /// <param name="userEntityToDelete">The user to delete</param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /></returns>
-        Task<RequestResponseDto> DeleteUser(UserDto userToDelete);
+        Task<RequestResponseDto> DeleteUser(UserEntityDto userEntityToDelete);
     }
 }

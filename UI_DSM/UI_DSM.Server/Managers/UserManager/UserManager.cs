@@ -175,7 +175,7 @@ namespace UI_DSM.Server.Managers.UserManager
         /// <returns>A <see cref="Task" /></returns>
         public async Task ResolveProperties(UserEntity entity, EntityDto dto)
         {
-            if (dto is not UserDto userDto)
+            if (dto is not UserEntityDto userDto)
             {
                 return;
             }

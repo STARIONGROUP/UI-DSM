@@ -38,10 +38,10 @@ namespace UI_DSM.Client.Services.Administration.UserService
         }
 
         /// <summary>
-        ///     Provide a collection of registered <see cref="UserDto" />
+        ///     Provide a collection of registered <see cref="UserEntityDto" />
         /// </summary>
-        /// <returns>A task where the result is a collection of <see cref="UserDto" /></returns>
-        public async Task<List<UserDto>> GetUsers()
+        /// <returns>A task where the result is a collection of <see cref="UserEntityDto" /></returns>
+        public async Task<List<UserEntityDto>> GetUsers()
         {
             var response = await this.HttpClient.GetAsync(this.MainRoute);
             var content = await response.Content.ReadAsStringAsync();
@@ -52,7 +52,7 @@ namespace UI_DSM.Client.Services.Administration.UserService
             }
 
             var entities =  JsonConvert.DeserializeObject<IEnumerable<EntityDto>>(content, this.JsonSerializerOptions);
-            return entities.Where(x => x.GetType() == typeof(UserDto)).Cast<UserDto>().ToList();
+            return entities.Where(x => x.GetType() == typeof(UserEntityDto)).Cast<UserEntityDto>().ToList();
         }
 
         /// <summary>
@@ -73,13 +73,13 @@ namespace UI_DSM.Client.Services.Administration.UserService
         /// <summary>
         ///     Delete a registered user
         /// </summary>
-        /// <param name="userToDelete">The user to delete</param>
+        /// <param name="userEntityToDelete">The user to delete</param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /></returns>
-        public async Task<RequestResponseDto> DeleteUser(UserDto userToDelete)
+        public async Task<RequestResponseDto> DeleteUser(UserEntityDto userEntityToDelete)
         {
-            if (!userToDelete.IsAdmin)
+            if (!userEntityToDelete.IsAdmin)
             {
-                var url = Path.Combine(this.MainRoute, userToDelete.Id.ToString());
+                var url = Path.Combine(this.MainRoute, userEntityToDelete.Id.ToString());
                 var deleteResponse = await this.HttpClient.DeleteAsync(url);
                 var deleteContent = await deleteResponse.Content.ReadAsStringAsync();
 

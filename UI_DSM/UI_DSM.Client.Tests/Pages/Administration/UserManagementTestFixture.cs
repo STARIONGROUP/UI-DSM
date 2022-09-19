@@ -44,14 +44,14 @@ namespace UI_DSM.Client.Tests.Pages.Administration
         private TestContext context;
         private IUserManagementViewModel viewModel;
         private Mock<IUserService> userService;
-        private List<UserDto> users;
+        private List<UserEntityDto> users;
 
         [SetUp]
         public void Setup()
         {
             this.userService = new Mock<IUserService>();
 
-            this.users = new List<UserDto>
+            this.users = new List<UserEntityDto>
             {
                 new ()
                 {
@@ -107,7 +107,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             this.userService.Setup(x => x.RegisterUser(It.IsAny<RegistrationDto>())).ReturnsAsync(new RegistrationResponseDto()
             {
                 IsRequestSuccessful = true,
-                CreatedUser = new UserDto()
+                CreatedUserEntity = new UserEntityDto()
                 {
                     UserName = "aNewUser"
                 }
@@ -127,7 +127,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             var tableBody = table.LastElementChild;
             Assert.That(tableBody!.Children.Length, Is.EqualTo(2));
 
-            this.viewModel.Users.Add(new UserDto()
+            this.viewModel.Users.Add(new UserEntityDto()
             {
                 UserName = "anotherUser"
             });
@@ -150,7 +150,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
 
             Assert.That(this.viewModel.ConfirmCancelPopup.IsVisible, Is.True);
 
-            this.userService.Setup(x => x.DeleteUser(It.IsAny<UserDto>())).ReturnsAsync(new RequestResponseDto()
+            this.userService.Setup(x => x.DeleteUser(It.IsAny<UserEntityDto>())).ReturnsAsync(new RequestResponseDto()
             {
                 IsRequestSuccessful = true
             });

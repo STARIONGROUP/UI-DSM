@@ -218,7 +218,7 @@ namespace UI_DSM.Server.Tests.Managers
             this.annotationManager.Setup(x => x.FindEntities(It.IsAny<List<Guid>>())).ReturnsAsync(annotations);
 
             var reviewObjective = new ReviewObjective();
-            await this.manager.ResolveProperties(reviewObjective, new UserDto());
+            await this.manager.ResolveProperties(reviewObjective, new UserEntityDto());
             Assert.That(reviewObjective.Author, Is.Null);
 
             var reviewDto = new ReviewObjectiveDto()

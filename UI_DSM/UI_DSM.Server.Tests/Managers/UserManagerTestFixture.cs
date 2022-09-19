@@ -129,7 +129,7 @@ namespace UI_DSM.Server.Tests.Managers
             await this.manager.ResolveProperties(user, new ParticipantDto());
             Assert.That(user.UserName, Is.Null);
             
-            await this.manager.ResolveProperties(user, new UserDto()
+            await this.manager.ResolveProperties(user, new UserEntityDto()
             {
                 UserName = "admin",
                 IsAdmin = true

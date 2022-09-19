@@ -57,7 +57,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
 
             httpResponse.StatusCode = HttpStatusCode.OK;
             
-            var users = new List<UserDto>
+            var users = new List<UserEntityDto>
             {
                 new ()
                 {
@@ -100,7 +100,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
 
             registrationResponse.IsRequestSuccessful = true;
 
-            registrationResponse.CreatedUser = new UserDto()
+            registrationResponse.CreatedUserEntity = new UserEntityDto()
             {
                 UserName = "user",
                 IsAdmin = false,
@@ -110,13 +110,13 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
             httpResponse.Content = new StringContent(JsonSerializer.Serialize(registrationResponse));
             registrationResult = this.service.RegisterUser(new RegistrationDto()).Result;
             Assert.That(registrationResult.IsRequestSuccessful, Is.True);
-            Assert.That(registrationResult.CreatedUser.Id, Is.EqualTo(registrationResponse.CreatedUser.Id));
+            Assert.That(registrationResult.CreatedUserEntity.Id, Is.EqualTo(registrationResponse.CreatedUserEntity.Id));
         }
 
         [Test]
         public void VerifyDeleteUser()
         {
-            var userToDelete = new UserDto()
+            var userToDelete = new UserEntityDto()
             {
                 UserName = "user",
                 IsAdmin = true,

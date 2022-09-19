@@ -64,7 +64,7 @@ namespace UI_DSM.Shared.Models
         /// <returns>A new <see cref="EntityDto" /></returns>
         public override EntityDto ToDto()
         {
-            return new UserDto(this.Id)
+            return new UserEntityDto(this.Id)
             {
                 UserName = this.UserName,
                 IsAdmin = this.IsAdmin
@@ -78,7 +78,7 @@ namespace UI_DSM.Shared.Models
         /// <param name="resolvedEntity">A <see cref="Dictionary{TKey,TValue}" /> of all <see cref="Entity" /></param>
         public override void ResolveProperties(EntityDto entityDto, Dictionary<Guid, Entity> resolvedEntity)
         {
-            if (entityDto is not UserDto userDto)
+            if (entityDto is not UserEntityDto userDto)
             {
                 throw new InvalidOperationException($"The DTO {entityDto.GetType()} does not match with the current UserEntity POCO");
             }

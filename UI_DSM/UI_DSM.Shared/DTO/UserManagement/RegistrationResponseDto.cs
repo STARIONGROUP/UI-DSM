@@ -22,8 +22,8 @@ namespace UI_DSM.Shared.DTO.UserManagement
     public class RegistrationResponseDto : RequestResponseDto
     {
         /// <summary>
-        ///     The created <see cref="UserDto" /> if the registration went successfully
+        ///     The created <see cref="UserEntityDto" /> if the registration went successfully
         /// </summary>
-        public UserDto CreatedUser { get; set; }
+        public UserEntityDto CreatedUserEntity { get; set; }
     }
 }

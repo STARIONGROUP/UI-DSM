@@ -82,7 +82,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
                         AccessRight.ManageParticipant
                     }
                 },
-                new UserDto(userGuid1)
+                new UserEntityDto(userGuid1)
                 {
                     UserName = "admin", 
                     IsAdmin = true
@@ -100,7 +100,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
                         AccessRight.ReviewTask
                     }
                 },
-                new UserDto(userGuid2)
+                new UserEntityDto(userGuid2)
                 {
                     UserName = "user"
                 }
@@ -148,7 +148,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
                         AccessRight.ManageParticipant
                     }
                 },
-                new UserDto(userGuid1)
+                new UserEntityDto(userGuid1)
                 {
                     UserName = "admin",
                     IsAdmin = true

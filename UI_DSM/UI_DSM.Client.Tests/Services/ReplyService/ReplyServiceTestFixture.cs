@@ -62,7 +62,7 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
                 {
                     RoleName = "Reviewer"
                 },
-                new UserDto(userId)
+                new UserEntityDto(userId)
                 {
                     UserName = "user"
                 }

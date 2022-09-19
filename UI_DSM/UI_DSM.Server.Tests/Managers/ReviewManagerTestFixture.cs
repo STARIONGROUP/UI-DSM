@@ -204,7 +204,7 @@ namespace UI_DSM.Server.Tests.Managers
                 });
 
             var review = new Review();
-            await this.manager.ResolveProperties(review, new UserDto());
+            await this.manager.ResolveProperties(review, new UserEntityDto());
             Assert.That(review.Author, Is.Null);
 
             var reviewDto = new ReviewDto()
