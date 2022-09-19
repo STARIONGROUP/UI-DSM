@@ -29,6 +29,22 @@ h4,
 
 }
 
+h5,
+.h5 {
+  font-weight: 700;
+  font-size: var(--text-sm);
+  line-height: 150%;
+
+}
+
+h6,
+.h6 {
+  font-weight: 700;
+  font-size: var(--text-xs);
+  line-height: 150%;
+
+}
+
 p,
 body {
   line-height: 160%;

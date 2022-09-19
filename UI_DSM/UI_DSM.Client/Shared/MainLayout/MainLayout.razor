@@ -2,7 +2,7 @@
 // MainLayout.razor
 // Copyright (c) 2022 RHEA System S.A.
 //
-// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
 //
 // This file is part of UI-DSM.
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
@@ -14,98 +14,119 @@
 @namespace AppComponents
 
 <div class="default-layout">
-    <div class="default-layout__top-bar">
-        <TopMenu />
-    </div>
+	<div class="default-layout__top-bar">
+		<TopMenu />
+	</div>
 
-    <div class="default-layout__main default-layout__main @layoutClass">
-				@if (tasksActive)
-				{
-					<aside class="default-layout__sidebar default-layout__sidebar__left">
-						<AuthorizeView>
-							<Authorized>
-								<AppAccordion Label="Tasks">
-									<NavLink href="/review">
-										<TaskItem TaskTitle="Check the requirements specification" isDone="true" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
-									</NavLink>
-									<TaskItem TaskTitle="Check the requirements specification" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
-									<TaskItem TaskTitle="Check the requirements specification" isDone="true" TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
-								</AppAccordion>
-
-								<AppAccordion Label="Specifications">
-									<AppAccordion Label="Specification 1" Variant="AppAccordion.VariantValue.Small">
-										<AppThreeList>
-											<li><NavLink href="/review">Specification 1.1</NavLink></li>
-											<li><NavLink href="/review">Specification 1.2</NavLink></li>
-											<li><NavLink href="/review">Specification 1.3</NavLink></li>
-										</AppThreeList>
-									</AppAccordion>
-									<AppAccordion Label="Specification 2" Variant="AppAccordion.VariantValue.Small">
-										<AppThreeList>
-											<li><NavLink href="/review">Specification 2.1</NavLink></li>
-											<li><NavLink href="/review">Specification 2.2</NavLink></li>
-										</AppThreeList>
-									</AppAccordion>
-								</AppAccordion>
-							</Authorized>
-						</AuthorizeView>
-					</aside>
-				}
-
-        <div class="default-layout__body">
-            @(this.Body)
-        </div>
-
-				@if (commentsActive) {
-					<aside  class="default-layout__sidebar default-layout__sidebar__right">
-						<AppAccordion Label="Comments">
+	<div class="default-layout__main default-layout__main @layoutClass">
+		@if (tasksActive)
+		{
+			<aside class="default-layout__sidebar default-layout__sidebar__left">
+				<AuthorizeView>
+					<Authorized>
+						<AppAccordion Label="Tasks">
+							<NavLink href="/review">
+								<TaskItem TaskTitle="Check the requirements specification" isDone="true"
+								TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+							</NavLink>
+							<TaskItem TaskTitle="Check the requirements specification"
+							TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+							<TaskItem TaskTitle="Check the requirements specification" isDone="true"
+							TaskDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
 						</AppAccordion>
-					</aside>
-				}
-    </div>
+
+						<AppAccordion Label="Specifications">
+							<AppAccordion Label="Specification 1" Variant="AppAccordion.VariantValue.Small">
+								<AppThreeList>
+									<li>
+										<NavLink href="/review">Specification 1.1</NavLink>
+									</li>
+									<li>
+										<NavLink href="/review">Specification 1.2</NavLink>
+									</li>
+									<li>
+										<NavLink href="/review">Specification 1.3</NavLink>
+									</li>
+								</AppThreeList>
+							</AppAccordion>
+
+							<AppAccordion Label="Specification 2" Variant="AppAccordion.VariantValue.Small">
+								<AppThreeList>
+									<li>
+										<NavLink href="/review">Specification 2.1</NavLink>
+									</li>
+									<li>
+										<NavLink href="/review">Specification 2.2</NavLink>
+									</li>
+								</AppThreeList>
+							</AppAccordion>
+						</AppAccordion>
+					</Authorized>
+				</AuthorizeView>
+			</aside>
+		}
+
+		<div class="default-layout__body">
+			@(this.Body)
+		</div>
+
+		<aside class="default-layout__sidebar default-layout__sidebar__right">
+			<AppAccordion Label="Requirement description">
+				<AppSidebarText Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a leo tortor. Nullam dignissim lacus at massa auctor, quis tristique massa sollicitudin." />
+			</AppAccordion>
+
+			@if (commentsActive)
+			{
+				<AppAccordion Label="Comments">
+					<AppComment Name="Kjell Lindgren" Date="3 minutes ago" Comment="Could you have a look at this data, and see if it aligns with yours?	" />
+					<AppComment Name="Jessica Watkins" Date="31 minutes ago" Comment="Could you have a look at this data, and see if it aligns with yours?	" />
+				</AppAccordion>
+			}
+		</aside>
+	</div>
 </div>
 
 @code {
 	/// <summary>
-	///     Inject NavigationManager for redirecting to the login page
+	/// Inject NavigationManager for redirecting to the login page
 	/// </summary>
 	@inject NavigationManager NavigationManager
 
 	/// <summary>
-	///    	Expose the authentication state as a cascading parameter
+	/// Expose the authentication state as a cascading parameter
 	/// </summary>
 	[CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
 
 	/// <summary>
-	///    	Redirect user if not authenticated
+	/// Redirect user if not authenticated
 	/// </summary>
 	protected async override Task OnInitializedAsync()
 	{
-			base.OnInitialized();
-			var user = (await AuthStat).User;
-			if(!user.Identity.IsAuthenticated)
-			{
-					NavigationManager.NavigateTo("/login");
-			}
+		base.OnInitialized();
+		var user = (await AuthStat).User;
+		if (!user.Identity.IsAuthenticated)
+		{
+			NavigationManager.NavigateTo("/login");
+		}
 	}
 
 	/// <summary>
-	///    	Task sidebar active or not
+	/// Task sidebar active or not
 	/// </summary>
 	private bool tasksActive = true;
 
 	/// <summary>
-	///    	Comments sidebar active or not
+	/// Comments sidebar active or not
 	/// </summary>
 	private bool commentsActive = true;
 
 	/// <summary>
-	///    	Keep track of layoutClass for the layout css
+	/// Keep track of layoutClass for the layout css
 	/// </summary>
 	private string layoutClass = "";
 
 	/// <summary>
-	///    	Get layout class based on the active sidebars
+	/// Get layout class based on the active sidebars
 	/// </summary>
 	protected override void OnInitialized()
 	{
@@ -114,15 +135,17 @@
 		this.StateHasChanged();
 	}
 
-	private void GetLayoutClass() {
-		if(this.tasksActive && this.commentsActive)
+	private void GetLayoutClass()
+	{
+		if (this.tasksActive && this.commentsActive)
 		{
 			this.layoutClass = "default-layout__main--both-sidebars";
 		}
-		else if(this.tasksActive)
+		else if (this.tasksActive)
 		{
 			this.layoutClass = "default-layout__main--left-sidebar";
-		}else if(this.commentsActive)
+		}
+		else if (this.commentsActive)
 		{
 			this.layoutClass = "default-layout__main--right-sidebar";
 		}

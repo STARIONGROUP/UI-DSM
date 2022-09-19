@@ -1,5 +1,5 @@
 <!--------------------------------------------------------------------------------------------------------
-// TaskItem.razor
+// AppComment.razor
 // Copyright (c) 2022 RHEA System S.A.
 //
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
@@ -12,34 +12,35 @@
 
 @namespace AppComponents
 
-<div class="task-item">
-  <div class="task-item__header">
-    <h2 class="h5">@TaskTitle</h2>
-    @if (isDone) {
-      <FeatherCheckCircle Size="24" Color="#1FAB77" StrokeWidth="2" />
-    }
+
+<div class="app-comment">
+  <div class="app-comment__header">
+    <FeatherMessageCircle Size="24" Color="currentColor" StrokeWidth="1.5f" />
+    <button>Mark as resolved</button>
   </div>
-  <div class="task-item__body">
-    @TaskDescription
+
+  <div class="app-comment__body">
+    <span class="app-comment__title">
+      <span class="app-comment__name">@Name</span>
+      <span class="app-comment__date">@Date</span>
+    </span>
+    <span class="app-comment__description">@Comment</span>
   </div>
 </div>
 
 @code {
   /// <summary>
-  ///     title text for the Task
+  ///   Name of the comment author
   /// </summary>
-  [Parameter]
-  public string TaskTitle { get; set; }
+  [Parameter] public string Name { get; set; }
 
   /// <summary>
-  ///     Description text for the Task
+  ///   Name of the commenter
   /// </summary>
-  [Parameter]
-  public string TaskDescription { get; set; }
+  [Parameter] public string Date { get; set; }
 
   /// <summary>
-  ///     Keep track if the task is done.
+  ///   Comment text
   /// </summary>
-  [Parameter]
-  public bool isDone { get; set; }
+  [Parameter] public string Comment { get; set; }
 }
