@@ -13,6 +13,7 @@
 
 namespace UI_DSM.Serializer.Json
 {
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
 
     /// <summary>
@@ -25,5 +26,12 @@ namespace UI_DSM.Serializer.Json
         /// </summary>
         /// <returns>A collection of <see cref="EntityDto" /></returns>
         IEnumerable<EntityDto> Deserialize(Stream stream);
+
+        /// <summary>
+        ///     Deserialize a <see cref="Stream" /> into a <see cref="EntityRequestResponseDto" />
+        /// </summary>
+        /// <param name="stream">The <see cref="Stream" /></param>
+        /// <returns>The <see cref="EntityRequestResponseDto" /></returns>
+        EntityRequestResponseDto DeserializeEntityRequestResponseDto(Stream stream);
     }
 }

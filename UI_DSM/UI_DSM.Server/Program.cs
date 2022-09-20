@@ -26,6 +26,7 @@ namespace UI_DSM.Server
 
     using NLog;
 
+    using UI_DSM.Serializer.Json;
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Modules;
     using UI_DSM.Shared.Models;
@@ -67,6 +68,7 @@ namespace UI_DSM.Server
             });
                
             builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DatabaseContext>();
+            builder.Services.AddSingleton<IJsonSerializer, JsonSerializer>();
 
             RegisterManagers(builder);
             RegisterModules();

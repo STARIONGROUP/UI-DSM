@@ -13,7 +13,11 @@
 
 namespace UI_DSM.Client.Tests.Helpers
 {
-    using Newtonsoft.Json;
+    using System.Text.Json;
+
+    using UI_DSM.Serializer.Json;
+    using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.DTO.Models;
 
     /// <summary>
     ///     Helper class for all call to Json Serialization inside tests
@@ -21,21 +25,54 @@ namespace UI_DSM.Client.Tests.Helpers
     public static class JsonSerializerHelper
     {
         /// <summary>
-        ///     The <see cref="JsonSerializerSettings" />
+        ///     The <see cref="JsonWriterOptions" />
         /// </summary>
-        private static readonly JsonSerializerSettings settings = new()
+        private static readonly JsonWriterOptions Settings = new()
         {
-            TypeNameHandling = TypeNameHandling.All
+            Indented = true
         };
+            
+        private static readonly IJsonSerializer Serializer = new Serializer.Json.JsonSerializer();
 
         /// <summary>
         ///     Serialize the <see cref="object" /> to a Json <see cref="string" /> with the correct settings applied
         /// </summary>
-        /// <param name="instance">The <see cref="object" /> to serialize</param>
+        /// <param name="model">The <see cref="object" /> to serialize</param>
         /// <returns>The Json output</returns>
-        public static string SerializeObject(object instance)
+        public static string SerializeObject(object model)
         {
-            return JsonConvert.SerializeObject(instance, Formatting.Indented, settings);
+            var stream = new MemoryStream();
+
+            if (model is EntityDto dto)
+            {
+                Serializer.Serialize(dto, stream, Settings);
+                return ReadStreamResult(stream);
+            }
+
+            if (model is IEnumerable<EntityDto> dtos)
+            {
+                 Serializer.Serialize(dtos, stream, Settings);
+                return ReadStreamResult(stream);
+            }
+
+            if (model is EntityRequestResponseDto entityRequest)
+            {
+                 Serializer.SerializeEntityRequestDto(entityRequest, stream, Settings);
+                return ReadStreamResult(stream);
+            }
+
+            return System.Text.Json.JsonSerializer.Serialize(model, new JsonSerializerOptions()
+            {
+                PropertyNameCaseInsensitive = false
+            });
+        }
+
+        private static string ReadStreamResult(MemoryStream stream)
+        {
+            using var reader = new StreamReader(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var serialized = reader.ReadToEnd();
+            return serialized;
         }
     }
 }

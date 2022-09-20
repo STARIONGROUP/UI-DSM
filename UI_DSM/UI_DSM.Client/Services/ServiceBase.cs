@@ -15,7 +15,7 @@ namespace UI_DSM.Client.Services
 {
     using Microsoft.AspNetCore.Components;
 
-    using Newtonsoft.Json;
+    using UI_DSM.Client.Services.JsonDeserializerProvider;
 
     /// <summary>
     ///     Base class for any service that needs to access to the API
@@ -28,24 +28,20 @@ namespace UI_DSM.Client.Services
         protected HttpClient HttpClient;
 
         /// <summary>
-        ///     The <see cref="JsonSerializerOptions" /> that is used for JSON action
+        /// The <see cref="IJsonDeserializerService"/>
         /// </summary>
-        protected JsonSerializerSettings JsonSerializerOptions;
+        protected IJsonDeserializerService Deserializer { get; private set; }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ServiceBase" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="HttpClient" /></param>
-        protected ServiceBase(HttpClient httpClient)
+        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
+        protected ServiceBase(HttpClient httpClient, IJsonDeserializerService deserializer)
         {
             this.HttpClient = httpClient;
-
-            this.JsonSerializerOptions = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto
-            };
-
             this.MainRoute = this.GetRoute();
+            this.Deserializer = deserializer;
         }
 
         /// <summary>

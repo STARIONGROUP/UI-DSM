@@ -15,6 +15,7 @@ namespace UI_DSM.Serializer.Json
 {
     using System.Text.Json;
 
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
 
     /// <summary>
@@ -37,5 +38,40 @@ namespace UI_DSM.Serializer.Json
         /// <param name="stream">The target <see cref="Stream" /></param>
         /// <param name="jsonWriterOptions">The <see cref="JsonWriterOptions" /> to use</param>
         void Serialize(EntityDto dto, Stream stream, JsonWriterOptions jsonWriterOptions);
+
+        /// <summary>
+        ///     Serialize an <see cref="EntityDto" /> as JSON to a target <see cref="Stream" />
+        /// </summary>
+        /// <param name="dto">The <see cref="EntityDto" /> that shall be serialized</param>
+        /// <param name="stream">The target <see cref="Stream" /></param>
+        /// <param name="jsonWriterOptions">The <see cref="JsonWriterOptions" /> to use</param>
+        /// <returns>A <see cref="Task"/></returns>
+        Task SerializeAsync(EntityDto dto, Stream stream, JsonWriterOptions jsonWriterOptions);
+
+        /// <summary>
+        ///     Serialize an <see cref="IEnumerable{EntityDto}" /> as JSON to a target <see cref="Stream" />
+        /// </summary>
+        /// <param name="dtos">The <see cref="IEnumerable{EntityDto}" /> that shall be serialized</param>
+        /// <param name="stream">The target <see cref="Stream" /></param>
+        /// <param name="jsonWriterOptions">The <see cref="JsonWriterOptions" /> to use</param>
+        /// <returns>A <see cref="Task"/></returns>
+        Task SerializeAsync(IEnumerable<EntityDto> dtos, Stream stream, JsonWriterOptions jsonWriterOptions);
+
+        /// <summary>
+        ///     Serialize a <see cref="EntityRequestResponseDto" />
+        /// </summary>
+        /// <param name="requestResponse">The <see cref="EntityRequestResponseDto" /></param>
+        /// <param name="stream">The <see cref="Stream" /></param>
+        /// <param name="jsonWriterOptions">The <see cref="JsonWriterOptions" /></param>
+        void SerializeEntityRequestDto(EntityRequestResponseDto requestResponse, Stream stream, JsonWriterOptions jsonWriterOptions);
+
+        /// <summary>
+        ///     Serialize a <see cref="EntityRequestResponseDto" />
+        /// </summary>
+        /// <param name="requestResponse">The <see cref="EntityRequestResponseDto" /></param>
+        /// <param name="stream">The <see cref="Stream" /></param>
+        /// <param name="jsonWriterOptions">The <see cref="JsonWriterOptions" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        Task SerializeEntityRequestDtoAsync(EntityRequestResponseDto requestResponse, Stream stream, JsonWriterOptions jsonWriterOptions);
     }
 }

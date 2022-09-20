@@ -20,8 +20,10 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
     using RichardSzalay.MockHttp;
 
     using UI_DSM.Client.Services;
+    using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Client.Services.ReplyService;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Extensions;
@@ -33,6 +35,7 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
         private ReplyService service;
         private MockHttpMessageHandler httpMessageHandler;
         private List<EntityDto> entitiesDto;
+        private IJsonDeserializerService jsonDeserializerService;
 
         [SetUp]
         public void Setup()
@@ -69,7 +72,8 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
             };
 
             ServiceBase.RegisterService<ReplyService>();
-            this.service = new ReplyService(httpClient);
+            this.jsonDeserializerService = new JsonDeserializerService(new JsonDeserializer());
+            this.service = new ReplyService(httpClient, this.jsonDeserializerService);
         }
 
         [Test]
@@ -115,9 +119,8 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
             Assert.That(reply.Id, Is.EqualTo(guid));
 
             httpResponse.Content = new StringContent(string.Empty);
-            reply = await this.service.GetReplyOfComment(projectId, annotationId, guid);
 
-            Assert.That(reply, Is.Null);
+            Assert.That(async () => await this.service.GetReplyOfComment(projectId, annotationId, guid), Throws.Exception);
         }
 
         [Test]

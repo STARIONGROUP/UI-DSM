@@ -23,6 +23,6 @@ namespace UI_DSM.Shared.DTO.Common
         /// <summary>
         ///     Gets or sets the collection of <see cref="EntityDto" />
         /// </summary>
-        public IEnumerable<EntityDto> Entities { get; set; }
+        public IEnumerable<EntityDto> Entities { get; set; } = new List<EntityDto>();
     }
 }

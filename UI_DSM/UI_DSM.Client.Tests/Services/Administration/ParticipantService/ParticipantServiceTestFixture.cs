@@ -21,7 +21,9 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
 
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.Administration.ParticipantService;
+    using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
@@ -33,6 +35,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
     {
         private ParticipantService service;
         private MockHttpMessageHandler httpMessageHandler;
+        private IJsonDeserializerService jsonDeserializerService;
 
         [SetUp]
         public void Setup()
@@ -42,7 +45,8 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
             httpClient.BaseAddress = new Uri("http://localhost/api");
 
             ServiceBase.RegisterService<ParticipantService>();
-            this.service = new ParticipantService(httpClient);
+            this.jsonDeserializerService = new JsonDeserializerService(new JsonDeserializer());
+            this.service = new ParticipantService(httpClient, this.jsonDeserializerService);
         }
 
         [Test]
@@ -161,9 +165,8 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
             Assert.That(participant.Id, Is.EqualTo(guid));
 
             httpResponse.Content = new StringContent(string.Empty);
-            participant = await this.service.GetParticipantOfProject(projectId, guid);
 
-            Assert.That(participant, Is.Null);
+            Assert.That(async () => await this.service.GetParticipantOfProject(projectId, guid), Throws.Exception);
         }
 
         [Test]

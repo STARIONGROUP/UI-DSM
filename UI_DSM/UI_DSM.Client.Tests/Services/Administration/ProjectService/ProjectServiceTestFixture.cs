@@ -15,7 +15,6 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
 {
     using System;
     using System.Net;
-    using System.Text.Json;
 
     using NUnit.Framework;
 
@@ -23,7 +22,9 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
 
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.Administration.ProjectService;
+    using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Extensions;
@@ -34,6 +35,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
     {
         private ProjectService service;
         private MockHttpMessageHandler httpMessageHandler;
+        private IJsonDeserializerService jsonDeserializerService;
 
         [SetUp]
         public void Setup()
@@ -43,7 +45,8 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
             httpClient.BaseAddress = new Uri("http://localhost/api");
 
             ServiceBase.RegisterService<ProjectService>();
-            this.service = new ProjectService(httpClient);
+            this.jsonDeserializerService = new JsonDeserializerService(new JsonDeserializer());
+            this.service = new ProjectService(httpClient, this.jsonDeserializerService);
         }
 
         [Test]
@@ -75,7 +78,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
         }
 
         [Test]
-        public void VerifyCreateProject()
+        public async Task VerifyCreateProject()
         {
             var project = new Project()
             {
@@ -103,8 +106,14 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
             }; 
 
             httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
-            Assert.That(this.service.CreateProject(project).Result.IsRequestSuccessful, Is.True);
-            Assert.That(this.service.CreateProject(project).Result.Entity, Is.Not.Null);
+
+            var result = await this.service.CreateProject(project);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsRequestSuccessful, Is.True);
+                Assert.That(result.Entity, Is.Not.Null);
+            });
 
             httpResponse.Content = new StringContent(string.Empty);
             Assert.That(async () => await this.service.CreateProject(project), Throws.Exception);
@@ -116,7 +125,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
             var project = new Project(Guid.NewGuid());
             var httpResponse = new HttpResponseMessage();
             var requestResponse = new RequestResponseDto() { IsRequestSuccessful = true };
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(requestResponse));
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
             var request = this.httpMessageHandler.When(HttpMethod.Delete, $"/Project/{project.Id}");
             request.Respond(_ => httpResponse);
 
@@ -151,8 +160,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
             Assert.That(project.Id, Is.EqualTo(guid));
 
             httpResponse.Content = new StringContent(string.Empty);
-            project = await this.service.GetProject(guid);
-            Assert.That(project, Is.Null);
+            Assert.That(async () => await this.service.GetProject(guid), Throws.Exception);
         }
 
         [Test]

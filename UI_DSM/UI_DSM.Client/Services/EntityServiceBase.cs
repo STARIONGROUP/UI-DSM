@@ -19,6 +19,7 @@ namespace UI_DSM.Client.Services
 
     using Newtonsoft.Json;
 
+    using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Shared.Assembler;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -36,7 +37,8 @@ namespace UI_DSM.Client.Services
         ///     Initializes a new instance of the <see cref="EntityServiceBase{TEntity, TEntityDto}" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="ServiceBase.HttpClient" /></param>
-        protected EntityServiceBase(HttpClient httpClient) : base(httpClient)
+        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
+        protected EntityServiceBase(HttpClient httpClient, IJsonDeserializerService deserializer) : base(httpClient, deserializer)
         {
         }
 
@@ -49,11 +51,10 @@ namespace UI_DSM.Client.Services
         protected async Task<IEnumerable<EntityDto>> GetEntityDto(Guid entityId, int deepLevel)
         {
             var getResponse = await this.HttpClient.GetAsync(this.CreateUri(Path.Combine(this.MainRoute, entityId.ToString()), deepLevel));
-            var getContent = await getResponse.Content.ReadAsStringAsync();
 
             return !getResponse.IsSuccessStatusCode
                 ? default
-                : JsonConvert.DeserializeObject<IEnumerable<EntityDto>>(getContent, this.JsonSerializerOptions);
+                : this.Deserializer.Deserialize<IEnumerable<EntityDto>>(await  getResponse.Content.ReadAsStreamAsync());
         }
 
         /// <summary>
@@ -84,14 +85,13 @@ namespace UI_DSM.Client.Services
         protected async Task<List<EntityDto>> GetEntitiesDto(int deepLevel)
         {
             var response = await this.HttpClient.GetAsync(this.CreateUri(this.MainRoute, deepLevel));
-            var content = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new HttpRequestException(content);
+                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
             }
 
-            return JsonConvert.DeserializeObject<IEnumerable<EntityDto>>(content, this.JsonSerializerOptions).ToList();
+            return this.Deserializer.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync()).ToList();
         }
 
         /// <summary>
@@ -114,11 +114,10 @@ namespace UI_DSM.Client.Services
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponseDto" /></returns>
         protected async Task<EntityRequestResponseDto> CreateEntityAndGetResponseDto(TEntity entity, int deepLevel)
         {
-            var content = JsonConvert.SerializeObject((TEntityDto)entity.ToDto(), this.JsonSerializerOptions);
+            var content = JsonConvert.SerializeObject((TEntityDto)entity.ToDto());
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
             var response = await this.HttpClient.PostAsync(this.CreateUri(Path.Combine(this.MainRoute, "Create"), deepLevel), bodyContent);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<EntityRequestResponseDto>(responseContent, this.JsonSerializerOptions);
+            return this.Deserializer.Deserialize<EntityRequestResponseDto>(await response.Content.ReadAsStreamAsync());
         }
 
         /// <summary>
@@ -151,12 +150,11 @@ namespace UI_DSM.Client.Services
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponseDto" /></returns>
         protected async Task<EntityRequestResponseDto> UpdateEntityAndGetResponseDto(TEntity entity, int deepLevel)
         {
-            var content = JsonConvert.SerializeObject((TEntityDto)entity.ToDto(), this.JsonSerializerOptions);
+            var content = JsonConvert.SerializeObject((TEntityDto)entity.ToDto());
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
             var response = await this.HttpClient.PutAsync(this.CreateUri(Path.Combine(this.MainRoute, entity.Id.ToString()), deepLevel), bodyContent);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<EntityRequestResponseDto>(responseContent, this.JsonSerializerOptions);
+            return this.Deserializer.Deserialize<EntityRequestResponseDto>(await response.Content.ReadAsStreamAsync());
         }
 
         /// <summary>
@@ -190,9 +188,8 @@ namespace UI_DSM.Client.Services
         {
             var url = Path.Combine(this.MainRoute, entityToDelete.Id.ToString());
             var deleteResponse = await this.HttpClient.DeleteAsync(url);
-            var deleteContent = await deleteResponse.Content.ReadAsStringAsync();
 
-            var response = JsonConvert.DeserializeObject<RequestResponseDto>(deleteContent, this.JsonSerializerOptions);
+            var response = this.Deserializer.Deserialize<RequestResponseDto>(await deleteResponse.Content.ReadAsStreamAsync());
 
             if (response == null)
             {

@@ -15,6 +15,7 @@ namespace UI_DSM.Serializer.Json
 {
     using System.Text.Json;
 
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
 
     /// <summary>
@@ -60,6 +61,73 @@ namespace UI_DSM.Serializer.Json
             var serializationAction = SerializationProvider.Provide(dto.GetType());
             serializationAction(dto, writer);
             writer.Flush();
+        }
+
+        /// <summary>
+        ///     Serialize an <see cref="EntityDto" /> as JSON to a target <see cref="Stream" />
+        /// </summary>
+        /// <param name="dto">The <see cref="EntityDto" /> that shall be serialized</param>
+        /// <param name="stream">The target <see cref="Stream" /></param>
+        /// <param name="jsonWriterOptions">The <see cref="JsonWriterOptions" /> to use</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public async Task SerializeAsync(EntityDto dto, Stream stream, JsonWriterOptions jsonWriterOptions)
+        {
+            await using var writer = new Utf8JsonWriter(stream, jsonWriterOptions);
+
+            var serializationAction = SerializationProvider.Provide(dto.GetType());
+            serializationAction(dto, writer);
+            await writer.FlushAsync();
+        }
+
+        /// <summary>
+        ///     Serialize an <see cref="IEnumerable{EntityDto}" /> as JSON to a target <see cref="Stream" />
+        /// </summary>
+        /// <param name="dtos">The <see cref="IEnumerable{EntityDto}" /> that shall be serialized</param>
+        /// <param name="stream">The target <see cref="Stream" /></param>
+        /// <param name="jsonWriterOptions">The <see cref="JsonWriterOptions" /> to use</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public async Task SerializeAsync(IEnumerable<EntityDto> dtos, Stream stream, JsonWriterOptions jsonWriterOptions)
+        {
+            await using var writer = new Utf8JsonWriter(stream, jsonWriterOptions);
+
+            writer.WriteStartArray();
+
+            foreach (var entityDto in dtos)
+            {
+                var serializationAction = SerializationProvider.Provide(entityDto.GetType());
+                serializationAction(entityDto, writer);
+                await writer.FlushAsync();
+            }
+
+            writer.WriteEndArray();
+            await writer.FlushAsync();
+        }
+
+        /// <summary>
+        ///     Serialize a <see cref="EntityRequestResponseDto" />
+        /// </summary>
+        /// <param name="requestResponse">The <see cref="EntityRequestResponseDto" /></param>
+        /// <param name="stream">The <see cref="Stream" /></param>
+        /// <param name="jsonWriterOptions">The <see cref="JsonWriterOptions" /></param>
+        public void SerializeEntityRequestDto(EntityRequestResponseDto requestResponse, Stream stream, JsonWriterOptions jsonWriterOptions)
+        {
+            using var writer = new Utf8JsonWriter(stream, jsonWriterOptions);
+            EntityRequestResponseDtoSerializer.Serialize(requestResponse, writer);
+            writer.Flush();
+        }
+
+        /// <summary>
+        ///     Serialize a <see cref="EntityRequestResponseDto" />
+        /// </summary>
+        /// <param name="requestResponse">The <see cref="EntityRequestResponseDto" /></param>
+        /// <param name="stream">The <see cref="Stream" /></param>
+        /// <param name="jsonWriterOptions">The <see cref="JsonWriterOptions" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        public async Task SerializeEntityRequestDtoAsync(EntityRequestResponseDto requestResponse, Stream stream, JsonWriterOptions jsonWriterOptions)
+        {
+            await using var writer = new Utf8JsonWriter(stream, jsonWriterOptions);
+            EntityRequestResponseDtoSerializer.Serialize(requestResponse, writer);
+            await writer.FlushAsync();
         }
     }
 }

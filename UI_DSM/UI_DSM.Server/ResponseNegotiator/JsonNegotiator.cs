@@ -13,32 +13,44 @@
 
 namespace UI_DSM.Server.ResponseNegotiator
 {
+    using System.Text.Json;
+
     using Carter;
 
     using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
 
-    using Newtonsoft.Json;
+    using UI_DSM.Serializer.Json;
+    using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.DTO.Models;
+
+    using JsonSerializer = System.Text.Json.JsonSerializer;
 
     /// <summary>
-    ///     <see cref="IResponseNegotiator" /> to use the Newtonsoft serializer with the <see cref="TypeNameHandling" />
-    ///     settings
+    ///     <see cref="IResponseNegotiator" /> to use the custom Json serializer
     /// </summary>
-    public class NewtonSoftNegotiator : IResponseNegotiator
+    public class JsonNegotiator : IResponseNegotiator
     {
         /// <summary>
-        ///     The <see cref="JsonSerializerSettings" />
+        ///     The <see cref="JsonWriterOptions" />
         /// </summary>
-        private readonly JsonSerializerSettings settings;
+        private readonly JsonWriterOptions settings;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="NewtonSoftNegotiator" /> class.
+        /// The <see cref="IJsonSerializer"/>
         /// </summary>
-        public NewtonSoftNegotiator()
+        private readonly IJsonSerializer serializer;
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="JsonNegotiator" /> class.
+        /// </summary>
+        public JsonNegotiator(IJsonSerializer serializer)
         {
-            this.settings = new JsonSerializerSettings
+            this.serializer = serializer;
+
+            this.settings = new JsonWriterOptions()
             {
-                TypeNameHandling = TypeNameHandling.All
+                Indented = true
             };
         }
 
@@ -68,7 +80,25 @@ namespace UI_DSM.Server.ResponseNegotiator
         /// </returns>
         public Task Handle(HttpRequest req, HttpResponse res, object model, CancellationToken cancellationToken)
         {
-            return res.WriteAsync(JsonConvert.SerializeObject(model, Formatting.Indented, this.settings), cancellationToken);
+            if (model is EntityDto dto)
+            {
+                return this.serializer.SerializeAsync(dto, res.Body, this.settings);
+            }
+
+            if (model is IEnumerable<EntityDto> dtos)
+            {
+                return this.serializer.SerializeAsync(dtos, res.Body, this.settings);
+            }
+
+            if (model is EntityRequestResponseDto entityRequest)
+            {
+                return this.serializer.SerializeEntityRequestDtoAsync(entityRequest, res.Body, this.settings);
+            }
+
+            return res.WriteAsync(JsonSerializer.Serialize(model, new JsonSerializerOptions()
+            {
+                PropertyNameCaseInsensitive = false
+            }), cancellationToken);
         }
     }
 }

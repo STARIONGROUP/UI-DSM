@@ -16,6 +16,7 @@ namespace UI_DSM.Serializer.Json
     using System.Runtime.Serialization;
     using System.Text.Json;
 
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
 
     /// <summary>
@@ -48,6 +49,24 @@ namespace UI_DSM.Serializer.Json
             }
 
             return result;
+        }
+
+        /// <summary>
+        ///     Deserialize a <see cref="Stream" /> into a <see cref="EntityRequestResponseDto" />
+        /// </summary>
+        /// <param name="stream">The <see cref="Stream" /></param>
+        /// <returns>The <see cref="EntityRequestResponseDto" /></returns>
+        public EntityRequestResponseDto DeserializeEntityRequestResponseDto(Stream stream)
+        {
+            using var document = JsonDocument.Parse(stream);
+            var documentRoot = document.RootElement;
+
+            if (documentRoot.ValueKind != JsonValueKind.Object)
+            {
+                throw new InvalidOperationException($"The {nameof(documentRoot)} must be of type JsonValueKind.Object");
+            }
+
+            return EntityRequestResponseDtoDeserializer.Deserialize(documentRoot);
         }
 
         /// <summary>
