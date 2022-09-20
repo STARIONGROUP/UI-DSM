@@ -19,6 +19,8 @@ namespace UI_DSM.Client.Tests.Helpers
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
 
+    using JsonSerializer = UI_DSM.Serializer.Json.JsonSerializer;
+
     /// <summary>
     ///     Helper class for all call to Json Serialization inside tests
     /// </summary>
@@ -31,8 +33,8 @@ namespace UI_DSM.Client.Tests.Helpers
         {
             Indented = true
         };
-            
-        private static readonly IJsonSerializer Serializer = new Serializer.Json.JsonSerializer();
+
+        private static readonly IJsonSerializer Serializer = new JsonSerializer();
 
         /// <summary>
         ///     Serialize the <see cref="object" /> to a Json <see cref="string" /> with the correct settings applied
@@ -51,23 +53,28 @@ namespace UI_DSM.Client.Tests.Helpers
 
             if (model is IEnumerable<EntityDto> dtos)
             {
-                 Serializer.Serialize(dtos, stream, Settings);
+                Serializer.Serialize(dtos, stream, Settings);
                 return ReadStreamResult(stream);
             }
 
             if (model is EntityRequestResponseDto entityRequest)
             {
-                 Serializer.SerializeEntityRequestDto(entityRequest, stream, Settings);
+                Serializer.SerializeEntityRequestDto(entityRequest, stream, Settings);
                 return ReadStreamResult(stream);
             }
 
-            return System.Text.Json.JsonSerializer.Serialize(model, new JsonSerializerOptions()
+            return System.Text.Json.JsonSerializer.Serialize(model, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = false
             });
         }
 
-        private static string ReadStreamResult(MemoryStream stream)
+        /// <summary>
+        ///     Reads the content of a <see cref="Stream" />
+        /// </summary>
+        /// <param name="stream">The <see cref="Stream" /></param>
+        /// <returns>The content of the <see cref="Stream"/></returns>
+        private static string ReadStreamResult(Stream stream)
         {
             using var reader = new StreamReader(stream);
             stream.Seek(0, SeekOrigin.Begin);
