@@ -49,7 +49,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
         [Test]
         public void VerifyRender()
         {
-            this.viewModel.User = new UserDto()
+            this.viewModel.UserEntity = new UserEntityDto()
             {
                 UserName = "admin",
                 IsAdmin = true,
@@ -61,10 +61,10 @@ namespace UI_DSM.Client.Tests.Components.Administration.UserManagement
 
             var inputTexts = renderer.FindComponents<DxTextBox>();
 
-            Assert.That(inputTexts[0].Instance.Text, Is.EqualTo(this.viewModel.User.UserName));
+            Assert.That(inputTexts[0].Instance.Text, Is.EqualTo(this.viewModel.UserEntity.UserName));
 
             var userId = renderer.Find("#userId");
-            Assert.That(userId.TextContent, Is.EqualTo(this.viewModel.User.Id.ToString()));
+            Assert.That(userId.TextContent, Is.EqualTo(this.viewModel.UserEntity.Id.ToString()));
         }
     }
 }

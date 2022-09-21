@@ -21,7 +21,9 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
 
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.AnnotationService;
+    using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
@@ -34,6 +36,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
         private AnnotationService service;
         private MockHttpMessageHandler httpMessageHandler;
         private List<EntityDto> entitiesDto;
+        private JsonDeserializerService jsonDeserializerService;
 
         [SetUp]
         public void Setup()
@@ -87,7 +90,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
                     Role = roleId,
                     User = userId
                 },
-                new UserDto(userId)
+                new UserEntityDto(userId)
                 {
                     UserName = "User"
                 },
@@ -111,7 +114,9 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
             };
 
             ServiceBase.RegisterService<AnnotationService>();
-            this.service = new AnnotationService(httpClient);
+
+            this.jsonDeserializerService = new JsonDeserializerService(new JsonDeserializer());
+            this.service = new AnnotationService(httpClient, this.jsonDeserializerService);
         }
 
         [Test]
@@ -160,9 +165,8 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
             });
 
             httpResponse.Content = new StringContent(string.Empty);
-            annotation = await this.service.GetAnnotation(projectId, guid);
 
-            Assert.That(annotation, Is.Null);
+            Assert.That(async () => await this.service.GetAnnotation(projectId, guid), Throws.Exception);
         }
 
         [Test]

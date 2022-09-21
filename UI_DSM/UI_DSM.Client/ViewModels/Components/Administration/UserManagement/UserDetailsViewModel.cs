@@ -22,8 +22,8 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.UserManagement
     public class UserDetailsViewModel : IUserDetailsViewModel
     {
         /// <summary>
-        ///     The <see cref="UserDto" />
+        ///     The <see cref="UserEntityDto" />
         /// </summary>
-        public UserDto User { get; set; }
+        public UserEntityDto UserEntity { get; set; }
     }
 }

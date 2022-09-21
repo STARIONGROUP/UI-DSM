@@ -18,43 +18,8 @@ namespace UI_DSM.Shared.DTO.Models
     /// <summary>
     ///     The Data Transfer Object representing the <see cref="Annotation" /> class.
     /// </summary>
-    public abstract class AnnotationDto : EntityDto
+    public partial class AnnotationDto
     {
-        /// <summary>
-        ///     Initiazes a new <see cref="AnnotationDto" />
-        /// </summary>
-        protected AnnotationDto()
-        {
-        }
-
-        /// <summary>
-        ///     Initiazes a new <see cref="AnnotationDto" />
-        /// </summary>
-        /// <param name="id">The <see cref="Guid" /> of the represented <see cref="AnnotationDto" /></param>
-        protected AnnotationDto(Guid id) : base(id)
-        {
-        }
-
-        /// <summary>
-        ///     Gets or sets the <see cref="Guid" /> of the represented author
-        /// </summary>
-        public Guid Author { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the <see cref="DateTime" /> for the creation of this <see cref="Annotation" />
-        /// </summary>
-        public DateTime CreatedOn { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the <see cref="Guid" /> of the represented <see cref="Annotation.AnnotatableItems"/>
-        /// </summary>
-        public List<Guid> AnnotatableItems { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the content of the <see cref="Annotation" />
-        /// </summary>
-        public string Content { get; set; }
-
         /// <summary>
         ///     Includes common properties for <see cref="AnnotationDto" /> from an <see cref="Annotation" />
         /// </summary>

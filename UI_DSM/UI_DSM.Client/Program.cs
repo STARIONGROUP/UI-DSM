@@ -24,6 +24,7 @@ namespace UI_DSM.Client
 
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.AuthenticationService;
+    using UI_DSM.Serializer.Json;
 
     /// <summary>
     ///     Entry class of the <see cref="UI_DSM.Client" /> project
@@ -77,6 +78,8 @@ namespace UI_DSM.Client
         /// <param name="builder">The <see cref="WebAssemblyHostBuilder" /></param>
         private static void AddServices(WebAssemblyHostBuilder builder)
         {
+            builder.Services.AddScoped<IJsonDeserializer, JsonDeserializer>();
+
             builder.Services.AddScoped(_ => new HttpClient
                 { BaseAddress = new Uri(builder.Configuration["apiUri"]) });
 

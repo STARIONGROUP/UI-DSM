@@ -15,6 +15,7 @@ namespace UI_DSM.Client.Services.AnnotationService
 {
     using Microsoft.AspNetCore.Components;
 
+    using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -31,7 +32,8 @@ namespace UI_DSM.Client.Services.AnnotationService
         ///     Initializes a new instance of the <see cref="AnnotationService" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="ServiceBase.HttpClient" /></param>
-        public AnnotationService(HttpClient httpClient) : base(httpClient)
+        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
+        public AnnotationService(HttpClient httpClient, IJsonDeserializerService deserializer) : base(httpClient, deserializer)
         {
         }
 

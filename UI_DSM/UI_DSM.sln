@@ -13,6 +13,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI_DSM.Client.Tests", "UI_D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI_DSM.Server.Tests", "UI_DSM.Server.Tests\UI_DSM.Server.Tests.csproj", "{7459B297-AA18-480B-86E1-72A80A249B6C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI_DSM.CodeGenerator", "UI_DSM.CodeGenerator\UI_DSM.CodeGenerator.csproj", "{150D0794-A712-4F7D-8BE6-AA53C1E94516}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI_DSM.CodeGenerator.Tests", "UI_DSM.CodeGenerator.Tests\UI_DSM.CodeGenerator.Tests.csproj", "{9965696F-346C-4140-B653-BEF26E0DB9CD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI_DSM.Serializer.Json", "UI_DSM.Serializer.Json\UI_DSM.Serializer.Json.csproj", "{26FCB51E-B8BF-429C-861E-B4BFD1B84908}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI_DSM.Serializer.Json.Tests", "UI_DSM.Serializer.Json.Tests\UI_DSM.Serializer.Json.Tests.csproj", "{F7AE939B-C8C2-40B9-9BD4-7104A3AE46F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +47,22 @@ Global
 		{7459B297-AA18-480B-86E1-72A80A249B6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7459B297-AA18-480B-86E1-72A80A249B6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7459B297-AA18-480B-86E1-72A80A249B6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{150D0794-A712-4F7D-8BE6-AA53C1E94516}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{150D0794-A712-4F7D-8BE6-AA53C1E94516}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{150D0794-A712-4F7D-8BE6-AA53C1E94516}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{150D0794-A712-4F7D-8BE6-AA53C1E94516}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9965696F-346C-4140-B653-BEF26E0DB9CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9965696F-346C-4140-B653-BEF26E0DB9CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9965696F-346C-4140-B653-BEF26E0DB9CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9965696F-346C-4140-B653-BEF26E0DB9CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26FCB51E-B8BF-429C-861E-B4BFD1B84908}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26FCB51E-B8BF-429C-861E-B4BFD1B84908}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26FCB51E-B8BF-429C-861E-B4BFD1B84908}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26FCB51E-B8BF-429C-861E-B4BFD1B84908}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7AE939B-C8C2-40B9-9BD4-7104A3AE46F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7AE939B-C8C2-40B9-9BD4-7104A3AE46F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7AE939B-C8C2-40B9-9BD4-7104A3AE46F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7AE939B-C8C2-40B9-9BD4-7104A3AE46F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

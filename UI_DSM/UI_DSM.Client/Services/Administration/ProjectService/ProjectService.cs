@@ -15,8 +15,7 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
 {
     using Microsoft.AspNetCore.Components;
 
-    using Newtonsoft.Json;
-
+    using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Shared.Assembler;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -33,7 +32,8 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
         ///     Initializes a new instance of the <see cref="ProjectService" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="ServiceBase.HttpClient" /></param>
-        public ProjectService(HttpClient httpClient) : base(httpClient)
+        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
+        public ProjectService(HttpClient httpClient, IJsonDeserializerService deserializer) : base(httpClient,deserializer)
         {
         }
 
@@ -115,14 +115,13 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
             try
             {
                 var response = await this.HttpClient.GetAsync(Path.Combine(this.MainRoute, "UserParticipation"));
-                var content = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException(content);
+                    throw new HttpRequestException(await response.Content.ReadAsStringAsync());
                 }
 
-                var dtos = JsonConvert.DeserializeObject<IEnumerable<EntityDto>>(content, this.JsonSerializerOptions);
+                var dtos = this.Deserializer.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync());
                 return Assembler.CreateEntities<Project>(dtos).ToList();
             }
             catch (Exception exception)

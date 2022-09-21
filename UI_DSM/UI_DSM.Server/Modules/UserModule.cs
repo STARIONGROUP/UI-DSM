@@ -37,7 +37,7 @@ namespace UI_DSM.Server.Modules
     ///     <see cref="UserEntity" />
     /// </summary>
     [Microsoft.AspNetCore.Components.Route("api/User")]
-    public class UserModule : EntityModule<UserEntity, UserDto>
+    public class UserModule : EntityModule<UserEntity, UserEntityDto>
     {
         /// <summary>
         ///     The <see cref="IConfigurationSection" /> for JWT Authentication
@@ -148,7 +148,7 @@ namespace UI_DSM.Server.Modules
                 return authenticationResponse;
             }
 
-            authenticationResponse.CreatedUser = (UserDto)identityResult.Entity.ToDto();
+            authenticationResponse.CreatedUserEntity = (UserEntityDto)identityResult.Entity.ToDto();
             context.Response.StatusCode = 201;
             return authenticationResponse;
         }
@@ -181,14 +181,14 @@ namespace UI_DSM.Server.Modules
         }
 
         /// <summary>
-        ///     Tries to create a new <see cref="UserEntity" /> based on its <see cref="UserDto" />
+        ///     Tries to create a new <see cref="UserEntity" /> based on its <see cref="UserEntityDto" />
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
-        /// <param name="dto">The <see cref="UserDto" /></param>
+        /// <param name="entityDto">The <see cref="UserEntityDto" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task CreateEntity(IEntityManager<UserEntity> manager, UserDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
+        public override async Task CreateEntity(IEntityManager<UserEntity> manager, UserEntityDto entityDto, HttpContext context, [FromQuery] int deepLevel = 0)
         {
             await Task.CompletedTask;
 

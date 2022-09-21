@@ -15,6 +15,7 @@ namespace UI_DSM.Client.Services.Administration.RoleService
 {
     using Microsoft.AspNetCore.Components;
 
+    using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -30,7 +31,8 @@ namespace UI_DSM.Client.Services.Administration.RoleService
         ///     Initializes a new instance of the <see cref="RoleService" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="ServiceBase.HttpClient" /></param>
-        public RoleService(HttpClient httpClient) : base(httpClient)
+        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
+        public RoleService(HttpClient httpClient, IJsonDeserializerService deserializer) : base(httpClient, deserializer)
         {
         }
 

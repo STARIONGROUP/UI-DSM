@@ -20,8 +20,10 @@ namespace UI_DSM.Client.Tests.Services.ReviewService
     using RichardSzalay.MockHttp;
 
     using UI_DSM.Client.Services;
+    using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Extensions;
@@ -33,6 +35,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewService
         private ReviewService service;
         private MockHttpMessageHandler httpMessageHandler;
         private List<EntityDto> entitiesDto;
+        private IJsonDeserializerService jsonDeserializerService;
 
         [SetUp]
         public void Setup()
@@ -64,14 +67,15 @@ namespace UI_DSM.Client.Tests.Services.ReviewService
                 {
                     RoleName = "Reviewer"
                 },
-                new UserDto(userId)
+                new UserEntityDto(userId)
                 {
                     UserName = "user"
                 }
             };
 
             ServiceBase.RegisterService<ReviewService>();
-            this.service = new ReviewService(httpClient);
+            this.jsonDeserializerService = new JsonDeserializerService(new JsonDeserializer());
+            this.service = new ReviewService(httpClient, this.jsonDeserializerService);
         }
 
         [Test]
@@ -115,9 +119,8 @@ namespace UI_DSM.Client.Tests.Services.ReviewService
             Assert.That(review.Id, Is.EqualTo(guid));
 
             httpResponse.Content = new StringContent(string.Empty);
-            review = await this.service.GetReviewOfProject(projectId, guid);
 
-            Assert.That(review, Is.Null);
+            Assert.That(async () => await this.service.GetReviewOfProject(projectId, guid), Throws.Exception);
         }
 
         [Test]

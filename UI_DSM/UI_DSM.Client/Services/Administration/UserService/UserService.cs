@@ -17,8 +17,7 @@ namespace UI_DSM.Client.Services.Administration.UserService
 
     using Microsoft.AspNetCore.Components;
 
-    using Newtonsoft.Json;
-
+    using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
@@ -31,28 +30,30 @@ namespace UI_DSM.Client.Services.Administration.UserService
     [Route("User")]
     public class UserService : ServiceBase, IUserService
     {
-        /// <summary>Initializes a new instance of the <see cref="UserService" /> class.</summary>
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="UserService" /> class.
+        /// </summary>
         /// <param name="httpClient">The <see cref="HttpClient" /></param>
-        public UserService(HttpClient httpClient) : base(httpClient)
+        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
+        public UserService(HttpClient httpClient, IJsonDeserializerService deserializer) : base(httpClient, deserializer)
         {
         }
 
         /// <summary>
-        ///     Provide a collection of registered <see cref="UserDto" />
+        ///     Provide a collection of registered <see cref="UserEntityDto" />
         /// </summary>
-        /// <returns>A task where the result is a collection of <see cref="UserDto" /></returns>
-        public async Task<List<UserDto>> GetUsers()
+        /// <returns>A task where the result is a collection of <see cref="UserEntityDto" /></returns>
+        public async Task<List<UserEntityDto>> GetUsers()
         {
             var response = await this.HttpClient.GetAsync(this.MainRoute);
-            var content = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new HttpRequestException(content);
+                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
             }
 
-            var entities =  JsonConvert.DeserializeObject<IEnumerable<EntityDto>>(content, this.JsonSerializerOptions);
-            return entities.Where(x => x.GetType() == typeof(UserDto)).Cast<UserDto>().ToList();
+            var entities =  this.Deserializer.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync());
+            return entities.Where(x => x.GetType() == typeof(UserEntityDto)).Cast<UserEntityDto>().ToList();
         }
 
         /// <summary>
@@ -66,24 +67,22 @@ namespace UI_DSM.Client.Services.Administration.UserService
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
             var registerResponse = await this.HttpClient.PostAsync(Path.Combine(this.MainRoute, "Register"), bodyContent);
-            var registerContent = await registerResponse.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<RegistrationResponseDto>(registerContent, this.JsonSerializerOptions);
+            return this.Deserializer.Deserialize<RegistrationResponseDto>(await registerResponse.Content.ReadAsStreamAsync());
         }
 
         /// <summary>
         ///     Delete a registered user
         /// </summary>
-        /// <param name="userToDelete">The user to delete</param>
+        /// <param name="userEntityToDelete">The user to delete</param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /></returns>
-        public async Task<RequestResponseDto> DeleteUser(UserDto userToDelete)
+        public async Task<RequestResponseDto> DeleteUser(UserEntityDto userEntityToDelete)
         {
-            if (!userToDelete.IsAdmin)
+            if (!userEntityToDelete.IsAdmin)
             {
-                var url = Path.Combine(this.MainRoute, userToDelete.Id.ToString());
+                var url = Path.Combine(this.MainRoute, userEntityToDelete.Id.ToString());
                 var deleteResponse = await this.HttpClient.DeleteAsync(url);
-                var deleteContent = await deleteResponse.Content.ReadAsStringAsync();
 
-                return JsonConvert.DeserializeObject<RequestResponseDto>(deleteContent, this.JsonSerializerOptions);
+                return this.Deserializer.Deserialize<RequestResponseDto>(await deleteResponse.Content.ReadAsStreamAsync());
             }
 
             return new RequestResponseDto

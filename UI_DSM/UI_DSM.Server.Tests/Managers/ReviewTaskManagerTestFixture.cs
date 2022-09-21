@@ -195,7 +195,7 @@ namespace UI_DSM.Server.Tests.Managers
             this.participantManager.Setup(x => x.FindEntity(assignedParticipant.Id)).ReturnsAsync(assignedParticipant);
 
             var reviewObjective = new ReviewTask();
-            await this.manager.ResolveProperties(reviewObjective, new UserDto());
+            await this.manager.ResolveProperties(reviewObjective, new UserEntityDto());
             Assert.That(reviewObjective.Author, Is.Null);
 
             var reviewDto = new ReviewTaskDto()

@@ -1,0 +1,86 @@
+// --------------------------------------------------------------------------------------------------------
+// <copyright file="{{this.Name}}Serializer.cs" company="RHEA System S.A.">
+//  Copyright (c) 2022 RHEA System S.A.
+//
+//  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+//
+//  This file is part of UI-DSM.
+//  The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+//  The UI-DSM application is provided to the community under the Apache License 2.0.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------------------------------
+// ------------THIS IS AN AUTOMATICALLY GENERATED FILE. ANY MANUAL CHANGES WILL BE OVERWRITTEN!------------
+// --------------------------------------------------------------------------------------------------------
+
+namespace UI_DSM.Serializer.Json
+{
+    using System.Text.Json;
+
+    using UI_DSM.Shared.DTO.Models;
+
+    /// <summary>
+    ///     The purpose of the <see cref="{{ this.Name }}Serializer" /> is to provide serialization capabilities
+    /// </summary>
+    internal static class {{ this.Name }}Serializer
+    {
+        /// <summary>
+        ///     Serializes an instance of <see cref="{{ this.Name }}" /> using an <see cref="Utf8JsonWriter"/>
+        /// </summary>
+        /// <param name="obj">The <see cref="{{ this.Name }}" /> to serialize</param>
+        /// <param name="writer"> The target <see cref="Utf8JsonWriter" /></param>
+        internal static void Serialize(object obj, Utf8JsonWriter writer)
+        {
+            if(obj is not {{this.Name}} dto)
+            {
+                throw new ArgumentException("The object shall be an {{this.name}}", nameof(obj));
+            }
+
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("@type");
+            writer.WriteStringValue("{{ this.Name }}");
+
+            {{#each (PropertyReflection.GetAllProperties this) as | property |}}
+                {{#if (PropertyReflection.IsEnumerable property)}}
+                writer.WriteStartArray("{{ String.LowerCaseFirstLetter property.Name }}");
+                
+                foreach(var item in dto.{{property.Name}})
+                {
+                    {{#if (PropertyReflection.IsBool property)}}
+                        writer.WriteBooleanValue(item);
+                    {{else if (PropertyReflection.IsNumeric property)}}
+                        writer.WriteNumberValue(item);
+                    {{else if (PropertyReflection.IsEnum property)}}
+                        writer.WriteStringValue(item.ToString().ToUpper());
+                    {{else}}
+                        writer.WriteStringValue(item);
+                    {{/if}}
+                }
+                
+                writer.WriteEndArray();
+
+                {{else}}
+                    writer.WritePropertyName("{{ String.LowerCaseFirstLetter property.Name }}");
+                    {{#if (PropertyReflection.IsBool property)}}
+                        writer.WriteBooleanValue(dto.{{property.Name}});
+                    {{else if (PropertyReflection.IsNumeric property)}}
+                        writer.WriteNumberValue(dto.{{property.Name}});
+                    {{else if (PropertyReflection.IsEnum property)}}
+                        writer.WriteStringValue(dto.{{property.Name}}.ToString().ToUpper());
+                    {{else}}
+                        writer.WriteStringValue(dto.{{property.Name}});
+                    {{/if}}
+
+                {{/if}}
+            {{/each}}
+            writer.WriteEndObject();
+        }
+    }
+}
+
+// ------------------------------------------------------------------------------------------------
+// --------THIS IS AN AUTOMATICALLY GENERATED FILE. ANY MANUAL CHANGES WILL BE OVERWRITTEN!--------
+// ------------------------------------------------------------------------------------------------

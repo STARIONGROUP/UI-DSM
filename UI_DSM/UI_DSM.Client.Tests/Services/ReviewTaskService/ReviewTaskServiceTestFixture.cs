@@ -20,8 +20,10 @@ namespace UI_DSM.Client.Tests.Services.ReviewTaskService
     using RichardSzalay.MockHttp;
 
     using UI_DSM.Client.Services;
+    using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Client.Services.ReviewTaskService;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
@@ -37,6 +39,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewTaskService
         private Guid projectId;
         private Guid reviewId;
         private Guid reviewObjectiveId;
+        private IJsonDeserializerService jsonDeserializerService;
 
         [SetUp]
         public void Setup()
@@ -73,14 +76,15 @@ namespace UI_DSM.Client.Tests.Services.ReviewTaskService
                 {
                     RoleName = "Reviewer"
                 },
-                new UserDto(userId)
+                new UserEntityDto(userId)
                 {
                     UserName = "user"
                 }
             };
 
             ServiceBase.RegisterService<ReviewTaskService>();
-            this.service = new ReviewTaskService(httpClient);
+            this.jsonDeserializerService = new JsonDeserializerService(new JsonDeserializer());
+            this.service = new ReviewTaskService(httpClient, this.jsonDeserializerService);
         }
 
         [Test]
@@ -122,9 +126,9 @@ namespace UI_DSM.Client.Tests.Services.ReviewTaskService
             Assert.That(reviewTask.Id, Is.EqualTo(guid));
 
             httpResponse.Content = new StringContent(string.Empty);
-            reviewTask = await this.service.GetTaskOfReviewObjective(this.projectId, this.reviewId, this.reviewObjectiveId, guid);
 
-            Assert.That(reviewTask, Is.Null);
+            Assert.That(async () => await this.service.GetTaskOfReviewObjective(this.projectId, 
+                this.reviewId, this.reviewObjectiveId, guid), Throws.Exception);
         }
 
         [Test]

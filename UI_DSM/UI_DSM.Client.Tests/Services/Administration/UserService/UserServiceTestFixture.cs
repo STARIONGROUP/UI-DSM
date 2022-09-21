@@ -14,7 +14,6 @@
 namespace UI_DSM.Client.Tests.Services.Administration.UserService
 {
     using System.Net;
-    using System.Text.Json;
 
     using NUnit.Framework;
 
@@ -22,7 +21,9 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
 
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.Administration.UserService;
+    using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
@@ -32,6 +33,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
     {
         private UserService service;
         private MockHttpMessageHandler httpMessageHandler;
+        private IJsonDeserializerService jsonDeserializerService;
 
         [SetUp]
         public void Setup()
@@ -41,7 +43,8 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
             httpClient.BaseAddress = new Uri("http://localhost/api");
 
             ServiceBase.RegisterService<UserService>();
-            this.service = new UserService(httpClient);
+            this.jsonDeserializerService = new JsonDeserializerService(new JsonDeserializer());
+            this.service = new UserService(httpClient, this.jsonDeserializerService);
         }
 
         [Test]
@@ -57,7 +60,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
 
             httpResponse.StatusCode = HttpStatusCode.OK;
             
-            var users = new List<UserDto>
+            var users = new List<UserEntityDto>
             {
                 new ()
                 {
@@ -91,7 +94,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
                 IsRequestSuccessful = false
             };
 
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(registrationResponse));
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(registrationResponse));
 
             var registrationResult = this.service.RegisterUser(new RegistrationDto()).Result;
             Assert.That(registrationResult.IsRequestSuccessful, Is.False);
@@ -100,23 +103,23 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
 
             registrationResponse.IsRequestSuccessful = true;
 
-            registrationResponse.CreatedUser = new UserDto()
+            registrationResponse.CreatedUserEntity = new UserEntityDto()
             {
                 UserName = "user",
                 IsAdmin = false,
                 Id = Guid.NewGuid()
             };
 
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(registrationResponse));
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(registrationResponse));
             registrationResult = this.service.RegisterUser(new RegistrationDto()).Result;
             Assert.That(registrationResult.IsRequestSuccessful, Is.True);
-            Assert.That(registrationResult.CreatedUser.Id, Is.EqualTo(registrationResponse.CreatedUser.Id));
+            Assert.That(registrationResult.CreatedUserEntity.Id, Is.EqualTo(registrationResponse.CreatedUserEntity.Id));
         }
 
         [Test]
         public void VerifyDeleteUser()
         {
-            var userToDelete = new UserDto()
+            var userToDelete = new UserEntityDto()
             {
                 UserName = "user",
                 IsAdmin = true,
@@ -136,14 +139,14 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
             httpResponse.StatusCode = HttpStatusCode.BadRequest;
             var requestResponse = new RequestResponseDto();
 
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(requestResponse));
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
 
             deleteResponse = this.service.DeleteUser(userToDelete).Result;
             Assert.That(deleteResponse.IsRequestSuccessful, Is.False);
 
             requestResponse.IsRequestSuccessful = true;
 
-            httpResponse.Content = new StringContent(JsonSerializer.Serialize(requestResponse));
+            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
 
             deleteResponse = this.service.DeleteUser(userToDelete).Result;
             Assert.That(deleteResponse.IsRequestSuccessful, Is.True);

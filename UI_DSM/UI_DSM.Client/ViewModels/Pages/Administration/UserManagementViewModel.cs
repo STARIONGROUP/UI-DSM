@@ -53,7 +53,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         /// <summary>
         ///     The user that the administrator is going to delete
         /// </summary>
-        private UserDto userToDelete;
+        private UserEntityDto userEntityToDelete;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="UserManagementViewModel" /> class.
@@ -101,7 +101,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         }
 
         /// <summary>
-        ///     Value indicating the user is currently visualizing details on a  <see cref="UserDto"/>
+        ///     Value indicating the user is currently visualizing details on a  <see cref="UserEntityDto"/>
         /// </summary>
         public bool IsOnDetailsViewMode
         {
@@ -115,9 +115,9 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         public IConfirmCancelPopupViewModel ConfirmCancelPopup { get; private set; }
 
         /// <summary>
-        ///     A collections of <see cref="UserDto" />
+        ///     A collections of <see cref="UserEntityDto" />
         /// </summary>
-        public SourceList<UserDto> Users { get; private set; } = new();
+        public SourceList<UserEntityDto> Users { get; private set; } = new();
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its
@@ -144,21 +144,21 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         /// <summary>
         ///     Opens a popup to confirm to delete a registered user
         /// </summary>
-        /// <param name="user">The <see cref="UserDto" /> to remove</param>
-        public void AskConfirmDeleteUser(UserDto user)
+        /// <param name="userEntity">The <see cref="UserEntityDto" /> to remove</param>
+        public void AskConfirmDeleteUser(UserEntityDto userEntity)
         {
-            this.userToDelete = user;
-            this.ConfirmCancelPopup.ContentText = $"You are about to delete the user {this.userToDelete.UserName}.\nAre you sure?";
+            this.userEntityToDelete = userEntity;
+            this.ConfirmCancelPopup.ContentText = $"You are about to delete the user {this.userEntityToDelete.UserName}.\nAre you sure?";
             this.ConfirmCancelPopup.IsVisible = true;
         }
 
         /// <summary>
-        ///     Opens a popup to provide informations for the given <see cref="UserDto" />
+        ///     Opens a popup to provide informations for the given <see cref="UserEntityDto" />
         /// </summary>
-        /// <param name="user">The <see cref="UserDto" /></param>
-        public void OpenDetailsPopup(UserDto user)
+        /// <param name="userEntity">The <see cref="UserEntityDto" /></param>
+        public void OpenDetailsPopup(UserEntityDto userEntity)
         {
-            this.UserDetailsViewModel.User = user;
+            this.UserDetailsViewModel.UserEntity = userEntity;
             this.IsOnDetailsViewMode = true;
         }
 
@@ -179,7 +179,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
 
             if (registerResult.IsRequestSuccessful)
             {
-                this.Users.Add(registerResult.CreatedUser);
+                this.Users.Add(registerResult.CreatedUserEntity);
             }
         }
 
@@ -189,11 +189,11 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         /// <returns>A <see cref="Task" /></returns>
         private async Task OnConfirmDelete()
         {
-            var deleteResult = await this.userService.DeleteUser(this.userToDelete);
+            var deleteResult = await this.userService.DeleteUser(this.userEntityToDelete);
 
             if (deleteResult.IsRequestSuccessful)
             {
-                this.Users.Remove(this.userToDelete);
+                this.Users.Remove(this.userEntityToDelete);
             }
 
             this.OnCancelDelete();
@@ -205,7 +205,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         private void OnCancelDelete()
         {
             this.ConfirmCancelPopup.IsVisible = false;
-            this.userToDelete = null;
+            this.userEntityToDelete = null;
         }
     }
 }

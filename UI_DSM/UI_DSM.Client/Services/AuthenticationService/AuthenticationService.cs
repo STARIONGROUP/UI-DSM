@@ -23,6 +23,7 @@ namespace UI_DSM.Client.Services.AuthenticationService
 
     using Newtonsoft.Json;
 
+    using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Shared.DTO.UserManagement;
 
     /// <summary>
@@ -43,10 +44,11 @@ namespace UI_DSM.Client.Services.AuthenticationService
 
         /// <summary>Initializes a new instance of the <see cref="AuthenticationService" /> class.</summary>
         /// <param name="httpClient">The <see cref="HttpClient" /></param>
+        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
         /// <param name="stateProvider">The <see cref="AuthenticationStateProvider" /></param>
         /// <param name="sessionStorageService">The <see cref="ISessionStorageService" /></param>
-        public AuthenticationService(HttpClient httpClient, AuthenticationStateProvider stateProvider, ISessionStorageService sessionStorageService) :
-            base(httpClient)
+        public AuthenticationService(HttpClient httpClient, IJsonDeserializerService deserializer, AuthenticationStateProvider stateProvider, ISessionStorageService sessionStorageService) :
+            base(httpClient, deserializer)
         {
             this.stateProvider = stateProvider;
             this.sessionStorageService = sessionStorageService;
@@ -65,8 +67,7 @@ namespace UI_DSM.Client.Services.AuthenticationService
             var authenticationResult = await this.HttpClient.PostAsync(Path.Combine(this.MainRoute, "Login"),
                 bodyContent);
 
-            var authenticationContent = await authenticationResult.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<AuthenticationResponseDto>(authenticationContent, this.JsonSerializerOptions);
+            var result = this.Deserializer.Deserialize<AuthenticationResponseDto>(await authenticationResult.Content.ReadAsStreamAsync());
 
             if (!authenticationResult.IsSuccessStatusCode)
             {
