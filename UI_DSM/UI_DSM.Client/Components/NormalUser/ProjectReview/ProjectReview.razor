@@ -1,0 +1,24 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// ProjectDetails.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+<EditForm Context="editFormContext" Model="@this.ViewModel.Project">
+	<DxFormLayout>
+		<DxFormLayoutItem Caption="Project Id:" ColSpanMd="12">
+			<label>@this.ViewModel.Project.Id</label>
+		</DxFormLayoutItem>
+		<DxFormLayoutItem Caption="Project Name:" ColSpanMd="12">
+			<DxTextBox @bind-Text="@this.ViewModel.Project.ProjectName" Enabled="false" />
+		</DxFormLayoutItem>
+		<DxFormLayoutItem Caption="Project Review :" ColSpanMd="12">
+			<label>@this.ViewModel.Project.Reviews</label>
+		</DxFormLayoutItem>
+	</DxFormLayout>
+</EditForm>

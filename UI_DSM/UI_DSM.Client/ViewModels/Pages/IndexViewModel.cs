@@ -20,6 +20,20 @@ namespace UI_DSM.Client.ViewModels.Pages
     using UI_DSM.Client.Pages;
     using UI_DSM.Client.Services.Administration.ProjectService;
     using UI_DSM.Shared.Models;
+    using DevExpress.Blazor;
+
+    using DynamicData;
+
+    using Microsoft.AspNetCore.Components;
+
+    using ReactiveUI;
+
+    using UI_DSM.Client.Components.Administration.ProjectManagement;
+    using UI_DSM.Client.Pages.Administration;
+    using UI_DSM.Client.Services.Administration.ProjectService;
+    using UI_DSM.Client.ViewModels.Components;
+    using UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     View model for the <see cref="Index" /> page
@@ -36,17 +50,25 @@ namespace UI_DSM.Client.ViewModels.Pages
         /// </summary>
         private readonly IProjectService projectService;
 
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="IndexViewModel" /> class.
         /// </summary>
         /// <param name="projectService">The <see cref="IProjectService" /></param>
         /// <param name="authenticationProvider">The <see cref="AuthenticationStateProvider" /></param>
-        public IndexViewModel(IProjectService projectService, AuthenticationStateProvider authenticationProvider)
+        /// <param name="navigationManager">The <see cref="NavigationManager" /></param>
+        public IndexViewModel(IProjectService projectService, AuthenticationStateProvider authenticationProvider, NavigationManager navigationManager)
         {
             this.projectService = projectService;
             this.authenticationProvider = authenticationProvider;
             authenticationProvider.AuthenticationStateChanged += this.PopulateAvailableProjects;
+            this.NavigationManager = navigationManager;
         }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="NavigationManager" />
+        /// </summary>
+        public NavigationManager NavigationManager { get; set; }
 
         /// <summary>
         ///     A collection of available <see cref="Project" /> for the user
@@ -85,6 +107,15 @@ namespace UI_DSM.Client.ViewModels.Pages
                     this.AvailableProject.AddRange(await this.projectService.GetUserParticipation());
                 }
             });
+        }
+
+        /// <summary>
+        ///     Navigate to the page dedicated to the given <see cref="Project" />
+        /// </summary>
+        /// <param name="project">The <see cref="Project" /></param>
+        public void GoToProjectPage(Project project)
+        {
+            this.NavigationManager.NavigateTo($"Project/{project.Id}");
         }
     }
 }

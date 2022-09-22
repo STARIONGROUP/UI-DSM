@@ -31,5 +31,11 @@ namespace UI_DSM.Client.ViewModels.Pages
         ///     A collection of available <see cref="Project" /> for the user
         /// </summary>
         SourceList<Project> AvailableProject { get; }
+
+        /// <summary>
+        ///     Navigate to the page dedicated to the given <see cref="Project" />
+        /// </summary>
+        /// <param name="project">The <see cref="Project" /></param>
+        void GoToProjectPage(Project project);
     }
 }
