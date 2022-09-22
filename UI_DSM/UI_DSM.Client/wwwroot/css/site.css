@@ -162,3 +162,8 @@ a:focus-visible,
 button:focus {
   outline: 2px solid var(--colors-primary-500);
 }
+
+
+.p4 {
+  padding: var(--spacing-4) !important;
+}

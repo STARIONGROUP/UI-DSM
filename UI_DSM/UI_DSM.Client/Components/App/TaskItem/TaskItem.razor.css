@@ -6,6 +6,10 @@
   text-decoration: none;
 }
 
+.task-item .h5 {
+  margin: 0;
+}
+
 .task-item__header {
   display: grid;
   gap: var(--spacing-4);

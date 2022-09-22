@@ -31,7 +31,7 @@
   background: var(--colors-gray-50);
   color: var(--colors-primary-500);
   font-weight: 700;
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
 }
 
 .app-accordion__button--small {
