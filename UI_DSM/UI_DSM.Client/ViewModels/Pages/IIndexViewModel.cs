@@ -14,7 +14,7 @@
 namespace UI_DSM.Client.ViewModels.Pages
 {
     using DynamicData;
-
+    using Microsoft.AspNetCore.Components;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -37,5 +37,7 @@ namespace UI_DSM.Client.ViewModels.Pages
         /// </summary>
         /// <param name="project">The <see cref="Project" /></param>
         void GoToProjectPage(Project project);
+
+        NavigationManager NavigationManager { get; set; }
     }
 }

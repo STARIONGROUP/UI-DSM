@@ -9,16 +9,16 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-<EditForm Context="editFormContext" Model="@this.ViewModel.Project">
-	<DxFormLayout>
-		<DxFormLayoutItem Caption="Project Id:" ColSpanMd="12">
-			<label>@this.ViewModel.Project.Id</label>
-		</DxFormLayoutItem>
-		<DxFormLayoutItem Caption="Project Name:" ColSpanMd="12">
-			<DxTextBox @bind-Text="@this.ViewModel.Project.ProjectName" Enabled="false" />
-		</DxFormLayoutItem>
-		<DxFormLayoutItem Caption="Project Review :" ColSpanMd="12">
-			<label>@this.ViewModel.Project.Reviews</label>
-		</DxFormLayoutItem>
-	</DxFormLayout>
-</EditForm>
+
+<h1>Reviews Plans from : @this.ViewModel.Project.ProjectName</h1>
+
+@foreach (var review in this.ViewModel.Project.Reviews)
+{
+
+	<div>
+		<h3>@review.Title</h3>
+		<h3>@review.CreatedOn</h3>
+		<h3>@review.Description</h3>
+		
+	</div>
+}

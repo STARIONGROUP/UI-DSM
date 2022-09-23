@@ -13,17 +13,10 @@
 
 namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
 {
-    using DevExpress.Blazor;
-
-    using DynamicData;
-
-    using Microsoft.AspNetCore.Components;
     using ReactiveUI;
 
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
-    using UI_DSM.Client.Pages.NormalUser.ProjectPage;
     using UI_DSM.Client.Services.Administration.ProjectService;
-    using UI_DSM.Client.Services.Administration.RoleService;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Shared.Models;

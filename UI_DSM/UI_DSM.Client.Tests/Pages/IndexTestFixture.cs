@@ -57,7 +57,7 @@ namespace UI_DSM.Client.Tests.Pages
             this.loginViewModel.Setup(x => x.Authentication).Returns(new AuthenticationDto());
             this.authenticationProvider = new Mock<AuthenticationStateProvider>();
             this.authenticationProvider.Setup(x => x.GetAuthenticationStateAsync()).ReturnsAsync(this.authenticationState);
-            this.viewModel = new IndexViewModel(this.projectService.Object, this.authenticationProvider.Object);
+            this.viewModel = new IndexViewModel(this.projectService.Object, this.authenticationProvider.Object, null);
             this.context.Services.AddSingleton(this.viewModel);
             this.context.Services.AddSingleton(this.loginViewModel.Object);
             this.context.AddTestAuthorization().SetAuthorized("user");

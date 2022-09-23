@@ -15,24 +15,11 @@ namespace UI_DSM.Client.ViewModels.Pages
 {
     using DynamicData;
 
+    using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
-
+    
     using UI_DSM.Client.Pages;
     using UI_DSM.Client.Services.Administration.ProjectService;
-    using UI_DSM.Shared.Models;
-    using DevExpress.Blazor;
-
-    using DynamicData;
-
-    using Microsoft.AspNetCore.Components;
-
-    using ReactiveUI;
-
-    using UI_DSM.Client.Components.Administration.ProjectManagement;
-    using UI_DSM.Client.Pages.Administration;
-    using UI_DSM.Client.Services.Administration.ProjectService;
-    using UI_DSM.Client.ViewModels.Components;
-    using UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement;
     using UI_DSM.Shared.Models;
 
     /// <summary>
