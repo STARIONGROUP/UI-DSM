@@ -1,0 +1,6 @@
+.projects-overview {
+  padding: var(--spacing-8) 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--spacing-4);
+}

@@ -1,0 +1,15 @@
+.task-overview{
+  border: 1px solid var(--colors-gray-100);
+  border-radius: var(--radius-1);
+  overflow: hidden;
+}
+
+.objective-page {
+  display: grid;
+  gap: var(--spacing-8);
+}
+
+.task-section {
+  display: grid;
+  gap: var(--spacing-4);
+}

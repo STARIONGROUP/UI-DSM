@@ -1,0 +1,23 @@
+
+
+.task-page {
+  height: 100%;
+  display: grid;
+  grid-template-areas: "a b c";
+  grid-template-columns: minmax(240px, 320px) 1fr minmax(240px, 320px);
+}
+
+.task-page__sidebar__left {
+  grid-area: a;
+  border-right: 1px solid var(--colors-gray-100);
+}
+
+.task-page__sidebar__right {
+  grid-area: c;
+  border-left: 1px solid var(--colors-gray-100);
+}
+
+.task-page__body {
+  grid-area: b;
+  padding: var(--spacing-8);
+}

@@ -3,6 +3,7 @@ h1,
   font-weight: 700;
   font-size: var(--text-4xl);
   line-height: 110%;
+  margin: 0;
 }
 
 h2,
@@ -10,8 +11,7 @@ h2,
   font-weight: 700;
   font-size: var(--text-3xl);
   line-height: 130%;
-
-  
+  margin: 0;  
 }
 
 h3,
@@ -19,6 +19,7 @@ h3,
   font-weight: 700;
   font-size: var(--text-2xl);
   line-height: 130%;
+  margin: 0;
 }
 
 h4,
@@ -26,7 +27,7 @@ h4,
   font-weight: 700;
   font-size: var(--text-base);
   line-height: 130%;
-
+  margin: 0;
 }
 
 h5,
@@ -34,7 +35,7 @@ h5,
   font-weight: 700;
   font-size: var(--text-sm);
   line-height: 150%;
-
+  margin: 0;
 }
 
 h6,
@@ -42,7 +43,7 @@ h6,
   font-weight: 700;
   font-size: var(--text-xs);
   line-height: 150%;
-
+  margin: 0;
 }
 
 p,

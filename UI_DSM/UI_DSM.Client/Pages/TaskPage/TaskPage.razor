@@ -1,0 +1,44 @@
+<!--------------------------------------------------------------------------------------------------------
+// TaskPage.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+@page "/project/1/review/1/objective/1/task/1"
+
+<PageTitle>Task | UI-DSM</PageTitle>
+
+<div class="task-page">
+  <aside class="task-page__sidebar task-page__sidebar__left">
+    <AppAccordion Label="Review objective">
+      <AppSidebarText
+        Description="Verify the proper translation and allocation of the ESA mission requirements into a set of system and subsystem technical specifications, including analysis and justification documents in terms of completeness, adequacy and consistency." />
+    </AppAccordion>
+
+    <AppAccordion Label="Tasks">
+      <TaskItem TaskTitle="Check the requirements specification" isDone="true" />
+      <TaskItem TaskTitle="Check the requirements specification" />
+      <TaskItem TaskTitle="Check the requirements specification" isDone="true" />
+    </AppAccordion>
+  </aside>
+  <main class="task-page__body">
+  </main>
+  <aside class="task-page__sidebar task-page__sidebar__right">
+    <AppAccordion Label="Requirement description">
+      <AppSidebarText
+        Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a leo tortor. Nullam dignissim lacus at massa auctor, quis tristique massa sollicitudin." />
+    </AppAccordion>
+    <AppAccordion Label="Comments">
+      <AppComment Name="Kjell Lindgren" Date="3 minutes ago"
+        Comment="Could you have a look at this data, and see if it aligns with yours?	" />
+      <AppComment Name="Jessica Watkins" Date="31 minutes ago"
+        Comment="Could you have a look at this data, and see if it aligns with yours?	" />
+    </AppAccordion>
+  </aside>
+</div>

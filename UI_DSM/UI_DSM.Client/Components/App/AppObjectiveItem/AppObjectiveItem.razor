@@ -1,5 +1,5 @@
 <!--------------------------------------------------------------------------------------------------------
-// Index.razor
+// AppObjectiveItem.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
@@ -10,23 +10,23 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
-@page "/login"
-@layout CleanLayout
+@namespace AppComponents
+
+<NavLink href="@Link">
+  <article class="app-objective-item">
+    <h3>@Title</h3>
+  </article>
+</NavLink>
 
 
-<PageTitle>Login | UI-DSM</PageTitle>
+@code {
+  /// <summary>
+  /// Project title
+  /// </summary>
+  [Parameter] public string Title { get; set; }
 
-<AuthorizeView>
-  <NotAuthorized>
-    <div class="login-page">
-      <div class="login-page__container">
-        <div class="login-page__right">
-          <header>
-            <h1 class="h2">Hello,<br /> login to get started 🚀</h1>
-          </header>
-          <Login />
-        </div>
-      </div>
-    </div>
-  </NotAuthorized>
-</AuthorizeView>
+  /// <summary>
+  /// Objective link
+  /// </summary>
+  [Parameter] public string Link { get; set; }
+}
