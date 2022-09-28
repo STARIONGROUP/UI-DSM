@@ -1,0 +1,13 @@
+.app-breadcrumb {
+  padding: var(--spacing-3) var(--spacing-4);
+  border-bottom: 1px solid var(--colors-gray-100);
+}
+.app-breadcrumb ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: var(--spacing-2);
+  align-items: center;
+  font-weight: 500;
+}
