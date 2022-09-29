@@ -40,6 +40,21 @@ namespace UI_DSM.Server.Migrations
                     b.ToTable("AnnotatableItemAnnotation");
                 });
 
+            modelBuilder.Entity("ArtifactReview", b =>
+                {
+                    b.Property<Guid>("ArtifactsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ReviewsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ArtifactsId", "ReviewsId");
+
+                    b.HasIndex("ReviewsId");
+
+                    b.ToTable("ArtifactReview");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -69,7 +84,7 @@ namespace UI_DSM.Server.Migrations
                         new
                         {
                             Id = "AF8956F8-CA85-4DF2-8CB6-C46D0845B987",
-                            ConcurrencyStamp = "9a2b04bc-fbf1-4bbb-aef3-214084843ecd",
+                            ConcurrencyStamp = "bdaed18c-5e74-46bd-8536-c1255071fd03",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -270,14 +285,14 @@ namespace UI_DSM.Server.Migrations
                         {
                             Id = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4a038e0b-f742-4b04-95fd-2de6f7895f23",
+                            ConcurrencyStamp = "3f1e53a3-5e68-4514-b53a-5f2afba551f1",
                             EmailConfirmed = false,
                             IsAdmin = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDQkHLx6aVgzvBDau1UCK8kmQ9nCCLdpmx/7Daop5C5Oo5ntq+2S7l3+WTFjSp0rug==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEDr2GVdqM38+1tymdhti7jnMdCMq/DgMJicqe7P1sRgZ50asePWsDN40KjHaC59odw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ef330ed2-78fa-47d2-b15d-f94b6e75a9c1",
+                            SecurityStamp = "facbc854-1ec0-4c4d-8a08-0551243724d4",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -322,6 +337,22 @@ namespace UI_DSM.Server.Migrations
                     b.HasIndex("EntityContainerId");
 
                     b.ToTable("Annotation");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Artifact", b =>
+                {
+                    b.HasBaseType("UI_DSM.Shared.Models.Entity");
+
+                    b.Property<Guid?>("EntityContainerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("FileName")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.HasIndex("EntityContainerId");
+
+                    b.ToTable("Artifact");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Participant", b =>
@@ -554,6 +585,17 @@ namespace UI_DSM.Server.Migrations
                     b.ToTable("Feedback");
                 });
 
+            modelBuilder.Entity("UI_DSM.Shared.Models.Model", b =>
+                {
+                    b.HasBaseType("UI_DSM.Shared.Models.Artifact");
+
+                    b.Property<string>("ModelName")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.ToTable("Model");
+                });
+
             modelBuilder.Entity("UI_DSM.Shared.Models.Note", b =>
                 {
                     b.HasBaseType("UI_DSM.Shared.Models.Annotation");
@@ -601,6 +643,21 @@ namespace UI_DSM.Server.Migrations
                     b.HasOne("UI_DSM.Shared.Models.Annotation", null)
                         .WithMany()
                         .HasForeignKey("AnnotationsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ArtifactReview", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Artifact", null)
+                        .WithMany()
+                        .HasForeignKey("ArtifactsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UI_DSM.Shared.Models.Review", null)
+                        .WithMany()
+                        .HasForeignKey("ReviewsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -689,6 +746,22 @@ namespace UI_DSM.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Author");
+
+                    b.Navigation("EntityContainer");
+                });
+
+            modelBuilder.Entity("UI_DSM.Shared.Models.Artifact", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Project", "EntityContainer")
+                        .WithMany("Artifacts")
+                        .HasForeignKey("EntityContainerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("UI_DSM.Shared.Models.Entity", null)
+                        .WithOne()
+                        .HasForeignKey("UI_DSM.Shared.Models.Artifact", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("EntityContainer");
                 });
@@ -866,6 +939,15 @@ namespace UI_DSM.Server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("UI_DSM.Shared.Models.Model", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.Artifact", null)
+                        .WithOne()
+                        .HasForeignKey("UI_DSM.Shared.Models.Model", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("UI_DSM.Shared.Models.Note", b =>
                 {
                     b.HasOne("UI_DSM.Shared.Models.Annotation", null)
@@ -894,6 +976,8 @@ namespace UI_DSM.Server.Migrations
             modelBuilder.Entity("UI_DSM.Shared.Models.Project", b =>
                 {
                     b.Navigation("Annotations");
+
+                    b.Navigation("Artifacts");
 
                     b.Navigation("Participants");
 

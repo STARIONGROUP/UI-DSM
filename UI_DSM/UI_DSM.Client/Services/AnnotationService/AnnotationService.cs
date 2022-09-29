@@ -32,8 +32,8 @@ namespace UI_DSM.Client.Services.AnnotationService
         ///     Initializes a new instance of the <see cref="AnnotationService" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="ServiceBase.HttpClient" /></param>
-        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
-        public AnnotationService(HttpClient httpClient, IJsonDeserializerService deserializer) : base(httpClient, deserializer)
+        /// <param name="jsonService">The <see cref="IJsonService" /></param>
+        public AnnotationService(HttpClient httpClient, IJsonService jsonService) : base(httpClient, jsonService)
         {
         }
 

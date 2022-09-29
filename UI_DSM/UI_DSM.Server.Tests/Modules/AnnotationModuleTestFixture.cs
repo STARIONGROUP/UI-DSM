@@ -135,11 +135,15 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(this.participant);
 
-            this.annotationManager.Setup(x => x.FindEntity(annotation.Id)).ReturnsAsync((Annotation)null);
+            this.annotationManager.As<IContainedEntityManager<Annotation>>()
+                .Setup(x => x.FindEntityWithContainer(annotation.Id)).ReturnsAsync((Annotation)null);
+
             await this.module.GetEntity(this.annotationManager.Object, annotation.Id, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 404, Times.Once);
 
-            this.annotationManager.Setup(x => x.FindEntity(annotation.Id)).ReturnsAsync(annotation);
+            this.annotationManager.As<IContainedEntityManager<Annotation>>()
+                .Setup(x => x.FindEntityWithContainer(annotation.Id)).ReturnsAsync(annotation);
+
             await this.module.GetEntity(this.annotationManager.Object, annotation.Id, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 400, Times.Once);
 

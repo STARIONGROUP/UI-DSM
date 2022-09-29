@@ -17,8 +17,6 @@ namespace UI_DSM.Client.Services
 
     using Microsoft.AspNetCore.WebUtilities;
 
-    using Newtonsoft.Json;
-
     using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Shared.Assembler;
     using UI_DSM.Shared.DTO.Common;
@@ -37,8 +35,8 @@ namespace UI_DSM.Client.Services
         ///     Initializes a new instance of the <see cref="EntityServiceBase{TEntity, TEntityDto}" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="ServiceBase.HttpClient" /></param>
-        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
-        protected EntityServiceBase(HttpClient httpClient, IJsonDeserializerService deserializer) : base(httpClient, deserializer)
+        /// <param name="jsonService">The <see cref="IJsonService" /></param>
+        protected EntityServiceBase(HttpClient httpClient, IJsonService jsonService) : base(httpClient, jsonService)
         {
         }
 
@@ -54,7 +52,7 @@ namespace UI_DSM.Client.Services
 
             return !getResponse.IsSuccessStatusCode
                 ? default
-                : this.Deserializer.Deserialize<IEnumerable<EntityDto>>(await  getResponse.Content.ReadAsStreamAsync());
+                : this.jsonService.Deserialize<IEnumerable<EntityDto>>(await getResponse.Content.ReadAsStreamAsync());
         }
 
         /// <summary>
@@ -91,7 +89,7 @@ namespace UI_DSM.Client.Services
                 throw new HttpRequestException(await response.Content.ReadAsStringAsync());
             }
 
-            return this.Deserializer.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync()).ToList();
+            return this.jsonService.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync()).ToList();
         }
 
         /// <summary>
@@ -114,10 +112,10 @@ namespace UI_DSM.Client.Services
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponseDto" /></returns>
         protected async Task<EntityRequestResponseDto> CreateEntityAndGetResponseDto(TEntity entity, int deepLevel)
         {
-            var content = JsonConvert.SerializeObject((TEntityDto)entity.ToDto());
+            var content = this.jsonService.Serialize((TEntityDto)entity.ToDto());
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
             var response = await this.HttpClient.PostAsync(this.CreateUri(Path.Combine(this.MainRoute, "Create"), deepLevel), bodyContent);
-            return this.Deserializer.Deserialize<EntityRequestResponseDto>(await response.Content.ReadAsStreamAsync());
+            return this.jsonService.Deserialize<EntityRequestResponseDto>(await response.Content.ReadAsStreamAsync());
         }
 
         /// <summary>
@@ -130,16 +128,37 @@ namespace UI_DSM.Client.Services
         {
             var entityRequest = await this.CreateEntityAndGetResponseDto(entity, deepLevel);
 
+            return HandleEntityRequestResponse(entityRequest);
+        }
+
+        /// <summary>
+        ///     Handles the result of the <see cref="EntityRequestResponseDto" />
+        /// </summary>
+        /// <param name="entityRequest">The <see cref="EntityRequestResponseDto" /></param>
+        /// <returns>The <see cref="EntityRequestResponse{TEntity}" /></returns>
+        protected static EntityRequestResponse<TEntity> HandleEntityRequestResponse(EntityRequestResponseDto entityRequest)
+        {
+            return HandleEntityRequestResponse<TEntity>(entityRequest);
+        }
+
+        /// <summary>
+        ///     Handles the result of the <see cref="EntityRequestResponseDto" />
+        /// </summary>
+        /// <param name="entityRequest">The <see cref="EntityRequestResponseDto" /></param>
+        /// <typeparam name="TTEntity">An <see cref="Entity" /></typeparam>
+        /// <returns>The <see cref="EntityRequestResponse{TEntity}" /></returns>
+        protected static EntityRequestResponse<TTEntity> HandleEntityRequestResponse<TTEntity>(EntityRequestResponseDto entityRequest) where TTEntity : Entity
+        {
             if (!entityRequest!.IsRequestSuccessful)
             {
-                return EntityRequestResponse<TEntity>.Fail(entityRequest.Errors);
+                return EntityRequestResponse<TTEntity>.Fail(entityRequest.Errors);
             }
 
-            var poco = Assembler.CreateEntities<TEntity>(entityRequest.Entities).FirstOrDefault();
+            var poco = Assembler.CreateEntities<TTEntity>(entityRequest.Entities).FirstOrDefault();
 
             return poco == null
-                ? EntityRequestResponse<TEntity>.Fail(new List<string> { "Error during the creation of the entity" })
-                : EntityRequestResponse<TEntity>.Success(poco);
+                ? EntityRequestResponse<TTEntity>.Fail(new List<string> { "Error during the creation of the entity" })
+                : EntityRequestResponse<TTEntity>.Success(poco);
         }
 
         /// <summary>
@@ -150,11 +169,11 @@ namespace UI_DSM.Client.Services
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponseDto" /></returns>
         protected async Task<EntityRequestResponseDto> UpdateEntityAndGetResponseDto(TEntity entity, int deepLevel)
         {
-            var content = JsonConvert.SerializeObject((TEntityDto)entity.ToDto());
+            var content = this.jsonService.Serialize((TEntityDto)entity.ToDto());
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
             var response = await this.HttpClient.PutAsync(this.CreateUri(Path.Combine(this.MainRoute, entity.Id.ToString()), deepLevel), bodyContent);
-            return this.Deserializer.Deserialize<EntityRequestResponseDto>(await response.Content.ReadAsStreamAsync());
+            return this.jsonService.Deserialize<EntityRequestResponseDto>(await response.Content.ReadAsStreamAsync());
         }
 
         /// <summary>
@@ -167,16 +186,7 @@ namespace UI_DSM.Client.Services
         {
             var entityRequest = await this.UpdateEntityAndGetResponseDto(entity, deepLevel);
 
-            if (!entityRequest!.IsRequestSuccessful)
-            {
-                return EntityRequestResponse<TEntity>.Fail(entityRequest.Errors);
-            }
-
-            var poco = Assembler.CreateEntities<TEntity>(entityRequest.Entities).FirstOrDefault();
-
-            return poco == null
-                ? EntityRequestResponse<TEntity>.Fail(new List<string> { "Error during the creation of the entity" })
-                : EntityRequestResponse<TEntity>.Success(poco);
+            return HandleEntityRequestResponse(entityRequest);
         }
 
         /// <summary>
@@ -189,7 +199,7 @@ namespace UI_DSM.Client.Services
             var url = Path.Combine(this.MainRoute, entityToDelete.Id.ToString());
             var deleteResponse = await this.HttpClient.DeleteAsync(url);
 
-            var response = this.Deserializer.Deserialize<RequestResponseDto>(await deleteResponse.Content.ReadAsStreamAsync());
+            var response = this.jsonService.Deserialize<RequestResponseDto>(await deleteResponse.Content.ReadAsStreamAsync());
 
             if (response == null)
             {

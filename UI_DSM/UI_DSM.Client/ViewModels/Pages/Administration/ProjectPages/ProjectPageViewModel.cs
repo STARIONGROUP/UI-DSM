@@ -13,7 +13,9 @@
 
 namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
 {
-    using DevExpress.Blazor;
+    using System.Reactive.Linq;
+
+    using CDP4Common.EngineeringModelData;
 
     using DynamicData;
 
@@ -21,13 +23,17 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
 
     using ReactiveUI;
 
+    using UI_DSM.Client.Components.Administration.ModelManagement;
     using UI_DSM.Client.Components.Administration.ParticipantManagement;
     using UI_DSM.Client.Components.Administration.ProjectManagement;
+    using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Pages.Administration.ProjectPages;
     using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.Administration.ProjectService;
     using UI_DSM.Client.Services.Administration.RoleService;
+    using UI_DSM.Client.Services.ArtifactService;
     using UI_DSM.Client.ViewModels.Components;
+    using UI_DSM.Client.ViewModels.Components.Administration.ModelManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.ParticipantManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement;
     using UI_DSM.Shared.Models;
@@ -38,6 +44,16 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
     public class ProjectPageViewModel : ReactiveObject, IProjectPageViewModel
     {
         /// <summary>
+        ///     The <see cref="IArtifactService" />
+        /// </summary>
+        private readonly IArtifactService artifactService;
+
+        /// <summary>
+        ///     A collection of <see cref="IDisposable" />
+        /// </summary>
+        private readonly List<IDisposable> disposables = new();
+
+        /// <summary>
         ///     The <see cref="IParticipantService" />
         /// </summary>
         private readonly IParticipantService participantService;
@@ -46,6 +62,11 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         ///     The <see cref="IProjectService" />
         /// </summary>
         private readonly IProjectService projectService;
+
+        /// <summary>
+        ///     Backing field for <see cref="IsOnCometConnectionMode" />
+        /// </summary>
+        private bool isOnCometConnectionMode;
 
         /// <summary>
         ///     Backing field for <see cref="IsOnCreationMode" />
@@ -58,16 +79,34 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         /// <param name="projectService">The <see cref="IProjectService" /></param>
         /// <param name="participantService">The <see cref="IParticipantService" /></param>
         /// <param name="roleService">The <see cref="IRoleService" /></param>
-        public ProjectPageViewModel(IProjectService projectService, IParticipantService participantService, IRoleService roleService)
+        /// <param name="cometConnectionViewModel">The <see cref="ICometConnectionViewModel" /></param>
+        /// <param name="artifactService">The <see cref="IArtifactService" /></param>
+        public ProjectPageViewModel(IProjectService projectService, IParticipantService participantService, IRoleService roleService,
+            ICometConnectionViewModel cometConnectionViewModel, IArtifactService artifactService)
         {
             this.projectService = projectService;
             this.participantService = participantService;
+            this.artifactService = artifactService;
 
             this.ParticipantCreationViewModel = new ParticipantCreationViewModel(this.participantService, roleService)
             {
                 OnValidSubmit = new EventCallbackFactory().Create(this, this.CreateParticipant)
             };
+
+            this.CometConnectionViewModel = cometConnectionViewModel;
+            this.CometConnectionViewModel.OnEventCallback = new EventCallbackFactory().Create(this, _ => this.UploadIteration());
+
+            this.disposables.Add(this.WhenAnyValue(x => x.IsOnCometConnectionMode)
+                .Where(x => !x).Subscribe(async _ => await this.CometConnectionViewModel.CometLogout()));
+
+            this.disposables.Add(this.WhenAnyValue(x => x.IsOnCometConnectionMode)
+                .Where(x => x).Subscribe(_ => this.CometConnectionViewModel.InitializeProperties()));
         }
+
+        /// <summary>
+        ///     The <see cref="ICometConnectionViewModel" /> for the <see cref="CometConnection" /> component
+        /// </summary>
+        public ICometConnectionViewModel CometConnectionViewModel { get; }
 
         /// <summary>
         ///     The <see cref="IProjectDetailsViewModel" /> for the <see cref="ProjectDetails" /> component
@@ -75,12 +114,21 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         public IProjectDetailsViewModel ProjectDetailsViewModel { get; } = new ProjectDetailsViewModel();
 
         /// <summary>
-        ///     Value indicating the user is currently creating a new <see cref="Participant"/>
+        ///     Value indicating the user is currently creating a new <see cref="Shared.Models.Participant" />
         /// </summary>
         public bool IsOnCreationMode
         {
             get => this.isOnCreationMode;
             set => this.RaiseAndSetIfChanged(ref this.isOnCreationMode, value);
+        }
+
+        /// <summary>
+        ///     Value indicating whether the user is currently trying to establish a connection to COMET
+        /// </summary>
+        public bool IsOnCometConnectionMode
+        {
+            get => this.isOnCometConnectionMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnCometConnectionMode, value);
         }
 
         /// <summary>
@@ -117,7 +165,53 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         }
 
         /// <summary>
-        ///     Create a new <see cref="Participant" /> with the provided data
+        ///     Opens the <see cref="CometConnection" /> popup
+        /// </summary>
+        public void OpenCometConnectionPopup()
+        {
+            this.IsOnCometConnectionMode = true;
+        }
+
+        /// <summary>
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.disposables.ForEach(x => x.Dispose());
+            this.disposables.Clear();
+        }
+
+        /// <summary>
+        ///     Uploads an <see cref="Iteration" /> to the server
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task UploadIteration()
+        {
+            var uploadResponse = await this.CometConnectionViewModel.UploadSelectedIteration();
+
+            if (uploadResponse.IsRequestSuccessful)
+            {
+                var uploadModelResponse = await this.artifactService.UploadModel(this.ProjectDetailsViewModel.Project.Id, uploadResponse.UploadedFilePath,
+                    $"{this.CometConnectionViewModel.SelectedEngineeringModelSetup.Item2} - {this.CometConnectionViewModel.SelectedIterationSetup.Item2}");
+
+                if (uploadModelResponse.IsRequestSuccessful)
+                {
+                    this.ProjectDetailsViewModel.Project.Artifacts.Add(uploadModelResponse.Entity);
+                    this.IsOnCometConnectionMode = false;
+                }
+                else
+                {
+                    this.CometConnectionViewModel.HandleUploadFailure(uploadModelResponse);
+                }
+            }
+            else
+            {
+                this.CometConnectionViewModel.HandleUploadFailure(uploadResponse);
+            }
+        }
+
+        /// <summary>
+        ///     Create a new <see cref="Shared.Models.Participant" /> with the provided data
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>
         private async Task CreateParticipant()

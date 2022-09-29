@@ -33,4 +33,14 @@ else
 		</DxPopup>
 	</div>
 	<ProjectDetails ViewModel="@this.ViewModel.ProjectDetailsViewModel"/>
+	<div>
+		<AppButton Click="@this.ViewModel.OpenCometConnectionPopup" Type="button">
+			<FeatherUpload Size="20" Color="currentColor" StrokeWidth="2" /> <span>Add COMET Model</span>
+		</AppButton>
+		<DxPopup CloseOnOutsideClick="false" HeaderText="Upload an Iteration" @bind-Visible="@this.ViewModel.IsOnCometConnectionMode">
+			<Content>
+				<CometConnection ViewModel="@this.ViewModel.CometConnectionViewModel"/>
+			</Content>
+		</DxPopup>
+	</div>
 }

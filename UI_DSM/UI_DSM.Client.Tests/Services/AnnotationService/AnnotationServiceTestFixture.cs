@@ -22,7 +22,6 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.AnnotationService;
     using UI_DSM.Client.Services.JsonDeserializerProvider;
-    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -36,7 +35,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
         private AnnotationService service;
         private MockHttpMessageHandler httpMessageHandler;
         private List<EntityDto> entitiesDto;
-        private JsonDeserializerService jsonDeserializerService;
+        private JsonService jsonService;
 
         [SetUp]
         public void Setup()
@@ -115,8 +114,8 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
 
             ServiceBase.RegisterService<AnnotationService>();
 
-            this.jsonDeserializerService = new JsonDeserializerService(new JsonDeserializer());
-            this.service = new AnnotationService(httpClient, this.jsonDeserializerService);
+            this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer());
+            this.service = new AnnotationService(httpClient, this.jsonService);
         }
 
         [Test]
@@ -132,7 +131,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
             Assert.That(async () => await this.service.GetAnnotationsOfProject(projectId), Throws.Exception);
             httpResponse.StatusCode = HttpStatusCode.OK;
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(this.entitiesDto));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(this.entitiesDto));
             var annotations = await this.service.GetAnnotationsOfProject(projectId);
             Assert.That(annotations, Has.Count.EqualTo(3));
             httpResponse.Content = new StringContent(string.Empty);
@@ -155,7 +154,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
 
             httpResponse.StatusCode = HttpStatusCode.OK;
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(this.entitiesDto));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(this.entitiesDto));
             annotation = await this.service.GetAnnotation(projectId, guid);
             
             Assert.Multiple(() =>
@@ -186,7 +185,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
                 IsRequestSuccessful = false
             };
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
             var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Project/{projectId}/Annotation/Create");
             request.Respond(_ => httpResponse);
 
@@ -197,7 +196,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
 
             entityRequestResponse.Entities = annotation.GetAssociatedEntities().ToDtos();
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
 
             requestResponse = await this.service.CreateAnnotation(projectId, annotation);
 
@@ -224,7 +223,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
 
             var httpResponse = new HttpResponseMessage();
             var requestResponse = new RequestResponseDto() { IsRequestSuccessful = true };
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
             var request = this.httpMessageHandler.When(HttpMethod.Delete, $"/Project/{project.Id}/Annotation/{annotation.Id}");
             request.Respond(_ => httpResponse);
 
@@ -254,7 +253,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
 
             var httpResponse = new HttpResponseMessage();
             var requestResponse = new EntityRequestResponseDto() { IsRequestSuccessful = false };
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
 
             var request = this.httpMessageHandler.When(HttpMethod.Put, $"/Project/{project.Id}/Annotation/{annotation.Id}");
             request.Respond(_ => httpResponse);
@@ -269,7 +268,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
 
             requestResponse.Entities = annotation.GetAssociatedEntities().ToDtos();
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
 
             requestResult = await this.service.UpdateAnnotation(annotation);
             Assert.That(requestResult.IsRequestSuccessful, Is.True);

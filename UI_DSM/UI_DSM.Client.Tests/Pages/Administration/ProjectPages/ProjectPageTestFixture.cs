@@ -26,6 +26,8 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
     using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.Administration.ProjectService;
     using UI_DSM.Client.Services.Administration.RoleService;
+    using UI_DSM.Client.Services.ArtifactService;
+    using UI_DSM.Client.ViewModels.Components.Administration.ModelManagement;
     using UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages;
     using UI_DSM.Shared.Models;
     using UI_DSM.Shared.Types;
@@ -40,6 +42,8 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
         private Mock<IProjectService> projectService;
         private Mock<IParticipantService> participantService;
         private Mock<IRoleService> roleService;
+        private Mock<IArtifactService> artifactService;
+        private Mock<ICometConnectionViewModel> cometConnexionViewModel;
 
         [SetUp]
         public void Setup()
@@ -48,7 +52,12 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
             this.projectService = new Mock<IProjectService>();
             this.participantService = new Mock<IParticipantService>();
             this.roleService = new Mock<IRoleService>();
-            this.viewModel = new ProjectPageViewModel(this.projectService.Object, this.participantService.Object, this.roleService.Object);
+            this.cometConnexionViewModel = new Mock<ICometConnectionViewModel>();
+            this.artifactService = new Mock<IArtifactService>();
+
+            this.viewModel = new ProjectPageViewModel(this.projectService.Object, this.participantService.Object, this.roleService.Object, 
+                this.cometConnexionViewModel.Object, this.artifactService.Object);
+
             this.context.Services.AddSingleton(this.viewModel);
         }
 

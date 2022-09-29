@@ -32,8 +32,8 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
         ///     Initializes a new instance of the <see cref="ProjectService" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="ServiceBase.HttpClient" /></param>
-        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
-        public ProjectService(HttpClient httpClient, IJsonDeserializerService deserializer) : base(httpClient,deserializer)
+        /// <param name="jsonService">The <see cref="IJsonService" /></param>
+        public ProjectService(HttpClient httpClient, IJsonService jsonService) : base(httpClient,jsonService)
         {
         }
 
@@ -121,7 +121,7 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
                     throw new HttpRequestException(await response.Content.ReadAsStringAsync());
                 }
 
-                var dtos = this.Deserializer.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync());
+                var dtos = this.jsonService.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync());
                 return Assembler.CreateEntities<Project>(dtos).ToList();
             }
             catch (Exception exception)

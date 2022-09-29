@@ -32,6 +32,7 @@ namespace UI_DSM.Shared.DTO.Models
             this.Participants = new List<Guid>();
             this.Reviews = new List<Guid>();
             this.Annotations = new List<Guid>();
+            this.Artifacts = new List<Guid>();
         }
 
         /// <summary>
@@ -43,6 +44,7 @@ namespace UI_DSM.Shared.DTO.Models
             this.Participants = new List<Guid>();
             this.Reviews = new List<Guid>();
             this.Annotations = new List<Guid>();
+            this.Artifacts = new List<Guid>();
         }
 
         /// <summary>
@@ -64,6 +66,11 @@ namespace UI_DSM.Shared.DTO.Models
         ///    Gets or sets the Annotations of the Project
         /// </summary>
         public List<Guid> Annotations { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the Artifacts of the Project
+        /// </summary>
+        public List<Guid> Artifacts { get; set; }
 
         /// <summary>
         ///    Instantiate a <see cref="Entity" /> from a <see cref="EntityDto" />

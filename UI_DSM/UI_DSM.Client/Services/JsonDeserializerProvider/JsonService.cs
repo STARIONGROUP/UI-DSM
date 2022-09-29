@@ -24,7 +24,7 @@ namespace UI_DSM.Client.Services.JsonDeserializerProvider
     /// <summary>
     ///     This service provides capabilities to detects the correct JSON deserializer depending on the type of the object
     /// </summary>
-    public class JsonDeserializerService : IJsonDeserializerService
+    public class JsonService : IJsonService
     {
         /// <summary>
         ///     The <see cref="IJsonDeserializer" /> to deserialize <see cref="EntityDto" />
@@ -37,16 +37,33 @@ namespace UI_DSM.Client.Services.JsonDeserializerProvider
         private readonly JsonSerializerOptions options;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="JsonDeserializerService" /> class.
+        ///     The <see cref="IJsonSerializer" />
+        /// </summary>
+        private readonly IJsonSerializer serializer;
+
+        /// <summary>
+        ///     The <see cref="JsonWriterOptions" />
+        /// </summary>
+        private readonly JsonWriterOptions writerOptions;
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="JsonService" /> class.
         /// </summary>
         /// <param name="deserializer">The <see cref="IJsonDeserializer" /></param>
-        public JsonDeserializerService(IJsonDeserializer deserializer)
+        /// <param name="serializer">The <see cref="IJsonSerializer" /></param>
+        public JsonService(IJsonDeserializer deserializer, IJsonSerializer serializer)
         {
             this.deserializer = deserializer;
+            this.serializer = serializer;
 
             this.options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
+            };
+
+            this.writerOptions = new JsonWriterOptions
+            {
+                Indented = true
             };
         }
 
@@ -69,6 +86,37 @@ namespace UI_DSM.Client.Services.JsonDeserializerProvider
             }
 
             return JsonSerializer.Deserialize<T>(stream, this.options);
+        }
+
+        /// <summary>
+        ///     Serialize a <see cref="T" /> into a <see cref="string" />
+        /// </summary>
+        /// <typeparam name="T">An object</typeparam>
+        /// <param name="value">The object to serialize</param>
+        /// <returns>The serialized value</returns>
+        public string Serialize<T>(T value) where T : class
+        {
+            using var stream = new MemoryStream();
+
+            switch (value)
+            {
+                case EntityDto dto:
+                    this.serializer.Serialize(dto, stream, this.writerOptions);
+                    break;
+                case IEnumerable<EntityDto> dtos:
+                    this.serializer.Serialize(dtos, stream, this.writerOptions);
+                    break;
+                case EntityRequestResponseDto requestDto:
+                    this.serializer.SerializeEntityRequestDto(requestDto, stream, this.writerOptions);
+                    break;
+                default:
+                    JsonSerializer.Serialize(stream, value);
+                    break;
+            }
+
+            stream.Position = 0;
+            using var streamReader = new StreamReader(stream);
+            return streamReader.ReadToEnd();
         }
     }
 }

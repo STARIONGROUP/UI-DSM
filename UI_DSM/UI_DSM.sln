@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI_DSM.CodeGenerator.Tests"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI_DSM.Serializer.Json", "UI_DSM.Serializer.Json\UI_DSM.Serializer.Json.csproj", "{26FCB51E-B8BF-429C-861E-B4BFD1B84908}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI_DSM.Serializer.Json.Tests", "UI_DSM.Serializer.Json.Tests\UI_DSM.Serializer.Json.Tests.csproj", "{F7AE939B-C8C2-40B9-9BD4-7104A3AE46F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI_DSM.Serializer.Json.Tests", "UI_DSM.Serializer.Json.Tests\UI_DSM.Serializer.Json.Tests.csproj", "{F7AE939B-C8C2-40B9-9BD4-7104A3AE46F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

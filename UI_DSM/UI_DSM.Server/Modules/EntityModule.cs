@@ -20,6 +20,7 @@ namespace UI_DSM.Server.Modules
 
     using Microsoft.AspNetCore.Mvc;
 
+    using UI_DSM.Serializer.Json;
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Common;
@@ -65,7 +66,7 @@ namespace UI_DSM.Server.Modules
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/GetEntity");
 
-            app.MapPost($"{this.MainRoute}/Create", this.CreateEntity)
+            app.MapPost($"{this.MainRoute}/Create", this.ConvertEntityAndCreate)
                 .Accepts<TEntityDto>("application/json")
                 .Produces<EntityRequestResponseDto>(201)
                 .Produces<EntityRequestResponseDto>(422)
@@ -80,7 +81,7 @@ namespace UI_DSM.Server.Modules
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/DeleteEntity");
 
-            app.MapPut(this.MainRoute + "/{entityId:guid}", this.UpdateEntity)
+            app.MapPut(this.MainRoute + "/{entityId:guid}", this.ConvertEntityAndUpdate)
                 .Produces<EntityRequestResponseDto>()
                 .Produces<EntityRequestResponseDto>(404)
                 .Produces<EntityRequestResponseDto>(422)
@@ -139,8 +140,8 @@ namespace UI_DSM.Server.Modules
 
             if (entity == null)
             {
-                 await context.Response.Negotiate(requestReponse);
-                 return;
+                await context.Response.Negotiate(requestReponse);
+                return;
             }
 
             await manager.ResolveProperties(entity, dto);
@@ -214,16 +215,33 @@ namespace UI_DSM.Server.Modules
         }
 
         /// <summary>
-        /// Validates the found <see cref="TEntityDto"/> and tries to update the <see cref="TEntity"/>
+        ///     Deserialize the body of the request as an <see cref="TEntityDto" />
         /// </summary>
-        /// <param name="manager">The <see cref="IEntityManager{TEntity}"/></param>
-        /// <param name="entity">The <see cref="TEntity"/></param>
-        /// <param name="dto">The <see cref="TEntityDto"/></param>
-        /// <param name="context">The <see cref="HttpContext"/></param>
-        /// <param name="requestResponse">The <see cref="EntityRequestResponseDto"/></param>
+        /// <param name="deserializer">The <see cref="IJsonDeserializer" /></param>
+        /// <param name="context">The <see cref="HttpRequest" /></param>
+        /// <returns>The deserialized <see cref="TEntityDto" /></returns>
+        protected TEntityDto DeserializeBodyRequest(IJsonDeserializer deserializer, HttpContext context)
+        {
+            if (!context.Request.HasJsonContentType())
+            {
+                return null;
+            }
+
+            var dto = deserializer.Deserialize(context.Request.BodyReader.AsStream()).FirstOrDefault() as TEntityDto;
+            return dto;
+        }
+
+        /// <summary>
+        ///     Validates the found <see cref="TEntityDto" /> and tries to update the <see cref="TEntity" />
+        /// </summary>
+        /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
+        /// <param name="entity">The <see cref="TEntity" /></param>
+        /// <param name="dto">The <see cref="TEntityDto" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="requestResponse">The <see cref="EntityRequestResponseDto" /></param>
         /// <param name="deepLevel">The deep level</param>
-        /// <returns>A <see cref="Task"/></returns>
-        protected async Task ValidateAndUpdateEntity(IEntityManager<TEntity> manager, TEntity entity, TEntityDto dto, HttpContext context,  EntityRequestResponseDto requestResponse, int deepLevel)
+        /// <returns>A <see cref="Task" /></returns>
+        protected async Task ValidateAndUpdateEntity(IEntityManager<TEntity> manager, TEntity entity, TEntityDto dto, HttpContext context, EntityRequestResponseDto requestResponse, int deepLevel)
         {
             var validationResult = context.Request.Validate(dto);
 
@@ -332,6 +350,35 @@ namespace UI_DSM.Server.Modules
             }
 
             return true;
+        }
+
+        /// <summary>
+        ///     Deserialize the <see cref="TEntityDto" /> and tries to create the corresponding POCO
+        /// </summary>
+        /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
+        /// <param name="deserializer">The <see cref="IJsonDeserializer" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="deepLevel">The deepLevel</param>
+        /// <returns>A <see cref="Task" /></returns>
+        private Task ConvertEntityAndCreate(IEntityManager<TEntity> manager, IJsonDeserializer deserializer, HttpContext context, [FromQuery] int deepLevel = 0)
+        {
+            var dto = this.DeserializeBodyRequest(deserializer, context);
+            return this.CreateEntity(manager, dto, context, deepLevel);
+        }
+
+        /// <summary>
+        ///     Deserialize the <see cref="TEntityDto" /> and tries to update the corresponding POCO
+        /// </summary>
+        /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
+        /// <param name="deserializer">The <see cref="IJsonDeserializer" /></param>
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="TEntity" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="deepLevel">The deepLevel</param>
+        /// <returns>A <see cref="Task" /></returns>
+        private Task ConvertEntityAndUpdate(IEntityManager<TEntity> manager, IJsonDeserializer deserializer, Guid entityId, HttpContext context, [FromQuery] int deepLevel = 0)
+        {
+            var dto = this.DeserializeBodyRequest(deserializer, context);
+            return this.UpdateEntity(manager, entityId, dto, context, deepLevel);
         }
     }
 }

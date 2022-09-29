@@ -18,6 +18,7 @@ namespace UI_DSM.Server.Tests.Managers
     using NUnit.Framework;
 
     using UI_DSM.Server.Context;
+    using UI_DSM.Server.Managers.ArtifactManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
@@ -33,6 +34,7 @@ namespace UI_DSM.Server.Tests.Managers
         private Mock<DatabaseContext> context;
         private Mock<IParticipantManager> participantManager;
         private Mock<IReviewObjectiveManager> reviewObjectiveManager;
+        private Mock<IArtifactManager> artifactManager;
 
         [SetUp]
         public void Setup()
@@ -40,7 +42,10 @@ namespace UI_DSM.Server.Tests.Managers
             this.context = new Mock<DatabaseContext>();
             this.participantManager = new Mock<IParticipantManager>();
             this.reviewObjectiveManager = new Mock<IReviewObjectiveManager>();
-            this.manager = new ReviewManager(this.context.Object, this.participantManager.Object, this.reviewObjectiveManager.Object);
+            this.artifactManager = new Mock<IArtifactManager>();
+            
+            this.manager = new ReviewManager(this.context.Object, this.participantManager.Object, this.reviewObjectiveManager.Object,
+                this.artifactManager.Object);
         }
 
         [Test]

@@ -79,6 +79,7 @@ namespace UI_DSM.Client
         private static void AddServices(WebAssemblyHostBuilder builder)
         {
             builder.Services.AddScoped<IJsonDeserializer, JsonDeserializer>();
+            builder.Services.AddScoped<IJsonSerializer, JsonSerializer>();
 
             builder.Services.AddScoped(_ => new HttpClient
                 { BaseAddress = new Uri(builder.Configuration["apiUri"]) });

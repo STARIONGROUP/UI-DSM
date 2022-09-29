@@ -31,8 +31,8 @@ namespace UI_DSM.Client.Services.ReviewObjectiveService
         ///     Initializes a new instance of the <see cref="ReviewObjectiveService" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="ServiceBase.HttpClient" /></param>
-        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
-        public ReviewObjectiveService(HttpClient httpClient, IJsonDeserializerService deserializer) : base(httpClient, deserializer)
+        /// <param name="jsonService">The <see cref="IJsonService" /></param>
+        public ReviewObjectiveService(HttpClient httpClient, IJsonService jsonService) : base(httpClient, jsonService)
         {
         }
 

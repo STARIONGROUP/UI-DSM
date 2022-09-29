@@ -22,7 +22,6 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.JsonDeserializerProvider;
     using UI_DSM.Client.Services.ReplyService;
-    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -35,7 +34,7 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
         private ReplyService service;
         private MockHttpMessageHandler httpMessageHandler;
         private List<EntityDto> entitiesDto;
-        private IJsonDeserializerService jsonDeserializerService;
+        private IJsonService jsonService;
 
         [SetUp]
         public void Setup()
@@ -72,8 +71,8 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
             };
 
             ServiceBase.RegisterService<ReplyService>();
-            this.jsonDeserializerService = new JsonDeserializerService(new JsonDeserializer());
-            this.service = new ReplyService(httpClient, this.jsonDeserializerService);
+            this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer());
+            this.service = new ReplyService(httpClient, this.jsonService);
         }
 
         [Test]
@@ -90,7 +89,7 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
             Assert.That(async () => await this.service.GetRepliesOfComment(projectId, annotationId), Throws.Exception);
             httpResponse.StatusCode = HttpStatusCode.OK;
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(this.entitiesDto));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(this.entitiesDto));
             var replies = await this.service.GetRepliesOfComment(projectId, annotationId);
             Assert.That(replies, Has.Count.EqualTo(1));
             httpResponse.Content = new StringContent(string.Empty);
@@ -114,7 +113,7 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
 
             httpResponse.StatusCode = HttpStatusCode.OK;
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(this.entitiesDto));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(this.entitiesDto));
             reply = await this.service.GetReplyOfComment(projectId, annotationId, guid);
             Assert.That(reply.Id, Is.EqualTo(guid));
 
@@ -141,7 +140,7 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
                 IsRequestSuccessful = false
             };
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
             var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Project/{projectId}/Annotation/{annotationId}/Reply/Create");
             request.Respond(_ => httpResponse);
 
@@ -152,7 +151,7 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
 
             entityRequestResponse.Entities = reply.GetAssociatedEntities().ToDtos();
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
 
             requestResponse = await this.service.CreateReply(projectId, annotationId, reply);
 
@@ -181,7 +180,7 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
 
             var httpResponse = new HttpResponseMessage();
             var requestResponse = new RequestResponseDto() { IsRequestSuccessful = true };
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
             var request = this.httpMessageHandler.When(HttpMethod.Delete, $"/Project/{projectId}/Annotation/{annotation.Id}/Reply/{reply.Id}");
             request.Respond(_ => httpResponse);
 
@@ -213,7 +212,7 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
 
             var httpResponse = new HttpResponseMessage();
             var requestResponse = new EntityRequestResponseDto() { IsRequestSuccessful = false };
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
 
             var request = this.httpMessageHandler.When(HttpMethod.Put, $"/Project/{projectId}/Annotation/{comment.Id}/Reply/{reply.Id}");
             request.Respond(_ => httpResponse);
@@ -228,7 +227,7 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
 
             requestResponse.Entities = reply.GetAssociatedEntities().ToDtos();
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
 
             requestResult = await this.service.UpdateReply(projectId, reply);
             Assert.That(requestResult.IsRequestSuccessful, Is.True);

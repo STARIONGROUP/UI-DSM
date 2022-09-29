@@ -73,6 +73,15 @@ namespace UI_DSM.Serializer.Json
 
             writer.WriteEndArray();
 
+            writer.WriteStartArray("artifacts");
+
+            foreach (var item in dto.Artifacts)
+            {
+                writer.WriteStringValue(item);
+            }
+
+            writer.WriteEndArray();
+
             writer.WritePropertyName("id");
             writer.WriteStringValue(dto.Id);
 

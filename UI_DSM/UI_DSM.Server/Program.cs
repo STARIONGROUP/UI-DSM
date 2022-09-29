@@ -29,6 +29,8 @@ namespace UI_DSM.Server
     using UI_DSM.Serializer.Json;
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Modules;
+    using UI_DSM.Server.Services.CometService;
+    using UI_DSM.Server.Services.FileService;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -47,10 +49,11 @@ namespace UI_DSM.Server
         /// </summary>
         /// <param name="args">A collection of <see cref="string" /></param>
         public static void Main(string[] args)
-        {
+         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            
             builder.Services.AddCarter();
             builder.Services.AddAuthorization();
 
@@ -69,6 +72,9 @@ namespace UI_DSM.Server
                
             builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DatabaseContext>();
             builder.Services.AddSingleton<IJsonSerializer, JsonSerializer>();
+            builder.Services.AddSingleton<IJsonDeserializer, JsonDeserializer>();
+            builder.Services.AddSingleton<ICometService, CometService>();
+            builder.Services.AddSingleton<IFileService, FileService>(_ => new FileService(builder.Configuration["StoragePath"]));
 
             RegisterManagers(builder);
             RegisterModules();

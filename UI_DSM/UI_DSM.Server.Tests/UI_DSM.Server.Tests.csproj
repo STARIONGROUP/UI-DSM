@@ -27,4 +27,10 @@
     <ProjectReference Include="..\UI_DSM.Server\UI_DSM.Server.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Data\26699a14-79d0-4f10-bcf1-15979ef3968f.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

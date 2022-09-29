@@ -32,8 +32,8 @@ namespace UI_DSM.Client.Services.ReviewService
         ///     Initializes a new instance of the <see cref="ReviewService" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="ServiceBase.HttpClient" /></param>
-        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
-        public ReviewService(HttpClient httpClient, IJsonDeserializerService deserializer) : base(httpClient, deserializer)
+        /// <param name="jsonService">The <see cref="IJsonService" /></param>
+        public ReviewService(HttpClient httpClient, IJsonService jsonService) : base(httpClient, jsonService)
         {
         }
 

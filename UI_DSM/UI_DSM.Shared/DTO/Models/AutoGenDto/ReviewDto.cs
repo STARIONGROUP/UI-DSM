@@ -31,6 +31,7 @@ namespace UI_DSM.Shared.DTO.Models
         public ReviewDto()
         {
             this.ReviewObjectives = new List<Guid>();
+            this.Artifacts = new List<Guid>();
         }
 
         /// <summary>
@@ -40,6 +41,7 @@ namespace UI_DSM.Shared.DTO.Models
         public ReviewDto(Guid id) : base(id)
         {
             this.ReviewObjectives = new List<Guid>();
+            this.Artifacts = new List<Guid>();
         }
 
         /// <summary>
@@ -76,6 +78,11 @@ namespace UI_DSM.Shared.DTO.Models
         ///    Gets or sets the ReviewObjectives of the Review
         /// </summary>
         public List<Guid> ReviewObjectives { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the Artifacts of the Review
+        /// </summary>
+        public List<Guid> Artifacts { get; set; }
 
         /// <summary>
         ///    Instantiate a <see cref="Entity" /> from a <see cref="EntityDto" />

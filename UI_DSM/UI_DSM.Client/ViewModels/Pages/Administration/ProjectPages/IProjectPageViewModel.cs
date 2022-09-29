@@ -13,9 +13,11 @@
 
 namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
 {
+    using UI_DSM.Client.Components.Administration.ModelManagement;
     using UI_DSM.Client.Components.Administration.ParticipantManagement;
     using UI_DSM.Client.Components.Administration.ProjectManagement;
     using UI_DSM.Client.ViewModels.Components;
+    using UI_DSM.Client.ViewModels.Components.Administration.ModelManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.ParticipantManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement;
     using UI_DSM.Shared.Models;
@@ -23,7 +25,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
     /// <summary>
     ///     Interface definition for <see cref="ProjectPageViewModel" />
     /// </summary>
-    public interface IProjectPageViewModel
+    public interface IProjectPageViewModel : IDisposable
     {
         /// <summary>
         ///     The <see cref="IProjectDetailsViewModel" /> for the <see cref="ProjectDetails" /> component
@@ -31,9 +33,14 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         IProjectDetailsViewModel ProjectDetailsViewModel { get; }
 
         /// <summary>
-        ///     Value indicating the user is currently creating a new <see cref="Participant"/>
+        ///     Value indicating the user is currently creating a new <see cref="Participant" />
         /// </summary>
         bool IsOnCreationMode { get; set; }
+
+        /// <summary>
+        ///     Value indicating whether the user is currently trying to establish a connection to COMET
+        /// </summary>
+        bool IsOnCometConnectionMode { get; set; }
 
         /// <summary>
         ///     Gets the <see cref="IErrorMessageViewModel" />
@@ -44,6 +51,11 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         ///     Gets the <see cref="IParticipantCreationViewModel" />
         /// </summary>
         IParticipantCreationViewModel ParticipantCreationViewModel { get; }
+
+        /// <summary>
+        ///     The <see cref="ICometConnectionViewModel" /> for the <see cref="CometConnection" /> component
+        /// </summary>
+        ICometConnectionViewModel CometConnectionViewModel { get; }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its
@@ -59,5 +71,10 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         ///     Opens the <see cref="ParticipantCreation" /> popup
         /// </summary>
         Task OpenCreateParticipantPopup();
+
+        /// <summary>
+        ///     Opens the <see cref="CometConnection" /> popup
+        /// </summary>
+        void OpenCometConnectionPopup();
     }
 }

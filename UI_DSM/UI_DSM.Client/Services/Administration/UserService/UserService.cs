@@ -34,8 +34,8 @@ namespace UI_DSM.Client.Services.Administration.UserService
         ///     Initializes a new instance of the <see cref="UserService" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="HttpClient" /></param>
-        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
-        public UserService(HttpClient httpClient, IJsonDeserializerService deserializer) : base(httpClient, deserializer)
+        /// <param name="jsonService">The <see cref="IJsonService" /></param>
+        public UserService(HttpClient httpClient, IJsonService jsonService) : base(httpClient, jsonService)
         {
         }
 
@@ -52,7 +52,7 @@ namespace UI_DSM.Client.Services.Administration.UserService
                 throw new HttpRequestException(await response.Content.ReadAsStringAsync());
             }
 
-            var entities =  this.Deserializer.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync());
+            var entities =  this.jsonService.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync());
             return entities.Where(x => x.GetType() == typeof(UserEntityDto)).Cast<UserEntityDto>().ToList();
         }
 
@@ -67,7 +67,7 @@ namespace UI_DSM.Client.Services.Administration.UserService
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
             var registerResponse = await this.HttpClient.PostAsync(Path.Combine(this.MainRoute, "Register"), bodyContent);
-            return this.Deserializer.Deserialize<RegistrationResponseDto>(await registerResponse.Content.ReadAsStreamAsync());
+            return this.jsonService.Deserialize<RegistrationResponseDto>(await registerResponse.Content.ReadAsStreamAsync());
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace UI_DSM.Client.Services.Administration.UserService
                 var url = Path.Combine(this.MainRoute, userEntityToDelete.Id.ToString());
                 var deleteResponse = await this.HttpClient.DeleteAsync(url);
 
-                return this.Deserializer.Deserialize<RequestResponseDto>(await deleteResponse.Content.ReadAsStreamAsync());
+                return this.jsonService.Deserialize<RequestResponseDto>(await deleteResponse.Content.ReadAsStreamAsync());
             }
 
             return new RequestResponseDto
