@@ -1,0 +1,34 @@
+<!--------------------------------------------------------------------------------------------------------
+// ObjectivePage.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+@page "/project/1/review/1/objective/1"
+@layout DefaultLayout
+
+<PageTitle>Objective title | UI-DSM</PageTitle>
+
+<div class="objective-page">
+
+  <AppReviewHeader />
+
+  <div class="task-section">
+    <h1 class="h3">Review objectives for [review plan title]</h1>
+    <div class="task-overview">
+      <NavLink href="/project/1/review/1/objective/1/task/1">
+        <TaskItem TaskTitle="Check the requirements specification" isDone="true" />
+      </NavLink>
+      <NavLink href="/project/1/review/1/objective/1/task/1">
+        <TaskItem TaskTitle="Check the requirements specification" />
+      </NavLink>
+    </div>
+
+  </div>
+</div>

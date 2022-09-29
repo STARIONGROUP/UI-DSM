@@ -1,5 +1,5 @@
 <!--------------------------------------------------------------------------------------------------------
-// Index.razor
+// ProjectsPage.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
@@ -10,23 +10,22 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
-@page "/login"
-@layout CleanLayout
+@page "/"
+@layout DefaultLayout
 
+<PageTitle>Projects | UI-DSM</PageTitle>
 
-<PageTitle>Login | UI-DSM</PageTitle>
+<div class="projects-page">
+  <div class="page-header">
+    <h1 class="h3">Projects</h1>
+  </div>
+  <div class="projects-overview">
+    <NavLink href="/project/1">
+      <AppProjectCard Title="Project 1" Created="05-10-2022 18:43" Tasks="20" Comments="20" />
+    </NavLink>
 
-<AuthorizeView>
-  <NotAuthorized>
-    <div class="login-page">
-      <div class="login-page__container">
-        <div class="login-page__right">
-          <header>
-            <h1 class="h2">Hello,<br /> login to get started 🚀</h1>
-          </header>
-          <Login />
-        </div>
-      </div>
-    </div>
-  </NotAuthorized>
-</AuthorizeView>
+    <NavLink href="/project/2">
+      <AppProjectCard Title="Project 2" Created="05-10-2022 12:43" Tasks="11" Comments="18" />
+    </NavLink>
+  </div>
+</div>

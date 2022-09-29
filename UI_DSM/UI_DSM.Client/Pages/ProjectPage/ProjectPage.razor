@@ -1,0 +1,31 @@
+<!--------------------------------------------------------------------------------------------------------
+// ProjectPage.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+@page "/project/1"
+@layout DefaultLayout
+
+<PageTitle>Project | UI-DSM</PageTitle>
+
+<div class="project-page">
+  <div class="page-header">
+    <h1 class="h3">Review plans for [project title]</h1>
+  </div>
+  <div class="projects-overview">
+    <NavLink href="/project/1/review/1">
+      <AppProjectCard Title="Review plan title 1" Created="05-10-2022 18:43" Tasks="20" Comments="20" />
+    </NavLink>
+
+    <NavLink href="/project/1/review/2">
+      <AppProjectCard Title="Review plan title 2" Created="05-10-2022 12:43" Tasks="11" Comments="18" />
+    </NavLink>
+  </div>
+</div>

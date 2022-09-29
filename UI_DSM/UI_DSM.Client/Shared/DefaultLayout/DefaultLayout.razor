@@ -1,0 +1,60 @@
+<!--------------------------------------------------------------------------------------------------------
+// DefaultLayout.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+@inherits LayoutComponentBase
+@namespace AppComponents
+
+<div class="default-layout">
+  <div class="default-layout__top-bar">
+    <TopMenu />
+  </div>
+
+  <div class="default-layout__main">
+    <div class="default-layout__body">
+      @(this.Body)
+    </div>
+  </div>
+</div>
+
+@code {
+  /// <summary>
+  /// Inject NavigationManager for redirecting to the login page
+  /// </summary>
+  @inject NavigationManager NavigationManager
+
+  /// <summary>
+  /// Expose the authentication state as a cascading parameter
+  /// </summary>
+  [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
+  /// <summary>
+  /// Redirect user if not authenticated
+  /// </summary>
+  protected async override Task OnInitializedAsync()
+  {
+    base.OnInitialized();
+    var user = (await AuthStat).User;
+    if (!user.Identity.IsAuthenticated)
+    {
+      NavigationManager.NavigateTo("/login");
+    }
+  }
+
+  /// <summary>
+  /// Get layout class based on the active sidebars
+  /// </summary>
+  protected override void OnInitialized()
+  {
+    base.OnInitialized();
+    this.StateHasChanged();
+  }
+}
