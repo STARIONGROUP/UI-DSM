@@ -23,7 +23,6 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.Administration.ProjectService;
     using UI_DSM.Client.Services.JsonDeserializerProvider;
-    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -35,7 +34,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
     {
         private ProjectService service;
         private MockHttpMessageHandler httpMessageHandler;
-        private IJsonDeserializerService jsonDeserializerService;
+        private IJsonService jsonService;
 
         [SetUp]
         public void Setup()
@@ -45,8 +44,8 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
             httpClient.BaseAddress = new Uri("http://localhost/api");
 
             ServiceBase.RegisterService<ProjectService>();
-            this.jsonDeserializerService = new JsonDeserializerService(new JsonDeserializer());
-            this.service = new ProjectService(httpClient, this.jsonDeserializerService);
+            this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer());
+            this.service = new ProjectService(httpClient, this.jsonService);
         }
 
         [Test]
@@ -69,7 +68,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
                 }
             };
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(projectDtos));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(projectDtos));
 
             var projects = this.service.GetProjects().Result;
             Assert.That(projects.Count, Is.EqualTo(1));
@@ -92,7 +91,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
                 IsRequestSuccessful = false
             };
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
 
             var request = this.httpMessageHandler.When(HttpMethod.Post, "/Project/Create");
             request.Respond(_ => httpResponse);
@@ -105,7 +104,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
                 project.ToDto()
             }; 
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
 
             var result = await this.service.CreateProject(project);
 
@@ -125,7 +124,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
             var project = new Project(Guid.NewGuid());
             var httpResponse = new HttpResponseMessage();
             var requestResponse = new RequestResponseDto() { IsRequestSuccessful = true };
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
             var request = this.httpMessageHandler.When(HttpMethod.Delete, $"/Project/{project.Id}");
             request.Respond(_ => httpResponse);
 
@@ -155,7 +154,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
                 ProjectName = "Project"
             };
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(new List<EntityDto>(){projectDto}));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(new List<EntityDto>(){projectDto}));
             project = await this.service.GetProject(guid);
             Assert.That(project.Id, Is.EqualTo(guid));
 
@@ -181,7 +180,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
             };
 
             httpResponse.StatusCode = HttpStatusCode.OK;
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(projects.ToDtos()));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(projects.ToDtos()));
             var foundProject = await this.service.GetUserParticipation();
             Assert.That(foundProject, Has.Count.EqualTo(2));
         }

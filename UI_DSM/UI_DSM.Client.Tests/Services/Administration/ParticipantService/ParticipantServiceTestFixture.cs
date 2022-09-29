@@ -22,7 +22,6 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.JsonDeserializerProvider;
-    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -35,7 +34,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
     {
         private ParticipantService service;
         private MockHttpMessageHandler httpMessageHandler;
-        private IJsonDeserializerService jsonDeserializerService;
+        private IJsonService jsonService;
 
         [SetUp]
         public void Setup()
@@ -45,8 +44,8 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
             httpClient.BaseAddress = new Uri("http://localhost/api");
 
             ServiceBase.RegisterService<ParticipantService>();
-            this.jsonDeserializerService = new JsonDeserializerService(new JsonDeserializer());
-            this.service = new ParticipantService(httpClient, this.jsonDeserializerService);
+            this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer());
+            this.service = new ParticipantService(httpClient, this.jsonService);
         }
 
         [Test]
@@ -110,7 +109,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
                 }
             };
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entitiesDto));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entitiesDto));
 
             var participants = await this.service.GetParticipantsOfProject(projectId);
             Assert.That(participants, Has.Count.EqualTo(2));
@@ -159,7 +158,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
                 }
             };
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entitiesDto));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entitiesDto));
             participant = await this.service.GetParticipantOfProject(projectId,guid);
 
             Assert.That(participant.Id, Is.EqualTo(guid));
@@ -197,7 +196,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
                 IsRequestSuccessful = false
             };
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
 
             var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Project/{projectId}/Participant/Create");
             request.Respond(_ => httpResponse);
@@ -209,7 +208,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
 
             entityRequestResponse.Entities = participant.GetAssociatedEntities().ToDtos();
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
 
             requestResponse = await this.service.CreateParticipant(projectId, participant);
 
@@ -247,7 +246,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
 
             var httpResponse = new HttpResponseMessage();
             var requestResponse = new RequestResponseDto() { IsRequestSuccessful = true };
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
             var request = this.httpMessageHandler.When(HttpMethod.Delete, $"/Project/{project.Id}/Participant/{participant.Id}");
             request.Respond(_ => httpResponse);
 
@@ -284,7 +283,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
 
             var httpResponse = new HttpResponseMessage();
             var requestResponse = new EntityRequestResponseDto() { IsRequestSuccessful = false };
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
 
             var request = this.httpMessageHandler.When(HttpMethod.Put, $"/Project/{project.Id}/Participant/{participant.Id}");
             request.Respond(_ => httpResponse);
@@ -299,7 +298,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
 
             requestResponse.Entities = participant.GetAssociatedEntities().ToDtos();
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
 
             requestResult = await this.service.UpdateParticipant(participant);
             Assert.That(requestResult.IsRequestSuccessful, Is.True);
@@ -338,7 +337,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
                 }
             };
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(usersEntities.ToDtos()));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(usersEntities.ToDtos()));
             var availableUsers = await this.service.GetAvailableUsersForCreation(projectId);
             Assert.That(availableUsers, Has.Count.EqualTo(3));
         }

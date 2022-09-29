@@ -47,6 +47,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.projectManager = new Mock<IEntityManager<Project>>();
             this.participantManager = new Mock<IEntityManager<Participant>>();
             this.participantManager.As<IParticipantManager>();
+            this.participantManager.As<IContainedEntityManager<Participant>>();
 
             ModuleTestHelper.Setup<ParticipantModule, ParticipantDto>(new ParticipantDtoValidator(), out this.context, 
                 out this.response, out this.request, out this.serviceProvider);
@@ -99,11 +100,16 @@ namespace UI_DSM.Server.Tests.Modules
             };
 
             this.routeValues["projectId"] = Guid.NewGuid().ToString();
-            this.participantManager.Setup(x => x.FindEntity(participant.Id)).ReturnsAsync((Participant)null);
+
+            this.participantManager.As<IContainedEntityManager<Participant>>()
+                .Setup(x => x.FindEntityWithContainer(participant.Id)).ReturnsAsync((Participant)null);
+
             await this.module.GetEntity(this.participantManager.Object, participant.Id, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 404, Times.Once);
 
-            this.participantManager.Setup(x => x.FindEntity(participant.Id)).ReturnsAsync(participant);
+            this.participantManager.As<IContainedEntityManager<Participant>>()
+                .Setup(x => x.FindEntityWithContainer(participant.Id)).ReturnsAsync(participant);
+
             await this.module.GetEntity(this.participantManager.Object, participant.Id, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 400, Times.Once);
 

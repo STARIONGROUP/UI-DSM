@@ -48,6 +48,7 @@ namespace UI_DSM.Client.Pages.Administration.ProjectPages
         public void Dispose()
         {
             this.disposables.ForEach(x => x.Dispose());
+            this.disposables.Clear();
         }
 
         /// <summary>
@@ -64,6 +65,11 @@ namespace UI_DSM.Client.Pages.Administration.ProjectPages
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCreationMode)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCometConnectionMode)
+                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+                
+            this.disposables.Add(this.ViewModel);
 
             await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId));
         }

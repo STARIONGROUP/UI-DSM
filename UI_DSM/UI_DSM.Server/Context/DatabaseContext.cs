@@ -99,6 +99,11 @@ namespace UI_DSM.Server.Context
         public virtual DbSet<Note> Notes { get; set; }
 
         /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="Model" />
+        /// </summary>
+        public virtual DbSet<Model> Models { get; set; }
+
+        /// <summary>
         ///     Tries to validate an object
         /// </summary>
         /// <param name="instance">The <see cref="object" /> to validate</param>
@@ -124,6 +129,7 @@ namespace UI_DSM.Server.Context
 
             builder.Entity<Project>().HasIndex(x => x.ProjectName).IsUnique();
             builder.Entity<Role>().HasIndex(x => x.RoleName).IsUnique();
+            builder.Entity<Model>().HasIndex(x => x.FileName).IsUnique();
 
             builder.Entity<Project>().HasMany(p => p.Participants)
                 .WithOne(p => (Project)p.EntityContainer)
@@ -140,15 +146,26 @@ namespace UI_DSM.Server.Context
                 .HasForeignKey("EntityContainerId")
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<Project>().HasMany(p => p.Artifacts)
+                .WithOne(p => (Project)p.EntityContainer)
+                .HasForeignKey("EntityContainerId")
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.Entity<Project>().Navigation(x => x.Participants).AutoInclude();
             builder.Entity<Project>().Navigation(x => x.Reviews).AutoInclude();
             builder.Entity<Project>().Navigation(x => x.Annotations).AutoInclude();
+            builder.Entity<Project>().Navigation(x => x.Artifacts).AutoInclude();
 
             builder.Entity<Participant>().Navigation(x => x.Role).AutoInclude();
             builder.Entity<Participant>().Navigation(x => x.User).AutoInclude();
 
             builder.Entity<Review>().Navigation(x => x.Author).AutoInclude();
             builder.Entity<Review>().Navigation(x => x.ReviewObjectives).AutoInclude();
+            
+            builder.Entity<Review>().HasMany(x => x.Artifacts)
+                .WithMany(x => x.Reviews);
+
+            builder.Entity<Review>().Navigation(x => x.Artifacts).AutoInclude();
 
             builder.Entity<Review>().HasMany(x => x.ReviewObjectives)
                 .WithOne(ro => (Review)ro.EntityContainer)
@@ -168,7 +185,7 @@ namespace UI_DSM.Server.Context
 
             builder.Entity<AnnotatableItem>().HasMany(x => x.Annotations);
             builder.Entity<AnnotatableItem>().Navigation(x => x.Annotations).AutoInclude();
-            
+
             builder.Entity<Annotation>().HasMany(a => a.AnnotatableItems);
             builder.Entity<Annotation>().Navigation(x => x.Author).AutoInclude();
 

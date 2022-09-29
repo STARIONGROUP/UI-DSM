@@ -14,28 +14,33 @@
 namespace UI_DSM.Client.Enumerator
 {
     /// <summary>
-    /// Enumeration that defines possible status for the authentication process
+    ///     Enumeration that defines possible status for the authentication process
     /// </summary>
     public enum AuthenticationStatus
     {
         /// <summary>
-        /// Defaut status, when no authentication process has been performed 
+        ///     Defaut status, when no authentication process has been performed
         /// </summary>
         None,
 
         /// <summary>
-        /// Status when the authentication process is in progress
+        ///     Status when the authentication process is in progress
         /// </summary>
         Authenticating,
 
         /// <summary>
-        /// Status when the authentication process ends succesfully
+        ///     Status when the authentication process ends succesfully
         /// </summary>
         Success,
 
         /// <summary>
-        /// Status when the authentication process failed
+        ///     Status when the authentication process failed
         /// </summary>
-        Fail
+        Fail,
+
+        /// <summary>
+        ///     Status when the server cannot be reached
+        /// </summary>
+        ServerFailure
     }
 }

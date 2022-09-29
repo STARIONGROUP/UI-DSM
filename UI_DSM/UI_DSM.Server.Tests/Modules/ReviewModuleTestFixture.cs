@@ -139,11 +139,15 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(review.Author);
 
-            this.reviewManager.Setup(x => x.FindEntity(review.Id)).ReturnsAsync((Review)null);
+            this.reviewManager.As<IContainedEntityManager<Review>>()
+                .Setup(x => x.FindEntityWithContainer(review.Id)).ReturnsAsync((Review)null);
+
             await this.module.GetEntity(this.reviewManager.Object, review.Id, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 404, Times.Once);
 
-            this.reviewManager.Setup(x => x.FindEntity(review.Id)).ReturnsAsync(review);
+            this.reviewManager.As<IContainedEntityManager<Review>>()
+                .Setup(x => x.FindEntityWithContainer(review.Id)).ReturnsAsync(review);
+
             await this.module.GetEntity(this.reviewManager.Object, review.Id, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 400, Times.Once);
 

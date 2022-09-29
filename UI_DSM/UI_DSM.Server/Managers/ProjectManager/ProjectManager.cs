@@ -20,6 +20,7 @@ namespace UI_DSM.Server.Managers.ProjectManager
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.AnnotationManager;
+    using UI_DSM.Server.Managers.ArtifactManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Server.Types;
@@ -31,6 +32,16 @@ namespace UI_DSM.Server.Managers.ProjectManager
     /// </summary>
     public class ProjectManager : IProjectManager
     {
+        /// <summary>
+        ///     The <see cref="IAnnotationManager" />
+        /// </summary>
+        private readonly IAnnotationManager annotationManager;
+
+        /// <summary>
+        ///     The <see cref="IArtifactManager" />
+        /// </summary>
+        private readonly IArtifactManager artifactManager;
+
         /// <summary>
         ///     The <see cref="DatabaseContext" />
         /// </summary>
@@ -52,23 +63,21 @@ namespace UI_DSM.Server.Managers.ProjectManager
         private readonly IReviewManager reviewManager;
 
         /// <summary>
-        /// The <see cref="IAnnotationManager"/>
-        /// </summary>
-        private readonly IAnnotationManager annotationManager;
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectManager" /> class.
         /// </summary>
         /// <param name="context">The <see cref="DatabaseContext" /></param>
         /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
-        /// <param name="reviewManager">The <see cref="IReviewManager"/></param>
-        /// <param name="annotationManager">The <see cref="IAnnotationManager"/></param>
-        public ProjectManager(DatabaseContext context, IParticipantManager participantManager, IReviewManager reviewManager, IAnnotationManager annotationManager)
+        /// <param name="reviewManager">The <see cref="IReviewManager" /></param>
+        /// <param name="annotationManager">The <see cref="IAnnotationManager" /></param>
+        /// <param name="artifactManager">The <see cref="IArtifactManager" /></param>
+        public ProjectManager(DatabaseContext context, IParticipantManager participantManager, IReviewManager reviewManager,
+            IAnnotationManager annotationManager, IArtifactManager artifactManager)
         {
             this.context = context;
             this.participantManager = participantManager;
             this.reviewManager = reviewManager;
             this.annotationManager = annotationManager;
+            this.artifactManager = artifactManager;
         }
 
         /// <summary>
@@ -229,13 +238,14 @@ namespace UI_DSM.Server.Managers.ProjectManager
             relatedEntities.InsertEntityCollection(await this.participantManager.FindEntities(projectDto.Participants));
             relatedEntities.InsertEntityCollection(await this.reviewManager.FindEntities(projectDto.Reviews));
             relatedEntities.InsertEntityCollection(await this.annotationManager.FindEntities(projectDto.Annotations));
+            relatedEntities.InsertEntityCollection(await this.artifactManager.FindEntities(projectDto.Artifacts));
             entity.ResolveProperties(projectDto, relatedEntities);
         }
 
         /// <summary>
         ///     Get a collection of <see cref="Project" /> where a <see cref="UserEntity" /> is a <see cref="Participant" />
         /// </summary>
-        /// <param name="userName">The name of the <see cref="UserEntity"/></param>
+        /// <param name="userName">The name of the <see cref="UserEntity" /></param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Project" /></returns>
         public async Task<IEnumerable<Project>> GetAvailableProjectsForUser(string userName)
         {

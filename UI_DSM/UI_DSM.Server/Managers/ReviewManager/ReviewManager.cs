@@ -19,6 +19,7 @@ namespace UI_DSM.Server.Managers.ReviewManager
 
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
+    using UI_DSM.Server.Managers.ArtifactManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
     using UI_DSM.Server.Types;
@@ -31,6 +32,11 @@ namespace UI_DSM.Server.Managers.ReviewManager
     /// </summary>
     public class ReviewManager : IReviewManager
     {
+        /// <summary>
+        ///     The <see cref="IArtifactManager" />
+        /// </summary>
+        private readonly IArtifactManager artifactManager;
+
         /// <summary>
         ///     The <see cref="DatabaseContext" />
         /// </summary>
@@ -56,12 +62,15 @@ namespace UI_DSM.Server.Managers.ReviewManager
         /// </summary>
         /// <param name="context">The <see cref="DatabaseContext" /></param>
         /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
-        /// <param name="reviewObjectiveManager">The <see cref="IReviewObjectiveManager"/></param>
-        public ReviewManager(DatabaseContext context, IParticipantManager participantManager, IReviewObjectiveManager reviewObjectiveManager)
+        /// <param name="reviewObjectiveManager">The <see cref="IReviewObjectiveManager" /></param>
+        /// <param name="artifactManager">The <see cref="IArtifactManager" /></param>
+        public ReviewManager(DatabaseContext context, IParticipantManager participantManager, IReviewObjectiveManager reviewObjectiveManager,
+            IArtifactManager artifactManager)
         {
             this.context = context;
             this.participantManager = participantManager;
             this.reviewObjectiveManager = reviewObjectiveManager;
+            this.artifactManager = artifactManager;
         }
 
         /// <summary>
@@ -232,6 +241,7 @@ namespace UI_DSM.Server.Managers.ReviewManager
             var relatedEntities = new Dictionary<Guid, Entity>();
             relatedEntities.InsertEntity(await this.participantManager.FindEntity(reviewDto.Author));
             relatedEntities.InsertEntityCollection(await this.reviewObjectiveManager.FindEntities(reviewDto.ReviewObjectives));
+            relatedEntities.InsertEntityCollection(await this.artifactManager.FindEntities(reviewDto.Artifacts));
             entity.ResolveProperties(reviewDto, relatedEntities);
         }
 

@@ -28,20 +28,20 @@ namespace UI_DSM.Client.Services
         protected HttpClient HttpClient;
 
         /// <summary>
-        /// The <see cref="IJsonDeserializerService"/>
+        /// The <see cref="IJsonService"/>
         /// </summary>
-        protected IJsonDeserializerService Deserializer { get; private set; }
+        protected IJsonService jsonService { get; private set; }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ServiceBase" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="HttpClient" /></param>
-        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
-        protected ServiceBase(HttpClient httpClient, IJsonDeserializerService deserializer)
+        /// <param name="jsonService">The <see cref="IJsonService" /></param>
+        protected ServiceBase(HttpClient httpClient, IJsonService jsonService)
         {
             this.HttpClient = httpClient;
             this.MainRoute = this.GetRoute();
-            this.Deserializer = deserializer;
+            this.jsonService = jsonService;
         }
 
         /// <summary>

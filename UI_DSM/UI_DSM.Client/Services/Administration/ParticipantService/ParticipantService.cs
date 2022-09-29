@@ -33,8 +33,8 @@ namespace UI_DSM.Client.Services.Administration.ParticipantService
         ///     Initializes a new instance of the <see cref="ParticipantService" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="ServiceBase.HttpClient" /></param>
-        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
-        public ParticipantService(HttpClient httpClient, IJsonDeserializerService deserializer) : base(httpClient, deserializer)
+        /// <param name="jsonService">The <see cref="IJsonService" /></param>
+        public ParticipantService(HttpClient httpClient, IJsonService jsonService) : base(httpClient, jsonService)
         {
         }
 
@@ -154,7 +154,7 @@ namespace UI_DSM.Client.Services.Administration.ParticipantService
                     throw new HttpRequestException(await getResponse.Content.ReadAsStringAsync());
                 }
 
-                var dtos = this.Deserializer.Deserialize<IEnumerable<EntityDto>>(await getResponse.Content.ReadAsStreamAsync());
+                var dtos = this.jsonService.Deserialize<IEnumerable<EntityDto>>(await getResponse.Content.ReadAsStreamAsync());
                 return Assembler.CreateEntities<UserEntity>(dtos).ToList();
             }
             catch (Exception exception)

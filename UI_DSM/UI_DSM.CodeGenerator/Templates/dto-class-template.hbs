@@ -30,7 +30,9 @@ namespace UI_DSM.Shared.DTO.Models
         {
             {{#each (PropertyReflection.GetProperties this) as | property |}}
                 {{#if (PropertyReflection.IsEnumerable property)}}
+                    {{#if (PropertyReflection.IsSerialized property)}}
                         this.{{ property.Name }} = new {{#PropertyReflection.GetPropertyType property}}();
+                    {{/if}}
                 {{/if}}
             {{/each}}
         }
@@ -40,7 +42,9 @@ namespace UI_DSM.Shared.DTO.Models
         {
             {{#each (PropertyReflection.GetProperties this) as | property |}}
                 {{#if (PropertyReflection.IsEnumerable property)}}
-                        this.{{ property.Name }} = new {{#PropertyReflection.GetPropertyType property}}();
+                        {{#if (PropertyReflection.IsSerialized property)}}
+                            this.{{ property.Name }} = new {{#PropertyReflection.GetPropertyType property}}();
+                        {{/if}}
                 {{/if}}
             {{/each}}
         }

@@ -36,7 +36,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
         private ReviewObjectiveService service;
         private MockHttpMessageHandler httpMessageHandler;
         private List<EntityDto> entitiesDto;
-        private IJsonDeserializerService jsonDeserializerService;
+        private IJsonService jsonService;
 
         [SetUp]
         public void Setup()
@@ -76,8 +76,8 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
             };
 
             ServiceBase.RegisterService<ReviewObjectiveService>();
-            this.jsonDeserializerService = new JsonDeserializerService(new JsonDeserializer());
-            this.service = new ReviewObjectiveService(httpClient, this.jsonDeserializerService);
+            this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer());
+            this.service = new ReviewObjectiveService(httpClient, this.jsonService);
         }
 
         [Test]
@@ -94,7 +94,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
             Assert.That(async () => await this.service.GetReviewsObjectivesOfReview(projectId, reviewId), Throws.Exception);
             httpResponse.StatusCode = HttpStatusCode.OK;
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(this.entitiesDto));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(this.entitiesDto));
             var reviewObjectives = await this.service.GetReviewsObjectivesOfReview(projectId, reviewId);
             Assert.That(reviewObjectives, Has.Count.EqualTo(1));
             httpResponse.Content = new StringContent(string.Empty);
@@ -118,7 +118,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
 
             httpResponse.StatusCode = HttpStatusCode.OK;
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(this.entitiesDto));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(this.entitiesDto));
             reviewObjective = await this.service.GetReviewObjectiveOfReview(projectId, reviewId, guid);
             Assert.That(reviewObjective.Id, Is.EqualTo(guid));
 
@@ -146,7 +146,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
                 IsRequestSuccessful = false
             };
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
             var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Project/{projectId}/Review/{reviewId}/ReviewObjective/Create");
             request.Respond(_ => httpResponse);
 
@@ -157,7 +157,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
 
             entityRequestResponse.Entities = reviewObjective.GetAssociatedEntities().ToDtos();
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
 
             requestResponse = await this.service.CreateReviewObjective(projectId, reviewId, reviewObjective);
 
@@ -188,7 +188,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
 
             var httpResponse = new HttpResponseMessage();
             var requestResponse = new RequestResponseDto() { IsRequestSuccessful = true };
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
             var request = this.httpMessageHandler.When(HttpMethod.Delete, $"/Project/{projectId}/Review/{review.Id}/ReviewObjective/{reviewObjective.Id}");
             request.Respond(_ => httpResponse);
 
@@ -222,7 +222,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
 
             var httpResponse = new HttpResponseMessage();
             var requestResponse = new EntityRequestResponseDto() { IsRequestSuccessful = false };
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
 
             var request = this.httpMessageHandler.When(HttpMethod.Put, $"/Project/{projectId}/Review/{review.Id}/ReviewObjective/{reviewObjective.Id}");
             request.Respond(_ => httpResponse);
@@ -237,7 +237,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
 
             requestResponse.Entities = reviewObjective.GetAssociatedEntities().ToDtos();
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
 
             requestResult = await this.service.UpdateReviewObjective(projectId, reviewObjective);
             Assert.That(requestResult.IsRequestSuccessful, Is.True);

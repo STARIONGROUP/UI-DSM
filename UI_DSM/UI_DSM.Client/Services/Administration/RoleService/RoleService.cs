@@ -31,8 +31,8 @@ namespace UI_DSM.Client.Services.Administration.RoleService
         ///     Initializes a new instance of the <see cref="RoleService" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="ServiceBase.HttpClient" /></param>
-        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
-        public RoleService(HttpClient httpClient, IJsonDeserializerService deserializer) : base(httpClient, deserializer)
+        /// <param name="jsonService">The <see cref="IJsonService" /></param>
+        public RoleService(HttpClient httpClient, IJsonService jsonService) : base(httpClient, jsonService)
         {
         }
 

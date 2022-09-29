@@ -173,7 +173,8 @@ namespace UI_DSM.Server.Tests.Modules
             this.annotationManager.As<IContainedEntityManager<Annotation>>()
                 .Setup(x => x.EntityIsContainedBy(this.commentId, this.projectId)).ReturnsAsync(false);
 
-            this.replyManager.Setup(x => x.FindEntity(reply.Id)).ReturnsAsync(reply);
+            this.replyManager.As<IContainedEntityManager<Reply>>()
+                .Setup(x => x.FindEntityWithContainer(reply.Id)).ReturnsAsync(reply);
 
             await this.module.GetEntity(this.replyManager.Object, reply.Id, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 400, Times.Exactly(2));
@@ -182,7 +183,7 @@ namespace UI_DSM.Server.Tests.Modules
                 .Setup(x => x.EntityIsContainedBy(this.commentId, this.projectId)).ReturnsAsync(true);
 
             await this.module.GetEntity(this.replyManager.Object, reply.Id, this.context.Object);
-            this.replyManager.Verify(x => x.FindEntity(reply.Id), Times.Once);
+            this.replyManager.As<IContainedEntityManager<Reply>>().Verify(x => x.FindEntityWithContainer(reply.Id), Times.Once);
         }
 
         [Test]

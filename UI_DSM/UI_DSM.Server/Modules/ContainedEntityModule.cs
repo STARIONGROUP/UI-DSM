@@ -84,7 +84,8 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            var entity = await manager.FindEntity(entityId);
+            var containedManager = manager as IContainedEntityManager<TEntity>;
+            var entity = await containedManager!.FindEntityWithContainer(entityId);
 
             if (entity == null)
             {

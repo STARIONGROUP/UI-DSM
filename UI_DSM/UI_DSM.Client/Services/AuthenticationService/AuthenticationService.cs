@@ -44,11 +44,11 @@ namespace UI_DSM.Client.Services.AuthenticationService
 
         /// <summary>Initializes a new instance of the <see cref="AuthenticationService" /> class.</summary>
         /// <param name="httpClient">The <see cref="HttpClient" /></param>
-        /// <param name="deserializer">The <see cref="IJsonDeserializerService" /></param>
+        /// <param name="jsonService">The <see cref="IJsonService" /></param>
         /// <param name="stateProvider">The <see cref="AuthenticationStateProvider" /></param>
         /// <param name="sessionStorageService">The <see cref="ISessionStorageService" /></param>
-        public AuthenticationService(HttpClient httpClient, IJsonDeserializerService deserializer, AuthenticationStateProvider stateProvider, ISessionStorageService sessionStorageService) :
-            base(httpClient, deserializer)
+        public AuthenticationService(HttpClient httpClient, IJsonService jsonService, AuthenticationStateProvider stateProvider, ISessionStorageService sessionStorageService) :
+            base(httpClient, jsonService)
         {
             this.stateProvider = stateProvider;
             this.sessionStorageService = sessionStorageService;
@@ -67,7 +67,7 @@ namespace UI_DSM.Client.Services.AuthenticationService
             var authenticationResult = await this.HttpClient.PostAsync(Path.Combine(this.MainRoute, "Login"),
                 bodyContent);
 
-            var result = this.Deserializer.Deserialize<AuthenticationResponseDto>(await authenticationResult.Content.ReadAsStreamAsync());
+            var result = this.jsonService.Deserialize<AuthenticationResponseDto>(await authenticationResult.Content.ReadAsStreamAsync());
 
             if (!authenticationResult.IsSuccessStatusCode)
             {

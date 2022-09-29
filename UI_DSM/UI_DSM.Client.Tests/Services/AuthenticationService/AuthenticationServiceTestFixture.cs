@@ -26,7 +26,6 @@ namespace UI_DSM.Client.Tests.Services.AuthenticationService
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.AuthenticationService;
     using UI_DSM.Client.Services.JsonDeserializerProvider;
-    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.UserManagement;
 
@@ -37,7 +36,7 @@ namespace UI_DSM.Client.Tests.Services.AuthenticationService
         private MockHttpMessageHandler httpMessageHandler;
         private Mock<AuthenticationProvider> authenticationProvider;
         private Mock<ISessionStorageService> sessionStorage;
-        private IJsonDeserializerService jsonDeserializerService;
+        private IJsonService jsonService;
 
         [SetUp]
         public void Setup()
@@ -48,9 +47,9 @@ namespace UI_DSM.Client.Tests.Services.AuthenticationService
             var httpClient = this.httpMessageHandler.ToHttpClient();
             httpClient.BaseAddress = new Uri("http://localhost/api");
             ServiceBase.RegisterService<AuthenticationService>();
-            this.jsonDeserializerService = new JsonDeserializerService(new JsonDeserializer());
+            this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer());
 
-            this.service = new AuthenticationService(httpClient, this.jsonDeserializerService,
+            this.service = new AuthenticationService(httpClient, this.jsonService,
                 this.authenticationProvider.Object, this.sessionStorage.Object);
         }
 
@@ -62,7 +61,7 @@ namespace UI_DSM.Client.Tests.Services.AuthenticationService
             var httpResponseMessage = new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.Unauthorized,
-                Content = new StringContent(JsonSerializerHelper.SerializeObject(new AuthenticationResponseDto()
+                Content = new StringContent(this.jsonService.Serialize(new AuthenticationResponseDto()
                 {
                     Errors = new List<string>()
                     {
@@ -83,7 +82,7 @@ namespace UI_DSM.Client.Tests.Services.AuthenticationService
 
             httpResponseMessage.StatusCode = HttpStatusCode.OK;
 
-            httpResponseMessage.Content = new StringContent(JsonSerializerHelper.SerializeObject(new AuthenticationResponseDto()
+            httpResponseMessage.Content = new StringContent(this.jsonService.Serialize(new AuthenticationResponseDto()
             {
                 IsRequestSuccessful = true,
                 Token = Guid.NewGuid().ToString()

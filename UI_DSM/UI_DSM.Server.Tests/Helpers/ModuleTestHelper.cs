@@ -41,7 +41,7 @@ namespace UI_DSM.Server.Tests.Helpers
         /// <param name="request">The <see cref="HttpRequest" /></param>
         /// <param name="serviceProvider">The <see cref="IServiceProvider"/></param>
         public static void Setup<TModule, TDto>(AbstractValidator<TDto> validator, out Mock<HttpContext> context, 
-            out Mock<HttpResponse> response, out Mock<HttpRequest> request, out Mock<IServiceProvider> serviceProvider) where TModule : ModuleBase, new() where TDto : EntityDto
+            out Mock<HttpResponse> response, out Mock<HttpRequest> request, out Mock<IServiceProvider> serviceProvider) where TModule : ModuleBase where TDto : class
         {
             response = new Mock<HttpResponse>();
             response.SetupSet(response => response.StatusCode = It.IsAny<int>()).Verifiable();

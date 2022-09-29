@@ -21,6 +21,7 @@ namespace UI_DSM.Server.Tests.Managers
 
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Managers.AnnotationManager;
+    using UI_DSM.Server.Managers.ArtifactManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ProjectManager;
     using UI_DSM.Server.Managers.ReviewManager;
@@ -35,6 +36,7 @@ namespace UI_DSM.Server.Tests.Managers
         private Mock<IParticipantManager> participantManager;
         private Mock<IReviewManager> reviewManager;
         private Mock<IAnnotationManager> annotationManager;
+        private Mock<IArtifactManager> artifactManager;
 
         [SetUp]
         public void Setup()
@@ -43,7 +45,9 @@ namespace UI_DSM.Server.Tests.Managers
             this.participantManager = new Mock<IParticipantManager>();
             this.reviewManager = new Mock<IReviewManager>();
             this.annotationManager = new Mock<IAnnotationManager>();
-            this.manager = new ProjectManager(this.context.Object, this.participantManager.Object, this.reviewManager.Object, this.annotationManager.Object);
+            this.artifactManager = new Mock<IArtifactManager>();
+            this.manager = new ProjectManager(this.context.Object, this.participantManager.Object, this.reviewManager.Object,
+                this.annotationManager.Object, this.artifactManager.Object);
         }
 
         [Test]

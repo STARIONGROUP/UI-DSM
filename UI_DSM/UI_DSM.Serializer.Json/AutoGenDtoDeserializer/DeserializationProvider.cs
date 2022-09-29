@@ -32,6 +32,7 @@ namespace UI_DSM.Serializer.Json
         {
             { "CommentDto", CommentDtoDeserializer.Deserialize },
             { "FeedbackDto", FeedbackDtoDeserializer.Deserialize },
+            { "ModelDto", ModelDtoDeserializer.Deserialize },
             { "NoteDto", NoteDtoDeserializer.Deserialize },
             { "ParticipantDto", ParticipantDtoDeserializer.Deserialize },
             { "ProjectDto", ProjectDtoDeserializer.Deserialize },

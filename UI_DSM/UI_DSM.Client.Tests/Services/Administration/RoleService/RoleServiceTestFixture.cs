@@ -22,7 +22,6 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.Administration.RoleService;
     using UI_DSM.Client.Services.JsonDeserializerProvider;
-    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -34,7 +33,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
     {
         private RoleService service;
         private MockHttpMessageHandler httpMessageHandler;
-        private IJsonDeserializerService jsonDeserializerService;
+        private IJsonService jsonService;
 
         [SetUp]
         public void Setup()
@@ -44,8 +43,8 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
             httpClient.BaseAddress = new Uri("http://localhost/api");
 
             ServiceBase.RegisterService<RoleService>();
-            this.jsonDeserializerService = new JsonDeserializerService(new JsonDeserializer());
-            this.service = new RoleService(httpClient, this.jsonDeserializerService);
+            this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer());
+            this.service = new RoleService(httpClient, this.jsonService);
         }
 
         [Test]
@@ -72,7 +71,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
                 }
             };
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(rolesDtos));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(rolesDtos));
 
             var roles = this.service.GetRoles().Result;
             Assert.That(roles.Count, Is.EqualTo(1));
@@ -104,7 +103,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
                 }
             };
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(new List<EntityDto>(){ roleDto }));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(new List<EntityDto>(){ roleDto }));
             role = await this.service.GetRole(guid);
 
             Assert.That(role.Id, Is.EqualTo(guid));
@@ -133,7 +132,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
                 IsRequestSuccessful = false
             };
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
 
             var request = this.httpMessageHandler.When(HttpMethod.Post, "/Role/Create");
             request.Respond(_ => httpResponse);
@@ -146,7 +145,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
                 role.ToDto()
             };
 
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(entityRequestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
             var result = await this.service.CreateRole(role);
 
             Assert.Multiple(() =>
@@ -165,7 +164,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
             var role = new Role(Guid.NewGuid());
             var httpResponse = new HttpResponseMessage();
             var requestResponse = new RequestResponseDto() { IsRequestSuccessful = true };
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
             var request = this.httpMessageHandler.When(HttpMethod.Delete, $"/Role/{role.Id}");
             request.Respond(_ => httpResponse);
 
@@ -189,7 +188,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
 
             var httpResponse = new HttpResponseMessage();
             var requestResponse = new EntityRequestResponseDto() { IsRequestSuccessful = false };
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
 
             var request = this.httpMessageHandler.When(HttpMethod.Put, $"/Role/{role.Id}");
             request.Respond(_ => httpResponse);
@@ -202,7 +201,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
                 role.ToDto()
             }; 
             
-            httpResponse.Content = new StringContent(JsonSerializerHelper.SerializeObject(requestResponse));
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
 
             Assert.That(this.service.UpdateRole(role).Result.IsRequestSuccessful, Is.True);
             httpResponse.Content = new StringContent(string.Empty);

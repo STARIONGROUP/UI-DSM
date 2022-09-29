@@ -32,6 +32,7 @@ namespace UI_DSM.Serializer.Json
         {
             { typeof(CommentDto), CommentDtoSerializer.Serialize },
             { typeof(FeedbackDto), FeedbackDtoSerializer.Serialize },
+            { typeof(ModelDto), ModelDtoSerializer.Serialize },
             { typeof(NoteDto), NoteDtoSerializer.Serialize },
             { typeof(ParticipantDto), ParticipantDtoSerializer.Serialize },
             { typeof(ProjectDto), ProjectDtoSerializer.Serialize },

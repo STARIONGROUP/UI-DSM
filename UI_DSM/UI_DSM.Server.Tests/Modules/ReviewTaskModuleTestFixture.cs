@@ -187,7 +187,8 @@ namespace UI_DSM.Server.Tests.Modules
             this.reviewObjectiveManager.As<IContainedEntityManager<ReviewObjective>>()
                 .Setup(x => x.EntityIsContainedBy(this.reviewObjectiveId, this.reviewId)).ReturnsAsync(false);
 
-            this.reviewTaskManager.Setup(x => x.FindEntity(reviewTask.Id)).ReturnsAsync(reviewTask);
+            this.reviewTaskManager.As<IContainedEntityManager<ReviewTask>>().Setup(x => 
+                x.FindEntityWithContainer(reviewTask.Id)).ReturnsAsync(reviewTask);
 
             await this.module.GetEntity(this.reviewTaskManager.Object, reviewTask.Id, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 400, Times.Once);
@@ -205,7 +206,9 @@ namespace UI_DSM.Server.Tests.Modules
                 .Setup(x => x.EntityIsContainedBy(this.reviewId, this.projectId)).ReturnsAsync(true);
 
             await this.module.GetEntity(this.reviewTaskManager.Object, reviewTask.Id, this.context.Object);
-            this.reviewTaskManager.Verify(x => x.FindEntity(reviewTask.Id), Times.Once);
+
+            this.reviewTaskManager.As<IContainedEntityManager<ReviewTask>>().Verify(x =>
+                x.FindEntityWithContainer(reviewTask.Id), Times.Once);
         }
 
         [Test]

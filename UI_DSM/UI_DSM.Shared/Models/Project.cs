@@ -69,6 +69,12 @@ namespace UI_DSM.Shared.Models
         public EntityContainerList<Annotation> Annotations { get; set; }
 
         /// <summary>
+        ///     A collection of contained <see cref="Artifact" />
+        /// </summary>
+        [DeepLevel(1)]
+        public EntityContainerList<Artifact> Artifacts { get; set; }
+
+        /// <summary>
         ///     Instantiate a <see cref="EntityDto" /> from a <see cref="Entity" />
         /// </summary>
         /// <returns>A new <see cref="EntityDto" /></returns>
@@ -79,7 +85,8 @@ namespace UI_DSM.Shared.Models
                 ProjectName = this.ProjectName,
                 Participants = new List<Guid>(this.Participants.Select(x => x.Id)),
                 Reviews = new List<Guid>(this.Reviews.Select(x => x.Id)),
-                Annotations = new List<Guid>(this.Annotations.Select(x => x.Id))
+                Annotations = new List<Guid>(this.Annotations.Select(x => x.Id)),
+                Artifacts = new List<Guid>(this.Artifacts.Select(x => x.Id))
             };
 
             return dto;
@@ -101,6 +108,7 @@ namespace UI_DSM.Shared.Models
             this.Participants.ResolveList(projectDto.Participants, resolvedEntity);
             this.Reviews.ResolveList(projectDto.Reviews, resolvedEntity);
             this.Annotations.ResolveList(projectDto.Annotations, resolvedEntity);
+            this.Artifacts.ResolveList(projectDto.Artifacts, resolvedEntity);
         }
 
         /// <summary>
@@ -111,6 +119,7 @@ namespace UI_DSM.Shared.Models
             this.Participants = new EntityContainerList<Participant>(this);
             this.Reviews = new EntityContainerList<Review>(this);
             this.Annotations = new EntityContainerList<Annotation>(this);
+            this.Artifacts = new EntityContainerList<Artifact>(this);
         }
     }
 }

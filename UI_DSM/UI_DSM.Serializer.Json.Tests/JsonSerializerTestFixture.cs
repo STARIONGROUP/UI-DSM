@@ -130,17 +130,25 @@ namespace UI_DSM.Serializer.Json.Tests
                 ReviewObjectives = new List<Guid>{reviewObjective.Id}
             };
 
+            var model = new ModelDto(Guid.NewGuid())
+            {
+                FileName = "161A0A63-DFFE-4DFA-8A33-D80B31DEC9FE.zip",
+                ModelName = "Envision - Iteration 1"
+            };
+
             var project = new ProjectDto(Guid.NewGuid())
             {
                 ProjectName = "Project",
                 Participants = new List<Guid>{participant.Id},
                 Reviews = new List<Guid>{review.Id},
-                Annotations = new List<Guid>{commentGuid, noteGuid, feedbackGuid}
+                Annotations = new List<Guid>{commentGuid, noteGuid, feedbackGuid},
+                Artifacts = new List<Guid>{model.Id}
             };
 
             var dtos = new List<EntityDto>
             {
-                project, participant, user, role, reply, comment, feedback, note, review, reviewObjective, reviewTask
+                project, participant, user, role, reply, comment, feedback, note, review, reviewObjective, reviewTask,
+                 model
             };
 
             var stream = new MemoryStream();

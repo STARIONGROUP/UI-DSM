@@ -14,9 +14,9 @@
 namespace UI_DSM.Client.Services.JsonDeserializerProvider
 {
     /// <summary>
-    ///     Interface definition for <see cref="JsonDeserializerService" />
+    ///     Interface definition for <see cref="JsonService" />
     /// </summary>
-    public interface IJsonDeserializerService
+    public interface IJsonService
     {
         /// <summary>
         ///     Deserialize a <see cref="Stream" /> into a <see cref="T" /> object
@@ -25,5 +25,13 @@ namespace UI_DSM.Client.Services.JsonDeserializerProvider
         /// <param name="stream">The <see cref="Stream" /> to deserialize</param>
         /// <returns>The <see cref="T" /> object</returns>
         T Deserialize<T>(Stream stream) where T : class;
+
+        /// <summary>
+        ///     Serialize a <see cref="T" /> into a <see cref="string" />
+        /// </summary>
+        /// <typeparam name="T">An object</typeparam>
+        /// <param name="value">The object to serialize</param>
+        /// <returns>The serialized value</returns>
+        string Serialize<T>(T value) where T : class;
     }
 }

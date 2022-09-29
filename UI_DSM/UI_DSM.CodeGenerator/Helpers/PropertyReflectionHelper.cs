@@ -21,6 +21,7 @@ namespace UI_DSM.CodeGenerator.Helpers
     using HandlebarsDotNet;
 
     using UI_DSM.CodeGenerator.Extensions;
+    using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -111,6 +112,11 @@ namespace UI_DSM.CodeGenerator.Helpers
                 if (propertyInfo.DeclaringType == typeof(UserEntity))
                 {
                     return propertyInfo.Name != nameof(UserEntity.UserId);
+                }
+
+                if (propertyInfo.PropertyType.GetCorrectTypeToCheck().IsAssignableTo(typeof(Entity)))
+                {
+                    return propertyInfo.GetCustomAttributes<DeepLevelAttribute>().Any();
                 }
 
                 return true;
