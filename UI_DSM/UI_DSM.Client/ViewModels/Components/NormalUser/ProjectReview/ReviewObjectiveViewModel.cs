@@ -16,33 +16,32 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
     using Microsoft.AspNetCore.Components;
     using ReactiveUI;
 
-    using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     View model for the <see cref="ProjectReview" /> component
+    ///     View model for the <see cref="ReviewObjective" /> component
     /// </summary>
-    public class ProjectReviewViewModel : ReactiveObject, IProjectReviewViewModel
+    public class ReviewObjectiveViewModel : ReactiveObject, IReviewObjectiveViewModel
     {
         /// <summary>
-        ///     Backing field for <see cref="Project" />
+        ///     Backing field for <see cref="Review" />
         /// </summary>
-        private Project project;
+        private Review review;
 
         /// <summary>
-        ///     The <see cref="Project" />
+        ///     The <see cref="Review" />
         /// </summary>
-        public Project Project
+        public Review Review
         {
-            get => this.project;
-            set => this.RaiseAndSetIfChanged(ref this.project, value);
+            get => this.review;
+            set => this.RaiseAndSetIfChanged(ref this.review, value);
         }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectReviewViewModel" /> class.
         /// </summary>
         /// <param name="navigationManager">The <see cref="NavigationManager" /></param>
-        public ProjectReviewViewModel(NavigationManager navigationManager)
+        public ReviewObjectiveViewModel(NavigationManager navigationManager)
         {
             this.NavigationManager = navigationManager;
         }
@@ -53,12 +52,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         public NavigationManager NavigationManager { get; set; }
 
         /// <summary>
-        ///     Navigate to the page dedicated to the given <see cref="Review" />
+        ///     Navigate to the page dedicated to the given <see cref="ReviewObjective" />
         /// </summary>
-        /// <param name="review">The <see cref="Review" /></param>
-        public void GoToReviewPage(Review review)
+        /// <param name="reviewObjective">The <see cref="ReviewObjective" /></param>
+        public void GoToReviewObjectivePage(ReviewObjective reviewObjective)
         {
-            this.NavigationManager.NavigateTo($"{this.NavigationManager.Uri}/Review/{review.Id}");
+            this.NavigationManager.NavigateTo($"{this.NavigationManager.Uri}/ReviewObjective/{reviewObjective.Id}");
         }
     }
 }

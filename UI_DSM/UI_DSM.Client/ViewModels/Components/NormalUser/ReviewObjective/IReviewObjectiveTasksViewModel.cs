@@ -11,27 +11,20 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
+namespace UI_DSM.Client.ViewModels.Components.NormalUser.ReviewObjective
 {
     using Microsoft.AspNetCore.Components;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     Interface definition for <see cref="ProjectReviewViewModel" />
+    ///     Interface definition for <see cref="ReviewObjectiveTasksViewModel" />
     /// </summary>
-    public interface IProjectReviewViewModel
+    public interface IReviewObjectiveTasksViewModel
     {
         /// <summary>
-        ///     The <see cref="Project" />
+        ///     The <see cref="ReviewObjective" />
         /// </summary>
-        Project Project { get; set; }
-
-
-        /// <summary>
-        ///     Navigate to the page dedicated to the given <see cref="Review" />
-        /// </summary>
-        /// <param name="review">The <see cref="Review" /></param>
-        void GoToReviewPage(Review review);
+        ReviewObjective ReviewObjective { get; set; }
 
         NavigationManager NavigationManager { get; set; }
     }

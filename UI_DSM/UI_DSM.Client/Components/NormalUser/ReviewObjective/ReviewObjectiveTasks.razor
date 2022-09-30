@@ -10,18 +10,26 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
-<div class="project-page">
-  <div class="page-header">
-        <h1 class="h3">Review plans for @this.ViewModel.Project.ProjectName</h1>
-  </div>
-  <div class="projects-overview">
-      @foreach (var review in this.ViewModel.Project.Reviews)
-	  {
-          <NavLink href=@("/Project/"+this.ViewModel.Project.Id+"/Review/"+review.Id)>
-            <AppProjectCard Title="@review.Title" Created="@review.CreatedOn.ToString()" Tasks="20" Comments="20" />
-          </NavLink>
-      }
+<div class="objective-page">
+
+    <AppReviewHeader Title=@this.ViewModel.ReviewObjective.Title Description=@this.ViewModel.ReviewObjective.Description />
+
+  <div class="task-section">
+    <h1 class="h3">Objective tasks</h1>
+    <div class="task-overview">
+            @foreach (var task in this.ViewModel.ReviewObjective.ReviewTasks)
+            {
+                <NavLink href="/project/1/review/1/objective/1/task/1">
+                    <TaskItem TaskTitle=@task.Title />
+                </NavLink>
+            }
+    </div>
   </div>
 </div>
+
+
+
+
+
 
 

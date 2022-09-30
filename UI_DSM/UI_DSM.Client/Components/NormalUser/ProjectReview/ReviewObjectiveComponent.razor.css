@@ -1,0 +1,5 @@
+﻿.objective-overview {
+    padding: var(--spacing-8) 0;
+    gap: var(--spacing-2);
+    display: grid;
+}

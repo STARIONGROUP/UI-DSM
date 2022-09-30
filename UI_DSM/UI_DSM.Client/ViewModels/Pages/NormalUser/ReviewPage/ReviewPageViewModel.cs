@@ -11,43 +11,41 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
+namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewPage
 {
     using ReactiveUI;
 
-    using UI_DSM.Client.Components.NormalUser.ProjectReview;
-    using UI_DSM.Client.Services.Administration.ProjectService;
+    using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     View model for the <see cref="ProjectPage" /> page
+    ///     View model for the <see cref="ReviewPageViewModel" /> page
     /// </summary>
-    public class NormalProjectPageViewModel : ReactiveObject, INormalProjectPageViewModel
+    public class ReviewPageViewModel : ReactiveObject, IReviewPageViewModel
     {
 
         /// <summary>
-        ///     The <see cref="IProjectService" />
+        ///     The <see cref="IReviewService" />
         /// </summary>
-        private readonly IProjectService projectService;
+        private readonly IReviewService reviewService;
 
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ProjectPageViewModel" /> class.
+        ///     Initializes a new instance of the <see cref="ReviewPageViewModel" /> class.
         /// </summary>
-        /// <param name="projectService">The <see cref="IProjectService" /></param>
-        public NormalProjectPageViewModel(IProjectService projectService, IProjectReviewViewModel projectReviewViewModal)
+        /// <param name="reviewService">The <see cref="IReviewService" /></param>
+        public ReviewPageViewModel(IReviewService reviewService, IReviewObjectiveViewModel reviewObjectiveViewModel)
         {
-            this.projectService = projectService;
-            this.ProjectReviewViewModel = projectReviewViewModal;
+            this.reviewService = reviewService;
+            this.ReviewObjectiveViewModel = reviewObjectiveViewModel;
         }
 
         /// <summary>
-        ///     The <see cref="IProjectReviewViewModel" /> for the <see cref="ProjectReview" /> component
+        ///     The <see cref="IReviewObjectiveViewModel" /> for the <see cref="ReviewObjective" /> component
         /// </summary>
-        public IProjectReviewViewModel ProjectReviewViewModel { get; }
-
+        public IReviewObjectiveViewModel ReviewObjectiveViewModel { get; }
 
         /// <summary>
         ///     Gets the <see cref="IErrorMessageViewModel" />
@@ -62,11 +60,12 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
         ///     want the component to refresh when that operation is completed.
         /// </summary>
         /// <param name="projectGuid">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="reviewGuid">The <see cref="Guid" /> of the <see cref="Review" /></param>
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
-        public async Task OnInitializedAsync(Guid projectGuid)
+        public async Task OnInitializedAsync(Guid projectGuid, Guid reviewGuid)
         {
-            var projectResponse = await this.projectService.GetProject(projectGuid, 1);
-            this.ProjectReviewViewModel.Project = projectResponse;
+            var reviewResponse = await this.reviewService.GetReviewOfProject(projectGuid, reviewGuid, 1);
+            this.ReviewObjectiveViewModel.Review = reviewResponse;
         }
     }
 }

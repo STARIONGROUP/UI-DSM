@@ -79,6 +79,20 @@ namespace UI_DSM.Client.ViewModels.Pages
         }
 
         /// <summary>
+        ///     Populates the <see cref="AvailableProject" /> collection based on a <see cref="AuthenticationState" />
+        /// </summary>
+        /// <param name="state">The <see cref="AuthenticationState" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        public async Task PopulateAvailableProjects(AuthenticationState state)
+        {
+            this.AvailableProject.Clear();
+            if (state.User.Identity is { IsAuthenticated: true })
+            {
+                this.AvailableProject.AddRange(await this.projectService.GetUserParticipation());
+            }
+        }
+        
+        /// <summary>
         ///     Populate the <see cref="AvailableProject" /> collection
         /// </summary>
         /// <param name="task">The <see cref="AuthenticationState" /> Task</param>
@@ -87,12 +101,7 @@ namespace UI_DSM.Client.ViewModels.Pages
             Task.Run(async () =>
             {
                 var state = await task;
-                this.AvailableProject.Clear();
-
-                if (state.User.Identity is { IsAuthenticated: true })
-                {
-                    this.AvailableProject.AddRange(await this.projectService.GetUserParticipation());
-                }
+                await this.PopulateAvailableProjects(state);
             });
         }
 

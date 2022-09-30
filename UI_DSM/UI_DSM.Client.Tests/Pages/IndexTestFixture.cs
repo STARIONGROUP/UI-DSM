@@ -14,10 +14,10 @@
 namespace UI_DSM.Client.Tests.Pages
 {
     using System.Security.Claims;
-
+    using AppComponents;
     using Bunit;
     using Bunit.TestDoubles;
-
+    using DevExpress.Blazor;
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -61,16 +61,18 @@ namespace UI_DSM.Client.Tests.Pages
             this.context.Services.AddSingleton(this.viewModel);
             this.context.Services.AddSingleton(this.loginViewModel.Object);
             this.context.AddTestAuthorization().SetAuthorized("user");
+            this.viewModel.NavigationManager = this.context.Services.GetRequiredService<FakeNavigationManager>();
         }
 
         [TearDown]
         public void Teardown()
         {
             this.context.CleanContext();
+            this.viewModel.Dispose();
         }
 
         [Test]
-        public void VerifyRenderer()
+        public async Task VerifyRenderer()
         {
             var availableProject = new List<Project>()
             {
@@ -87,7 +89,7 @@ namespace UI_DSM.Client.Tests.Pages
             this.projectService.Setup(x => x.GetUserParticipation()).ReturnsAsync(availableProject);
             var renderer = this.context.RenderComponent<Index>();
 
-            var divProject1 = renderer.FindAll("div");
+            var divProject1 = renderer.FindComponents<AppProjectCard>();
             Assert.That(divProject1, Has.Count.Zero);
 
             this.authenticationState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>()
@@ -96,7 +98,11 @@ namespace UI_DSM.Client.Tests.Pages
             }, "basic")));
 
             this.authenticationProvider.Setup(x => x.GetAuthenticationStateAsync()).ReturnsAsync(this.authenticationState);
-            this.viewModel.PopulateAvailableProjects();
+            await this.viewModel.PopulateAvailableProjects(this.authenticationState);
+
+            renderer.Render();
+            var projectDivs = renderer.FindComponents<AppProjectCard>().ToList();
+            Assert.That(projectDivs.Count, Is.EqualTo(2));
         }
     }
 }

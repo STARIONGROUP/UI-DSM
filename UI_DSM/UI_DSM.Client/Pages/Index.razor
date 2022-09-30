@@ -11,16 +11,21 @@
 -------------------------------------------------------------------------------------------------------->
 
 @page "/index"
+@layout DefaultLayout
 
 <PageTitle>Dashboard | UI-DSM</PageTitle>
 
-<h1>UI-DSM</h1>
 
-The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-
-@foreach (var project in this.ViewModel.AvailableProject.Items)
-{
-	<div id="@project.ProjectName" @onclick="@(() => this.ViewModel.GoToProjectPage(project))">
-		@project.ProjectName
-	</div>
-}
+<div class="projects-page">
+    <div class="page-header">
+        <h1 class="h3">Projects</h1>
+    </div>
+    <div class="projects-overview">
+        @foreach (var project in this.ViewModel.AvailableProject.Items)
+        {
+            <NavLink href=@("/Project/"+project.Id)>
+                <AppProjectCard Title="@project.ProjectName" Created="05-10-2022 18:43" Tasks="20" Comments="20" />
+            </NavLink>
+        }
+     </div>
+ </div>

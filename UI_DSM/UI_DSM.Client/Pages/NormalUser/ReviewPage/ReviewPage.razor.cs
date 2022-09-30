@@ -11,19 +11,19 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Pages.NormalUser.ProjectPage
+namespace UI_DSM.Client.Pages.NormalUser.ReviewPage
 {
     using Microsoft.AspNetCore.Components;
 
     using ReactiveUI;
 
-    using UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage;
+    using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewPage;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     This page provide information for a <see cref="Project" />
+    ///     This page provide information for a <see cref="Review" />
     /// </summary>
-    public partial class NormalProjectPage : IDisposable
+    public partial class ReviewPage : IDisposable
     {
         /// <summary>
         ///     The collection of <see cref="IDisposable" />
@@ -37,10 +37,16 @@ namespace UI_DSM.Client.Pages.NormalUser.ProjectPage
         public string ProjectId { get; set; }
 
         /// <summary>
-        ///     The <see cref="INormalProjectPageViewModel" /> for this page
+        ///     The <see cref="Guid" /> of the review
+        /// </summary>
+        [Parameter]
+        public string ReviewId { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IReviewPageViewModel" /> for this page
         /// </summary>
         [Inject]
-        public INormalProjectPageViewModel ViewModel { get; set; }
+        public IReviewPageViewModel ViewModel { get; set; }
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -59,10 +65,9 @@ namespace UI_DSM.Client.Pages.NormalUser.ProjectPage
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
         protected override async Task OnInitializedAsync()
         {
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ProjectReviewViewModel.Project)
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ReviewObjectiveViewModel.Review)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
-
-            await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId));
+            await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId), new Guid(this.ReviewId));
         }
     }
 }

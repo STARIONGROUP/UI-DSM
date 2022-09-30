@@ -12,16 +12,21 @@
 
 <div class="project-page">
   <div class="page-header">
-        <h1 class="h3">Review plans for @this.ViewModel.Project.ProjectName</h1>
+        <h1 class="h3">Review objectives for @this.ViewModel.Review.Title</h1>
   </div>
-  <div class="projects-overview">
-      @foreach (var review in this.ViewModel.Project.Reviews)
-	  {
-          <NavLink href=@("/Project/"+this.ViewModel.Project.Id+"/Review/"+review.Id)>
-            <AppProjectCard Title="@review.Title" Created="@review.CreatedOn.ToString()" Tasks="20" Comments="20" />
-          </NavLink>
-      }
+
+  <div class="objective-overview">
+		@foreach (var reviewObjective in this.ViewModel.Review.ReviewObjectives)
+		{
+
+			<div div @onclick="@(() => this.ViewModel.GoToReviewObjectivePage(reviewObjective))">
+				<AppObjectiveItem Title="@reviewObjective.Title" Link=@(this.ViewModel.NavigationManager.Uri+"/ReviewObjective/"+reviewObjective.Id) />
+			</div>
+		}
   </div>
 </div>
+
+
+
 
 

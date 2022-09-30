@@ -11,38 +11,38 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
+namespace UI_DSM.Client.ViewModels.Components.NormalUser.ReviewObjective
 {
     using Microsoft.AspNetCore.Components;
     using ReactiveUI;
 
-    using UI_DSM.Client.Components.NormalUser.ProjectReview;
+    using UI_DSM.Client.Components.NormalUser.ReviewObjective;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     View model for the <see cref="ProjectReview" /> component
+    ///     View model for the <see cref="ReviewObjectiveTasks" /> component
     /// </summary>
-    public class ProjectReviewViewModel : ReactiveObject, IProjectReviewViewModel
+    public class ReviewObjectiveTasksViewModel : ReactiveObject, IReviewObjectiveTasksViewModel
     {
         /// <summary>
-        ///     Backing field for <see cref="Project" />
+        ///     Backing field for <see cref="ReviewObjective" />
         /// </summary>
-        private Project project;
+        private ReviewObjective reviewObjective;
 
         /// <summary>
-        ///     The <see cref="Project" />
+        ///     The <see cref="ReviewObjective" />
         /// </summary>
-        public Project Project
+        public ReviewObjective ReviewObjective
         {
-            get => this.project;
-            set => this.RaiseAndSetIfChanged(ref this.project, value);
+            get => this.reviewObjective;
+            set => this.RaiseAndSetIfChanged(ref this.reviewObjective, value);
         }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectReviewViewModel" /> class.
         /// </summary>
         /// <param name="navigationManager">The <see cref="NavigationManager" /></param>
-        public ProjectReviewViewModel(NavigationManager navigationManager)
+        public ReviewObjectiveTasksViewModel(NavigationManager navigationManager)
         {
             this.NavigationManager = navigationManager;
         }
@@ -51,14 +51,5 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         ///     Gets or sets the <see cref="NavigationManager" />
         /// </summary>
         public NavigationManager NavigationManager { get; set; }
-
-        /// <summary>
-        ///     Navigate to the page dedicated to the given <see cref="Review" />
-        /// </summary>
-        /// <param name="review">The <see cref="Review" /></param>
-        public void GoToReviewPage(Review review)
-        {
-            this.NavigationManager.NavigateTo($"{this.NavigationManager.Uri}/Review/{review.Id}");
-        }
     }
 }

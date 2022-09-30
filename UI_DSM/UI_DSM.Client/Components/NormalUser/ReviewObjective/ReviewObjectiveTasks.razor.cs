@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IProjectDetailsViewModel.cs" company="RHEA System S.A.">
+// <copyright file="ProjectDetails.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
@@ -11,28 +11,22 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
+namespace UI_DSM.Client.Components.NormalUser.ReviewObjective
 {
     using Microsoft.AspNetCore.Components;
+
+    using UI_DSM.Client.ViewModels.Components.NormalUser.ReviewObjective;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     Interface definition for <see cref="ProjectReviewViewModel" />
+    ///     This components provide <see cref="ReviewObjective" /> tasks
     /// </summary>
-    public interface IProjectReviewViewModel
+    public partial class ReviewObjectiveTasks
     {
         /// <summary>
-        ///     The <see cref="Project" />
+        ///     The <see cref="IReviewObjectiveTasksViewModel" /> for the component
         /// </summary>
-        Project Project { get; set; }
-
-
-        /// <summary>
-        ///     Navigate to the page dedicated to the given <see cref="Review" />
-        /// </summary>
-        /// <param name="review">The <see cref="Review" /></param>
-        void GoToReviewPage(Review review);
-
-        NavigationManager NavigationManager { get; set; }
+        [Parameter]
+        public IReviewObjectiveTasksViewModel ViewModel { get; set; }
     }
 }

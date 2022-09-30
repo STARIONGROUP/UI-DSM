@@ -9,18 +9,21 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-@page "/Project/{ProjectId}"
+@page "/Project/{ProjectId}/Review/{ReviewId}/ReviewObjective/{ReviewObjectiveId}"
 @layout DefaultLayout
 
-<PageTitle>Project | UI-DSM</PageTitle>
+<PageTitle>Objective title | UI-DSM</PageTitle>
 
-@if (this.ViewModel.ProjectReviewViewModel.Project == null)
+@if (this.ViewModel.ReviewObjectiveTasksViewModel.ReviewObjective == null)
 {
 	<div>
-		Project not found...
+		Review Objective not found...
 	</div>
 }
 else
 {
-	<ProjectReview ViewModel="@this.ViewModel.ProjectReviewViewModel" />
+	<UI_DSM.Client.Components.NormalUser.ReviewObjective.ReviewObjectiveTasks ViewModel="@this.ViewModel.ReviewObjectiveTasksViewModel" />
 }
+
+
+

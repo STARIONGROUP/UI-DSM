@@ -17,21 +17,21 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     Interface definition for <see cref="ProjectReviewViewModel" />
+    ///     Interface definition for <see cref="ReviewObjectiveViewModel" />
     /// </summary>
-    public interface IProjectReviewViewModel
+    public interface IReviewObjectiveViewModel
     {
         /// <summary>
-        ///     The <see cref="Project" />
+        ///     The <see cref="Review" />
         /// </summary>
-        Project Project { get; set; }
+        Review Review { get; set; }
 
-
+        
         /// <summary>
-        ///     Navigate to the page dedicated to the given <see cref="Review" />
+        ///     Navigate to the page dedicated to the given <see cref="ReviewObjective" />
         /// </summary>
-        /// <param name="review">The <see cref="Review" /></param>
-        void GoToReviewPage(Review review);
+        /// <param name="reviewObjective">The <see cref="ReviewObjective" /></param>
+        void GoToReviewObjectivePage(ReviewObjective reviewObjective);
 
         NavigationManager NavigationManager { get; set; }
     }

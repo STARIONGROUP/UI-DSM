@@ -14,7 +14,10 @@
 namespace UI_DSM.Client.ViewModels.Pages
 {
     using DynamicData;
+    
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Authorization;
+
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -26,6 +29,13 @@ namespace UI_DSM.Client.ViewModels.Pages
         ///     Populate the <see cref="AvailableProject" /> collection
         /// </summary>
         void PopulateAvailableProjects();
+
+        /// <summary>
+        ///     Populates the <see cref="IndexViewModel.AvailableProject" /> collection based on a <see cref="AuthenticationState" />
+        /// </summary>
+        /// <param name="state">The <see cref="AuthenticationState" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        Task PopulateAvailableProjects(AuthenticationState state);
 
         /// <summary>
         ///     A collection of available <see cref="Project" /> for the user
