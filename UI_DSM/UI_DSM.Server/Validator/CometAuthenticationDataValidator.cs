@@ -27,7 +27,14 @@ namespace UI_DSM.Server.Validator
         /// </summary>
         public CometAuthenticationDataValidator()
         {
-            this.RuleFor(x => x.Url).NotEmpty();
+            this.RuleFor(x => x.Url).NotEmpty()
+                .Empty()
+                .When(x => x.UploadFromFile)
+                .WithMessage("The url cannot be set when uploading a file")
+                .NotEmpty()
+                .When(x => !x.UploadFromFile)
+                .WithMessage("The url can not be empty");
+
             this.RuleFor(x => x.UserName).NotEmpty();
             this.RuleFor(x => x.Password).NotEmpty();
         }

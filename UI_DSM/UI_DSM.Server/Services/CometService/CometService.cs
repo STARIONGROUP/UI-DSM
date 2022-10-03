@@ -56,14 +56,14 @@ namespace UI_DSM.Server.Services.CometService
         /// <summary>
         ///     Tries to login to a Comet <see cref="ISession" />
         /// </summary>
-        /// <param name="authenticationData">The <see cref="CometAuthenticationData" /></param>
+        /// <param name="uploadData">The <see cref="CometAuthenticationData" /></param>
         /// <returns>A <see cref="Task" /> with the result of the login process</returns>
-        public async Task<Tuple<AuthenticationStatus, Guid>> Login(CometAuthenticationData authenticationData)
+        public async Task<Tuple<AuthenticationStatus, Guid>> Login(CometAuthenticationData uploadData)
         {
             var sessionId = Guid.NewGuid();
-            var uri = new Uri(authenticationData.Url);
+            var uri = new Uri(uploadData.Url);
             var dal = new CdpServicesDal();
-            var credentials = new Credentials(authenticationData.UserName, authenticationData.Password, uri);
+            var credentials = new Credentials(uploadData.UserName, uploadData.Password, uri);
             var session = new Session(dal, credentials);
 
             try
@@ -104,6 +104,7 @@ namespace UI_DSM.Server.Services.CometService
 
             await session.Close();
             this.currentSessions.Remove(sessionId);
+            this.fileService.DeleteTemporaryFile($"{sessionId}.zip");
         }
 
         /// <summary>
@@ -166,7 +167,7 @@ namespace UI_DSM.Server.Services.CometService
         public async Task<string> CreateAnnexC3File(Iteration iteration)
         {
             var fileName = $"{iteration.Iid}.zip";
-            var path = Path.Combine(this.fileService.GetTempFolder(),fileName);
+            var path = Path.Combine(this.fileService.GetTempFolder(), fileName);
             var credentials = new Credentials("admin", "pass", new Uri(path));
             var dal = new JsonFileDal();
             _ = new Session(dal, credentials);
@@ -209,6 +210,62 @@ namespace UI_DSM.Server.Services.CometService
             }
 
             return iteration;
+        }
+
+        /// <summary>
+        ///     Tries to read an Annex C3 file
+        /// </summary>
+        /// <param name="file">The <see cref="IFormFile" /></param>
+        /// <param name="authenticationData">The <see cref="CometAuthenticationData" /></param>
+        /// <returns>A <see cref="Task" /> with the result of the operation</returns>
+        public async Task<Tuple<AuthenticationStatus, Guid>> ReadAnnexC3File(IFormFile file, CometAuthenticationData authenticationData)
+        {
+            var sessionGuid = Guid.NewGuid();
+            var fileName = $"{sessionGuid}.zip";
+            await this.fileService.WriteToFile(file, fileName);
+
+            var openedSession = await this.OpenSession(Path.Combine(this.fileService.GetTempFolder(), fileName),
+                authenticationData.UserName, authenticationData.Password);
+
+            if (openedSession.Item1 == AuthenticationStatus.Success)
+            {
+                this.currentSessions[sessionGuid] = openedSession.Item2;
+                return new Tuple<AuthenticationStatus, Guid>(AuthenticationStatus.Success, sessionGuid);
+            }
+
+            this.fileService.DeleteTemporaryFile(fileName);
+            return new Tuple<AuthenticationStatus, Guid>(openedSession.Item1, Guid.Empty);
+        }
+
+        /// <summary>
+        ///     Tries to open an <see cref="ISession" /> from an Annex C3 file
+        /// </summary>
+        /// <param name="filePath">The file path </param>
+        /// <param name="userName">The username</param>
+        /// <param name="password">The password</param>
+        /// <returns>A <see cref="Task" /> with the result of the operation</returns>
+        public async Task<Tuple<AuthenticationStatus, ISession>> OpenSession(string filePath, string userName = "admin", string password = "Password")
+        {
+            try
+            {
+                var credentials = new Credentials(userName, password, new Uri(filePath));
+                var dal = new JsonFileDal();
+                var session = new Session(dal, credentials);
+                await session.Open();
+                var isSessionOpen = session.RetrieveSiteDirectory() != null;
+
+                return isSessionOpen
+                    ? new Tuple<AuthenticationStatus, ISession>(AuthenticationStatus.Success, session)
+                    : new Tuple<AuthenticationStatus, ISession>(AuthenticationStatus.Fail, session);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return new Tuple<AuthenticationStatus, ISession>(AuthenticationStatus.Fail, null);
+            }
+            catch (FileLoadException)
+            {
+                return new Tuple<AuthenticationStatus, ISession>(AuthenticationStatus.ServerFailure, null);
+            }
         }
 
         /// <summary>

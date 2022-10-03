@@ -13,12 +13,16 @@
 
 namespace UI_DSM.Server.Tests.Modules
 {
+    using System.Text.Json;
+
     using Carter;
 
     using CDP4Common.EngineeringModelData;
     using CDP4Common.SiteDirectoryData;
 
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Primitives;
+
     using Moq;
 
     using NUnit.Framework;
@@ -38,6 +42,7 @@ namespace UI_DSM.Server.Tests.Modules
         private Mock<HttpContext> context;
         private Mock<HttpResponse> response;
         private Mock<IServiceProvider> serviceProvider;
+        private Mock<HttpRequest> request;
 
         [SetUp]
         public void Setup()
@@ -45,7 +50,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.cometService = new Mock<ICometService>();
 
             ModuleTestHelper.Setup<CometModule, CometAuthenticationData>(new CometAuthenticationDataValidator(), out this.context,
-                out this.response, out _, out this.serviceProvider);
+                out this.response, out this.request, out this.serviceProvider);
 
             this.module = new CometModule(this.cometService.Object);
         }
@@ -156,6 +161,63 @@ namespace UI_DSM.Server.Tests.Modules
 
             await this.module.UploadIteration(sessionId, modelUpload, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 400, Times.Exactly(2));
+        }
+
+        [Test]
+        public async Task VerifyUploadAnnexC3()
+        {
+            var formColletion = new Mock<IFormCollection>();
+            var formFileCollection = new FormFileCollection();
+            this.request.Setup(x => x.Form).Returns(formColletion.Object);
+            formColletion.Setup(x => x.Files).Returns(formFileCollection);
+            await this.module.UploadAnnexC3(this.context.Object); 
+            this.response.VerifySet(x => x.StatusCode = 400, Times.Once);
+
+            var formFile = new Mock<IFormFile>();
+            formFile.Setup(x => x.ContentType).Returns("application/json");
+            formFileCollection.Add(formFile.Object);
+            await this.module.UploadAnnexC3(this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 400, Times.Exactly(2));
+            
+            formFile.Setup(x => x.ContentType).Returns("application/x-zip-compressed");
+            var stringValues = new StringValues();
+            formColletion.Setup(x => x.TryGetValue("authenticationData", out stringValues)).Returns(false);
+            await this.module.UploadAnnexC3(this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 400, Times.Exactly(3));
+
+            var authenticationData = new CometAuthenticationData()
+            {
+                UploadFromFile = false,
+                UserName = "admin",
+                Password = "pass"
+            };
+
+            stringValues = new StringValues(new []{JsonSerializer.Serialize(authenticationData)});
+            formColletion.Setup(x => x.TryGetValue("authenticationData", out stringValues)).Returns(true);
+            this.response.Setup(x => x.StatusCode).Returns(200);
+
+            await this.module.UploadAnnexC3(this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 400, Times.Exactly(4));
+            authenticationData.UploadFromFile = true;
+            stringValues = new StringValues(new[] { JsonSerializer.Serialize(authenticationData) });
+            formColletion.Setup(x => x.TryGetValue("authenticationData", out stringValues)).Returns(true);
+
+            this.cometService.Setup(x => x.ReadAnnexC3File(It.IsAny<IFormFile>(), It.IsAny<CometAuthenticationData>()))
+                .ReturnsAsync(new Tuple<AuthenticationStatus, Guid>(AuthenticationStatus.Fail, Guid.Empty));
+
+            await this.module.UploadAnnexC3(this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
+
+            this.cometService.Setup(x => x.ReadAnnexC3File(It.IsAny<IFormFile>(), It.IsAny<CometAuthenticationData>()))
+                .ReturnsAsync(new Tuple<AuthenticationStatus, Guid>(AuthenticationStatus.ServerFailure, Guid.Empty));
+
+            await this.module.UploadAnnexC3(this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 500, Times.Once);
+
+            this.cometService.Setup(x => x.ReadAnnexC3File(It.IsAny<IFormFile>(), It.IsAny<CometAuthenticationData>()))
+                .ReturnsAsync(new Tuple<AuthenticationStatus, Guid>(AuthenticationStatus.Success, Guid.NewGuid()));
+            
+            await this.module.UploadAnnexC3(this.context.Object);
         }
     }
 }

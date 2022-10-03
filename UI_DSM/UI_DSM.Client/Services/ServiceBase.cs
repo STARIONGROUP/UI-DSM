@@ -15,7 +15,7 @@ namespace UI_DSM.Client.Services
 {
     using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Client.Services.JsonDeserializerProvider;
+    using UI_DSM.Client.Services.JsonService;
 
     /// <summary>
     ///     Base class for any service that needs to access to the API
@@ -28,11 +28,6 @@ namespace UI_DSM.Client.Services
         protected HttpClient HttpClient;
 
         /// <summary>
-        /// The <see cref="IJsonService"/>
-        /// </summary>
-        protected IJsonService jsonService { get; private set; }
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="ServiceBase" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="HttpClient" /></param>
@@ -43,6 +38,11 @@ namespace UI_DSM.Client.Services
             this.MainRoute = this.GetRoute();
             this.jsonService = jsonService;
         }
+
+        /// <summary>
+        ///     The <see cref="IJsonService" />
+        /// </summary>
+        protected IJsonService jsonService { get; private set; }
 
         /// <summary>
         ///     A <see cref="Dictionary{TKey,TValue}" /> that store the main route for all <see cref="ServiceBase" />

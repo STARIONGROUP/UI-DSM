@@ -14,6 +14,7 @@
 namespace UI_DSM.Server.Modules
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Text.Json;
 
     using Carter.ModelBinding;
     using Carter.Response;
@@ -22,6 +23,7 @@ namespace UI_DSM.Server.Modules
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Primitives;
 
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Server.Services.CometService;
@@ -83,6 +85,72 @@ namespace UI_DSM.Server.Modules
                 .Produces<RequestResponseDto>(404)
                 .WithTags("Comet")
                 .WithName("Comet/Logout");
+
+            app.MapPost($"{this.MainRoute}/Upload", this.UploadAnnexC3);
+        }
+
+        /// <summary>
+        ///     Uploads an Annex C3 file and tries to open it
+        /// </summary>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        [Authorize(Roles = "Administrator")]
+        public async Task UploadAnnexC3(HttpContext context)
+        {
+            var response = new CometAuthenticationResponse();
+
+            var authenticationDataValue = VerifyFormRequestAndExtractData(context, response);
+
+            if (context.Response.StatusCode != 200)
+            {
+                await context.Response.Negotiate(response);
+                return;
+            }
+
+            CometAuthenticationData authenticationData;
+
+            try
+            {
+                authenticationData = JsonSerializer.Deserialize<CometAuthenticationData>(authenticationDataValue);
+                var validation = context.Request.Validate(authenticationData);
+
+                if (!validation.IsValid)
+                {
+                    throw new InvalidDataException();
+                }
+            }
+            catch
+            {
+                response.Errors = new List<string>
+                {
+                    "The field 'authenticationData' is invalid!"
+                };
+
+                context.Response.StatusCode = 400;
+                await context.Response.Negotiate(response);
+                return;
+            }
+
+            var file = context.Request.Form.Files.First();
+            var result = await this.cometService.ReadAnnexC3File(file, authenticationData);
+
+            switch (result.Item1)
+            {
+                case AuthenticationStatus.Success:
+                    response.SessionId = result.Item2;
+                    response.IsRequestSuccessful = true;
+                    break;
+                case AuthenticationStatus.Fail:
+                    response.Errors = new List<string> { "Invalid username/password" };
+                    context.Response.StatusCode = 401;
+                    break;
+                case AuthenticationStatus.ServerFailure:
+                    response.Errors = new List<string> { "Invalid AnnexC3 file" };
+                    context.Response.StatusCode = 500;
+                    break;
+            }
+
+            await context.Response.Negotiate(response);
         }
 
         /// <summary>
@@ -148,14 +216,14 @@ namespace UI_DSM.Server.Modules
         /// <summary>
         ///     Tries to log to a Comet session
         /// </summary>
-        /// <param name="authenticationData">The <see cref="CometAuthenticationData" /> to use to establish the connection</param>
+        /// <param name="uploadData">The <see cref="CometAuthenticationData" /> to use to establish the connection</param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize(Roles = "Administrator")]
-        public async Task Login([FromBody] CometAuthenticationData authenticationData, HttpContext context)
+        public async Task Login([FromBody] CometAuthenticationData uploadData, HttpContext context)
         {
             var cometResponse = new CometAuthenticationResponse();
-            var validationResult = context.Request.Validate(authenticationData);
+            var validationResult = context.Request.Validate(uploadData);
 
             if (!validationResult.IsValid)
             {
@@ -165,7 +233,7 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            var result = await this.cometService.Login(authenticationData);
+            var result = await this.cometService.Login(uploadData);
 
             switch (result.Item1)
             {
@@ -178,7 +246,7 @@ namespace UI_DSM.Server.Modules
                     context.Response.StatusCode = 401;
                     break;
                 case AuthenticationStatus.ServerFailure:
-                    cometResponse.Errors = new List<string> { $"Comet server not reachable at the folling url {authenticationData.Url}" };
+                    cometResponse.Errors = new List<string> { $"Comet server not reachable at the folling url {uploadData.Url}" };
                     context.Response.StatusCode = 500;
                     break;
             }
@@ -223,6 +291,41 @@ namespace UI_DSM.Server.Modules
             }
 
             await context.Response.Negotiate(response);
+        }
+
+        /// <summary>
+        ///     Verifies that the <see cref="IFormCollection" /> contains <see cref="IFormFile" /> and <see cref="StringValues" />
+        /// </summary>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="response">The <see cref="RequestResponseDto" /></param>
+        /// <returns>
+        ///     The contained value inside the <see cref="IFormCollection" /> for the <see cref="CometAuthenticationData" /> field
+        /// </returns>
+        private static string VerifyFormRequestAndExtractData(HttpContext context, RequestResponseDto response)
+        {
+            if (context.Request.Form.Files.Count != 1 || context.Request.Form.Files.First().ContentType != "application/x-zip-compressed")
+            {
+                response.Errors = new List<string>
+                {
+                    "The request only accept a single zip file!"
+                };
+
+                context.Response.StatusCode = 400;
+                return string.Empty;
+            }
+
+            if (!context.Request.Form.TryGetValue("authenticationData", out var authenticationDataValue))
+            {
+                response.Errors = new List<string>
+                {
+                    "The request must contains a field 'authenticationData'!"
+                };
+
+                context.Response.StatusCode = 400;
+                return string.Empty;
+            }
+
+            return authenticationDataValue.First();
         }
     }
 }

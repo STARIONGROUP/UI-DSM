@@ -20,7 +20,7 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
     using RichardSzalay.MockHttp;
 
     using UI_DSM.Client.Services;
-    using UI_DSM.Client.Services.JsonDeserializerProvider;
+    using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Client.Services.ReplyService;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;

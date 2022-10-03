@@ -22,7 +22,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
 
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.Administration.ProjectService;
-    using UI_DSM.Client.Services.JsonDeserializerProvider;
+    using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;

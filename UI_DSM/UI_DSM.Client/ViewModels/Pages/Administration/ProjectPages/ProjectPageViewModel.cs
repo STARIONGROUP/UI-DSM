@@ -79,10 +79,10 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         /// <param name="projectService">The <see cref="IProjectService" /></param>
         /// <param name="participantService">The <see cref="IParticipantService" /></param>
         /// <param name="roleService">The <see cref="IRoleService" /></param>
-        /// <param name="cometConnectionViewModel">The <see cref="ICometConnectionViewModel" /></param>
+        /// <param name="cometUploadViewModel">The <see cref="ICometUploadViewModel" /></param>
         /// <param name="artifactService">The <see cref="IArtifactService" /></param>
         public ProjectPageViewModel(IProjectService projectService, IParticipantService participantService, IRoleService roleService,
-            ICometConnectionViewModel cometConnectionViewModel, IArtifactService artifactService)
+            ICometUploadViewModel cometUploadViewModel, IArtifactService artifactService)
         {
             this.projectService = projectService;
             this.participantService = participantService;
@@ -93,20 +93,20 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
                 OnValidSubmit = new EventCallbackFactory().Create(this, this.CreateParticipant)
             };
 
-            this.CometConnectionViewModel = cometConnectionViewModel;
-            this.CometConnectionViewModel.OnEventCallback = new EventCallbackFactory().Create(this, _ => this.UploadIteration());
+            this.CometUploadViewModel = cometUploadViewModel;
+            this.CometUploadViewModel.OnEventCallback = new EventCallbackFactory().Create(this, _ => this.UploadIteration());
 
             this.disposables.Add(this.WhenAnyValue(x => x.IsOnCometConnectionMode)
-                .Where(x => !x).Subscribe(async _ => await this.CometConnectionViewModel.CometLogout()));
+                .Where(x => !x).Subscribe(async _ => await this.CometUploadViewModel.CometLogout()));
 
             this.disposables.Add(this.WhenAnyValue(x => x.IsOnCometConnectionMode)
-                .Where(x => x).Subscribe(_ => this.CometConnectionViewModel.InitializeProperties()));
+                .Where(x => x).Subscribe(_ => this.CometUploadViewModel.InitializeProperties()));
         }
 
         /// <summary>
-        ///     The <see cref="ICometConnectionViewModel" /> for the <see cref="CometConnection" /> component
+        ///     The <see cref="ICometUploadViewModel" /> for the <see cref="CometConnection" /> component
         /// </summary>
-        public ICometConnectionViewModel CometConnectionViewModel { get; }
+        public ICometUploadViewModel CometUploadViewModel { get; }
 
         /// <summary>
         ///     The <see cref="IProjectDetailsViewModel" /> for the <see cref="ProjectDetails" /> component
@@ -187,12 +187,12 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         /// <returns>A <see cref="Task" /></returns>
         private async Task UploadIteration()
         {
-            var uploadResponse = await this.CometConnectionViewModel.UploadSelectedIteration();
+            var uploadResponse = await this.CometUploadViewModel.UploadSelectedIteration();
 
             if (uploadResponse.IsRequestSuccessful)
             {
                 var uploadModelResponse = await this.artifactService.UploadModel(this.ProjectDetailsViewModel.Project.Id, uploadResponse.UploadedFilePath,
-                    $"{this.CometConnectionViewModel.SelectedEngineeringModelSetup.Item2} - {this.CometConnectionViewModel.SelectedIterationSetup.Item2}");
+                    $"{this.CometUploadViewModel.SelectedEngineeringModelSetup.Item2} - {this.CometUploadViewModel.SelectedIterationSetup.Item2}");
 
                 if (uploadModelResponse.IsRequestSuccessful)
                 {
@@ -201,12 +201,12 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
                 }
                 else
                 {
-                    this.CometConnectionViewModel.HandleUploadFailure(uploadModelResponse);
+                    this.CometUploadViewModel.HandleUploadFailure(uploadModelResponse);
                 }
             }
             else
             {
-                this.CometConnectionViewModel.HandleUploadFailure(uploadResponse);
+                this.CometUploadViewModel.HandleUploadFailure(uploadResponse);
             }
         }
 

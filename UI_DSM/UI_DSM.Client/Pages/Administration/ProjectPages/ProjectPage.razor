@@ -39,7 +39,7 @@ else
 		</AppButton>
 		<DxPopup CloseOnOutsideClick="false" HeaderText="Upload an Iteration" @bind-Visible="@this.ViewModel.IsOnCometConnectionMode">
 			<Content>
-				<CometConnection ViewModel="@this.ViewModel.CometConnectionViewModel"/>
+				<CometUpload ViewModel="@this.ViewModel.CometUploadViewModel"/>
 			</Content>
 		</DxPopup>
 	</div>

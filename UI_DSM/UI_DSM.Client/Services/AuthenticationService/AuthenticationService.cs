@@ -23,7 +23,7 @@ namespace UI_DSM.Client.Services.AuthenticationService
 
     using Newtonsoft.Json;
 
-    using UI_DSM.Client.Services.JsonDeserializerProvider;
+    using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Shared.DTO.UserManagement;
 
     /// <summary>

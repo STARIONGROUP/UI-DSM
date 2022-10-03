@@ -13,8 +13,8 @@
 
 namespace UI_DSM.Client.Services.Administration.CometService
 {
+    using System.Net.Http.Headers;
     using System.Text;
-    using System.Text.Json;
 
     using CDP4Common.EngineeringModelData;
     using CDP4Common.SiteDirectoryData;
@@ -22,8 +22,9 @@ namespace UI_DSM.Client.Services.Administration.CometService
     using CDP4Dal;
 
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Forms;
 
-    using UI_DSM.Client.Services.JsonDeserializerProvider;
+    using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Shared.DTO.CometData;
 
     /// <summary>
@@ -44,11 +45,11 @@ namespace UI_DSM.Client.Services.Administration.CometService
         /// <summary>
         ///     Tries to login to a Comet <see cref="ISession" />
         /// </summary>
-        /// <param name="authenticationData">The <see cref="CometAuthenticationData" /></param>
+        /// <param name="uploadData">The <see cref="CometAuthenticationData" /></param>
         /// <returns>A <see cref="Task" /> with the result of the connection</returns>
-        public async Task<CometAuthenticationResponse> Login(CometAuthenticationData authenticationData)
+        public async Task<CometAuthenticationResponse> Login(CometAuthenticationData uploadData)
         {
-            var content = JsonSerializer.Serialize(authenticationData);
+            var content = this.jsonService.Serialize(uploadData);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
             var response = await this.HttpClient.PostAsync(Path.Combine(this.MainRoute, "Login"), bodyContent);
             return this.jsonService.Deserialize<CometAuthenticationResponse>(await response.Content.ReadAsStreamAsync());
@@ -91,16 +92,46 @@ namespace UI_DSM.Client.Services.Administration.CometService
         /// <returns>A <see cref="Task" /> with the <see cref="ModelUploadResponse" /></returns>
         public async Task<ModelUploadResponse> UploadIteration(Guid sessionId, Guid modelId, Guid iterationId)
         {
-            var modelUpload = new ModelUploadData()
+            var modelUpload = new ModelUploadData
             {
                 IterationId = iterationId,
                 ModelId = modelId
             };
 
-            var content = JsonSerializer.Serialize(modelUpload);
+            var content = this.jsonService.Serialize(modelUpload);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
             var response = await this.HttpClient.PostAsync($"{this.MainRoute}/{sessionId}/Models/Upload", bodyContent);
             return this.jsonService.Deserialize<ModelUploadResponse>(await response.Content.ReadAsStreamAsync());
+        }
+
+        /// <summary>
+        ///     Uploads an Annex C3 file and tries to opens it
+        /// </summary>
+        /// <param name="uploadData">The <see cref="CometAuthenticationData" /></param>
+        /// <param name="browserFile">The <see cref="IBrowserFile" /></param>
+        /// <returns>A <see cref="Task" /> with the result of the upload</returns>
+        public async Task<CometAuthenticationResponse> UploadAnnexC3File(CometAuthenticationData uploadData, IBrowserFile browserFile)
+        {
+            const int limitSize = 512000 * 2;
+
+            if (browserFile.Size > limitSize)
+            {
+                return new CometAuthenticationResponse()
+                {
+                    Errors = new List<string>
+                    {
+                        $"The file size must not exceed {limitSize / 100}Kb"
+                    }
+                };
+            }
+
+            var content = new MultipartFormDataContent();
+            var fileContent = new StreamContent(browserFile.OpenReadStream(limitSize));
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(browserFile.ContentType);
+            content.Add(fileContent, "file", browserFile.Name);
+            content.Add(new StringContent(this.jsonService.Serialize(uploadData)), "authenticationData");
+            var response = await this.HttpClient.PostAsync(Path.Combine(this.MainRoute, "Upload"), content);
+            return this.jsonService.Deserialize<CometAuthenticationResponse>(await response.Content.ReadAsStreamAsync());
         }
     }
 }

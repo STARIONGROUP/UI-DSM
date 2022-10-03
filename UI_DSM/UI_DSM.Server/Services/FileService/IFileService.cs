@@ -65,5 +65,13 @@ namespace UI_DSM.Server.Services.FileService
         /// <param name="fileName">The <see cref="File" /> name</param>
         /// <returns>A value indicating if the <see cref="File" /> exists</returns>
         bool Exists(string folderPath, string fileName);
+
+        /// <summary>
+        ///     Write the content of the <see cref="IFormFile" /> into a temporary file
+        /// </summary>
+        /// <param name="file">The <see cref="IFormFile" /></param>
+        /// <param name="fileName">The name of the file</param>
+        /// <returns>A <see cref="Task" /></returns>
+        Task WriteToFile(IFormFile file, string fileName);
     }
 }

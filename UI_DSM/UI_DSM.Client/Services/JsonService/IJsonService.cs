@@ -11,7 +11,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Services.JsonDeserializerProvider
+namespace UI_DSM.Client.Services.JsonService
 {
     /// <summary>
     ///     Interface definition for <see cref="JsonService" />

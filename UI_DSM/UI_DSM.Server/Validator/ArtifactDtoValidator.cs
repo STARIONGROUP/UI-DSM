@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="ArtifactValidator.cs" company="RHEA System S.A.">
+// <copyright file="ArtifactDtoValidator.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -20,12 +20,12 @@ namespace UI_DSM.Server.Validator
     /// <summary>
     ///     <see cref="AbstractValidator{T}" /> for the <see cref="ArtifactDto" />
     /// </summary>
-    public class ArtifactValidator : AbstractValidator<ArtifactDto>
+    public class ArtifactDtoValidator : AbstractValidator<ArtifactDto>
     {
         /// <summary>
-        ///     Initializes a new <see cref="ArtifactValidator" />
+        ///     Initializes a new <see cref="ArtifactDtoValidator" />
         /// </summary>
-        public ArtifactValidator()
+        public ArtifactDtoValidator()
         {
         }
     }

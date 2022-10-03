@@ -15,7 +15,7 @@ namespace UI_DSM.Client.Services.ReviewService
 {
     using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Client.Services.JsonDeserializerProvider;
+    using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;

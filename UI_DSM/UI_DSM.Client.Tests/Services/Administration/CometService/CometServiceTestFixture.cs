@@ -15,13 +15,15 @@ namespace UI_DSM.Client.Tests.Services.Administration.CometService
 {
     using System.Net;
 
+    using Microsoft.AspNetCore.Components.Forms;
+    using Moq;
     using NUnit.Framework;
 
     using RichardSzalay.MockHttp;
 
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.Administration.CometService;
-    using UI_DSM.Client.Services.JsonDeserializerProvider;
+    using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.CometData;
 
@@ -123,6 +125,51 @@ namespace UI_DSM.Client.Tests.Services.Administration.CometService
 
             httpResponse.Content = new StringContent(this.jsonService.Serialize(modelUploadResponse));
             Assert.That((await this.service.UploadIteration(sessionId, Guid.NewGuid(),Guid.NewGuid())).IsRequestSuccessful, Is.True);
+        }
+
+        [Test]
+        public async Task VerifyUploadAnnexC3File()
+        {
+            var browserFile = new Mock<IBrowserFile>();
+            browserFile.Setup(x => x.Size).Returns(512000 * 3);
+
+            var authenticationData = new CometAuthenticationData()
+            {
+                UploadFromFile = true,
+                UserName = "admin",
+                Password = "pass"
+            };
+
+            var cometAuthenticationResponse = await this.service.UploadAnnexC3File(authenticationData, browserFile.Object);
+            Assert.That(cometAuthenticationResponse.Errors, Is.Not.Empty);
+
+            browserFile.Setup(x => x.Size).Returns(512000);
+            browserFile.Setup(x => x.ContentType).Returns("application/x-zip-compressed");
+            browserFile.Setup(x => x.Name).Returns("LOFT.zip");
+            browserFile.Setup(x => x.OpenReadStream(It.IsAny<long>(), default)).Returns(new MemoryStream());
+
+            var httpResponse = new HttpResponseMessage();
+            var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Comet/Upload");
+            request.Respond(_ => httpResponse);
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(new CometAuthenticationResponse()
+            {
+                IsRequestSuccessful = false
+            }));
+
+            cometAuthenticationResponse = await this.service.UploadAnnexC3File(authenticationData, browserFile.Object);
+
+            Assert.That(cometAuthenticationResponse.IsRequestSuccessful, Is.False);
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(new CometAuthenticationResponse()
+            {
+                SessionId = Guid.NewGuid(),
+                IsRequestSuccessful = true
+            }));
+
+            cometAuthenticationResponse = await this.service.UploadAnnexC3File(authenticationData, browserFile.Object);
+
+            Assert.That(cometAuthenticationResponse.IsRequestSuccessful, Is.True);
         }
     }
 }

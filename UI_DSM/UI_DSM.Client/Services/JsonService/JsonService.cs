@@ -11,7 +11,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Services.JsonDeserializerProvider
+namespace UI_DSM.Client.Services.JsonService
 {
     using System.Text.Json;
 

@@ -18,6 +18,7 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
     using CDP4Common.EngineeringModelData;
 
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Forms;
 
     using ReactiveUI;
 
@@ -28,9 +29,9 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
     using UI_DSM.Shared.DTO.Common;
 
     /// <summary>
-    ///     View model for the <see cref="CometConnection" /> component
+    ///     View model for the <see cref="CometUpload" /> component
     /// </summary>
-    public class CometConnectionViewModel : ReactiveObject, ICometConnectionViewModel
+    public class CometUploadViewModel : ReactiveObject, ICometUploadViewModel
     {
         /// <summary>
         ///     The <see cref="ICometService" />
@@ -46,6 +47,11 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
         ///     <see cref="Dictionary{TKey,TValue}" /> that stores available models with frozen Iteration
         /// </summary>
         private Dictionary<Guid, List<Tuple<Guid, string>>> availableModels;
+
+        /// <summary>
+        ///     Backing field for <see cref="BrowserFile" />
+        /// </summary>
+        private IBrowserFile browserFile;
 
         /// <summary>
         ///     Backing field for <see cref="CometConnectionStatus" />
@@ -78,12 +84,21 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
         private Guid sessionId;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="CometConnectionViewModel" /> class.
+        ///     Initializes a new instance of the <see cref="CometUploadViewModel" /> class.
         /// </summary>
         /// <param name="cometService">The <see cref="ICometService" /></param>
-        public CometConnectionViewModel(ICometService cometService)
+        public CometUploadViewModel(ICometService cometService)
         {
             this.cometService = cometService;
+        }
+
+        /// <summary>
+        ///     Gets the <see cref="IBrowserFile" /> to upload
+        /// </summary>
+        public IBrowserFile BrowserFile
+        {
+            get => this.browserFile;
+            private set => this.RaiseAndSetIfChanged(ref this.browserFile, value);
         }
 
         /// <summary>
@@ -145,7 +160,7 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
         /// <summary>
         ///     Gets the <see cref="CometAuthenticationData" />
         /// </summary>
-        public CometAuthenticationData AuthenticationData { get; } = new();
+        public CometAuthenticationData UploadData { get; } = new();
 
         /// <summary>
         ///     <see cref="EventCallback" /> to be called after the <see cref="SelectedIterationSetup" /> has been set
@@ -159,13 +174,16 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
         public async Task CometLogin()
         {
             this.CometConnectionStatus = AuthenticationStatus.Authenticating;
-            var response = await this.cometService.Login(this.AuthenticationData);
+
+            var response = this.UploadData.UploadFromFile 
+                ? await this.cometService.UploadAnnexC3File(this.UploadData, this.BrowserFile) 
+                : await this.cometService.Login(this.UploadData);
 
             if (response.IsRequestSuccessful)
             {
                 this.sessionId = response.SessionId;
                 this.CometConnectionStatus = AuthenticationStatus.Success;
-                this.AuthenticationData.Password = string.Empty;
+                this.UploadData.Password = string.Empty;
                 this.ErrorMessage = string.Empty;
                 var models = await this.cometService.GetAvailableEngineeringModels(this.sessionId);
                 this.availableModels = models.AvailableModels;
@@ -200,13 +218,15 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
         public void InitializeProperties()
         {
             this.CometConnectionStatus = AuthenticationStatus.None;
-            this.AuthenticationData.UserName = string.Empty;
-            this.AuthenticationData.Password = string.Empty;
+            this.UploadData.UserName = string.Empty;
+            this.UploadData.Password = string.Empty;
             this.ErrorMessage = string.Empty;
-            this.AuthenticationData.Url = string.Empty;
+            this.UploadData.Url = string.Empty;
             this.AvailableEngineeringModels = new List<Tuple<Guid, string>>();
             this.SelectedEngineeringModelSetup = null;
             this.SelectedIterationSetup = null;
+            this.BrowserFile = null;
+            this.UploadData.UploadFromFile = false;
             this.IterationUploadStatus = UploadStatus.None;
             this.availableModels = new Dictionary<Guid, List<Tuple<Guid, string>>>();
 
@@ -236,11 +256,37 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
         /// <summary>
         ///     Handle an upload failure
         /// </summary>
-        /// <param name="response">The <see cref="RequestResponseDto"/> that contains information about the failure</param>
+        /// <param name="response">The <see cref="RequestResponseDto" /> that contains information about the failure</param>
         public void HandleUploadFailure(RequestResponseDto response)
         {
             this.IterationUploadStatus = UploadStatus.Fail;
             this.ErrorMessage = response.Errors.FirstOrDefault();
+        }
+
+        /// <summary>
+        ///     Handle the change of the selected file to upload
+        /// </summary>
+        /// <param name="newBrowserFile">The <see cref="IBrowserFile" /></param>
+        public void HandleOnFileSelected(IBrowserFile newBrowserFile)
+        {
+            this.BrowserFile = newBrowserFile;
+            this.UploadData.UploadFromFile = true;
+            this.UploadData.Url = string.Empty;
+        }
+
+        /// <summary>
+        ///     Handle any change on the <see cref="CometAuthenticationData.Url" /> property
+        /// </summary>
+        /// <param name="newText">The new text</param>
+        public void UrlTextHasChanged(string newText)
+        {
+            this.UploadData.Url = newText;
+
+            if (!string.IsNullOrEmpty(this.UploadData.Url) && this.BrowserFile != null)
+            {
+                this.UploadData.UploadFromFile = false;
+                this.BrowserFile = null;
+            }
         }
 
         /// <summary>
@@ -253,8 +299,8 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
                 return;
             }
 
-            this.AvailableIterationsSetup = this.availableModels.TryGetValue(this.SelectedEngineeringModelSetup.Item1, out var iterations) 
-                ? iterations 
+            this.AvailableIterationsSetup = this.availableModels.TryGetValue(this.SelectedEngineeringModelSetup.Item1, out var iterations)
+                ? iterations
                 : new List<Tuple<Guid, string>>();
 
             this.SelectedIterationSetup = this.AvailableIterationsSetup?.FirstOrDefault();
