@@ -131,7 +131,7 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            var file = context.Request.Form.Files.First();
+            var file = context.Request.Form.Files[0];
             var result = await this.cometService.ReadAnnexC3File(file, authenticationData);
 
             switch (result.Item1)
@@ -303,7 +303,7 @@ namespace UI_DSM.Server.Modules
         /// </returns>
         private static string VerifyFormRequestAndExtractData(HttpContext context, RequestResponseDto response)
         {
-            if (context.Request.Form.Files.Count != 1 || context.Request.Form.Files.First().ContentType != "application/x-zip-compressed")
+            if (context.Request.Form.Files.Count != 1 || context.Request.Form.Files[0].ContentType != "application/x-zip-compressed")
             {
                 response.Errors = new List<string>
                 {
