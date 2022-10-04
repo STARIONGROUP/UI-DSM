@@ -44,6 +44,11 @@ namespace UI_DSM.Server.Services.FileService
                 throw new ArgumentNullException(nameof(storagePath));
             }
 
+            if (!Path.IsPathFullyQualified(storagePath))
+            {
+                storagePath = Path.GetFullPath(storagePath);
+            }
+
             if (!Directory.Exists(storagePath))
             {
                 Directory.CreateDirectory(storagePath);

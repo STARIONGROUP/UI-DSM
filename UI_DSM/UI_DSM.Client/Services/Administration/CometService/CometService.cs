@@ -127,7 +127,7 @@ namespace UI_DSM.Client.Services.Administration.CometService
 
             var content = new MultipartFormDataContent();
             var fileContent = new StreamContent(browserFile.OpenReadStream(limitSize));
-            fileContent.Headers.ContentType = new MediaTypeHeaderValue(browserFile.ContentType);
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/x-zip-compressed");
             content.Add(fileContent, "file", browserFile.Name);
             content.Add(new StringContent(this.jsonService.Serialize(uploadData)), "authenticationData");
             var response = await this.HttpClient.PostAsync(Path.Combine(this.MainRoute, "Upload"), content);
