@@ -4,7 +4,7 @@
   height: 100%;
   display: grid;
   grid-template-areas: "a b c";
-  grid-template-columns: 17vw 66vw 17vw;
+  grid-template-columns: 18vw 64vw 18vw;
 }
 
 .task-page__sidebar__left {

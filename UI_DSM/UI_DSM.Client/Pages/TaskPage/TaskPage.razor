@@ -42,11 +42,20 @@
             BodyCssClass="list-dropdown">
             <ul>
               <li>
-                <button> Requirement to function </button>
+                <button @onclick="() => CurrentView = ViewValue.FunctionalToProduct">
+                  Functional to product
+                </button>
               </li>
               <li>
-                <button> Readiness level </button>
-              </li>              
+                <button @onclick="() => CurrentView = ViewValue.RequirementToFunction">
+                  Requirement to function
+                </button>
+              </li>
+              <li>
+                <button @onclick="() => CurrentView = ViewValue.ReadinessLevel">
+                  Readiness level
+                </button>
+              </li>
             </ul>
           </DxDropDown>
         </div>
@@ -64,7 +73,18 @@
         </AppButton>
       </div>
 
-      <AppTraceabilityTable />
+      @if (CurrentView == ViewValue.FunctionalToProduct)
+      {
+        <AppTraceabilityTable />
+      }
+      else if (CurrentView == ViewValue.ReadinessLevel)
+      {
+        @CurrentView
+      }
+      else
+      {
+        @CurrentView
+      }
     </div>
   </main>
 
@@ -88,6 +108,16 @@
 
 @code {
   /// <summary>
+  /// Different variants on the button, for styling purpose
+  /// </summary>
+  public enum ViewValue
+  {
+    FunctionalToProduct,
+    ReadinessLevel,
+    RequirementToFunction
+  }
+
+  /// <summary>
   /// Bool to keep track of the open state of the user dropdown menu
   /// </summary>
   bool IsColumnMenuOpen { get; set; } = false;
@@ -96,4 +126,6 @@
   /// Bool to keep track of the open state of the user dropdown menu
   /// </summary>
   bool IsViewMenuOpen { get; set; } = false;
+
+  ViewValue CurrentView { get; set; } = ViewValue.FunctionalToProduct;
 }

@@ -23,15 +23,16 @@ table th {
   border-bottom: 1px solid var(--colors-gray-100);
   padding: var(--spacing-3);
 }
+
+table td:first-child,
+table th:first-child {
+  border-left: none;
+}
   
 
-table thead th {
-  border-top: 1px solid var(--colors-gray-100);
-}
-
-table th:last-child,
-table td:last-child {
-  border-right: 1px solid var(--colors-gray-100);
+table tr:last-child th,
+table tr:last-child td {
+  border-bottom: none;
 }
 
 table thead th {
