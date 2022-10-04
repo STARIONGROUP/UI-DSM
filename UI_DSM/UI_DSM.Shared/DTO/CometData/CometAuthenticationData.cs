@@ -16,6 +16,8 @@ namespace UI_DSM.Shared.DTO.CometData
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
 
+    using UI_DSM.Shared.Annotations;
+
     /// <summary>
     ///     Data used to establish a connection to a Comet session
     /// </summary>
@@ -24,8 +26,7 @@ namespace UI_DSM.Shared.DTO.CometData
         /// <summary>
         ///     Gets or sets the Url where the Comet instance can be reached
         /// </summary>
-        [Required]
-        [Url]
+        [OptionalUrl(ErrorMessage = "Enter the URL or provide an Annex C3 file")]
         public string Url { get; set; }
 
         /// <summary>
@@ -40,5 +41,11 @@ namespace UI_DSM.Shared.DTO.CometData
         [Required]
         [PasswordPropertyText]
         public string Password { get; set; }
+
+        /// <summary>
+        ///     Value indicating if the upload is done from a file or not
+        /// </summary>
+        [Required]
+        public bool UploadFromFile { get; set; }
     }
 }

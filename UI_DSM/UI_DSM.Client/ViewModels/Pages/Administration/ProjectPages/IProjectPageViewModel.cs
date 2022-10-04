@@ -53,9 +53,9 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         IParticipantCreationViewModel ParticipantCreationViewModel { get; }
 
         /// <summary>
-        ///     The <see cref="ICometConnectionViewModel" /> for the <see cref="CometConnection" /> component
+        ///     The <see cref="ICometUploadViewModel" /> for the <see cref="CometConnection" /> component
         /// </summary>
-        ICometConnectionViewModel CometConnectionViewModel { get; }
+        ICometUploadViewModel CometUploadViewModel { get; }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its

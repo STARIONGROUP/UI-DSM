@@ -19,7 +19,7 @@ namespace UI_DSM.Client.Tests.Services.ArtifactService
 
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.ArtifactService;
-    using UI_DSM.Client.Services.JsonDeserializerProvider;
+    using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Extensions;

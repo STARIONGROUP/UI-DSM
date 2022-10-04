@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="CometConnectionTestFixture.cs" company="RHEA System S.A.">
+// <copyright file="CometUploadTestFixture.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -31,10 +31,10 @@ namespace UI_DSM.Client.Tests.Components.Administration.ModelManagement
     using TestContext = Bunit.TestContext;
 
     [TestFixture]
-    public class CometConnectionTestFixture
+    public class CometUploadTestFixture
     {
         private TestContext context;
-        private ICometConnectionViewModel viewModel;
+        private ICometUploadViewModel viewModel;
         private Mock<ICometService> cometService;
 
         [SetUp]
@@ -43,7 +43,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ModelManagement
             this.context = new TestContext();
             this.context.ConfigureDevExpressBlazor();
             this.cometService = new Mock<ICometService>();
-            this.viewModel = new CometConnectionViewModel(this.cometService.Object);
+            this.viewModel = new CometUploadViewModel(this.cometService.Object);
         }
 
         [TearDown]
@@ -56,7 +56,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ModelManagement
         [Test]
         public async Task VerifyComponent()
         {
-            var renderer = this.context.RenderComponent<CometConnection>(parameters =>
+            var renderer = this.context.RenderComponent<CometUpload>(parameters =>
             {
                 parameters.Add(p => p.ViewModel, this.viewModel);
             });
@@ -65,11 +65,13 @@ namespace UI_DSM.Client.Tests.Components.Administration.ModelManagement
 
             var editForm = renderer.FindComponent<EditForm>();
 
-            this.viewModel.AuthenticationData.Url = "http://localhost";
-            this.viewModel.AuthenticationData.UserName = "admin";
-            this.viewModel.AuthenticationData.Password = "password";
+            const string url = "http://localhost";
+            this.viewModel.UrlTextHasChanged(url);
+            Assert.That(this.viewModel.UploadData.Url, Is.EqualTo(url));
+            this.viewModel.UploadData.UserName = "admin";
+            this.viewModel.UploadData.Password = "password";
 
-            this.cometService.Setup(x => x.Login(this.viewModel.AuthenticationData)).ReturnsAsync(new CometAuthenticationResponse()
+            this.cometService.Setup(x => x.Login(this.viewModel.UploadData)).ReturnsAsync(new CometAuthenticationResponse()
             {
                 IsRequestSuccessful = false
             });
@@ -79,7 +81,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ModelManagement
 
             var sessionId = Guid.NewGuid();
 
-            this.cometService.Setup(x => x.Login(this.viewModel.AuthenticationData)).ReturnsAsync(new CometAuthenticationResponse()
+            this.cometService.Setup(x => x.Login(this.viewModel.UploadData)).ReturnsAsync(new CometAuthenticationResponse()
             {
                 IsRequestSuccessful = true,
                 SessionId = sessionId
@@ -105,7 +107,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ModelManagement
                 .ReturnsAsync(modelsData);
 
             await renderer.InvokeAsync(editForm.Instance.OnValidSubmit.InvokeAsync);
-            Assert.That(this.viewModel.AuthenticationData.Password, Is.Empty);
+            Assert.That(this.viewModel.UploadData.Password, Is.Empty);
 
             this.viewModel.OnEventCallback = new EventCallbackFactory().Create(this.viewModel, async () =>
             {
@@ -117,6 +119,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ModelManagement
                 }
                 else
                 {
+                    await this.viewModel.UploadSelectedIteration();
                     await this.viewModel.CometLogout();
                 }
             });
@@ -140,6 +143,40 @@ namespace UI_DSM.Client.Tests.Components.Administration.ModelManagement
                 });
 
             await renderer.InvokeAsync(this.viewModel.OnEventCallback.InvokeAsync);
+        }
+
+        [Test]
+        public async Task VerifyFileUploadBehavior()
+        {
+            var renderer = this.context.RenderComponent<CometUpload>(parameters =>
+            {
+                parameters.Add(p => p.ViewModel, this.viewModel);
+            });
+
+            this.viewModel.InitializeProperties();
+
+            this.viewModel.UploadData.Url = "http://localhost";
+            this.viewModel.UploadData.UserName = "admin";
+            this.viewModel.UploadData.Password = "password";
+
+            var inputFile = renderer.FindComponent<InputFile>();
+
+            var browserFiles = new List<IBrowserFile>();
+            var eventArgs = new InputFileChangeEventArgs(browserFiles);
+            await renderer.InvokeAsync(async () => await inputFile.Instance.OnChange.InvokeAsync(eventArgs));
+
+            Assert.That(this.viewModel.UploadData.Url, Is.Not.Empty);
+
+            var browserFile = new Mock<IBrowserFile>();
+            browserFiles.Add(browserFile.Object);
+
+            eventArgs = new InputFileChangeEventArgs(browserFiles);
+            await renderer.InvokeAsync(async () => await inputFile.Instance.OnChange.InvokeAsync(eventArgs));
+
+            Assert.That(this.viewModel.UploadData.Url, Is.Empty);
+
+            this.viewModel.UrlTextHasChanged("http://localhost");
+            Assert.That(this.viewModel.BrowserFile, Is.Null);
         }
     }
 }

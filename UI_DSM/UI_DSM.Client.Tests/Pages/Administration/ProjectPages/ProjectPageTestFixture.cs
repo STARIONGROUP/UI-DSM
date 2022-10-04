@@ -43,7 +43,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
         private Mock<IParticipantService> participantService;
         private Mock<IRoleService> roleService;
         private Mock<IArtifactService> artifactService;
-        private Mock<ICometConnectionViewModel> cometConnexionViewModel;
+        private Mock<ICometUploadViewModel> cometConnexionViewModel;
 
         [SetUp]
         public void Setup()
@@ -52,7 +52,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
             this.projectService = new Mock<IProjectService>();
             this.participantService = new Mock<IParticipantService>();
             this.roleService = new Mock<IRoleService>();
-            this.cometConnexionViewModel = new Mock<ICometConnectionViewModel>();
+            this.cometConnexionViewModel = new Mock<ICometUploadViewModel>();
             this.artifactService = new Mock<IArtifactService>();
 
             this.viewModel = new ProjectPageViewModel(this.projectService.Object, this.participantService.Object, this.roleService.Object, 

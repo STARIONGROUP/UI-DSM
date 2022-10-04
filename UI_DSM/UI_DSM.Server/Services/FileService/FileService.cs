@@ -159,5 +159,17 @@ namespace UI_DSM.Server.Services.FileService
 
             return Path.Combine(newFolderPath, tempFileName);
         }
+
+        /// <summary>
+        ///     Write the content of the <see cref="IFormFile" /> into a temporary file
+        /// </summary>
+        /// <param name="file">The <see cref="IFormFile" /></param>
+        /// <param name="fileName">The name of the file</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public async Task WriteToFile(IFormFile file, string fileName)
+        {
+            await using var fileStream = File.Create(Path.Combine(this.GetTempFolder(), fileName));
+            await file.CopyToAsync(fileStream);
+        }
     }
 }

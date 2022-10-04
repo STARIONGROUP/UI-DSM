@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="ICometConnectionViewModel.cs" company="RHEA System S.A.">
+// <copyright file="ICometUploadViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
@@ -17,15 +17,16 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
     using CDP4Common.SiteDirectoryData;
 
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Forms;
 
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Shared.DTO.CometData;
     using UI_DSM.Shared.DTO.Common;
 
     /// <summary>
-    ///     Interface definition for <see cref="CometConnectionViewModel" />
+    ///     Interface definition for <see cref="CometUploadViewModel" />
     /// </summary>
-    public interface ICometConnectionViewModel : IDisposable
+    public interface ICometUploadViewModel : IDisposable
     {
         /// <summary>
         ///     A collection of available <see cref="Tuple{T1,T2}" />
@@ -65,12 +66,17 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
         /// <summary>
         ///     Gets the <see cref="CometAuthenticationData" />
         /// </summary>
-        CometAuthenticationData AuthenticationData { get; }
+        CometAuthenticationData UploadData { get; }
 
         /// <summary>
         ///     The error message
         /// </summary>
         string ErrorMessage { get; }
+
+        /// <summary>
+        ///     Gets the <see cref="IBrowserFile" /> to upload
+        /// </summary>
+        IBrowserFile BrowserFile { get; }
 
         /// <summary>
         ///     Tries to establish a connection to a Comet instance
@@ -98,7 +104,19 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
         /// <summary>
         ///     Handle an upload failure
         /// </summary>
-        /// <param name="response">The <see cref="RequestResponseDto"/> that contains information about the failure</param>
+        /// <param name="response">The <see cref="RequestResponseDto" /> that contains information about the failure</param>
         void HandleUploadFailure(RequestResponseDto response);
+
+        /// <summary>
+        ///     Handle the change of the selected file to upload
+        /// </summary>
+        /// <param name="newBrowserFile">The <see cref="IBrowserFile" /></param>
+        void HandleOnFileSelected(IBrowserFile newBrowserFile);
+
+        /// <summary>
+        ///     Handle any change on the <see cref="CometAuthenticationData.Url" /> property
+        /// </summary>
+        /// <param name="newText">The new text</param>
+        void UrlTextHasChanged(string newText);
     }
 }

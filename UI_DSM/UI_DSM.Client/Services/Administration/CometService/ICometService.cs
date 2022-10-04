@@ -18,6 +18,8 @@ namespace UI_DSM.Client.Services.Administration.CometService
 
     using CDP4Dal;
 
+    using Microsoft.AspNetCore.Components.Forms;
+
     using UI_DSM.Shared.DTO.CometData;
 
     /// <summary>
@@ -28,9 +30,9 @@ namespace UI_DSM.Client.Services.Administration.CometService
         /// <summary>
         ///     Tries to login to a Comet <see cref="ISession" />
         /// </summary>
-        /// <param name="authenticationData">The <see cref="CometAuthenticationData" /></param>
+        /// <param name="uploadData">The <see cref="CometAuthenticationData" /></param>
         /// <returns>A <see cref="Task" /> with the result of the connection</returns>
-        Task<CometAuthenticationResponse> Login(CometAuthenticationData authenticationData);
+        Task<CometAuthenticationResponse> Login(CometAuthenticationData uploadData);
 
         /// <summary>
         ///     Closes the current <see cref="ISession" />
@@ -54,5 +56,13 @@ namespace UI_DSM.Client.Services.Administration.CometService
         /// <param name="iterationId">The <see cref="Guid" /> of the <see cref="Iteration" /> to upload</param>
         /// <returns>A <see cref="Task" /> with the <see cref="ModelUploadResponse" /></returns>
         Task<ModelUploadResponse> UploadIteration(Guid sessionId, Guid modelId, Guid iterationId);
+
+        /// <summary>
+        ///     Uploads an Annex C3 file and tries to opens it
+        /// </summary>
+        /// <param name="uploadData">The <see cref="CometAuthenticationData" /></param>
+        /// <param name="browserFile">The <see cref="IBrowserFile" /></param>
+        /// <returns>A <see cref="Task" /> with the result of the upload</returns>
+        Task<CometAuthenticationResponse> UploadAnnexC3File(CometAuthenticationData uploadData, IBrowserFile browserFile);
     }
 }

@@ -17,7 +17,7 @@ namespace UI_DSM.Client.Services
 
     using Microsoft.AspNetCore.WebUtilities;
 
-    using UI_DSM.Client.Services.JsonDeserializerProvider;
+    using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Shared.Assembler;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;

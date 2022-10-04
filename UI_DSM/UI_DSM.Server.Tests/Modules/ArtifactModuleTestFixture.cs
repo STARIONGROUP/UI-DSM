@@ -51,7 +51,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.artifactManager.As<IArtifactManager>();
             this.artifactManager.As<IContainedEntityManager<Artifact>>();
 
-            ModuleTestHelper.Setup<ArtifactModule, ArtifactDto>(new ArtifactValidator(), out this.context,
+            ModuleTestHelper.Setup<ArtifactModule, ArtifactDto>(new ArtifactDtoValidator(), out this.context,
                 out this.response, out this.request, out this.serviceProvider);
 
             this.projectId = Guid.NewGuid();

@@ -29,9 +29,9 @@ namespace UI_DSM.Server.Services.CometService
         /// <summary>
         ///     Tries to login to a Comet <see cref="ISession" />
         /// </summary>
-        /// <param name="authenticationData">The <see cref="CometAuthenticationData" /></param>
+        /// <param name="uploadData">The <see cref="CometAuthenticationData" /></param>
         /// <returns>A <see cref="Task" /> with the result of the login process</returns>
-        Task<Tuple<AuthenticationStatus, Guid>> Login(CometAuthenticationData authenticationData);
+        Task<Tuple<AuthenticationStatus, Guid>> Login(CometAuthenticationData uploadData);
 
         /// <summary>
         ///     Closes a <see cref="ISession" />
@@ -74,5 +74,13 @@ namespace UI_DSM.Server.Services.CometService
         /// <param name="iterationId">The <see cref="Guid" /> of the <see cref="IterationSetup" /></param>
         /// <returns>The <see cref="IterationSetup" /></returns>
         IterationSetup GetIterationSetup(Guid sessionId, Guid modelId, Guid iterationId);
+
+        /// <summary>
+        ///     Tries to read an Annex C3 file
+        /// </summary>
+        /// <param name="file">The <see cref="IFormFile" /></param>
+        /// <param name="authenticationData">The <see cref="CometAuthenticationData" /></param>
+        /// <returns>A <see cref="Task" /> with the result of the operation</returns>
+        Task<Tuple<AuthenticationStatus, Guid>> ReadAnnexC3File(IFormFile file, CometAuthenticationData authenticationData);
     }
 }

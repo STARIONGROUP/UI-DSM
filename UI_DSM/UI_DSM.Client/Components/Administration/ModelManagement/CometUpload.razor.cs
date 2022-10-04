@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="CometConnection.cs" company="RHEA System S.A.">
+// <copyright file="CometUpload.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
@@ -13,9 +13,10 @@
 
 namespace UI_DSM.Client.Components.Administration.ModelManagement
 {
-    using CDP4Common.SiteDirectoryData;
+    using System.Reactive.Linq;
 
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Forms;
 
     using ReactiveUI;
 
@@ -25,18 +26,18 @@ namespace UI_DSM.Client.Components.Administration.ModelManagement
     /// <summary>
     ///     Component that gave the possibility to connect to a COMET instance
     /// </summary>
-    public partial class CometConnection : IDisposable
+    public partial class CometUpload : IDisposable
     {
         /// <summary>
         ///     A collection of <see cref="IDisposable" />
         /// </summary>
-        private List<IDisposable> disposables = new();
+        private readonly List<IDisposable> disposables = new();
 
         /// <summary>
-        ///     The <see cref="ICometConnectionViewModel" />
+        ///     The <see cref="ICometUploadViewModel" />
         /// </summary>
         [Parameter]
-        public ICometConnectionViewModel ViewModel { get; set; }
+        public ICometUploadViewModel ViewModel { get; set; }
 
         /// <summary>
         ///     The text to display inside the connection button
@@ -44,9 +45,14 @@ namespace UI_DSM.Client.Components.Administration.ModelManagement
         public string ConnectButtonText { get; private set; }
 
         /// <summary>
-        /// The text to display inside the upload button
+        ///     The text to display inside the upload button
         /// </summary>
         public string UploadText { get; set; }
+
+        /// <summary>
+        ///     The <see cref="InputFile" /> key
+        /// </summary>
+        private string inputFileKey = Guid.NewGuid().ToString();
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -71,15 +77,26 @@ namespace UI_DSM.Client.Components.Administration.ModelManagement
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IterationUploadStatus)
                 .Subscribe(_ => this.OnIterationUploadStatusChanged()));
-                
+
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ErrorMessage)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.BrowserFile).Where(x => x == null)
+                .Subscribe(_ => this.InvokeAsync(this.ClearInputFile)));
 
             return base.OnInitializedAsync();
         }
 
         /// <summary>
-        ///     Sets properties when the <see cref="CometConnectionViewModel.IterationUploadStatus" /> has changed
+        ///     Clears the selected file
+        /// </summary>
+        private void ClearInputFile()
+        {
+            this.inputFileKey = Guid.NewGuid().ToString();
+        }
+
+        /// <summary>
+        ///     Sets properties when the <see cref="CometUploadViewModel.IterationUploadStatus" /> has changed
         /// </summary>
         private void OnIterationUploadStatusChanged()
         {
@@ -104,7 +121,7 @@ namespace UI_DSM.Client.Components.Administration.ModelManagement
         }
 
         /// <summary>
-        ///     Sets properties when the <see cref="CometConnectionViewModel.CometConnectionStatus" /> has changed
+        ///     Sets properties when the <see cref="CometUploadViewModel.CometConnectionStatus" /> has changed
         /// </summary>
         private void OnCometConnectionStatusChanged()
         {
@@ -127,6 +144,19 @@ namespace UI_DSM.Client.Components.Administration.ModelManagement
             }
 
             this.InvokeAsync(this.StateHasChanged);
+        }
+
+        /// <summary>
+        ///     Handle the InputFile event
+        /// </summary>
+        /// <param name="arg">The <see cref="InputFileChangeEventArgs" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        private void OnFileSelected(InputFileChangeEventArgs arg)
+        {
+            if (arg.FileCount == 1)
+            {
+                this.ViewModel.HandleOnFileSelected(arg.File);
+            }
         }
     }
 }

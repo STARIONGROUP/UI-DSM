@@ -1,5 +1,5 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
-// CometConnection.razor
+// CometUpload.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
@@ -10,24 +10,35 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @using UI_DSM.Client.Enumerator
-@using CDP4Common.SiteDirectoryData
+@using CDP4JsonSerializer.JsonConverter
 
 @if (this.ViewModel.CometConnectionStatus != AuthenticationStatus.Success)
 {
-	<EditForm Context="editFormContext" Model="@this.ViewModel.AuthenticationData" OnValidSubmit="@this.ViewModel.CometLogin">
-		<DataAnnotationsValidator />
+	<EditForm Context="editFormContext" Model="@this.ViewModel.UploadData" OnValidSubmit="@this.ViewModel.CometLogin">
+		<DataAnnotationsValidator/>
 		<p class="alert-danger">@this.ViewModel.ErrorMessage</p>
 		<DxFormLayout>
-			<DxFormLayoutItem Caption="Source Address :" ColSpanMd="12">
-				<DxTextBox @bind-Text="@this.ViewModel.AuthenticationData.Url" NullText="Enter the COMET source address" />
-			</DxFormLayoutItem>
-			<DxFormLayoutItem Caption="Username :" ColSpanMd="12">
-				<DxTextBox @bind-Text="@this.ViewModel.AuthenticationData.UserName" NullText="Enter the COMET username" />
-			</DxFormLayoutItem>
-			<DxFormLayoutItem Caption="Password :" ColSpanMd="12">
-				<DxTextBox @bind-Text="@this.ViewModel.AuthenticationData.Password" NullText="Enter the COMET password" Password="true"/>
-			</DxFormLayoutItem>
+			<DxFormLayoutGroup Caption="Comet Source" ColSpanMd="12">
+				<DxFormLayoutItem Caption="Server Address :" ColSpanMd="12">
+					<DxTextBox Text="@this.ViewModel.UploadData.Url" NullText="Enter the COMET source address"
+					           TextChanged="@this.ViewModel.UrlTextHasChanged"
+					           TextExpression="@(() => this.ViewModel.UploadData.Url)"/>
+				</DxFormLayoutItem>
+				<p>or</p>
+				<DxFormLayoutItem Caption="Annex C3 File :" ColSpanMd="12">
+					<InputFile OnChange="this.OnFileSelected" accept=".zip" @key="this.inputFileKey"/>
+				</DxFormLayoutItem>
+			</DxFormLayoutGroup>
+			<DxFormLayoutGroup Caption="Credentials" ColSpanMd="12" BeginRow="true">
+				<DxFormLayoutItem Caption="Username :" ColSpanMd="12">
+					<DxTextBox @bind-Text="@this.ViewModel.UploadData.UserName" NullText="Enter the COMET username"/>
+				</DxFormLayoutItem>
+				<DxFormLayoutItem Caption="Password :" ColSpanMd="12">
+					<DxTextBox @bind-Text="@this.ViewModel.UploadData.Password" NullText="Enter the COMET password" Password="true"/>
+				</DxFormLayoutItem>
+			</DxFormLayoutGroup>
 		</DxFormLayout>
+		<ValidationSummary/>
 		<div class="modal-footer m-top-10px">
 			<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="@this.ConnectButtonText" SubmitFormOnClick="true"/>
 		</div>

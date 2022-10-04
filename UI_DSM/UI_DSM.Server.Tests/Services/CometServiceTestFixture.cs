@@ -15,10 +15,13 @@ namespace UI_DSM.Server.Tests.Services
 {
     using CDP4Common.SiteDirectoryData;
 
+    using Microsoft.AspNetCore.Http;
+
     using Moq;
 
     using NUnit.Framework;
 
+    using UI_DSM.Client.Enumerator;
     using UI_DSM.Server.Services.CometService;
     using UI_DSM.Server.Services.FileService;
     using UI_DSM.Shared.DTO.CometData;
@@ -61,6 +64,61 @@ namespace UI_DSM.Server.Tests.Services
                 Assert.That(() => this.cometService.GetIterationSetup(sessionId, Guid.NewGuid(), Guid.NewGuid()), Throws.Exception);
                 Assert.That(() => this.cometService.GetAvailableEngineeringModel(sessionId), Throws.Exception);
             });
+        }
+
+        [Test]
+        public async Task VerifyReadAnnexC3File()
+        {
+            this.fileService.Setup(x => x.GetTempFolder()).Returns(TestContext.CurrentContext.TestDirectory);
+            var formFile = new Mock<IFormFile>();
+
+            var cometAuthentication = new CometAuthenticationData()
+            {
+                UserName = "adminn",
+                Password = "pass"
+            };
+
+            var readResult = await this.cometService.ReadAnnexC3File(formFile.Object, cometAuthentication);
+
+            Assert.That(readResult.Item1, Is.EqualTo(AuthenticationStatus.ServerFailure));
+
+            var filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Data", "26699a14-79d0-4f10-bcf1-15979ef3968f.zip");
+            var fileToDelete = string.Empty;
+
+            this.fileService.Setup(x => x.WriteToFile(It.IsAny<IFormFile>(), It.IsAny<string>()))
+                .Callback((IFormFile _, string targetPath) =>
+                {
+                    File.Copy(filePath, targetPath);
+                    fileToDelete = targetPath;
+                });
+
+            readResult = await this.cometService.ReadAnnexC3File(formFile.Object, cometAuthentication);
+            Assert.That(readResult.Item1, Is.EqualTo(AuthenticationStatus.Fail));
+
+            File.Delete(fileToDelete);
+
+            cometAuthentication.UserName = "admin";
+            readResult = await this.cometService.ReadAnnexC3File(formFile.Object, cometAuthentication);
+            Assert.That(readResult.Item1, Is.EqualTo(AuthenticationStatus.Success));
+            var session = Guid.Parse(fileToDelete.Split('.')[0]);
+
+            var engineeringModels = this.cometService.GetAvailableEngineeringModel(session).ToList();
+            Assert.That(engineeringModels, Is.Not.Empty);
+
+            var iterationId = engineeringModels.First().IterationSetup.First(x => x.FrozenOn != null).IterationIid;
+            var iterationSetup = this.cometService.GetIterationSetup(session, engineeringModels.First().Iid, iterationId);
+            var iteration = await this.cometService.ReadIteration(session, iterationSetup);
+            var newAnnexC3File = await this.cometService.CreateAnnexC3File(iteration);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(File.Exists(newAnnexC3File), Is.True);
+                Assert.That(iteration, Is.Not.Null);
+                Assert.That(async () => await this.cometService.Close(session), Throws.Nothing);
+            });
+
+            File.Delete(fileToDelete);
+            File.Delete(newAnnexC3File);
         }
     }
 }
