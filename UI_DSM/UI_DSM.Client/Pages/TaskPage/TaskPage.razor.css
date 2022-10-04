@@ -4,7 +4,7 @@
   height: 100%;
   display: grid;
   grid-template-areas: "a b c";
-  grid-template-columns: minmax(240px, 320px) 1fr minmax(240px, 320px);
+  grid-template-columns: 17vw 66vw 17vw;
 }
 
 .task-page__sidebar__left {
@@ -20,4 +20,17 @@
 .task-page__body {
   grid-area: b;
   padding: var(--spacing-8);
+}
+
+.task-page__body-inner {
+  display: grid;
+  align-items: flex-start;
+  gap: var(--spacing-8);
+}
+
+.task-page__actions {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  gap: var(--spacing-2);
 }

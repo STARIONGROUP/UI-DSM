@@ -27,18 +27,73 @@
       <TaskItem TaskTitle="Check the requirements specification" isDone="true" />
     </AppAccordion>
   </aside>
+
   <main class="task-page__body">
+    <div class="task-page__body-inner">
+      <div class="task-page__actions">
+        <div id="view-selector">
+          <AppButton Label="Select view" Type="button" Variant="AppButton.VariantValue.Tertiary"
+            Click="() => IsViewMenuOpen = !IsViewMenuOpen">
+            <FeatherEye Size="20" Color="currentColor" StrokeWidth="2" /> <span>Functional to product</span>
+          </AppButton>
+
+          <DxDropDown @bind-IsOpen="@IsViewMenuOpen" PositionMode="DropDownPositionMode.Bottom"
+            PositionTarget="#view-selector" CloseMode="DropDownCloseMode.Close" PreventCloseOnPositionTargetClick="true"
+            BodyCssClass="list-dropdown">
+            <ul>
+              <li>
+                <button> Requirement to function </button>
+              </li>
+              <li>
+                <button> Readiness level </button>
+              </li>              
+            </ul>
+          </DxDropDown>
+        </div>
+
+        <AppButton Label="Filter data" Type="button" Variant="AppButton.VariantValue.Tertiary">
+          <FeatherFilter Size="20" Color="currentColor" StrokeWidth="2" /> <span>Filter</span>
+        </AppButton>
+
+        <AppButton Label="Select visible columns" Type="button" Variant="AppButton.VariantValue.Tertiary">
+          <FeatherColumns Size="20" Color="currentColor" StrokeWidth="2" /> <span>Columns</span>
+        </AppButton>
+
+        <AppButton Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success">
+          <FeatherCheckCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Done</span>
+        </AppButton>
+      </div>
+
+      <AppTraceabilityTable />
+    </div>
   </main>
+
   <aside class="task-page__sidebar task-page__sidebar__right">
     <AppAccordion Label="Requirement description">
       <AppSidebarText
         Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a leo tortor. Nullam dignissim lacus at massa auctor, quis tristique massa sollicitudin." />
     </AppAccordion>
+
     <AppAccordion Label="Comments">
       <AppComment Name="Kjell Lindgren" Date="3 minutes ago"
         Comment="Could you have a look at this data, and see if it aligns with yours?	" />
+
       <AppComment Name="Jessica Watkins" Date="31 minutes ago"
         Comment="Could you have a look at this data, and see if it aligns with yours?	" />
     </AppAccordion>
   </aside>
 </div>
+
+
+
+@code {
+  /// <summary>
+  /// Bool to keep track of the open state of the user dropdown menu
+  /// </summary>
+  bool IsColumnMenuOpen { get; set; } = false;
+
+  /// <summary>
+  /// Bool to keep track of the open state of the user dropdown menu
+  /// </summary>
+  bool IsViewMenuOpen { get; set; } = false;
+}

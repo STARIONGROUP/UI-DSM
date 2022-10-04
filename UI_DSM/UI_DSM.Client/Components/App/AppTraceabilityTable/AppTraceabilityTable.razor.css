@@ -4,6 +4,8 @@
   max-height: calc(100vh - 200px);
   border-radius: var(--radius-1);
   font-size: var(--text-sm);
+  width: 100%;
+  border: 1px solid var(--colors-gray-100);
 }
 
 table { 
@@ -12,7 +14,7 @@ table {
   border: none;
   border-collapse: separate;
   border-spacing: 0;
-  table-layout: fixed;
+  width: 100%;
 }
 
 table td,

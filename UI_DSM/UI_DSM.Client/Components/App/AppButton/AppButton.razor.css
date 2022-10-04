@@ -33,3 +33,22 @@
   background: var(--colors-green-600);
   color: var(--colors-white);
 }
+
+
+
+
+
+.app-button--tertiary {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--colors-primary-900);
+  color: var(--colors-primary-900);
+}
+
+.app-button--tertiary:focus {
+  outline: 2px solid var(--colors-primary-700);
+}
+
+.app-button--tertiary:hover {
+  background: var(--colors-primary-900);
+  color: var(--colors-white);
+}
