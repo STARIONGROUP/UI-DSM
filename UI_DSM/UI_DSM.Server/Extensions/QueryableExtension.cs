@@ -55,36 +55,45 @@ namespace UI_DSM.Server.Extensions
         {
             var scopedProperties = Entity.GetScopedProperties(deepLevel, entityType);
 
-            foreach (var scopedProperty in scopedProperties)
+            return scopedProperties.Where(scopedProperty => !containedType.Contains(scopedProperty))
+                .Aggregate(queryable, (current, scopedProperty) => ComputeProperty(current, deepLevel, containedType, currentPath, scopedProperty));
+        }
+
+        /// <summary>
+        /// Adds the property to the <see cref="IQueryable{T}"/>
+        /// </summary>
+        /// <typeparam name="TEntity">An <see cref="Entity"/></typeparam>
+        /// <param name="queryable">The <see cref="IQueryable{T}"/></param>
+        /// <param name="deepLevel">The deep level</param>
+        /// <param name="containedType">The <see cref="Type"/></param>
+        /// <param name="currentPath">The current pass</param>
+        /// <param name="scopedProperty">The current <see cref="PropertyInfo"/></param>
+        /// <returns>The <see cref="IQueryable{T}"/></returns>
+        private static IQueryable<TEntity> ComputeProperty<TEntity>(IQueryable<TEntity> queryable, int deepLevel, List<PropertyInfo> containedType, string currentPath, PropertyInfo scopedProperty) where TEntity : Entity
+        {
+            var propertyType = scopedProperty.PropertyType.GetCorrectTypeToCheck();
+            var updatedPath = UpdatePath(currentPath, scopedProperty.Name);
+
+            if (propertyType.IsAbstract)
             {
-                var propertyType = scopedProperty.PropertyType.GetCorrectTypeToCheck();
+                containedType.Add(scopedProperty);
+                queryable = queryable.Include(updatedPath);
 
-                if (!containedType.Contains(scopedProperty))
+                foreach (var concreteClass in Entity.GetConcreteClasses(propertyType))
                 {
-                    var updatedPath = UpdatePath(currentPath, scopedProperty.Name);
+                    queryable = queryable.BuildIncludeEntityQueryable(deepLevel == 0 ? 0 : deepLevel - 1, concreteClass, containedType, updatedPath);
+                }
+            }
+            else
+            {
+                queryable = queryable.Include(updatedPath);
 
-                    if (propertyType.IsAbstract)
-                    {
-                        containedType.Add(scopedProperty);
-                        queryable = queryable.Include(updatedPath);
-                        
-                        foreach (var concreteClass in Entity.GetConcreteClasses(propertyType))
-                        {
-                            queryable = queryable.BuildIncludeEntityQueryable(deepLevel == 0 ? 0 : deepLevel - 1, concreteClass, containedType, updatedPath);
-                        }
-                    }
-                    else
-                    {
-                        queryable = queryable.Include(updatedPath);
+                if (propertyType.IsAssignableTo(typeof(Entity)))
+                {
+                    containedType.Add(scopedProperty);
 
-                        if (propertyType.IsAssignableTo(typeof(Entity)))
-                        {
-                            containedType.Add(scopedProperty);
-
-                            queryable = queryable
-                                .BuildIncludeEntityQueryable(deepLevel == 0 ? 0 : deepLevel - 1, propertyType, containedType, updatedPath);
-                        }
-                    }
+                    queryable = queryable
+                        .BuildIncludeEntityQueryable(deepLevel == 0 ? 0 : deepLevel - 1, propertyType, containedType, updatedPath);
                 }
             }
 
