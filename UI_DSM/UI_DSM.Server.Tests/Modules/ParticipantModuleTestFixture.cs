@@ -58,6 +58,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.serviceProvider.Setup(x => x.GetService(typeof(IEntityManager<Project>))).Returns(this.projectManager.Object);
 
             this.module = new ParticipantModule();
+            Program.RegisterEntities();
         }
 
         [Test]

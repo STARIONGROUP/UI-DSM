@@ -49,11 +49,11 @@ namespace UI_DSM.Server
         /// </summary>
         /// <param name="args">A collection of <see cref="string" /></param>
         public static void Main(string[] args)
-         {
+        {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            
+
             builder.Services.AddCarter();
             builder.Services.AddAuthorization();
 
@@ -65,11 +65,8 @@ namespace UI_DSM.Server
                     .AllowAnyMethod());
             });
 
-            builder.Services.AddDbContext<DatabaseContext>(opt =>
-            {
-                opt.UseNpgsql(builder.Configuration["DataBaseConnection"]);
-            });
-               
+            builder.Services.AddDbContext<DatabaseContext>(opt => { opt.UseNpgsql(builder.Configuration["DataBaseConnection"]); });
+
             builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DatabaseContext>();
             builder.Services.AddSingleton<IJsonSerializer, JsonSerializer>();
             builder.Services.AddSingleton<IJsonDeserializer, JsonDeserializer>();
@@ -78,6 +75,7 @@ namespace UI_DSM.Server
 
             RegisterManagers(builder);
             RegisterModules();
+            RegisterEntities();
 
             var jwtSettings = builder.Configuration.GetSection("JWTSettings");
 
@@ -132,6 +130,26 @@ namespace UI_DSM.Server
             LogAppStart();
 
             app.Run();
+        }
+
+        /// <summary>
+        ///     Register all <see cref="Entity" /> class for deep level properties computation
+        /// </summary>
+        public static void RegisterEntities()
+        {
+            var entityType = typeof(Entity);
+            var entityAssembly = Assembly.GetAssembly(entityType)!;
+
+            var entities = entityAssembly.GetExportedTypes()
+                .Where(x => x.IsClass && !x.IsAbstract && x.IsSubclassOf(entityType)).ToList();
+
+            foreach (var entity in entities)
+            {
+                Entity.RegisterEntityProperties(entity);
+            }
+
+            Entity.RegisterAbstractEntity(entityAssembly.GetExportedTypes()
+                .Where(x => x.IsClass && x.IsSubclassOf(entityType)).ToList());
         }
 
         /// <summary>

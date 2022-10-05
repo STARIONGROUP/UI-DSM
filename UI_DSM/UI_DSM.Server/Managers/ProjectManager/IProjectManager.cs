@@ -13,6 +13,7 @@
 
 namespace UI_DSM.Server.Managers.ProjectManager
 {
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -26,5 +27,14 @@ namespace UI_DSM.Server.Managers.ProjectManager
         /// <param name="userName">The name of the <see cref="UserEntity" /></param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Project" /></returns>
         Task<IEnumerable<Project>> GetAvailableProjectsForUser(string userName);
+
+        /// <summary>
+        ///     Gets the number of open <see cref="ReviewTask" /> where the logged user is assigned to
+        ///     and <see cref="Comment" /> for each <see cref="Project" />
+        /// </summary>
+        /// <param name="projectsId">A collection of <see cref="Guid" /> for <see cref="Project" />s</param>
+        /// <param name="userName">The name of the current logged user</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
+        Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> projectsId, string userName);
     }
 }

@@ -114,6 +114,16 @@ namespace UI_DSM.Serializer.Json
                 }
             }
 
+            if (jsonElement.TryGetProperty("createdOn", out var createdOnProperty))
+            {
+                var propertyValue = createdOnProperty.GetString();
+
+                if (propertyValue != null)
+                {
+                    dto.CreatedOn = DateTime.Parse(propertyValue);
+                }
+            }
+
             return dto;
         }
     }

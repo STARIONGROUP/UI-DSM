@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Server.Tests.Managers
 {
+    using Microsoft.EntityFrameworkCore;
+    
     using Moq;
 
     using NUnit.Framework;
@@ -31,14 +33,18 @@ namespace UI_DSM.Server.Tests.Managers
         private Mock<DatabaseContext> context;
         private Mock<IRoleManager> roleManager;
         private Mock<IUserManager> userManager;
-        
+        private Mock<DbSet<Participant>> participantDbSet;
+        private Mock<DbSet<Project>> projectDbSet;
+
         [SetUp]
         public void Setup()
         {
             this.context = new Mock<DatabaseContext>();
+            this.context.CreateDbSetForContext(out this.participantDbSet, out this.projectDbSet);
             this.roleManager = new Mock<IRoleManager>();
             this.userManager = new Mock<IUserManager>();
             this.manager = new ParticipantManager(this.context.Object, this.userManager.Object, this.roleManager.Object);
+            Program.RegisterEntities();
         }
 
         [Test]
@@ -73,19 +79,12 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var dbSet = DbSetMockHelper.CreateMock(data);
-            this.context.Setup(x => x.Participants).Returns(dbSet.Object);
-
-            foreach (var participantData in data)
-            {
-                dbSet.Setup(x => x.FindAsync(participantData.Id)).ReturnsAsync(participantData);
-            }
+            this.participantDbSet.UpdateDbSetCollection(data);
 
             var allEntities = await this.manager.GetEntities();
             Assert.That(allEntities.Count(), Is.EqualTo(8));
 
             var invalidGuid = Guid.NewGuid();
-            dbSet.Setup(x => x.FindAsync(invalidGuid)).ReturnsAsync((Participant)null);
             var participant = await this.manager.FindEntity(invalidGuid);
             Assert.That(participant, Is.Null);
 
@@ -136,9 +135,7 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var projectDbSet = DbSetMockHelper.CreateMock(projects);
-            this.context.Setup(x => x.Projects).Returns(projectDbSet.Object);
-            projectDbSet.Setup(x => x.FindAsync(projects.First().Id)).ReturnsAsync(projects.First());
+            this.projectDbSet.UpdateDbSetCollection(projects);
 
             participant.EntityContainer = new Project(Guid.NewGuid());
             operationResult = await this.manager.CreateEntity(participant);
@@ -168,6 +165,22 @@ namespace UI_DSM.Server.Tests.Managers
             participant.User = new UserEntity(Guid.NewGuid());
             participant.Role = new Role(Guid.NewGuid());
             await this.manager.UpdateEntity(participant);
+            Assert.That(operationResult.Succeeded, Is.False);
+
+            var projects = new List<Project>()
+            {
+                new(Guid.NewGuid())
+                {
+                    Participants =
+                    {
+                        participant
+                    }
+                }
+            };
+
+            this.projectDbSet.UpdateDbSetCollection(projects);
+            await this.manager.UpdateEntity(participant);
+
             this.context.Verify(x => x.Update(participant), Times.Once);
 
             this.context.Setup(x => x.SaveChangesAsync(default)).ThrowsAsync(new InvalidOperationException());
@@ -182,15 +195,19 @@ namespace UI_DSM.Server.Tests.Managers
             var operationResult = await this.manager.DeleteEntity(participant);
             Assert.That(operationResult.Succeeded, Is.False);
 
-            participant.EntityContainer = new Project(Guid.NewGuid());
-            var dbSet = DbSetMockHelper.CreateMock(new List<Project>());
-            this.context.Setup(x => x.Projects).Returns(dbSet.Object);
+            var projects = new List<Project>()
+            {
+                new(Guid.NewGuid())
+                {
+                    Participants =
+                    {
+                        participant
+                    }
+                }
+            };
 
-            dbSet.Setup(x => x.FindAsync(participant.EntityContainer.Id)).ReturnsAsync((Project)null);
-            operationResult = await this.manager.DeleteEntity(participant);
-            Assert.That(operationResult.Succeeded, Is.False);
+            this.projectDbSet.UpdateDbSetCollection(projects); 
 
-            dbSet.Setup(x => x.FindAsync(participant.EntityContainer.Id)).ReturnsAsync((Project)participant.EntityContainer);
             await this.manager.DeleteEntity(participant);
             this.context.Verify(x => x.Remove(participant), Times.Once);
 
@@ -248,8 +265,7 @@ namespace UI_DSM.Server.Tests.Managers
 
             var allParticipants = new List<Participant>(project1.Participants);
             allParticipants.AddRange(project2.Participants);
-            var dbSet = DbSetMockHelper.CreateMock(allParticipants);
-            this.context.Setup(x => x.Participants).Returns(dbSet.Object);
+            this.participantDbSet.UpdateDbSetCollection(allParticipants);
             var entities = await this.manager.GetContainedEntities(project1.Id);
             Assert.That(entities.Count(), Is.EqualTo(2));
             entities = await this.manager.GetContainedEntities(Guid.NewGuid());
@@ -288,8 +304,7 @@ namespace UI_DSM.Server.Tests.Managers
                 Participants = { participants.First() }
             };
 
-            var dbSet = DbSetMockHelper.CreateMock(participants);
-            this.context.Setup(x => x.Participants).Returns(dbSet.Object);
+            this.participantDbSet.UpdateDbSetCollection(participants);
 
             this.userManager.Setup(x => x.GetUsers(It.IsAny<Func<UserEntity, bool>>()))
                 .ReturnsAsync(users.Where(x => participants.All(p => p.User.Id != x.Id)));

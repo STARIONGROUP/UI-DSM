@@ -36,6 +36,7 @@ namespace UI_DSM.Server.Tests.Managers
         {
             this.modelManager = new Mock<IModelManager>();
             this.manager = new ArtifactManager(this.modelManager.Object);
+            Program.RegisterEntities();
         }
 
         [Test]
@@ -71,6 +72,7 @@ namespace UI_DSM.Server.Tests.Managers
             {
                 this.modelManager.Setup(x => x.FindEntity(model.Id)).ReturnsAsync(model);
                 this.modelManager.Setup(x => x.FindEntityWithContainer(model.Id)).ReturnsAsync(model);
+                this.modelManager.Setup(x => x.GetEntity(model.Id,0)).ReturnsAsync(model.GetAssociatedEntities());
             }
 
             entities = await this.manager.GetEntity(Guid.NewGuid());

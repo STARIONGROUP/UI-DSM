@@ -27,6 +27,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Server.Types;
     using UI_DSM.Server.Validator;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
@@ -55,6 +56,13 @@ namespace UI_DSM.Server.Tests.Modules
 
              ModuleTestHelper.Setup<ProjectModule, ProjectDto>(new ProjectDtoValidator(), out this.httpContext, out this.httpResponse, out _, out _);
              this.module = new ProjectModule();
+
+             this.httpContext.Setup(x => x.User).Returns(new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>()
+             {
+                 new (ClaimTypes.Name, "user")
+             })));
+
+             Program.RegisterEntities();
         }
 
         [Test]
@@ -173,6 +181,33 @@ namespace UI_DSM.Server.Tests.Modules
             await this.module.GetProjectsForUser(this.projectManager.As<IProjectManager>().Object, this.httpContext.Object);
             
             this.projectManager.As<IProjectManager>().Verify(x => x.GetAvailableProjectsForUser(username), Times.Once);
+        }
+
+        [Test]
+        public async Task VerifyGetOpenTasksAndComments()
+        {
+            await this.module.GetOpenTasksAndComments(this.projectManager.As<IProjectManager>().Object, null, this.httpContext.Object);
+            this.httpResponse.VerifySet(x => x.StatusCode = 400, Times.Once);
+
+            var guids = new List<Guid>
+            {
+                Guid.NewGuid()
+            };
+
+            var result = new Dictionary<Guid, ComputedProjectProperties>
+            {
+                [guids[0]] = new ()
+                {
+                    CommentCount = 15,
+                    TaskCount = 12
+                }
+            };
+
+            this.projectManager.As<IProjectManager>().Setup(x => x.GetOpenTasksAndComments(guids, "user"))
+                .ReturnsAsync(result);
+
+            await this.module.GetOpenTasksAndComments(this.projectManager.As<IProjectManager>().Object, guids, this.httpContext.Object);
+            this.projectManager.As<IProjectManager>().Verify(x => x.GetOpenTasksAndComments(guids, "user"), Times.Once);
         }
     }
 }

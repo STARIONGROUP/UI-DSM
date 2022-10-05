@@ -26,7 +26,6 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
     using UI_DSM.Client.Components.Administration.ModelManagement;
     using UI_DSM.Client.Components.Administration.ParticipantManagement;
     using UI_DSM.Client.Components.Administration.ProjectManagement;
-    using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Pages.Administration.ProjectPages;
     using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.Administration.ProjectService;
@@ -104,7 +103,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         }
 
         /// <summary>
-        ///     The <see cref="ICometUploadViewModel" /> for the <see cref="CometConnection" /> component
+        ///     The <see cref="ICometUploadViewModel" /> for the <see cref="CometUpload" /> component
         /// </summary>
         public ICometUploadViewModel CometUploadViewModel { get; }
 
@@ -165,7 +164,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         }
 
         /// <summary>
-        ///     Opens the <see cref="CometConnection" /> popup
+        ///     Opens the <see cref="CometUpload" /> popup
         /// </summary>
         public void OpenCometConnectionPopup()
         {

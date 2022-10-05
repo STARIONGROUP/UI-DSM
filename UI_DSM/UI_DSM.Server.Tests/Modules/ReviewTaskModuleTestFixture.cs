@@ -86,6 +86,7 @@ namespace UI_DSM.Server.Tests.Modules
             })));
 
             this.module = new ReviewTaskModule();
+            Program.RegisterEntities();
         }
 
         [Test]

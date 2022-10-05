@@ -48,19 +48,19 @@ namespace UI_DSM.Server.Tests.Helpers
             return this.inner.Execute<TResult>(expression);
         }
 
-        public IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
-        {
-            return new TestAsyncEnumerable<TResult>(expression);
-        }
-
-        public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(this.Execute<TResult>(expression));
-        }
-
         TResult IAsyncQueryProvider.ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
-            return this.Execute<TResult>(expression);
+            var expectedResultType = typeof(TResult).GetGenericArguments()[0];
+
+            var executionResult = typeof(IQueryProvider)
+                .GetMethods()
+                .First(method => method.Name == nameof(IQueryProvider.Execute) && method.IsGenericMethod)
+                .MakeGenericMethod(expectedResultType)
+                .Invoke(this, new object[] { expression });
+
+            return (TResult)typeof(Task).GetMethod(nameof(Task.FromResult))!
+                .MakeGenericMethod(expectedResultType)
+                .Invoke(null, new[] { executionResult });
         }
     }
 }

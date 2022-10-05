@@ -22,6 +22,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewTaskService
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Client.Services.ReviewTaskService;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -49,7 +50,8 @@ namespace UI_DSM.Client.Tests.Services.ReviewTaskService
             this.httpMessageHandler = new MockHttpMessageHandler();
             var httpClient = this.httpMessageHandler.ToHttpClient();
             httpClient.BaseAddress = new Uri("http://localhost/api");
-
+            EntityHelper.RegisterEntities();
+            
             var participantId = Guid.NewGuid();
             var roleId = Guid.NewGuid();
             var userId = Guid.NewGuid();

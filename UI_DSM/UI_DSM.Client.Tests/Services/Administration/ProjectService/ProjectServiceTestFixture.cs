@@ -184,5 +184,36 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
             var foundProject = await this.service.GetUserParticipation();
             Assert.That(foundProject, Has.Count.EqualTo(2));
         }
+
+        [Test]
+        public async Task VerifyGetOpenTaskAndComments()
+        {
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.BadRequest;
+
+            var request = this.httpMessageHandler.When(HttpMethod.Get, "/Project/GetOpenTasksAndComments");
+            request.Respond(_ => httpResponse);
+
+            Assert.That(async () => await this.service.GetOpenTasksAndComments(null), Throws.Exception);
+
+            httpResponse.StatusCode = HttpStatusCode.OK;
+
+            var guids = new List<Guid>
+            {
+                Guid.NewGuid()
+            };
+
+            var requestResults = new Dictionary<Guid, ComputedProjectProperties>
+            {
+                [guids[0]] = new()
+                {
+                    CommentCount = 15,
+                    TaskCount = 12
+                }
+            };
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResults));
+            Assert.That(await this.service.GetOpenTasksAndComments(guids), Is.EquivalentTo(requestResults));
+        }
     }
 }

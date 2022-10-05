@@ -56,5 +56,13 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
         /// </summary>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Project" /> as result</returns>
         Task<List<Project>> GetUserParticipation();
+
+        /// <summary>
+        ///     Gets, for all <see cref="Project" />, the number of open <see cref="ReviewTask" /> and <see cref="Comment" />
+        ///     related to the <see cref="Project" />
+        /// </summary>
+        /// <param name="projectsId">A collection of <see cref="Guid" /></param>
+        /// <returns>A <see cref="Task" /> with a <see cref="Dictionary{Guid, ComputedProjectProperties}" /></returns>
+        Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> projectsId);
     }
 }

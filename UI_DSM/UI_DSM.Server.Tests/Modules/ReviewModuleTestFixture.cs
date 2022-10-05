@@ -70,6 +70,7 @@ namespace UI_DSM.Server.Tests.Modules
             })));
 
             this.module = new ReviewModule();
+            Program.RegisterEntities();
         }
 
         [Test]

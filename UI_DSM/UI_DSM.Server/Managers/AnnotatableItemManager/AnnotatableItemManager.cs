@@ -61,9 +61,8 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /> if found</returns>
         public async Task<IEnumerable<Entity>> GetEntity(Guid entityId, int deepLevel = 0)
         {
-            var annotatableItem = await this.FindEntity(entityId);
-
-            return annotatableItem == null ? Enumerable.Empty<Entity>() : annotatableItem.GetAssociatedEntities(deepLevel);
+            var annotatableItem = (await this.reviewObjectiveManager.GetEntity(entityId, deepLevel)).ToList();
+            return annotatableItem;
         }
 
         /// <summary>
@@ -105,7 +104,7 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
         /// <returns>A <see cref="Task" /> with the result of the creation</returns>
         public Task<EntityOperationResult<AnnotatableItem>> CreateEntity(AnnotatableItem entity)
         {
-            return HandleNotSupportedOperation();
+            return EntityManager<AnnotatableItem>.HandleNotSupportedOperation();
         }
 
         /// <summary>
@@ -115,7 +114,7 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
         /// <returns>A <see cref="Task" /> with the result of the update</returns>
         public Task<EntityOperationResult<AnnotatableItem>> UpdateEntity(AnnotatableItem entity)
         {
-            return HandleNotSupportedOperation();
+            return EntityManager<AnnotatableItem>.HandleNotSupportedOperation();
         }
 
         /// <summary>
@@ -125,7 +124,7 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
         /// <returns>A <see cref="Task" /> with the result of the deletion</returns>
         public Task<EntityOperationResult<AnnotatableItem>> DeleteEntity(AnnotatableItem entity)
         {
-            return HandleNotSupportedOperation();
+            return EntityManager<AnnotatableItem>.HandleNotSupportedOperation();
         }
 
         /// <summary>
@@ -137,16 +136,6 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
         public Task ResolveProperties(AnnotatableItem entity, EntityDto dto)
         {
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        ///     Provides the correct returns values on unsupported operation
-        /// </summary>
-        /// <returns>A <see cref="Task" /></returns>
-        private static async Task<EntityOperationResult<AnnotatableItem>> HandleNotSupportedOperation()
-        {
-            await Task.CompletedTask;
-            return EntityOperationResult<AnnotatableItem>.Failed("Operation not supported");
         }
     }
 }

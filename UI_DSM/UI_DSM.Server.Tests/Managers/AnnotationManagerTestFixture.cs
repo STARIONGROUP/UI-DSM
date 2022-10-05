@@ -58,6 +58,7 @@ namespace UI_DSM.Server.Tests.Managers
             this.feedbackManager = new Mock<IFeedbackManager>();
             this.noteManager = new Mock<INoteManager>();
             this.manager = new AnnotationManager(this.commentManager.Object, this.feedbackManager.Object, this.noteManager.Object);
+            Program.RegisterEntities();
         }
 
         [Test]
@@ -100,16 +101,19 @@ namespace UI_DSM.Server.Tests.Managers
             foreach (var comment in comments)
             {
                 this.commentManager.Setup(x => x.FindEntity(comment.Id)).ReturnsAsync(comment);
+                this.commentManager.Setup(x => x.GetEntity(comment.Id,0)).ReturnsAsync(comment.GetAssociatedEntities());
             }
 
             foreach (var feedback in feedbacks)
             {
                 this.feedbackManager.Setup(x => x.FindEntity(feedback.Id)).ReturnsAsync(feedback);
+                this.feedbackManager.Setup(x => x.GetEntity(feedback.Id, 0)).ReturnsAsync(feedback.GetAssociatedEntities());
             }
 
             foreach (var note in notes)
             {
                 this.noteManager.Setup(x => x.FindEntity(note.Id)).ReturnsAsync(note);
+                this.noteManager.Setup(x => x.GetEntity(note.Id, 0)).ReturnsAsync(note.GetAssociatedEntities());
             }
 
             getEntitiesResult = await this.manager.GetEntity(comments.First().Id);

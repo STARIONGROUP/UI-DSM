@@ -14,6 +14,7 @@
 namespace UI_DSM.Server.Tests.Managers
 {
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
 
     using Moq;
 
@@ -30,13 +31,16 @@ namespace UI_DSM.Server.Tests.Managers
         private UserManager manager;
         private Mock<UserManager<User>> authenticationManager;
         private Mock<DatabaseContext> context;
+        private Mock<DbSet<UserEntity>> userDbSet;
 
         [SetUp]
         public void Setup()
         {
             this.authenticationManager = new Mock<UserManager<User>>(new Mock<IUserStore<User>>().Object, null, null, null, null, null, null, null, null);
             this.context = new Mock<DatabaseContext>();
+            this.context.CreateDbSetForContext(out this.userDbSet);
             this.manager = new UserManager(this.context.Object, this.authenticationManager.Object);
+            Program.RegisterEntities();
         }
 
         [Test]
@@ -55,15 +59,9 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var dbSet = DbSetMockHelper.CreateMock(users);
-            this.context.Setup(x => x.UsersEntities).Returns(dbSet.Object);
+            this.userDbSet.UpdateDbSetCollection(users);
             var getEntitiesResult = await this.manager.GetEntities();
             Assert.That(getEntitiesResult.Count(), Is.EqualTo(2));
-
-            foreach (var userEntity in users)
-            {
-                dbSet.Setup(x => x.FindAsync(userEntity.Id)).ReturnsAsync(userEntity);
-            }
 
             var getEntityResult = await this.manager.GetEntity(Guid.NewGuid());
             Assert.That(getEntityResult, Is.Empty);
@@ -111,15 +109,12 @@ namespace UI_DSM.Server.Tests.Managers
             this.authenticationManager.Setup(x => x.FindByNameAsync(userEntity.UserName)).ReturnsAsync(new User());
             this.authenticationManager.Setup(x => x.DeleteAsync(It.IsAny<User>())).ReturnsAsync(IdentityResult.Failed());
 
-            var dbSet = DbSetMockHelper.CreateMock(new List<UserEntity>());
-            this.context.Setup(x => x.UsersEntities).Returns(dbSet.Object);
-
             operationResult = await this.manager.DeleteEntity(userEntity);
             Assert.That(operationResult.Succeeded, Is.False);
 
             this.authenticationManager.Setup(x => x.DeleteAsync(It.IsAny<User>())).ReturnsAsync(IdentityResult.Success);
-            operationResult = await this.manager.DeleteEntity(userEntity);
-            Assert.That(operationResult.Succeeded, Is.True);
+            await this.manager.DeleteEntity(userEntity);
+            this.context.Verify(x => x.Remove(userEntity), Times.Once);
         }
 
         [Test]

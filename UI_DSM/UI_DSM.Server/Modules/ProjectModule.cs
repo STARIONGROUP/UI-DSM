@@ -40,17 +40,23 @@ namespace UI_DSM.Server.Modules
         {
             base.AddRoutes(app);
 
-            app.MapGet(this.MainRoute+"/UserParticipation", this.GetProjectsForUser)
+            app.MapGet(this.MainRoute + "/UserParticipation", this.GetProjectsForUser)
                 .Produces<IEnumerable<EntityDto>>()
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/GetProjectsForUser");
+
+            app.MapGet($"{this.MainRoute}/OpenTasksAndComments", this.GetOpenTasksAndComments)
+                .Accepts<IEnumerable<Guid>>("application/json")
+                .Produces<Dictionary<Guid, ComputedProjectProperties>>()
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/GetOpenTasksAndComments");
         }
 
         /// <summary>
-        /// Gets a collection of <see cref="Project"/> where a user is participating
+        ///     Gets a collection of <see cref="Project" /> where a user is participating
         /// </summary>
         /// <param name="projectManager">The <see cref="IProjectManager" /></param>
-        /// <param name="context">The <see cref="HttpContext"/></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns></returns>
         [Authorize]
         public async Task GetProjectsForUser(IProjectManager projectManager, HttpContext context)
@@ -126,7 +132,28 @@ namespace UI_DSM.Server.Modules
         [Authorize(Roles = "Administrator")]
         public override Task UpdateEntity(IEntityManager<Project> manager, Guid entityId, ProjectDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.UpdateEntity(manager, entityId, dto, context,deepLevel);
+            return base.UpdateEntity(manager, entityId, dto, context, deepLevel);
+        }
+
+        /// <summary>
+        ///     Gets, for all <see cref="Project" />, the number of open <see cref="ReviewTask" /> and <see cref="Comment" />
+        ///     related to the <see cref="Project" />
+        /// </summary>
+        /// <param name="projectManager">The <see cref="IProjectManager"/></param>
+        /// <param name="projectsId">A collection of <see cref="Guid"/></param>
+        /// <param name="context">The <see cref="HttpContext"/></param>
+        /// <returns>A <see cref="Task"/></returns>
+        [Authorize]
+        public async Task GetOpenTasksAndComments(IProjectManager projectManager, IEnumerable<Guid> projectsId, HttpContext context)
+        {
+            if(projectsId == null)
+            {
+                context.Response.StatusCode = 400;
+                return;
+            }
+
+            var computedProperties = await projectManager.GetOpenTasksAndComments(projectsId, context.User.Identity?.Name);
+            await context.Response.Negotiate(computedProperties);
         }
     }
 }

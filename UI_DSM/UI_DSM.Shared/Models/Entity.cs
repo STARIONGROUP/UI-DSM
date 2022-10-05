@@ -13,10 +13,11 @@
 
 namespace UI_DSM.Shared.Models
 {
-    using System.Collections.Immutable;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Reflection;
+
+    using Microsoft.EntityFrameworkCore;
 
     using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.DTO.Models;
@@ -27,16 +28,22 @@ namespace UI_DSM.Shared.Models
     public abstract class Entity
     {
         /// <summary>
-        ///     A collection of <see cref="PropertyInfo" />
+        ///     A <see cref="Dictionary{TKey,TValue}" /> that maps an <see cref="Entity" /> Type with all associated
+        ///     <see cref="PropertyInfo" />
+        ///     with a deepLevel
         /// </summary>
-        private ImmutableList<PropertyInfo> entityProperties;
+        private static readonly Dictionary<Type, Dictionary<int, List<PropertyInfo>>> EntityAssociatedProperties = new();
+
+        /// <summary>
+        ///     A <see cref="Dictionary{TKey,TValue}" /> that maps an abstract <see cref="Entity" /> with all concretes onces
+        /// </summary>
+        private static readonly Dictionary<Type, List<Type>> AbstractEntityWithConcreteOnces = new();
 
         /// <summary>
         ///     Initializes a new <see cref="Entity" />
         /// </summary>
         protected Entity()
         {
-            this.InitializesPropertiesCollection();
         }
 
         /// <summary>
@@ -46,7 +53,6 @@ namespace UI_DSM.Shared.Models
         protected Entity(Guid id)
         {
             this.Id = id;
-            this.InitializesPropertiesCollection();
         }
 
         /// <summary>
@@ -60,6 +66,39 @@ namespace UI_DSM.Shared.Models
         ///     Gets or sets the <see cref="Entity" /> container of the current <see cref="Entity" />
         /// </summary>
         public Entity EntityContainer { get; set; }
+
+        /// <summary>
+        ///     Register an <see cref="Entity" /> with all associated <see cref="PropertyInfo" /> that has a
+        ///     <see cref="DeepLevelAttribute" />
+        /// </summary>
+        /// <param name="type">The <see cref="Type" /> of the <see cref="Entity" /></param>
+        public static void RegisterEntityProperties(Type type)
+        {
+            if (!type.IsSubclassOf(typeof(Entity)))
+            {
+                return;
+            }
+
+            var deepProperties = new Dictionary<int, List<PropertyInfo>>();
+
+            var properties = type.GetProperties()
+                .Where(prop => prop.IsDefined(typeof(DeepLevelAttribute), false));
+
+            foreach (var propertyInfo in properties)
+            {
+                var deepLevel = propertyInfo.GetCustomAttributes(typeof(DeepLevelAttribute), false)
+                    .Cast<DeepLevelAttribute>().First().Level;
+
+                if (!deepProperties.ContainsKey(deepLevel))
+                {
+                    deepProperties[deepLevel] = new List<PropertyInfo>();
+                }
+
+                deepProperties[deepLevel].Add(propertyInfo);
+            }
+
+            EntityAssociatedProperties[type] = deepProperties;
+        }
 
         /// <summary>
         ///     Instantiate a <see cref="EntityDto" /> from a <see cref="Entity" />
@@ -92,6 +131,20 @@ namespace UI_DSM.Shared.Models
             return entities.DistinctBy(x => x.Id).ToList();
         }
 
+        public IQueryable<TEntity> BuildIncludeEntityQueryable<TEntity>(IQueryable<TEntity> queryable, int deepLevel, Type entityType)
+            where TEntity : Entity
+        {
+            var scopedProperties = GetScopedProperties(deepLevel, entityType);
+
+            foreach (var scopedProperty in scopedProperties)
+            {
+                queryable = queryable.Include(x => scopedProperty);
+                queryable = this.BuildIncludeEntityQueryable(queryable, deepLevel == 0 ? 0 : deepLevel - 1, scopedProperty.PropertyType);
+            }
+
+            return queryable;
+        }
+
         /// <summary>
         ///     Determines whether the specified object is equal to the current object.
         /// </summary>
@@ -120,6 +173,65 @@ namespace UI_DSM.Shared.Models
         }
 
         /// <summary>
+        ///     Gets a collection of <see cref="PropertyInfo" /> that are in the scoped of the <paramref name="deepLevel" />
+        /// </summary>
+        /// <param name="deepLevel">The deep level</param>
+        /// <param name="entityType">The <see cref="Type" /></param>
+        /// <returns>A collection of <see cref="PropertyInfo" /></returns>
+        public static List<PropertyInfo> GetScopedProperties(int deepLevel, Type entityType)
+        {
+            var scopedProperties = new List<PropertyInfo>();
+
+            var associatedProperties = new List<Dictionary<int, List<PropertyInfo>>>();
+
+            if (entityType.IsAbstract)
+            {
+                associatedProperties.AddRange(AbstractEntityWithConcreteOnces[entityType].Select(concreteType => EntityAssociatedProperties[concreteType]));
+            }
+            else
+            {
+                associatedProperties.Add(EntityAssociatedProperties[entityType]);
+            }
+
+            foreach (var associatedProperty in associatedProperties)
+            {
+                for (var deepLevelIndex = deepLevel; deepLevelIndex >= 0; deepLevelIndex--)
+                {
+                    if (associatedProperty.TryGetValue(deepLevelIndex, out var properties))
+                    {
+                        scopedProperties.AddRange(properties);
+                    }
+                }
+            }
+
+            return scopedProperties;
+        }
+
+        /// <summary>
+        ///     Register all abstract <see cref="Entity" /> abstract <see cref="Type" />
+        /// </summary>
+        /// <param name="entityTypes">A collection of all <see cref="Entity" /> <see cref="Type" /></param>
+        public static void RegisterAbstractEntity(List<Type> entityTypes)
+        {
+            var abstractEntities = entityTypes.Where(x => x.IsAbstract).ToList();
+
+            foreach (var abstractEntity in abstractEntities)
+            {
+                AbstractEntityWithConcreteOnces[abstractEntity] = entityTypes.Where(x => x.IsSubclassOf(abstractEntity)).ToList();
+            }
+        }
+
+        /// <summary>
+        ///     Get all classes that are a subclass of the provided <see cref="Type" />
+        /// </summary>
+        /// <param name="propertyType">The <see cref="Type" /></param>
+        /// <returns>A collection of <see cref="Type" /></returns>
+        public static List<Type> GetConcreteClasses(Type propertyType)
+        {
+            return AbstractEntityWithConcreteOnces.ContainsKey(propertyType) ? AbstractEntityWithConcreteOnces[propertyType] : new List<Type>();
+        }
+
+        /// <summary>
         ///     Get a collection of all <see cref="Entity" /> that are associated to this <see cref="Entity" /> in the range of the
         ///     <see cref="deepLevel" />.
         /// </summary>
@@ -132,9 +244,7 @@ namespace UI_DSM.Shared.Models
                 return;
             }
 
-            var scopedProperties = this.entityProperties
-                .Where(x => x.GetCustomAttributes(typeof(DeepLevelAttribute), false)
-                .Cast<DeepLevelAttribute>().First().Level <= deepLevel);
+            var scopedProperties = GetScopedProperties(deepLevel, this.GetType());
 
             foreach (var propertyInfo in scopedProperties)
             {
@@ -169,15 +279,6 @@ namespace UI_DSM.Shared.Models
             }
 
             return null;
-        }
-
-        /// <summary>
-        ///     Retrieved all <see cref="Entity" /> property linked to this <see cref="Entity" />
-        /// </summary>
-        private void InitializesPropertiesCollection()
-        {
-            this.entityProperties = this.GetType().GetProperties()
-                .Where(prop => prop.IsDefined(typeof(DeepLevelAttribute), false)).ToImmutableList();
         }
 
         /// <summary>

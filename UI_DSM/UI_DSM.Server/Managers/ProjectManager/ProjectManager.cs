@@ -13,24 +13,21 @@
 
 namespace UI_DSM.Server.Managers.ProjectManager
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using NLog;
-
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.AnnotationManager;
     using UI_DSM.Server.Managers.ArtifactManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReviewManager;
-    using UI_DSM.Server.Types;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     This manager handles operation to the Database for <see cref="Project" />s
     /// </summary>
-    public class ProjectManager : IProjectManager
+    public class ProjectManager : EntityManager<Project>, IProjectManager
     {
         /// <summary>
         ///     The <see cref="IAnnotationManager" />
@@ -41,16 +38,6 @@ namespace UI_DSM.Server.Managers.ProjectManager
         ///     The <see cref="IArtifactManager" />
         /// </summary>
         private readonly IArtifactManager artifactManager;
-
-        /// <summary>
-        ///     The <see cref="DatabaseContext" />
-        /// </summary>
-        private readonly DatabaseContext context;
-
-        /// <summary>
-        ///     The <see cref="NLog" /> logger
-        /// </summary>
-        private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         ///     The <see cref="IParticipantManager" />
@@ -71,154 +58,12 @@ namespace UI_DSM.Server.Managers.ProjectManager
         /// <param name="annotationManager">The <see cref="IAnnotationManager" /></param>
         /// <param name="artifactManager">The <see cref="IArtifactManager" /></param>
         public ProjectManager(DatabaseContext context, IParticipantManager participantManager, IReviewManager reviewManager,
-            IAnnotationManager annotationManager, IArtifactManager artifactManager)
+            IAnnotationManager annotationManager, IArtifactManager artifactManager) : base(context)
         {
-            this.context = context;
             this.participantManager = participantManager;
             this.reviewManager = reviewManager;
             this.annotationManager = annotationManager;
             this.artifactManager = artifactManager;
-        }
-
-        /// <summary>
-        ///     Gets a collection of all <see cref="Entity" />s and associated <see cref="Entity" />
-        /// </summary>
-        /// <param name="deepLevel">The level of deepnest that we need to retrieve associated <see cref="Entity" /></param>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /> as result</returns>
-        public async Task<IEnumerable<Entity>> GetEntities(int deepLevel = 0)
-        {
-            var projects = await this.context.Projects.ToListAsync();
-            return projects.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
-        }
-
-        /// <summary>
-        ///     Tries to get all <see cref="Project" /> based on their <see cref="Guid" />
-        /// </summary>
-        /// <param name="entitiesId">A collection of <see cref="Guid" /></param>
-        /// <returns>A collection of <see cref="Project" /></returns>
-        public async Task<IEnumerable<Project>> FindEntities(IEnumerable<Guid> entitiesId)
-        {
-            var entities = new List<Project>();
-
-            foreach (var id in entitiesId)
-            {
-                var entity = await this.FindEntity(id);
-
-                if (entity != null)
-                {
-                    entities.Add(entity);
-                }
-            }
-
-            return entities;
-        }
-
-        /// <summary>
-        ///     Creates a new <see cref="Project" /> and store it into the <see cref="DatabaseContext" />
-        /// </summary>
-        /// <param name="entity">The <see cref="Project" /> to create</param>
-        /// <returns>A <see cref="Task" /> with the result of the creation</returns>
-        public async Task<EntityOperationResult<Project>> CreateEntity(Project entity)
-        {
-            var operationResult = new EntityOperationResult<Project>(this.context.Add(entity), EntityState.Added);
-
-            try
-            {
-                await this.context.SaveChangesAsync();
-            }
-            catch (Exception exception)
-            {
-                if (ExceptionHelper.IsUniqueConstraintViolation(exception))
-                {
-                    operationResult.HandleExpection($"The name {entity.ProjectName} is already used");
-                }
-                else
-                {
-                    operationResult.HandleExpection(exception);
-                    this.logger.Error(exception.Message);
-                }
-            }
-
-            return operationResult;
-        }
-
-        /// <summary>
-        ///     Updates a <see cref="Project" />
-        /// </summary>
-        /// <param name="entity">The <see cref="Project" /> to update</param>
-        /// <returns>A <see cref="Task" /> with the result of the update</returns>
-        public async Task<EntityOperationResult<Project>> UpdateEntity(Project entity)
-        {
-            var operationResult = new EntityOperationResult<Project>(this.context.Update(entity), EntityState.Modified, EntityState.Unchanged);
-
-            try
-            {
-                await this.context.SaveChangesAsync();
-            }
-            catch (Exception exception)
-            {
-                if (ExceptionHelper.IsUniqueConstraintViolation(exception))
-                {
-                    operationResult.HandleExpection($"The name {entity.ProjectName} is already used");
-                }
-                else
-                {
-                    operationResult.HandleExpection(exception);
-                    this.logger.Error(exception.Message);
-                }
-            }
-
-            return operationResult;
-        }
-
-        /// <summary>
-        ///     Deletes a <see cref="Project" />
-        /// </summary>
-        /// <param name="entity">The <see cref="Project" /> to delete</param>
-        /// <returns>A <see cref="Task" /> with the result of the deletion</returns>
-        public async Task<EntityOperationResult<Project>> DeleteEntity(Project entity)
-        {
-            var operationResult = new EntityOperationResult<Project>(this.context.Remove(entity), EntityState.Deleted, EntityState.Detached);
-
-            try
-            {
-                await this.context.SaveChangesAsync();
-            }
-            catch (Exception exception)
-            {
-                operationResult.HandleExpection(exception);
-                this.logger.Error(exception.Message);
-            }
-
-            return operationResult;
-        }
-
-        /// <summary>
-        ///     Tries to get a <see cref="Entity" /> based on its <see cref="Guid" /> and its associated <see cref="Entity" />
-        /// </summary>
-        /// <param name="entityId">The <see cref="Guid" /></param>
-        /// <param name="deepLevel">The level of deepnest that we need to retrieve associated <see cref="Entity" /></param>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" />  if found</returns>
-        public async Task<IEnumerable<Entity>> GetEntity(Guid entityId, int deepLevel = 0)
-        {
-            var project = await this.FindEntity(entityId);
-
-            if (project == null)
-            {
-                return Enumerable.Empty<Entity>();
-            }
-
-            return project.GetAssociatedEntities(deepLevel);
-        }
-
-        /// <summary>
-        ///     Tries to get a <see cref="Project" /> based on its <see cref="Guid" />
-        /// </summary>
-        /// <param name="entityId">The <see cref="Guid" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="Project" /> if found</returns>
-        public async Task<Project> FindEntity(Guid entityId)
-        {
-            return await this.context.Projects.FindAsync(entityId);
         }
 
         /// <summary>
@@ -227,7 +72,7 @@ namespace UI_DSM.Server.Managers.ProjectManager
         /// <param name="entity">The <see cref="Project" /></param>
         /// <param name="dto">The <see cref="EntityDto" /></param>
         /// <returns>A <see cref="Task" /></returns>
-        public async Task ResolveProperties(Project entity, EntityDto dto)
+        public override async Task ResolveProperties(Project entity, EntityDto dto)
         {
             if (dto is not ProjectDto projectDto)
             {
@@ -250,7 +95,81 @@ namespace UI_DSM.Server.Managers.ProjectManager
         public async Task<IEnumerable<Project>> GetAvailableProjectsForUser(string userName)
         {
             var participants = await this.participantManager.GetParticipants(userName);
-            return participants.Select(x => x.EntityContainer as Project);
+            return participants.Select(x => x.EntityContainer as Project).OrderBy(x => x!.CreatedOn);
+        }
+
+        /// <summary>
+        ///     Gets the number of open <see cref="ReviewTask" /> where the logged user is assigned to
+        ///     and <see cref="Comment" /> for each <see cref="Project" />
+        /// </summary>
+        /// <param name="projectsId">A collection of <see cref="Guid" /> for <see cref="Project" />s</param>
+        /// <param name="userName">The name of the current logged user</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
+        public async Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> projectsId, string userName)
+        {
+            var dictionary = new Dictionary<Guid, ComputedProjectProperties>();
+
+            foreach (var projectId in projectsId)
+            {
+                var computedProperties = await this.GetOpenTasksAndComments(projectId, userName);
+
+                if (computedProperties != null)
+                {
+                    dictionary[projectId] = computedProperties;
+                }
+            }
+
+            return dictionary;
+        }
+
+        /// <summary>
+        ///     Sets specific properties before the creation of the <see cref="Project" />
+        /// </summary>
+        /// <param name="entity">The <see cref="Project" /></param>
+        protected override void SetSpecificPropertiesBeforeCreate(Project entity)
+        {
+            entity.CreatedOn = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        ///     Gets the number of open <see cref="ReviewTask" /> where the logged user is assigned to
+        ///     and <see cref="Comment" /> for a <see cref="Project" />
+        /// </summary>
+        /// <param name="projectId">A <see cref="Guid" /> for <see cref="Project" /></param>
+        /// <param name="userName">The name of the current logged user</param>
+        /// <returns>A <see cref="Task" />with the <see cref="ComputedProjectProperties" /></returns>
+        private async Task<ComputedProjectProperties> GetOpenTasksAndComments(Guid projectId, string userName)
+        {
+            if (this.EntityDbSet.All(x => x.Id != projectId))
+            {
+                return null;
+            }
+
+            var participant = await this.participantManager.GetParticipantForProject(projectId, userName);
+
+            if (participant == null)
+            {
+                return null;
+            }
+
+            var tasks = this.EntityDbSet
+                .Where(x => x.Id == projectId)
+                .SelectMany(x => x.Reviews)
+                .SelectMany(x => x.ReviewObjectives)
+                .SelectMany(x => x.ReviewTasks)
+                .Count(x => x.Status == StatusKind.Open && x.IsAssignedTo != null && x.IsAssignedTo.Id == participant.Id);
+
+            var comments = this.EntityDbSet
+                .Where(x => x.Id == projectId)
+                .SelectMany(x => x.Annotations)
+                .OfType<Comment>()
+                .Count();
+
+            return new ComputedProjectProperties
+            {
+                TaskCount = tasks,
+                CommentCount = comments
+            };
         }
     }
 }

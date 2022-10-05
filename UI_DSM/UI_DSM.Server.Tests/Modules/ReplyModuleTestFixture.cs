@@ -78,6 +78,7 @@ namespace UI_DSM.Server.Tests.Modules
             })));
 
             this.module = new ReplyModule();
+            Program.RegisterEntities();
         }
 
         [Test]

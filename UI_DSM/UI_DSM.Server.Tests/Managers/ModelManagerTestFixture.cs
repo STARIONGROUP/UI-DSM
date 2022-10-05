@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Server.Tests.Managers
 {
+    using Microsoft.EntityFrameworkCore;
+
     using Moq;
 
     using NUnit.Framework;
@@ -28,13 +30,17 @@ namespace UI_DSM.Server.Tests.Managers
     {
         private ModelManager manager;
         private Mock<DatabaseContext> context;
+        private Mock<DbSet<Model>> modelDbSet;
+        private Mock<DbSet<Project>> projectDbSet;
 
         [SetUp]
         public void Setup()
         {
             this.context = new Mock<DatabaseContext>();
+            this.context.CreateDbSetForContext(out this.modelDbSet, out this.projectDbSet);
 
             this.manager = new ModelManager(this.context.Object);
+            Program.RegisterEntities();
         }
 
         [Test]
@@ -54,19 +60,12 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var dbSet = DbSetMockHelper.CreateMock(models);
-            this.context.Setup(x => x.Models).Returns(dbSet.Object);
-
-            foreach (var model in models)
-            {
-                dbSet.Setup(x => x.FindAsync(model.Id)).ReturnsAsync(model);
-            }
+            this.modelDbSet.UpdateDbSetCollection(models);
 
             var allEntities = await this.manager.GetEntities(1);
             Assert.That(allEntities.ToList(), Has.Count.EqualTo(2));
 
             var invalidGuid = Guid.NewGuid();
-            dbSet.Setup(x => x.FindAsync(invalidGuid)).ReturnsAsync((Model)null);
             var foundReview = await this.manager.FindEntity(invalidGuid);
             Assert.That(foundReview, Is.Null);
 
@@ -108,9 +107,7 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var projectDbSet = DbSetMockHelper.CreateMock(projects);
-            this.context.Setup(x => x.Projects).Returns(projectDbSet.Object);
-            projectDbSet.Setup(x => x.FindAsync(projects.First().Id)).ReturnsAsync(projects.First());
+            this.projectDbSet.UpdateDbSetCollection(projects);
 
             await this.manager.CreateEntity(model);
             this.context.Verify(x => x.Add(model), Times.Once);

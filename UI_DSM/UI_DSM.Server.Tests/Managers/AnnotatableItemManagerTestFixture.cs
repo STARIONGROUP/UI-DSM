@@ -42,6 +42,7 @@ namespace UI_DSM.Server.Tests.Managers
             this.reviewObjectiveManager = new Mock<IReviewObjectiveManager>();
             this.annotationManager = new Mock<IAnnotationManager>();
             this.manager = new AnnotatableItemManager(this.reviewObjectiveManager.Object, this.annotationManager.Object);
+            Program.RegisterEntities();
         }
 
         [Test]
@@ -81,7 +82,11 @@ namespace UI_DSM.Server.Tests.Managers
 
             foreach (var reviewObjective in reviewObjectives)
             {
-                this.reviewObjectiveManager.Setup(x => x.FindEntity(reviewObjective.Id)).ReturnsAsync(reviewObjective);
+                this.reviewObjectiveManager.Setup(x => x.GetEntity(reviewObjective.Id,0))
+                    .ReturnsAsync(reviewObjective.GetAssociatedEntities());
+
+                this.reviewObjectiveManager.Setup(x => x.FindEntity(reviewObjective.Id))
+                    .ReturnsAsync(reviewObjective);
             }
 
             var getEntityResult = await this.manager.GetEntity(Guid.NewGuid());

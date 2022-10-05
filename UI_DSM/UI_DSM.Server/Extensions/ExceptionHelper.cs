@@ -24,11 +24,19 @@ namespace UI_DSM.Server.Extensions
         ///     Check if the <see cref="Exception" /> results after a unique constraint violation
         /// </summary>
         /// <param name="ex">The <see cref="Exception" /></param>
+        /// <param name="uniqueException">The <see cref="PostgresException"/> if </param>
         /// <returns>True if the <see cref="Exception" /> is a unique constraint violation</returns>
-        public static bool IsUniqueConstraintViolation(Exception ex)
+        public static bool IsUniqueConstraintViolation(Exception ex, out PostgresException uniqueException)
         {
             var innermost = GetInnermostException(ex);
-            return innermost is PostgresException { SqlState: "23505" };
+            uniqueException = null;
+
+            if (innermost is PostgresException { SqlState: "23505" } exception)
+            {
+                uniqueException = exception;
+            }
+
+            return uniqueException != null;
         }
 
         /// <summary>

@@ -44,6 +44,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
             this.httpMessageHandler = new MockHttpMessageHandler();
             var httpClient = this.httpMessageHandler.ToHttpClient();
             httpClient.BaseAddress = new Uri("http://localhost/api");
+            EntityHelper.RegisterEntities();
 
             var participantId = Guid.NewGuid();
             var roleId = Guid.NewGuid();
