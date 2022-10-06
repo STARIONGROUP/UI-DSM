@@ -14,12 +14,12 @@
 namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
 {
     using AppComponents;
+
     using Bunit;
     using Bunit.TestDoubles;
-    using DevExpress.Blazor;
-
 
     using Microsoft.Extensions.DependencyInjection;
+    
     using NUnit.Framework;
 
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
@@ -43,10 +43,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
             this.context = new TestContext();
             this.errorMessage = new ErrorMessageViewModel();
             this.context.ConfigureDevExpressBlazor();
+
             this.viewModel = new ProjectReviewViewModel(null)
             {
                 Project = new Project()
             };
+
             this.viewModel.NavigationManager = this.context.Services.GetRequiredService<FakeNavigationManager>();
         }
 
@@ -57,7 +59,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
         }
 
         [Test]
-        public async Task VerifyComponent()
+        public void VerifyComponent()
         {
             var renderer = this.context.RenderComponent<ProjectReview>(parameters =>
             {
@@ -66,14 +68,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
             });
 
             var projectReviewsCard = renderer.FindComponents<AppProjectCard>();
-            Assert.That(projectReviewsCard.Count(), Is.EqualTo(0));
+            Assert.That(projectReviewsCard, Has.Count.EqualTo(0));
 
             this.viewModel.Project.ProjectName = "Project";
             this.viewModel.Project.Reviews.Add(new Review(Guid.NewGuid()));
             
             renderer.Render();
             var projectReviewsCard1 = renderer.FindComponents<AppProjectCard>();
-            Assert.That(projectReviewsCard1.Count, Is.EqualTo(1));
+            Assert.That(projectReviewsCard1, Has.Count.EqualTo(1));
         }
     }
 }

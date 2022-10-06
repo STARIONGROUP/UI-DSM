@@ -11,7 +11,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Tests.Pages.NormalUser
+namespace UI_DSM.Client.Tests.Pages.NormalUser.ProjectPage
 {
     using Bunit;
     
@@ -58,7 +58,6 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser
         [Test]
         public async Task VerifyOnInitialized()
         {
-
             var projectGuid = Guid.NewGuid();
             this.projectService.Setup(x => x.GetProject(projectGuid, 0)).ReturnsAsync((Project)null);
 
@@ -68,7 +67,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser
             });
 
             var noProjectFound = renderer.Find("div");
-            Assert.That(noProjectFound.InnerHtml.Contains("Project not found"), Is.True);
+            Assert.That(noProjectFound.InnerHtml, Does.Contain("Project not found"));
 
             var project = new Project(projectGuid)
             {
@@ -83,7 +82,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser
             Assert.That(this.viewModel.ProjectReviewViewModel.Project, Is.Not.Null);
 
             var projectsComponent = renderer.FindComponents<ProjectReview>();
-            Assert.That(projectsComponent.Count, Is.EqualTo(1));
+            Assert.That(projectsComponent, Has.Count.EqualTo(1));
         }
     }
 }

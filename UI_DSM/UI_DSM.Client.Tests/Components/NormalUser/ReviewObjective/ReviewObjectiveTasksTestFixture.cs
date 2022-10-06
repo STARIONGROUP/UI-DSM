@@ -18,9 +18,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ReviewObjective
     using Bunit;
     using Bunit.TestDoubles;
     
-    using DevExpress.Blazor;
-    
     using Microsoft.Extensions.DependencyInjection;
+
     using NUnit.Framework;
 
     using UI_DSM.Client.Components.NormalUser.ReviewObjective;
@@ -44,10 +43,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ReviewObjective
             this.context = new TestContext();
             this.errorMessage = new ErrorMessageViewModel();
             this.context.ConfigureDevExpressBlazor();
+            
             this.viewModel = new ReviewObjectiveTasksViewModel(null)
             {
                 ReviewObjective = new ReviewObjective()
             };
+            
             this.viewModel.NavigationManager = this.context.Services.GetRequiredService<FakeNavigationManager>();
         }
 
@@ -58,7 +59,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ReviewObjective
         }
 
         [Test]
-        public async Task VerifyComponent()
+        public void VerifyComponent()
         {
             var renderer = this.context.RenderComponent<ReviewObjectiveTasks>(parameters =>
             {
@@ -67,14 +68,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ReviewObjective
             });
 
             var reviewObjectiveTaskItem = renderer.FindComponents<TaskItem>();
-            Assert.That(reviewObjectiveTaskItem.Count(), Is.EqualTo(0));
+            Assert.That(reviewObjectiveTaskItem, Has.Count.EqualTo(0));
 
             this.viewModel.ReviewObjective.Title = "Review Objective 1";
             this.viewModel.ReviewObjective.ReviewTasks.Add(new ReviewTask(Guid.NewGuid()));
 
             renderer.Render();
             var reviewObjectiveTaskItem1 = renderer.FindComponents<TaskItem>();
-            Assert.That(reviewObjectiveTaskItem1.Count, Is.EqualTo(1));
+            Assert.That(reviewObjectiveTaskItem1, Has.Count.EqualTo(1));
         }
     }
 }

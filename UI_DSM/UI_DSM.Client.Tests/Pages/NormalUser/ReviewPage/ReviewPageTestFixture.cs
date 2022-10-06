@@ -11,7 +11,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Tests.Pages.NormalUser
+namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewPage
 {
     using Bunit;
 
@@ -22,12 +22,12 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser
     using NUnit.Framework;
 
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
+    using UI_DSM.Client.Pages.NormalUser.ReviewPage;
+    using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Tests.Helpers;
-    using UI_DSM.Shared.Models;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewPage;
-    using UI_DSM.Client.Services.ReviewService;
-    using UI_DSM.Client.Pages.NormalUser.ReviewPage;
+    using UI_DSM.Shared.Models;
 
     using TestContext = Bunit.TestContext;
 
@@ -58,10 +58,8 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser
         [Test]
         public async Task VerifyOnInitialized()
         {
-
             var projectGuid = Guid.NewGuid();
             var reviewGuid = Guid.NewGuid();
-      
 
             var renderer = this.context.RenderComponent<ReviewPage>(parameters =>
             {
@@ -70,7 +68,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser
             });
 
             var noReviewFound = renderer.Find("div");
-            Assert.That(noReviewFound.InnerHtml.Contains("Review not found"), Is.True);
+            Assert.That(noReviewFound.InnerHtml, Does.Contain("Review not found"));
 
             var project = new Project(projectGuid)
             {
@@ -90,7 +88,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser
             Assert.That(this.viewModel.ReviewObjectiveViewModel.Review, Is.Not.Null);
 
             var reviewObjectiveComponent = renderer.FindComponents<ReviewObjectiveComponent>();
-            Assert.That(reviewObjectiveComponent.Count, Is.EqualTo(1));
+            Assert.That(reviewObjectiveComponent, Has.Count.EqualTo(1));
         }
     }
 }

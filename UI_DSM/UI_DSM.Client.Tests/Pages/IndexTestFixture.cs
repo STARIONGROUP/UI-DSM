@@ -14,10 +14,12 @@
 namespace UI_DSM.Client.Tests.Pages
 {
     using System.Security.Claims;
+
     using AppComponents;
+
     using Bunit;
     using Bunit.TestDoubles;
-    using DevExpress.Blazor;
+
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -102,7 +104,7 @@ namespace UI_DSM.Client.Tests.Pages
 
             renderer.Render();
             var projectDivs = renderer.FindComponents<AppProjectCard>().ToList();
-            Assert.That(projectDivs.Count, Is.EqualTo(2));
+            Assert.That(projectDivs, Has.Count.EqualTo(2));
         }
     }
 }

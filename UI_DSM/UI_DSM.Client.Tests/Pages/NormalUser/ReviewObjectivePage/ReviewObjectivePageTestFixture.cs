@@ -11,7 +11,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Tests.Pages.NormalUser
+namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewObjectivePage
 {
     using Bunit;
 
@@ -21,13 +21,13 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser
 
     using NUnit.Framework;
 
-    using UI_DSM.Client.Tests.Helpers;
-    using UI_DSM.Shared.Models;
-    using UI_DSM.Client.ViewModels.Components.NormalUser.ReviewObjective;
-    using UI_DSM.Client.Pages.NormalUser.ReviewObjectivePage;
-    using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage;
-    using UI_DSM.Client.Services.ReviewObjectiveService;
     using UI_DSM.Client.Components.NormalUser.ReviewObjective;
+    using UI_DSM.Client.Pages.NormalUser.ReviewObjectivePage;
+    using UI_DSM.Client.Services.ReviewObjectiveService;
+    using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.ReviewObjective;
+    using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage;
+    using UI_DSM.Shared.Models;
 
     using TestContext = Bunit.TestContext;
 
@@ -58,11 +58,9 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser
         [Test]
         public async Task VerifyOnInitialized()
         {
-
             var projectGuid = Guid.NewGuid();
             var reviewGuid = Guid.NewGuid();
             var reviewObjectiveGuid = Guid.NewGuid();
-
 
             var renderer = this.context.RenderComponent<ReviewObjectivePage>(parameters =>
             {
@@ -72,7 +70,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser
             });
 
             var noReviewObjectiveFound = renderer.Find("div");
-            Assert.That(noReviewObjectiveFound.InnerHtml.Contains("Review Objective not found"), Is.True);
+            Assert.That(noReviewObjectiveFound.InnerHtml, Does.Contain("Review Objective not found"));
 
             var project = new Project(projectGuid)
             {
@@ -97,7 +95,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser
             Assert.That(this.viewModel.ReviewObjectiveTasksViewModel.ReviewObjective, Is.Not.Null);
 
             var reviewObjectiveTask = renderer.FindComponents<ReviewObjectiveTasks>();
-            Assert.That(reviewObjectiveTask.Count, Is.EqualTo(1));
+            Assert.That(reviewObjectiveTask, Has.Count.EqualTo(1));
         }
     }
 }
