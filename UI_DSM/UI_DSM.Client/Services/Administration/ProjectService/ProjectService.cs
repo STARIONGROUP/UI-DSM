@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Services.Administration.ProjectService
 {
+    using System.Text;
+
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Client.Services.JsonService;
@@ -33,7 +35,7 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
         /// </summary>
         /// <param name="httpClient">The <see cref="ServiceBase.HttpClient" /></param>
         /// <param name="jsonService">The <see cref="IJsonService" /></param>
-        public ProjectService(HttpClient httpClient, IJsonService jsonService) : base(httpClient,jsonService)
+        public ProjectService(HttpClient httpClient, IJsonService jsonService) : base(httpClient, jsonService)
         {
         }
 
@@ -128,6 +130,32 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
             {
                 throw new HttpRequestException(exception.Message);
             }
+        }
+
+        /// <summary>
+        ///     Gets, for all <see cref="Project" />, the number of open <see cref="ReviewTask" /> and <see cref="Comment" />
+        ///     related to the <see cref="Project" />
+        /// </summary>
+        /// <param name="projectsId">A collection of <see cref="Guid" /></param>
+        /// <returns>A <see cref="Task" /> with a <see cref="Dictionary{Guid, ComputedProjectProperties}" /></returns>
+        public async Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> projectsId)
+        {
+            var content = this.jsonService.Serialize(projectsId);
+            var body = new StringContent(content, Encoding.UTF8, "application/json");
+
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{this.MainRoute}/GetOpenTasksAndComments")
+            {
+                Content = body
+            };
+
+            var response = await this.HttpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(response.ReasonPhrase);
+            }
+
+            return this.jsonService.Deserialize<Dictionary<Guid, ComputedProjectProperties>>(await response.Content.ReadAsStreamAsync());
         }
     }
 }

@@ -151,50 +151,27 @@ namespace UI_DSM.Server.Context
                 .HasForeignKey("EntityContainerId")
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<Project>().Navigation(x => x.Participants).AutoInclude();
-            builder.Entity<Project>().Navigation(x => x.Reviews).AutoInclude();
-            builder.Entity<Project>().Navigation(x => x.Annotations).AutoInclude();
-            builder.Entity<Project>().Navigation(x => x.Artifacts).AutoInclude();
-
-            builder.Entity<Participant>().Navigation(x => x.Role).AutoInclude();
-            builder.Entity<Participant>().Navigation(x => x.User).AutoInclude();
-
-            builder.Entity<Review>().Navigation(x => x.Author).AutoInclude();
-            builder.Entity<Review>().Navigation(x => x.ReviewObjectives).AutoInclude();
-            
             builder.Entity<Review>().HasMany(x => x.Artifacts)
                 .WithMany(x => x.Reviews);
-
-            builder.Entity<Review>().Navigation(x => x.Artifacts).AutoInclude();
 
             builder.Entity<Review>().HasMany(x => x.ReviewObjectives)
                 .WithOne(ro => (Review)ro.EntityContainer)
                 .HasForeignKey("EntityContainerId")
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<ReviewObjective>().Navigation(x => x.Author).AutoInclude();
-            builder.Entity<ReviewObjective>().Navigation(x => x.ReviewTasks).AutoInclude();
-
             builder.Entity<ReviewObjective>().HasMany(x => x.ReviewTasks)
                 .WithOne(ro => (ReviewObjective)ro.EntityContainer)
                 .HasForeignKey("EntityContainerId")
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<ReviewTask>().Navigation(x => x.Author).AutoInclude();
-            builder.Entity<ReviewTask>().Navigation(x => x.IsAssignedTo).AutoInclude();
-
             builder.Entity<AnnotatableItem>().HasMany(x => x.Annotations);
-            builder.Entity<AnnotatableItem>().Navigation(x => x.Annotations).AutoInclude();
 
             builder.Entity<Annotation>().HasMany(a => a.AnnotatableItems);
-            builder.Entity<Annotation>().Navigation(x => x.Author).AutoInclude();
 
             builder.Entity<Comment>().HasMany(x => x.Replies)
                 .WithOne(reply => (Comment)reply.EntityContainer)
                 .HasForeignKey("EntityContainerId")
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<Reply>().Navigation(x => x.Author).AutoInclude();
 
             builder.ApplyConfiguration(new UserConfiguration());
             builder.ApplyConfiguration(new UserEntityConfiguration());

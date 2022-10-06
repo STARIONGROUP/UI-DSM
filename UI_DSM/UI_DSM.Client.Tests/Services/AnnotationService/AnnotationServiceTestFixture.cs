@@ -22,6 +22,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.AnnotationService;
     using UI_DSM.Client.Services.JsonService;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -40,6 +41,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
         [SetUp]
         public void Setup()
         {
+            EntityHelper.RegisterEntities();
             this.httpMessageHandler = new MockHttpMessageHandler();
             var httpClient = this.httpMessageHandler.ToHttpClient();
             httpClient.BaseAddress = new Uri("http://localhost/api");

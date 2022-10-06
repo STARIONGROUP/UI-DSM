@@ -82,6 +82,9 @@ namespace UI_DSM.Serializer.Json
 
             writer.WriteEndArray();
 
+            writer.WritePropertyName("createdOn");
+            writer.WriteStringValue(dto.CreatedOn);
+
             writer.WritePropertyName("id");
             writer.WriteStringValue(dto.Id);
 

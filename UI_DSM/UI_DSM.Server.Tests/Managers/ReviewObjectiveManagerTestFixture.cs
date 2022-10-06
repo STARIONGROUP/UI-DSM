@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Server.Tests.Managers
 {
+    using Microsoft.EntityFrameworkCore;
+
     using Moq;
 
     using NUnit.Framework;
@@ -35,17 +37,22 @@ namespace UI_DSM.Server.Tests.Managers
         private Mock<IParticipantManager> participantManager;
         private Mock<IReviewTaskManager> reviewTaskManager;
         private Mock<IAnnotationManager> annotationManager;
+        private Mock<DbSet<ReviewObjective>> reviewObjectiveDbSet;
+        private Mock<DbSet<Review>> reviewDbSet;
 
         [SetUp]
         public void Setup()
         {
             this.context = new Mock<DatabaseContext>();
+            this.context.CreateDbSetForContext(out this.reviewObjectiveDbSet, out this.reviewDbSet);
             this.participantManager = new Mock<IParticipantManager>();
             this.reviewTaskManager = new Mock<IReviewTaskManager>();
             this.annotationManager = new Mock<IAnnotationManager>();
 
             this.manager = new ReviewObjectiveManager(this.context.Object, this.participantManager.Object, this.reviewTaskManager.Object,
                 this.annotationManager.Object);
+
+            Program.RegisterEntities();
         }
 
         [Test]
@@ -79,19 +86,12 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var dbSet = DbSetMockHelper.CreateMock(reviewObjectives);
-            this.context.Setup(x => x.ReviewObjectives).Returns(dbSet.Object);
-
-            foreach (var reviewObjective in reviewObjectives)
-            {
-                dbSet.Setup(x => x.FindAsync(reviewObjective.Id)).ReturnsAsync(reviewObjective);
-            }
+            this.reviewObjectiveDbSet.UpdateDbSetCollection(reviewObjectives);
 
             var allEntities = await this.manager.GetEntities(1);
             Assert.That(allEntities.ToList(), Has.Count.EqualTo(5));
 
             var invalidGuid = Guid.NewGuid();
-            dbSet.Setup(x => x.FindAsync(invalidGuid)).ReturnsAsync((ReviewObjective)null);
             var foundReview = await this.manager.FindEntity(invalidGuid);
             Assert.That(foundReview, Is.Null);
 
@@ -137,9 +137,7 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var reviewDbSet = DbSetMockHelper.CreateMock(reviews);
-            this.context.Setup(x => x.Reviews).Returns(reviewDbSet.Object);
-            reviewDbSet.Setup(x => x.FindAsync(reviews.First().Id)).ReturnsAsync(reviews.First());
+           this.reviewDbSet.UpdateDbSetCollection(reviews);
 
             await this.manager.CreateEntity(reviewObjective);
             this.context.Verify(x => x.Add(reviewObjective), Times.Once);
@@ -161,6 +159,19 @@ namespace UI_DSM.Server.Tests.Managers
             var operationResult = await this.manager.UpdateEntity(reviewObjective);
             Assert.That(operationResult.Succeeded, Is.False);
             reviewObjective.Description = "Review new Description";
+
+            var reviews = new List<Review>()
+            {
+                new(Guid.NewGuid())
+                {
+                    ReviewObjectives =
+                    {
+                        reviewObjective
+                    }
+                }
+            };
+
+            this.reviewDbSet.UpdateDbSetCollection(reviews);
             await this.manager.UpdateEntity(reviewObjective);
             this.context.Verify(x => x.Update(reviewObjective), Times.Once);
 
@@ -176,15 +187,18 @@ namespace UI_DSM.Server.Tests.Managers
             var operationResult = await this.manager.DeleteEntity(reviewObjective);
             Assert.That(operationResult.Succeeded, Is.False);
 
-            reviewObjective.EntityContainer = new Review(Guid.NewGuid());
-            var dbSet = DbSetMockHelper.CreateMock(new List<Review>());
-            this.context.Setup(x => x.Reviews).Returns(dbSet.Object);
+            var reviews = new List<Review>()
+            {
+                new(Guid.NewGuid())
+                {
+                    ReviewObjectives =
+                    {
+                        reviewObjective
+                    }
+                }
+            };
 
-            dbSet.Setup(x => x.FindAsync(reviewObjective.EntityContainer.Id)).ReturnsAsync((Review)null);
-            operationResult = await this.manager.DeleteEntity(reviewObjective);
-            Assert.That(operationResult.Succeeded, Is.False);
-
-            dbSet.Setup(x => x.FindAsync(reviewObjective.EntityContainer.Id)).ReturnsAsync((Review)reviewObjective.EntityContainer);
+            this.reviewDbSet.UpdateDbSetCollection(reviews);
             await this.manager.DeleteEntity(reviewObjective);
             this.context.Verify(x => x.Remove(reviewObjective), Times.Once);
 

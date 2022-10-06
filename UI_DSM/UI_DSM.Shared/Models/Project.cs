@@ -75,6 +75,12 @@ namespace UI_DSM.Shared.Models
         public EntityContainerList<Artifact> Artifacts { get; set; }
 
         /// <summary>
+        ///     The <see cref="DateTime" /> where the <see cref="Project" /> has been created
+        /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime CreatedOn { get; set; }
+
+        /// <summary>
         ///     Instantiate a <see cref="EntityDto" /> from a <see cref="Entity" />
         /// </summary>
         /// <returns>A new <see cref="EntityDto" /></returns>
@@ -83,6 +89,7 @@ namespace UI_DSM.Shared.Models
             var dto = new ProjectDto(this.Id)
             {
                 ProjectName = this.ProjectName,
+                CreatedOn = this.CreatedOn,
                 Participants = new List<Guid>(this.Participants.Select(x => x.Id)),
                 Reviews = new List<Guid>(this.Reviews.Select(x => x.Id)),
                 Annotations = new List<Guid>(this.Annotations.Select(x => x.Id)),
@@ -105,6 +112,7 @@ namespace UI_DSM.Shared.Models
             }
 
             this.ProjectName = projectDto.ProjectName;
+            this.CreatedOn = projectDto.CreatedOn;
             this.Participants.ResolveList(projectDto.Participants, resolvedEntity);
             this.Reviews.ResolveList(projectDto.Reviews, resolvedEntity);
             this.Annotations.ResolveList(projectDto.Annotations, resolvedEntity);

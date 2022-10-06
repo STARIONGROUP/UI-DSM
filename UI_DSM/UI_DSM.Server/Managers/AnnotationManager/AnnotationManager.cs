@@ -77,9 +77,23 @@ namespace UI_DSM.Server.Managers.AnnotationManager
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /> if found</returns>
         public async Task<IEnumerable<Entity>> GetEntity(Guid entityId, int deepLevel = 0)
         {
-            var annotation = await this.FindEntity(entityId);
+            var annotation = new List<Entity>();
+            annotation.AddRange(await this.commentManager.GetEntity(entityId, deepLevel));
 
-            return annotation == null ? Enumerable.Empty<Entity>() : annotation.GetAssociatedEntities(deepLevel);
+            if (annotation.Any())
+            {
+                return annotation;
+            }
+
+            annotation.AddRange(await this.feedbackManager.GetEntity(entityId, deepLevel));
+
+            if (annotation.Any())
+            {
+                return annotation;
+            }
+
+            annotation.AddRange(await this.noteManager.GetEntity(entityId, deepLevel));
+            return annotation;
         }
 
         /// <summary>

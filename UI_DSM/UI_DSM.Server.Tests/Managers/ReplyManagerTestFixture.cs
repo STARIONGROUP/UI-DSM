@@ -23,6 +23,8 @@ namespace UI_DSM.Server.Tests.Managers
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
+    
+    using Microsoft.EntityFrameworkCore;
 
     [TestFixture]
     public class ReplyManagerTestFixture
@@ -31,11 +33,14 @@ namespace UI_DSM.Server.Tests.Managers
         private Mock<DatabaseContext> context;
         private Mock<IParticipantManager> participantManager;
         private Participant participant;
+        private Mock<DbSet<Reply>> replyDbSet;
+        private Mock<DbSet<Comment>> commentDbSet;
 
         [SetUp]
         public void Setup()
         {
             this.context = new Mock<DatabaseContext>();
+            this.context.CreateDbSetForContext(out this.replyDbSet, out this.commentDbSet);
             this.participantManager = new Mock<IParticipantManager>();
             this.manager = new ReplyManager(this.context.Object, this.participantManager.Object);
 
@@ -44,6 +49,8 @@ namespace UI_DSM.Server.Tests.Managers
                 Role = new Role(Guid.NewGuid()),
                 User = new UserEntity(Guid.NewGuid())
             };
+            
+            Program.RegisterEntities();
         }
 
         [Test]
@@ -71,14 +78,7 @@ namespace UI_DSM.Server.Tests.Managers
                 Replies = { replies.First(), replies.Last() }
             };
 
-            var dbSet = DbSetMockHelper.CreateMock(replies);
-
-            foreach (var reply in replies)
-            {
-                dbSet.Setup(x => x.FindAsync(reply.Id)).ReturnsAsync(reply);
-            }
-
-            this.context.Setup(x => x.Replies).Returns(dbSet.Object);
+            this.replyDbSet.UpdateDbSetCollection(replies);
 
             var getEntities = await this.manager.GetEntities();
             Assert.That(getEntities.ToList(), Has.Count.EqualTo(6));
@@ -112,14 +112,8 @@ namespace UI_DSM.Server.Tests.Managers
                 Replies = { reply }
             };
 
-            var dbSet = DbSetMockHelper.CreateMock(new List<Comment>());
-            this.context.Setup(x => x.Comments).Returns(dbSet.Object);
-            dbSet.Setup(x => x.FindAsync(comment.Id)).ReturnsAsync((Comment)null);
+            this.commentDbSet.UpdateDbSetCollection(new List<Comment>{comment});
 
-            operationResult = await this.manager.CreateEntity(reply);
-            Assert.That(operationResult.Succeeded, Is.False);
-
-            dbSet.Setup(x => x.FindAsync(comment.Id)).ReturnsAsync(comment);
             await this.manager.CreateEntity(reply);
             this.context.Verify(x => x.Add(reply), Times.Once);
             this.context.Setup(x => x.SaveChangesAsync(default)).ThrowsAsync(new InvalidOperationException());
@@ -136,6 +130,13 @@ namespace UI_DSM.Server.Tests.Managers
 
             reply.Author = this.participant;
             reply.Content = "A reply";
+
+            var comment = new Comment(Guid.NewGuid())
+            {
+                Replies = { reply }
+            };
+
+            this.commentDbSet.UpdateDbSetCollection(new List<Comment>{comment});
 
             await this.manager.UpdateEntity(reply);
             this.context.Verify(x => x.Update(reply), Times.Once);
@@ -157,14 +158,7 @@ namespace UI_DSM.Server.Tests.Managers
                 Replies = { reply }
             };
 
-            var dbSet = DbSetMockHelper.CreateMock(new List<Comment>());
-            this.context.Setup(x => x.Comments).Returns(dbSet.Object);
-            dbSet.Setup(x => x.FindAsync(comment.Id)).ReturnsAsync((Comment)null);
-
-            operationResult = await this.manager.DeleteEntity(reply);
-            Assert.That(operationResult.Succeeded, Is.False);
-
-            dbSet.Setup(x => x.FindAsync(comment.Id)).ReturnsAsync(comment);
+            this.commentDbSet.UpdateDbSetCollection(new List<Comment> { comment });
             await this.manager.DeleteEntity(reply);
 
             this.context.Verify(x => x.Remove(reply), Times.Once);

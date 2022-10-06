@@ -58,9 +58,8 @@ namespace UI_DSM.Server.Managers.ArtifactManager
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /> if found</returns>
         public async Task<IEnumerable<Entity>> GetEntity(Guid entityId, int deepLevel = 0)
         {
-            var artifact = await this.FindEntity(entityId);
-
-            return artifact == null ? Enumerable.Empty<Entity>() : artifact.GetAssociatedEntities(deepLevel);
+            var artifact = await this.modelManager.GetEntity(entityId, deepLevel);
+            return artifact;
         }
 
         /// <summary>

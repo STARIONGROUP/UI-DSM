@@ -20,6 +20,7 @@ namespace UI_DSM.Client.Tests.Services.ArtifactService
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.ArtifactService;
     using UI_DSM.Client.Services.JsonService;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Extensions;
@@ -43,6 +44,7 @@ namespace UI_DSM.Client.Tests.Services.ArtifactService
 
             this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer());
             this.service = new ArtifactService(httpClient, this.jsonService);
+            EntityHelper.RegisterEntities();
         }
 
         [Test]

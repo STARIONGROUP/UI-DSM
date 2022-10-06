@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Server.Tests.Managers
 {
+    using Microsoft.EntityFrameworkCore;
+
     using Moq;
    
     using NUnit.Framework;
@@ -36,11 +38,16 @@ namespace UI_DSM.Server.Tests.Managers
         private Participant participant;
         private List<AnnotatableItem> annotatableItems;
         private Mock<IReplyManager> replyManager;
+        private Mock<DbSet<Project>> projectDbSet;
+        private Mock<DbSet<Comment>> commentDbSet;
 
         [SetUp]
         public void Setup()
         {
             this.context = new Mock<DatabaseContext>();
+            this.context.CreateDbSetForContext(out this.commentDbSet, out this.projectDbSet);
+            this.context.Setup(x => x.Set<Project>()).Returns(this.projectDbSet.Object);
+            this.context.Setup(x => x.Set<Comment>()).Returns(this.commentDbSet.Object);
             this.participantManager = new Mock<IParticipantManager>();
             this.annotatableItemManager = new Mock<IAnnotatableItemManager>();
             this.replyManager = new Mock<IReplyManager>();
@@ -61,6 +68,8 @@ namespace UI_DSM.Server.Tests.Managers
                     Author = this.participant
                 }
             };
+
+            Program.RegisterEntities();
         }
 
         [Test]
@@ -98,14 +107,12 @@ namespace UI_DSM.Server.Tests.Managers
 
             comments.First().AnnotatableItems.First().Annotations.Add(comments.First());
 
-            var dbSet = DbSetMockHelper.CreateMock(comments);
+            this.commentDbSet.UpdateDbSetCollection(comments);
 
             foreach (var comment in comments)
             {
-                dbSet.Setup(x => x.FindAsync(comment.Id)).ReturnsAsync(comment);
+                this.commentDbSet.Setup(x => x.FindAsync(comment.Id)).ReturnsAsync(comment);
             }
-
-            this.context.Setup(x => x.Comments).Returns(dbSet.Object);
 
             var getEntities = await this.manager.GetEntities(1);
             Assert.That(getEntities.ToList(), Has.Count.EqualTo(9));
@@ -143,9 +150,7 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var projectDbSet = DbSetMockHelper.CreateMock(projects);
-            this.context.Setup(x => x.Projects).Returns(projectDbSet.Object);
-            projectDbSet.Setup(x => x.FindAsync(projects.First().Id)).ReturnsAsync(projects.First());
+            this.projectDbSet.UpdateDbSetCollection(projects);
             await this.manager.CreateEntity(comment);
 
             this.context.Verify(x => x.Add(comment), Times.Once);
@@ -162,9 +167,12 @@ namespace UI_DSM.Server.Tests.Managers
             Assert.That(operationResult.Succeeded, Is.False);
 
             comment.Author = this.participant;
-            comment.Content = "A comment";
             comment.AnnotatableItems = this.annotatableItems;
 
+            operationResult = await this.manager.UpdateEntity(comment);
+            Assert.That(operationResult.Succeeded, Is.False);
+
+            comment.Content = "A comment";
             operationResult = await this.manager.UpdateEntity(comment);
             Assert.That(operationResult.Succeeded, Is.False);
 
@@ -179,9 +187,7 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var projectDbSet = DbSetMockHelper.CreateMock(projects);
-            this.context.Setup(x => x.Projects).Returns(projectDbSet.Object);
-            projectDbSet.Setup(x => x.FindAsync(projects.First().Id)).ReturnsAsync(projects.First());
+            this.projectDbSet.UpdateDbSetCollection(projects);
 
             await this.manager.UpdateEntity(comment);
             this.context.Verify(x => x.Update(comment), Times.Once);
@@ -210,9 +216,7 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var projectDbSet = DbSetMockHelper.CreateMock(projects);
-            this.context.Setup(x => x.Projects).Returns(projectDbSet.Object);
-            projectDbSet.Setup(x => x.FindAsync(projects.First().Id)).ReturnsAsync(projects.First());
+            this.projectDbSet.UpdateDbSetCollection(projects);
 
             await this.manager.DeleteEntity(comment);
             this.context.Verify(x => x.Remove(comment), Times.Once);

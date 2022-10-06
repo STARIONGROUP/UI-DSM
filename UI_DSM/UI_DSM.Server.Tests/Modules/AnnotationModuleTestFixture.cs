@@ -83,6 +83,8 @@ namespace UI_DSM.Server.Tests.Modules
                 Role = new Role(Guid.NewGuid()),
                 User = new UserEntity(Guid.NewGuid())
             };
+
+            Program.RegisterEntities();
         }
 
         [Test]

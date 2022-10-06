@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Server.Tests.Managers
 {
+    using Microsoft.EntityFrameworkCore;
+
     using Moq;
 
     using Npgsql;
@@ -31,11 +33,13 @@ namespace UI_DSM.Server.Tests.Managers
         private RoleManager manager;
         private Mock<DatabaseContext> context;
         private List<Role> data;
+        private Mock<DbSet<Role>> roleDbSet;
         
         [SetUp]
         public void Setup()
         {
             this.context = new Mock<DatabaseContext>();
+            this.context.CreateDbSetForContext(out this.roleDbSet);
             this.manager = new RoleManager(this.context.Object);
             
             this.data = new List<Role>()
@@ -57,16 +61,15 @@ namespace UI_DSM.Server.Tests.Managers
                     }
                 }
             };
+
+            this.roleDbSet.UpdateDbSetCollection(this.data);
+            Program.RegisterEntities();
         }
 
         [Test]
         public async Task VerifyGetRoles()
         {
-            var dbSet = DbSetMockHelper.CreateMock(this.data);
             var invalidGuid = Guid.NewGuid();
-            dbSet.Setup(x => x.FindAsync(invalidGuid)).ReturnsAsync((Role)null);
-            dbSet.Setup(x => x.FindAsync(this.data.Last().Id)).ReturnsAsync(this.data.Last());
-            this.context.Setup(x => x.UiDsmRoles).Returns(dbSet.Object);
            
             Assert.Multiple(() =>
             {
@@ -74,11 +77,6 @@ namespace UI_DSM.Server.Tests.Managers
                Assert.That(this.manager.GetEntity(invalidGuid).Result, Is.Empty);
                Assert.That(this.manager.GetEntity(this.data.Last().Id).Result, Is.Not.Null);
             });
-
-            foreach (var role in this.data)
-            {
-                dbSet.Setup(x => x.FindAsync(role.Id)).ReturnsAsync(role);
-            }
 
             var foundEntities = await this.manager.FindEntities(this.data.Select(x => x.Id));
             Assert.That(foundEntities.Count(), Is.EqualTo(this.data.Count));
@@ -108,7 +106,7 @@ namespace UI_DSM.Server.Tests.Managers
                 .ThrowsAsync(new PostgresException("unique constraint", "High", "High", "23505"));
 
             creationResult = await this.manager.CreateEntity(newRole);
-            Assert.That(creationResult.Errors.First(), Does.Contain("already used"));
+            Assert.That(creationResult.Errors.First(), Does.Contain("already exists"));
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());
@@ -140,7 +138,7 @@ namespace UI_DSM.Server.Tests.Managers
 
             role.RoleName = this.data.First().RoleName;
             updateResult = await this.manager.UpdateEntity(role);
-            Assert.That(updateResult.Errors.First(), Does.Contain("already used"));
+            Assert.That(updateResult.Errors.First(), Does.Contain("already exist"));
 
             this.context.Setup(x => x.SaveChangesAsync(default))
                 .ThrowsAsync(new InvalidOperationException());

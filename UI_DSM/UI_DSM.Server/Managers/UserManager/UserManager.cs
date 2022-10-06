@@ -16,8 +16,6 @@ namespace UI_DSM.Server.Managers.UserManager
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
 
-    using NLog;
-
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Models;
@@ -26,7 +24,7 @@ namespace UI_DSM.Server.Managers.UserManager
     /// <summary>
     ///     This manager handles operation to the Database for <see cref="UserEntity" />s
     /// </summary>
-    public class UserManager : IUserManager
+    public class UserManager : EntityManager<UserEntity>, IUserManager
     {
         /// <summary>
         ///     The <see cref="UserManager{TUser}" />
@@ -34,85 +32,13 @@ namespace UI_DSM.Server.Managers.UserManager
         private readonly UserManager<User> authenticationUserManager;
 
         /// <summary>
-        ///     The <see cref="DatabaseContext" />
-        /// </summary>
-        private readonly DatabaseContext context;
-
-        /// <summary>
-        ///     The <see cref="NLog" /> logger
-        /// </summary>
-        private readonly Logger logger = LogManager.GetCurrentClassLogger();
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="UserManager" /> class.
         /// </summary>
         /// <param name="context">The <see cref="DatabaseContext" /></param>
         /// <param name="authenticationUserManager">The <see cref="authenticationUserManager" /></param>
-        public UserManager(DatabaseContext context, UserManager<User> authenticationUserManager)
+        public UserManager(DatabaseContext context, UserManager<User> authenticationUserManager) : base(context)
         {
-            this.context = context;
             this.authenticationUserManager = authenticationUserManager;
-        }
-
-        /// <summary>
-        ///     Gets a collection of all <see cref="Entity" />s and associated <see cref="Entity" />
-        /// </summary>
-        /// <param name="deepLevel">The level of deepnest that we need to retrieve associated <see cref="Entity" /></param>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /> as result</returns>
-        public async Task<IEnumerable<Entity>> GetEntities(int deepLevel = 0)
-        {
-            var users = await this.context.UsersEntities.ToListAsync();
-            return users.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
-        }
-
-        /// <summary>
-        ///     Tries to get a <see cref="Entity" /> based on its <see cref="Guid" /> and its associated <see cref="Entity" />
-        /// </summary>
-        /// <param name="entityId">The <see cref="Guid" /></param>
-        /// <param name="deepLevel">The level of deepnest that we need to retrieve associated <see cref="Entity" /></param>
-        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /> if found</returns>
-        public async Task<IEnumerable<Entity>> GetEntity(Guid entityId, int deepLevel = 0)
-        {
-            var user = await this.FindEntity(entityId);
-
-            if (user == null)
-            {
-                return Enumerable.Empty<Entity>();
-            }
-
-            return user.GetAssociatedEntities(deepLevel);
-        }
-
-        /// <summary>
-        ///     Tries to get a <see cref="UserEntity" /> based on its <see cref="Guid" />
-        /// </summary>
-        /// <param name="entityId">The <see cref="Guid" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="UserEntity" /> if found</returns>
-        public async Task<UserEntity> FindEntity(Guid entityId)
-        {
-            return await this.context.UsersEntities.FindAsync(entityId);
-        }
-
-        /// <summary>
-        ///     Tries to get all <see cref="UserEntity" /> based on their <see cref="Guid" />
-        /// </summary>
-        /// <param name="entitiesId">A collection of <see cref="Guid" /></param>
-        /// <returns>A collection of <see cref="UserEntity" /></returns>
-        public async Task<IEnumerable<UserEntity>> FindEntities(IEnumerable<Guid> entitiesId)
-        {
-            var entities = new List<UserEntity>();
-
-            foreach (var id in entitiesId)
-            {
-                var entity = await this.FindEntity(id);
-
-                if (entity != null)
-                {
-                    entities.Add(entity);
-                }
-            }
-
-            return entities;
         }
 
         /// <summary>
@@ -120,10 +46,9 @@ namespace UI_DSM.Server.Managers.UserManager
         /// </summary>
         /// <param name="entity">The <see cref="UserEntity" /> to create</param>
         /// <returns>A <see cref="Task" /> with the result of the creation</returns>
-        public async Task<EntityOperationResult<UserEntity>> CreateEntity(UserEntity entity)
+        public override Task<EntityOperationResult<UserEntity>> CreateEntity(UserEntity entity)
         {
-            await Task.CompletedTask;
-            return EntityOperationResult<UserEntity>.Failed("Cannot create an UserEntity");
+            return HandleNotSupportedOperation();
         }
 
         /// <summary>
@@ -131,10 +56,9 @@ namespace UI_DSM.Server.Managers.UserManager
         /// </summary>
         /// <param name="entity">The <see cref="UserEntity" /> to update</param>
         /// <returns>A <see cref="Task" /> with the result of the update</returns>
-        public async Task<EntityOperationResult<UserEntity>> UpdateEntity(UserEntity entity)
+        public override Task<EntityOperationResult<UserEntity>> UpdateEntity(UserEntity entity)
         {
-            await Task.CompletedTask;
-            return EntityOperationResult<UserEntity>.Failed("Cannot update an UserEntity");
+            return HandleNotSupportedOperation();
         }
 
         /// <summary>
@@ -142,7 +66,7 @@ namespace UI_DSM.Server.Managers.UserManager
         /// </summary>
         /// <param name="entity">The <see cref="UserEntity" /> to delete</param>
         /// <returns>A <see cref="Task" /> with the result of the deletion</returns>
-        public async Task<EntityOperationResult<UserEntity>> DeleteEntity(UserEntity entity)
+        public override async Task<EntityOperationResult<UserEntity>> DeleteEntity(UserEntity entity)
         {
             if (entity.IsAdmin)
             {
@@ -158,13 +82,12 @@ namespace UI_DSM.Server.Managers.UserManager
 
             var identityResult = await this.authenticationUserManager.DeleteAsync(user);
 
-            this.context.UsersEntities.Remove(entity);
+            if (!identityResult.Succeeded)
+            {
+                return EntityOperationResult<UserEntity>.Failed(identityResult.Errors.Select(x => x.Description).ToArray());
+            }
 
-            await this.context.SaveChangesAsync();
-
-            return identityResult.Succeeded
-                ? EntityOperationResult<UserEntity>.Success(entity)
-                : EntityOperationResult<UserEntity>.Failed(identityResult.Errors.Select(x => x.Description).ToArray());
+            return await base.DeleteEntity(entity);
         }
 
         /// <summary>
@@ -173,7 +96,7 @@ namespace UI_DSM.Server.Managers.UserManager
         /// <param name="entity">The <see cref="UserEntity" /></param>
         /// <param name="dto">The <see cref="EntityDto" /></param>
         /// <returns>A <see cref="Task" /></returns>
-        public async Task ResolveProperties(UserEntity entity, EntityDto dto)
+        public override async Task ResolveProperties(UserEntity entity, EntityDto dto)
         {
             if (dto is not UserEntityDto userDto)
             {
@@ -208,19 +131,7 @@ namespace UI_DSM.Server.Managers.UserManager
                 UserName = createdUser.UserName
             };
 
-            var operationResult = new EntityOperationResult<UserEntity>(this.context.Add(userEntity), EntityState.Added);
-
-            try
-            {
-                await this.context.SaveChangesAsync();
-            }
-            catch (Exception exception)
-            {
-                operationResult.HandleExpection(exception);
-                this.logger.Error(exception.Message);
-            }
-
-            return operationResult;
+            return await this.AddEntityToContext(userEntity);
         }
 
         /// <summary>
@@ -230,7 +141,7 @@ namespace UI_DSM.Server.Managers.UserManager
         /// <returns>A <see cref="Task" /> with the <see cref="UserEntity" /> if found</returns>
         public async Task<UserEntity> GetUserByName(string userName)
         {
-            return await this.context.UsersEntities.FirstOrDefaultAsync(x => x.UserName == userName);
+            return await this.EntityDbSet.FirstOrDefaultAsync(x => x.UserName == userName);
         }
 
         /// <summary>
@@ -240,7 +151,7 @@ namespace UI_DSM.Server.Managers.UserManager
         /// <returns>A <see cref="Task" /> with a collection of <see cref="UserEntity" /></returns>
         public async Task<IEnumerable<UserEntity>> GetUsers(Func<UserEntity, bool> predicate)
         {
-            var users = this.context.UsersEntities.Where(predicate);
+            var users = this.EntityDbSet.Where(predicate);
             await Task.CompletedTask;
             return users;
         }

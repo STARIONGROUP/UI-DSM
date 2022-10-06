@@ -57,6 +57,7 @@ namespace UI_DSM.Server.Tests.Modules
 
             ModuleTestHelper.Setup<RoleModule, RoleDto>(new RoleDtoValidator(), out this.httpContext, out this.httpResponse, out _, out _);
             this.module = new RoleModule();
+            Program.RegisterEntities();
         }
 
         [Test]

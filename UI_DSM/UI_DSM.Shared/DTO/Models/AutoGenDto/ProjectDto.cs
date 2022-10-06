@@ -73,6 +73,11 @@ namespace UI_DSM.Shared.DTO.Models
         public List<Guid> Artifacts { get; set; }
 
         /// <summary>
+        ///    Gets or sets the CreatedOn of the Project
+        /// </summary>
+        public DateTime CreatedOn { get; set; }
+
+        /// <summary>
         ///    Instantiate a <see cref="Entity" /> from a <see cref="EntityDto" />
         /// </summary>
         public override Entity InstantiatePoco()

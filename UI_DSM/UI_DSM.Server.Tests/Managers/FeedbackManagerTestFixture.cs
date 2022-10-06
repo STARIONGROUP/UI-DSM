@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Server.Tests.Managers
 {
+    using Microsoft.EntityFrameworkCore;
+
     using Moq;
 
     using NUnit.Framework;
@@ -34,11 +36,14 @@ namespace UI_DSM.Server.Tests.Managers
         private Mock<IAnnotatableItemManager> annotatableItemManager;
         private Participant participant;
         private List<AnnotatableItem> annotatableItems;
+        private Mock<DbSet<Project>> projectDbSet;
+        private Mock<DbSet<Feedback>> feedbackDbSet;
 
         [SetUp]
         public void Setup()
         {
             this.context = new Mock<DatabaseContext>();
+            this.context.CreateDbSetForContext(out this.feedbackDbSet, out this.projectDbSet);
             this.participantManager = new Mock<IParticipantManager>();
             this.annotatableItemManager = new Mock<IAnnotatableItemManager>();
             this.manager = new FeedbackManager(this.context.Object, this.participantManager.Object);
@@ -57,6 +62,8 @@ namespace UI_DSM.Server.Tests.Managers
                     Author = this.participant
                 }
             };
+
+            Program.RegisterEntities();
         }
 
         [Test]
@@ -81,14 +88,7 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var dbSet = DbSetMockHelper.CreateMock(feedbacks);
-
-            foreach (var feedback in feedbacks)
-            {
-                dbSet.Setup(x => x.FindAsync(feedback.Id)).ReturnsAsync(feedback);
-            }
-
-            this.context.Setup(x => x.Feedbacks).Returns(dbSet.Object);
+            this.feedbackDbSet.UpdateDbSetCollection(feedbacks);
 
             var getEntities = await this.manager.GetEntities();
             Assert.That(getEntities.ToList(), Has.Count.EqualTo(7));
@@ -126,9 +126,7 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var projectDbSet = DbSetMockHelper.CreateMock(projects);
-            this.context.Setup(x => x.Projects).Returns(projectDbSet.Object);
-            projectDbSet.Setup(x => x.FindAsync(projects.First().Id)).ReturnsAsync(projects.First());
+            this.projectDbSet.UpdateDbSetCollection(projects);
 
             await this.manager.CreateEntity(feedback);
             this.context.Verify(x => x.Add(feedback), Times.Once);
@@ -162,9 +160,7 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var projectDbSet = DbSetMockHelper.CreateMock(projects);
-            this.context.Setup(x => x.Projects).Returns(projectDbSet.Object);
-            projectDbSet.Setup(x => x.FindAsync(projects.First().Id)).ReturnsAsync(projects.First());
+            this.projectDbSet.UpdateDbSetCollection(projects);
 
             await this.manager.UpdateEntity(feedback);
             this.context.Verify(x => x.Update(feedback), Times.Once);
@@ -191,9 +187,8 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var projectDbSet = DbSetMockHelper.CreateMock(projects);
-            this.context.Setup(x => x.Projects).Returns(projectDbSet.Object);
-            projectDbSet.Setup(x => x.FindAsync(projects.First().Id)).ReturnsAsync(projects.First());
+            this.projectDbSet.UpdateDbSetCollection(projects);
+
             await this.manager.DeleteEntity(feedback);
             this.context.Verify(x => x.Remove(feedback), Times.Once);
             this.context.Setup(x => x.SaveChangesAsync(default)).ThrowsAsync(new InvalidOperationException());
