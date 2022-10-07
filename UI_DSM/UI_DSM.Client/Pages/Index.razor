@@ -10,7 +10,7 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
-@page "/index"
+@page "/"
 @layout DefaultLayout
 
 <PageTitle>Dashboard | UI-DSM</PageTitle>
@@ -24,7 +24,7 @@
         @foreach (var project in this.ViewModel.AvailableProject.Items)
         {
             <NavLink href=@("/Project/"+project.Id)>
-                <AppProjectCard Title="@project.ProjectName" Created="05-10-2022 18:43" Tasks="20" Comments="20" />
+                <AppProjectCard Title="@project.ProjectName" Created="@project.CreatedOn.ToString()" Tasks="@this.ViewModel.CommentsAndTasks[project.Id].TaskCount" Comments="0" />
             </NavLink>
         }
      </div>

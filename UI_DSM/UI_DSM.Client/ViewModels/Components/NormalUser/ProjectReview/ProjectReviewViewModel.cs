@@ -17,6 +17,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
     using ReactiveUI;
 
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -37,6 +38,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
             get => this.project;
             set => this.RaiseAndSetIfChanged(ref this.project, value);
         }
+
+        /// <summary>
+        ///     A collection of comments and tasks <see cref="Review" /> for the user
+        /// </summary>
+        public Dictionary<Guid, ComputedProjectProperties> CommentsAndTasks { get; set; } = new();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectReviewViewModel" /> class.

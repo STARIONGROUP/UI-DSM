@@ -13,10 +13,12 @@
 
 namespace UI_DSM.Server.Modules
 {
+    using Carter.Response;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Server.Managers;
+    using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -28,6 +30,20 @@ namespace UI_DSM.Server.Modules
     [Route("api/Project/{projectId:guid}/Review")]
     public class ReviewModule : ContainedEntityModule<Review, ReviewDto, Project>
     {
+        /// <summary>
+        ///     Adds routes to the <see cref="IEndpointRouteBuilder" />
+        /// </summary>
+        /// <param name="app">The <see cref="IEndpointRouteBuilder" /></param>
+        public override void AddRoutes(IEndpointRouteBuilder app)
+        {
+            base.AddRoutes(app);
+
+            app.MapGet($"{this.MainRoute}/OpenTasksAndComments", this.GetOpenTasksAndComments)
+                .Produces<Dictionary<Guid, ComputedProjectProperties>>()
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/GetOpenTasksAndComments");
+        }
+
         /// <summary>
         ///     Gets a collection of all <see cref="Review" />
         /// </summary>
@@ -152,6 +168,21 @@ namespace UI_DSM.Server.Modules
         {
             await Task.CompletedTask;
             return true;
+        }
+
+        /// <summary>
+        ///     Gets, for all <see cref="Review" />, the number of open <see cref="ReviewTask" /> and <see cref="Comment" />
+        ///     related to the <see cref="Review" />
+        /// </summary>
+        /// <param name="reviewManager">The <see cref="IReviewManager"/></param>
+        /// <param name="context">The <see cref="HttpContext"/></param>
+        /// <returns>A <see cref="Task"/></returns>
+        [Authorize]
+        public async Task GetOpenTasksAndComments(IReviewManager reviewManager,Guid projectId, HttpContext context)
+        {
+            var reviewsId = (await reviewManager.GetContainedEntities(projectId)).Select(x => x.Id);
+            var computedProperties = await reviewManager.GetOpenTasksAndComments(reviewsId);
+            await context.Response.Negotiate(computedProperties);
         }
     }
 }

@@ -13,6 +13,7 @@
 
 namespace UI_DSM.Server.Managers.ReviewManager
 {
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -20,5 +21,13 @@ namespace UI_DSM.Server.Managers.ReviewManager
     /// </summary>
     public interface IReviewManager : IContainedEntityManager<Review>
     {
+
+        /// <summary>
+        ///     Gets the number of open <see cref="ReviewTask" /> where the logged user is assigned to
+        ///     and <see cref="Comment" /> for each <see cref="Review" />
+        /// </summary>
+        /// <param name="reviewsId">A collection of <see cref="Guid" /> for <see cref="Review" />s</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
+        Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewsId);
     }
 }

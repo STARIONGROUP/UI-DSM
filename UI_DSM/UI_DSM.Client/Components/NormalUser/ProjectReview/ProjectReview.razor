@@ -18,7 +18,7 @@
       @foreach (var review in this.ViewModel.Project.Reviews)
 	  {
           <NavLink href=@("/Project/"+this.ViewModel.Project.Id+"/Review/"+review.Id)>
-            <AppProjectCard Title="@review.Title" Created="@review.CreatedOn.ToString()" Tasks="20" Comments="20" />
+                <AppProjectCard Title="@review.Title" Created="@review.CreatedOn.ToString()" Tasks="20" Comments="20" />
           </NavLink>
       }
   </div>

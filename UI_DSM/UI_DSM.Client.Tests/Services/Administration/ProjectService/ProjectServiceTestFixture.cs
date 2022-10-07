@@ -191,10 +191,10 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
             var httpResponse = new HttpResponseMessage();
             httpResponse.StatusCode = HttpStatusCode.BadRequest;
 
-            var request = this.httpMessageHandler.When(HttpMethod.Get, "/Project/GetOpenTasksAndComments");
+            var request = this.httpMessageHandler.When(HttpMethod.Get, "/Project/OpenTasksAndComments");
             request.Respond(_ => httpResponse);
 
-            Assert.That(async () => await this.service.GetOpenTasksAndComments(null), Throws.Exception);
+            Assert.That(async () => await this.service.GetOpenTasksAndComments(), Throws.Exception);
 
             httpResponse.StatusCode = HttpStatusCode.OK;
 
@@ -213,7 +213,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ProjectService
             };
 
             httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResults));
-            Assert.That(await this.service.GetOpenTasksAndComments(guids), Is.EquivalentTo(requestResults));
+            Assert.That(await this.service.GetOpenTasksAndComments(), Is.EquivalentTo(requestResults));
         }
     }
 }

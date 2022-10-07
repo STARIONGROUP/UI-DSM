@@ -17,8 +17,9 @@ namespace UI_DSM.Client.ViewModels.Pages
     
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
-
+  
     using UI_DSM.Shared.Models;
+    using UI_DSM.Shared.DTO.Common;
 
     /// <summary>
     ///     Interface definition for <see cref="IndexViewModel" />
@@ -41,6 +42,11 @@ namespace UI_DSM.Client.ViewModels.Pages
         ///     A collection of available <see cref="Project" /> for the user
         /// </summary>
         SourceList<Project> AvailableProject { get; }
+
+        /// <summary>
+        ///     A collection of comments and tasks <see cref="Project" /> for the user
+        /// </summary>
+        public Dictionary<Guid, ComputedProjectProperties> CommentsAndTasks { get; set; }
 
         /// <summary>
         ///     Navigate to the page dedicated to the given <see cref="Project" />
