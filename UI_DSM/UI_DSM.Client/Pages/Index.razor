@@ -24,7 +24,14 @@
         @foreach (var project in this.ViewModel.AvailableProject.Items)
         {
             <NavLink href=@("/Project/"+project.Id)>
-                <AppProjectCard Title="@project.ProjectName" Created="@project.CreatedOn.ToString()" Tasks="@this.ViewModel.CommentsAndTasks[project.Id].TaskCount" Comments="0" />
+                @if (this.ViewModel.CommentsAndTasks.ContainsKey(project.Id))
+                {
+                    <AppProjectCard Title="@project.ProjectName" Created="@project.CreatedOn.ToString()" Tasks="@this.ViewModel.CommentsAndTasks[project.Id].TaskCount" Comments="@this.ViewModel.CommentsAndTasks[project.Id].CommentCount" />
+                }
+                else
+                {
+                    <AppProjectCard Title="@project.ProjectName" Created="@project.CreatedOn.ToString()" Tasks="-1" Comments="-1" />
+                }
             </NavLink>
         }
      </div>

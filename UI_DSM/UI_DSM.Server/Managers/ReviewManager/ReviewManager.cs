@@ -95,9 +95,9 @@ namespace UI_DSM.Server.Managers.ReviewManager
         ///     Gets the number of open <see cref="ReviewTask" /> where the logged user is assigned to
         ///     and <see cref="Comment" /> for each <see cref="Project" />
         /// </summary>
-        /// <param name="projectsId">A collection of <see cref="Guid" /> for <see cref="Project" />s</param>
-        /// <returns>A <see cref="Task" /> with the <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
-        public async Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewsId)
+        /// <param name="reviewsId">A collection of <see cref="Guid" /> for <see cref="Review" />s</param>
+        /// <returns> A <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
+        public Dictionary<Guid, ComputedProjectProperties> GetOpenTasksAndComments(IEnumerable<Guid> reviewsId)
         {
             var dictionary = new Dictionary<Guid, ComputedProjectProperties>();
 
@@ -119,8 +119,8 @@ namespace UI_DSM.Server.Managers.ReviewManager
         ///     and <see cref="Comment" /> for a <see cref="Review" />
         /// </summary>
         /// <param name="reviewId">A <see cref="Guid" /> for <see cref="Review" /></param>
-        /// <returns>A <see cref="Task" />with the <see cref="ComputedProjectProperties" /></returns>
-        private  ComputedProjectProperties GetOpenTasksAndComments(Guid reviewId)
+        /// <returns> A <see cref="ComputedProjectProperties" /></returns>
+        private ComputedProjectProperties GetOpenTasksAndComments(Guid reviewId)
         {
             if (this.EntityDbSet.All(x => x.Id != reviewId))
             {

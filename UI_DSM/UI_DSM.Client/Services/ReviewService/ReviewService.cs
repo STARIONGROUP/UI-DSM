@@ -149,7 +149,6 @@ namespace UI_DSM.Client.Services.ReviewService
             {
                 throw new HttpRequestException(response.ReasonPhrase);
             }
-            var content = await response.Content.ReadAsStringAsync();
             return this.jsonService.Deserialize<Dictionary<Guid, ComputedProjectProperties>>(await response.Content.ReadAsStreamAsync());
         }
     }

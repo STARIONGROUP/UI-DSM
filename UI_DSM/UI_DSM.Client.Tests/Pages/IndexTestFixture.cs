@@ -32,6 +32,7 @@ namespace UI_DSM.Client.Tests.Pages
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Pages;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.UserManagement;
     using UI_DSM.Shared.Models;
 
@@ -64,6 +65,7 @@ namespace UI_DSM.Client.Tests.Pages
             this.context.Services.AddSingleton(this.loginViewModel.Object);
             this.context.AddTestAuthorization().SetAuthorized("user");
             this.viewModel.NavigationManager = this.context.Services.GetRequiredService<FakeNavigationManager>();
+            this.viewModel.PopulateAvailableProjects();
         }
 
         [TearDown]
@@ -91,20 +93,31 @@ namespace UI_DSM.Client.Tests.Pages
             this.projectService.Setup(x => x.GetUserParticipation()).ReturnsAsync(availableProject);
             var renderer = this.context.RenderComponent<Index>();
 
-            var divProject1 = renderer.FindComponents<AppProjectCard>();
-            Assert.That(divProject1, Has.Count.Zero);
+            var projectComponent = renderer.FindComponents<AppProjectCard>();
+            Assert.That(projectComponent, Has.Count.Zero);
 
             this.authenticationState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>()
             {
                 new(ClaimTypes.Name, "user"),
             }, "basic")));
 
+            var guids = availableProject.Select(x => x.Id).ToList();
+            var result = new Dictionary<Guid, ComputedProjectProperties>
+            {
+                [guids[0]] = new()
+                {
+                    CommentCount = 15,
+                    TaskCount = 12
+                }
+            };
+            this.projectService.Setup(x => x.GetOpenTasksAndComments()).ReturnsAsync(result);
+
             this.authenticationProvider.Setup(x => x.GetAuthenticationStateAsync()).ReturnsAsync(this.authenticationState);
             await this.viewModel.PopulateAvailableProjects(this.authenticationState);
 
             renderer.Render();
-            var projectDivs = renderer.FindComponents<AppProjectCard>().ToList();
-            Assert.That(projectDivs, Has.Count.EqualTo(2));
+            var projectComponents = renderer.FindComponents<AppProjectCard>().ToList();
+            Assert.That(projectComponents, Has.Count.EqualTo(2));
         }
     }
 }

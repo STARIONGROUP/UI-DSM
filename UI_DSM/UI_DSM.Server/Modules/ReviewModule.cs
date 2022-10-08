@@ -175,13 +175,14 @@ namespace UI_DSM.Server.Modules
         ///     related to the <see cref="Review" />
         /// </summary>
         /// <param name="reviewManager">The <see cref="IReviewManager"/></param>
+        /// <param name="projectId"> The <see cref="Guid"/> of the <see cref="Project" /></param>
         /// <param name="context">The <see cref="HttpContext"/></param>
         /// <returns>A <see cref="Task"/></returns>
         [Authorize]
         public async Task GetOpenTasksAndComments(IReviewManager reviewManager,Guid projectId, HttpContext context)
         {
             var reviewsId = (await reviewManager.GetContainedEntities(projectId)).Select(x => x.Id);
-            var computedProperties = await reviewManager.GetOpenTasksAndComments(reviewsId);
+            var computedProperties =  reviewManager.GetOpenTasksAndComments(reviewsId);
             await context.Response.Negotiate(computedProperties);
         }
     }

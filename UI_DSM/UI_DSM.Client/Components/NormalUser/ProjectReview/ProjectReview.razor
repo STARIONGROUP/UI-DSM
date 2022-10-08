@@ -18,7 +18,14 @@
       @foreach (var review in this.ViewModel.Project.Reviews)
 	  {
           <NavLink href=@("/Project/"+this.ViewModel.Project.Id+"/Review/"+review.Id)>
-                <AppProjectCard Title="@review.Title" Created="@review.CreatedOn.ToString()" Tasks="20" Comments="20" />
+                @if (this.ViewModel.CommentsAndTasks.ContainsKey(review.Id))
+                {
+                   <AppProjectCard Title="@review.Title" Created="@review.CreatedOn.ToString()" Tasks="@this.ViewModel.CommentsAndTasks[review.Id].TaskCount" Comments="@this.ViewModel.CommentsAndTasks[review.Id].CommentCount" />
+                }
+                else
+                {
+                   <AppProjectCard Title="@review.Title" Created="@review.CreatedOn.ToString()" Tasks="-1" Comments="-1" />
+                }
           </NavLink>
       }
   </div>
