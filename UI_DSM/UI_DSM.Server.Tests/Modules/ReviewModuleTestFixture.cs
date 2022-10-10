@@ -30,6 +30,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Server.Types;
     using UI_DSM.Server.Validator;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
@@ -274,6 +275,32 @@ namespace UI_DSM.Server.Tests.Modules
             this.reviewManager.Setup(x => x.UpdateEntity(It.IsAny<Review>())).ReturnsAsync(EntityOperationResult<Review>.Success(review));
             await this.module.UpdateEntity(this.reviewManager.Object, review.Id, reviewDto, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 200, Times.Once);
+        }
+
+         [Test]
+        public async Task VerifyGetOpenTasksAndComments()
+        {
+            var reviews = new List<Review>
+            {
+                new(Guid.NewGuid())
+            };
+
+            Project project = new(Guid.NewGuid());
+            project.Reviews.AddRange(reviews);
+
+
+            var guids = reviews.Select(x => x.Id).ToList();
+            var result = new Dictionary<Guid, ComputedProjectProperties>
+            {
+                [guids[0]] = new()
+                {
+                    CommentCount = 15,
+                    TaskCount = 12
+                }
+            };
+            this.reviewManager.As<IReviewManager>().Setup(x => x.GetOpenTasksAndComments(It.IsAny<IEnumerable<Guid>>())).Returns(result);
+            await this.module.GetOpenTasksAndComments(this.reviewManager.As<IReviewManager>().Object,project.Id, this.context.Object);
+            this.reviewManager.As<IReviewManager>().Verify(x => x.GetOpenTasksAndComments(It.IsAny<IEnumerable<Guid>>()), Times.Once);
         }
     }
 }

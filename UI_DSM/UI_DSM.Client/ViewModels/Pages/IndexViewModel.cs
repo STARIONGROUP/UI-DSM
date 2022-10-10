@@ -20,6 +20,7 @@ namespace UI_DSM.Client.ViewModels.Pages
     
     using UI_DSM.Client.Pages;
     using UI_DSM.Client.Services.Administration.ProjectService;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -63,6 +64,11 @@ namespace UI_DSM.Client.ViewModels.Pages
         public SourceList<Project> AvailableProject { get; } = new();
 
         /// <summary>
+        ///     A collection of comments and tasks <see cref="Project" /> for the user
+        /// </summary>
+        public Dictionary<Guid, ComputedProjectProperties> CommentsAndTasks { get; set; } = new();
+
+        /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
@@ -86,9 +92,11 @@ namespace UI_DSM.Client.ViewModels.Pages
         public async Task PopulateAvailableProjects(AuthenticationState state)
         {
             this.AvailableProject.Clear();
+            
             if (state.User.Identity is { IsAuthenticated: true })
             {
-                this.AvailableProject.AddRange(await this.projectService.GetUserParticipation());
+                this.CommentsAndTasks = await this.projectService.GetOpenTasksAndComments();
+                this.AvailableProject.AddRange(await this.projectService.GetUserParticipation());             
             }
         }
         

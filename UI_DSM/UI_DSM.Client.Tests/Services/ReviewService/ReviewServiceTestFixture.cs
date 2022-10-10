@@ -238,5 +238,38 @@ namespace UI_DSM.Client.Tests.Services.ReviewService
             httpResponse.Content = new StringContent(string.Empty);
             Assert.That(async () => await this.service.UpdateReview(review), Throws.Exception);
         }
+
+        [Test]
+        public async Task VerifyGetOpenTaskAndComments()
+        {
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.BadRequest;
+
+            Project project = new Project(Guid.NewGuid());
+
+            var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Project/{project.Id}/Review/OpenTasksAndComments");
+            request.Respond(_ => httpResponse);
+
+            Assert.That(async () => await this.service.GetOpenTasksAndComments(project.Id), Throws.Exception);
+
+            httpResponse.StatusCode = HttpStatusCode.OK;
+
+            var guids = new List<Guid>
+            {
+                Guid.NewGuid()
+            };
+
+            var requestResults = new Dictionary<Guid, ComputedProjectProperties>
+            {
+                [guids[0]] = new()
+                {
+                    CommentCount = 15,
+                    TaskCount = 12
+                }
+            };
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResults));
+            Assert.That(await this.service.GetOpenTasksAndComments(project.Id), Is.EquivalentTo(requestResults));
+        }
     }
 }

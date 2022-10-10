@@ -17,6 +17,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
 
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.Services.Administration.ProjectService;
+    using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Shared.Models;
@@ -32,14 +33,20 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
         /// </summary>
         private readonly IProjectService projectService;
 
+        /// <summary>
+        ///     The <see cref="IReviewService" />
+        /// </summary>
+        private readonly IReviewService reviewService;
+
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectPageViewModel" /> class.
         /// </summary>
         /// <param name="projectService">The <see cref="IProjectService" /></param>
-        public NormalProjectPageViewModel(IProjectService projectService, IProjectReviewViewModel projectReviewViewModal)
+        public NormalProjectPageViewModel(IProjectService projectService, IReviewService reviewService, IProjectReviewViewModel projectReviewViewModal)
         {
             this.projectService = projectService;
+            this.reviewService = reviewService;
             this.ProjectReviewViewModel = projectReviewViewModal;
         }
 
@@ -67,6 +74,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
         {
             var projectResponse = await this.projectService.GetProject(projectGuid, 1);
             this.ProjectReviewViewModel.Project = projectResponse;
+            ProjectReviewViewModel.CommentsAndTasks = await this.reviewService.GetOpenTasksAndComments(projectGuid);
         }
     }
 }

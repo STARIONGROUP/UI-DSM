@@ -23,6 +23,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ProjectPage
 
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.Services.Administration.ProjectService;
+    using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Shared.Models;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage;
@@ -38,6 +39,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ProjectPage
         private INormalProjectPageViewModel viewModel;
         private IProjectReviewViewModel projectReviewViewModel;
         private Mock<IProjectService> projectService;
+        private Mock<IReviewService> reviewService;
 
         [SetUp]
         public void Setup()
@@ -45,7 +47,8 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ProjectPage
             this.context = new TestContext();
             this.projectReviewViewModel = new ProjectReviewViewModel(null);
             this.projectService = new Mock<IProjectService>();
-            this.viewModel = new NormalProjectPageViewModel(this.projectService.Object, this.projectReviewViewModel);
+            this.reviewService = new Mock<IReviewService>();
+            this.viewModel = new NormalProjectPageViewModel(this.projectService.Object, this.reviewService.Object, this.projectReviewViewModel);
             this.context.Services.AddSingleton(this.viewModel);
         }
 

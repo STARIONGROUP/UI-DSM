@@ -60,5 +60,12 @@ namespace UI_DSM.Client.Services.ReviewService
         /// <param name="review">The <see cref="Review" /> to delete</param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /></returns>
         Task<RequestResponseDto> DeleteReview(Review review);
+
+        /// <summary>
+        ///     Gets, for a <see cref="Review" />, the number of open <see cref="ReviewTask" /> and <see cref="Comment" />
+        ///     related to the <see cref="Review" />
+        /// </summary>
+        /// <returns>A <see cref="Task" /> with a <see cref="Dictionary{Guid, ComputedProjectProperties}" /></returns>
+        Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(Guid projectId);
     }
 }

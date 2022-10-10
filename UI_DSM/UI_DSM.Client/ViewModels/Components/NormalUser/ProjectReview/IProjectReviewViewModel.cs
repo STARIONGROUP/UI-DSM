@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 {
     using Microsoft.AspNetCore.Components;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -25,6 +26,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         ///     The <see cref="Project" />
         /// </summary>
         Project Project { get; set; }
+
+        /// <summary>
+        ///     A collection of comments and tasks <see cref="Review" /> for the user
+        /// </summary>
+        Dictionary<Guid, ComputedProjectProperties> CommentsAndTasks { get; set; }
 
 
         /// <summary>

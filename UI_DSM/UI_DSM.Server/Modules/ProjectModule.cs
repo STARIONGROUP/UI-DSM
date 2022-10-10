@@ -46,7 +46,6 @@ namespace UI_DSM.Server.Modules
                 .WithName($"{this.EntityName}/GetProjectsForUser");
 
             app.MapGet($"{this.MainRoute}/OpenTasksAndComments", this.GetOpenTasksAndComments)
-                .Accepts<IEnumerable<Guid>>("application/json")
                 .Produces<Dictionary<Guid, ComputedProjectProperties>>()
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/GetOpenTasksAndComments");
@@ -140,17 +139,12 @@ namespace UI_DSM.Server.Modules
         ///     related to the <see cref="Project" />
         /// </summary>
         /// <param name="projectManager">The <see cref="IProjectManager"/></param>
-        /// <param name="projectsId">A collection of <see cref="Guid"/></param>
         /// <param name="context">The <see cref="HttpContext"/></param>
         /// <returns>A <see cref="Task"/></returns>
         [Authorize]
-        public async Task GetOpenTasksAndComments(IProjectManager projectManager, IEnumerable<Guid> projectsId, HttpContext context)
+        public async Task GetOpenTasksAndComments(IProjectManager projectManager, HttpContext context)
         {
-            if(projectsId == null)
-            {
-                context.Response.StatusCode = 400;
-                return;
-            }
+            var projectsId = (await projectManager.GetAvailableProjectsForUser(context.User.Identity?.Name)).Select(x => x.Id) ;
 
             var computedProperties = await projectManager.GetOpenTasksAndComments(projectsId, context.User.Identity?.Name);
             await context.Response.Negotiate(computedProperties);

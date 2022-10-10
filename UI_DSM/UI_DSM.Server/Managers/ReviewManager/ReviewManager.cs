@@ -18,6 +18,7 @@ namespace UI_DSM.Server.Managers.ReviewManager
     using UI_DSM.Server.Managers.ArtifactManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
@@ -88,6 +89,62 @@ namespace UI_DSM.Server.Managers.ReviewManager
             entity.ReviewNumber = project!.Reviews.Max(x => x.ReviewNumber) + 1;
             entity.CreatedOn = DateTime.UtcNow;
             entity.Status = StatusKind.Open;
+        }
+
+        /// <summary>
+        ///     Gets the number of open <see cref="ReviewTask" /> where the logged user is assigned to
+        ///     and <see cref="Comment" /> for each <see cref="Project" />
+        /// </summary>
+        /// <param name="reviewsId">A collection of <see cref="Guid" /> for <see cref="Review" />s</param>
+        /// <returns> A <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
+        public Dictionary<Guid, ComputedProjectProperties> GetOpenTasksAndComments(IEnumerable<Guid> reviewsId)
+        {
+            var dictionary = new Dictionary<Guid, ComputedProjectProperties>();
+
+            foreach (var reviewId in reviewsId)
+            {
+                var computedProperties = this.GetOpenTasksAndComments(reviewId);
+
+                if (computedProperties != null)
+                {
+                    dictionary[reviewId] = computedProperties;
+                }
+            }
+
+            return dictionary;
+        }
+
+        /// <summary>
+        ///     Gets the number of open <see cref="ReviewTask" /> where the logged user is assigned to
+        ///     and <see cref="Comment" /> for a <see cref="Review" />
+        /// </summary>
+        /// <param name="reviewId">A <see cref="Guid" /> for <see cref="Review" /></param>
+        /// <returns> A <see cref="ComputedProjectProperties" /></returns>
+        private ComputedProjectProperties GetOpenTasksAndComments(Guid reviewId)
+        {
+            if (this.EntityDbSet.All(x => x.Id != reviewId))
+            {
+                return null;
+            }
+
+            var tasks = this.EntityDbSet
+                .Where(x => x.Id == reviewId)
+                .SelectMany(x => x.ReviewObjectives)
+                .SelectMany(x => x.ReviewTasks)
+                .Count(x => x.Status == StatusKind.Open);
+
+            var comments = this.EntityDbSet
+                .Where(x => x.Id == reviewId)
+                .SelectMany(x => x.ReviewObjectives)
+                .SelectMany(x => x.Annotations)
+                .OfType<Comment>()
+                .Count();
+
+            return new ComputedProjectProperties
+            {
+                TaskCount = tasks,
+                CommentCount = comments
+            };
         }
     }
 }
