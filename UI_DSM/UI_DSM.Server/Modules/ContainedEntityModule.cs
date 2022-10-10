@@ -101,7 +101,7 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            await context.Response.Negotiate(entity.GetAssociatedEntities(deepLevel).ToDtos());
+            await context.Response.Negotiate((await manager.GetEntity(entityId, deepLevel)).ToDtos());
         }
 
         /// <summary>
