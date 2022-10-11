@@ -25,7 +25,7 @@ A script is available to run docker commands
 ### Linux
 ```
 $ ./solutionFolder# export DEVEXPRESS_NUGET_KEY=<YOUR-API-KEY>
-$ ./solutionFolder# ./compose.sh
+$ ./solutionFolder# ./compose.sh <ooption>
 ```
 
 ### Windows
