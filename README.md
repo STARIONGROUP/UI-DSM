@@ -16,9 +16,32 @@ The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
 
 ## Installation
 
-The web application will be distributed using docker containers and docker-compose.
+The web application is distributed using docker containers and docker-compose.
 
-> More Information coming soon
+In the first stage the application is built using the private DevExpress nuget feed. In order to access this nuget feed, it is required to EXPORT the API-KEY to an environment variable.
+
+A script is available to run docker commands
+
+### Linux
+```
+$ ./solutionFolder# export DEVEXPRESS_NUGET_KEY=<YOUR-API-KEY>
+$ ./solutionFolder# ./compose.sh
+```
+
+### Windows
+```
+$ ./solutionFolder# set DEVEXPRESS_NUGET_KEY=<YOUR-API-KEY>
+$ ./solutionFolder# ./compose.bat <option>
+```
+
+Available options : 
+    build - (default) builds the solution, creates the images and runs the containers.
+    strt - starts the containers if they already have been run and stopped.
+    stp - stops the running containers without removing them.
+    up - runs containers without rebuilding them.
+    down - stops and removes the containers. Volume information is not lost.
+    dev - creates database containers. Does not required to set the DEVEXPRESS_NUGET_KEY.
+    devtest - creates database and server containers. 
 
 ## Build Status
 
