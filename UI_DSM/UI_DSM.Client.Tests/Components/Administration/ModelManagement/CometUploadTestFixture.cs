@@ -144,8 +144,8 @@ namespace UI_DSM.Client.Tests.Components.Administration.ModelManagement
 
                 Assert.That(modelsData.AvailableModels.First(), Is.Not.EqualTo(null));
                 Assert.That(modelsData.AvailableModels.First().Iterations.First(), Is.Not.EqualTo(null));
-                Assert.That(modelsData.AvailableModels.GetHashCode(), Is.Not.EqualTo(0));
-                Assert.That(modelsData.AvailableModels.First().Iterations.GetHashCode(), Is.Not.EqualTo(0));
+                Assert.That(modelsData.AvailableModels.First().GetHashCode(), Is.Not.EqualTo(0));
+                Assert.That(modelsData.AvailableModels.First().Iterations.First().GetHashCode(), Is.Not.EqualTo(0));
             });
 
             this.cometService.Setup(x => x.GetAvailableEngineeringModels(It.IsAny<Guid>()))
