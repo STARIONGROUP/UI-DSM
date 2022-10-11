@@ -106,9 +106,47 @@ namespace UI_DSM.Client.Tests.Components.Administration.ModelManagement
                                 IterationName = "Iteration 1"
                             }
                         }
+                    },
+                    new EngineeringModelData()
+                    {
+                    EngineeringModelName = "LOFT",
+                    EngineeringId = Guid.NewGuid(),
+                    Iterations = new List<IterationData>
+                    {
+                        new ()
+                        {
+                            IterationId = Guid.NewGuid(),
+                            IterationName = "Iteration 1"
+                        }
                     }
                 }
+                }
             };
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(modelsData.AvailableModels.First(), Is.EqualTo(new EngineeringModelData()
+                {
+                    EngineeringId = modelGuid,
+                    EngineeringModelName = "LOFT"
+                }));
+
+                Assert.That(modelsData.AvailableModels.First(), Is.Not.EqualTo(modelsData.AvailableModels.Last()));
+
+                Assert.That(modelsData.AvailableModels.First().Iterations.First(), Is.EqualTo(new IterationData()
+                {
+                    IterationId = iterationGuid,
+                    IterationName = "Iteration 1"
+                }));
+
+                Assert.That(modelsData.AvailableModels.First().Iterations.First(), Is.Not.EqualTo(modelsData.AvailableModels.Last()
+                    .Iterations.First()));
+
+                Assert.That(modelsData.AvailableModels.First(), Is.Not.EqualTo(null));
+                Assert.That(modelsData.AvailableModels.First().Iterations.First(), Is.Not.EqualTo(null));
+                Assert.That(modelsData.AvailableModels.GetHashCode(), Is.Not.EqualTo(0));
+                Assert.That(modelsData.AvailableModels.First().Iterations.GetHashCode(), Is.Not.EqualTo(0));
+            });
 
             this.cometService.Setup(x => x.GetAvailableEngineeringModels(It.IsAny<Guid>()))
                 .ReturnsAsync(modelsData);
