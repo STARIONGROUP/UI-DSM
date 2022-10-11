@@ -203,7 +203,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.projectManager.As<IProjectManager>().Setup(x => x.GetOpenTasksAndComments(guids, "user"))
                 .ReturnsAsync(result);
 
-            await this.module.GetOpenTasksAndComments(this.projectManager.As<IProjectManager>().Object, guids, this.httpContext.Object);
+            await this.module.GetOpenTasksAndComments(this.projectManager.As<IProjectManager>().Object, this.httpContext.Object);
             this.projectManager.As<IProjectManager>().Verify(x => x.GetOpenTasksAndComments(guids, "user"), Times.Once);
         }
     }
