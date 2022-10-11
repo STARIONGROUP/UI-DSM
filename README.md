@@ -35,13 +35,14 @@ $ ./solutionFolder# ./compose.bat <option>
 ```
 
 Available options : 
-    build - (default) builds the solution, creates the images and runs the containers.
-    strt - starts the containers if they already have been run and stopped.
-    stp - stops the running containers without removing them.
-    up - runs containers without rebuilding them.
-    down - stops and removes the containers. Volume information is not lost.
-    dev - creates database containers. Does not required to set the DEVEXPRESS_NUGET_KEY.
-    devtest - creates database and server containers. 
+
+- `build` - (default) builds the solution, creates the images and runs the containers.
+- `strt` - starts the containers if they already have been run and stopped.
+- `stp` - stops the running containers without removing them.
+- `up` - runs containers without rebuilding them.
+- `down` - stops and removes the containers. Volume information is not lost.
+- `dev` - creates database containers. Does not required to set the DEVEXPRESS_NUGET_KEY.
+- `devtest` - creates database and server containers. 
 
 ## Build Status
 
