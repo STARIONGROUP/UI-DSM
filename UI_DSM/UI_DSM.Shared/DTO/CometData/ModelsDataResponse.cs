@@ -21,13 +21,8 @@ namespace UI_DSM.Shared.DTO.CometData
     public class ModelsDataResponse : RequestResponseDto
     {
         /// <summary>
-        ///     A <see cref="Dictionary{TKey,TValue}" /> that represents available models with the Frozen Iteration
+        ///     A collection of <see cref="EngineeringModelData" />
         /// </summary>
-        public Dictionary<Guid, List<Tuple<Guid, string>>> AvailableModels { get; set; } = new();
-
-        /// <summary>
-        ///     A <see cref="Dictionary{TKey,TValue}" /> that contains the correspondance between the Model id and the Model name
-        /// </summary>
-        public Dictionary<Guid, string> ModelNames { get; set; } = new();
+        public List<EngineeringModelData> AvailableModels { get; set; } = new();
     }
 }

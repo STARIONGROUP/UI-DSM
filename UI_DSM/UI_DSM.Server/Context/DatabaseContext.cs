@@ -34,6 +34,7 @@ namespace UI_DSM.Server.Context
         /// <param name="options">The options to be used by a <see cref="DbContext" />.</param>
         public DatabaseContext(DbContextOptions options) : base(options)
         {
+            this.EnsureCreated();
         }
 
         /// <summary>
@@ -115,6 +116,14 @@ namespace UI_DSM.Server.Context
             Validator.TryValidateObject(instance, validationContext, errors);
 
             return errors.Select(x => x.ErrorMessage).ToList();
+        }
+
+        /// <summary>
+        ///     Ensures that the database is fully created
+        /// </summary>
+        private void EnsureCreated()
+        {
+            this.Database.EnsureCreated();
         }
 
         /// <summary>

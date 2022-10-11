@@ -1,0 +1,46 @@
+version: '3.5'
+
+services:
+  postgres:
+    container_name: uidsm_db
+    image: postgres
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'pass'
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+    expose:
+       - 5432
+    networks:
+      uidsm_net:
+        aliases:
+          - uidsm_db
+    restart: always
+
+  uidsm_server:
+      container_name: uidsm_server
+      restart: always
+      build:
+        context: .
+        args:
+         - DEVEXPRESS_NUGET_KEY=$DEVEXPRESS_NUGET_KEY
+      networks:
+        uidsm_net:
+          aliases:
+            - uidsm_server
+      depends_on:
+        - postgres
+      ports:
+        - "8081:80"
+        - "8082:443"
+      volumes:
+        - artifacts:/app/storage
+
+networks:
+  uidsm_net:
+    driver: bridge
+
+volumes:
+    postgres:
+    artifacts:

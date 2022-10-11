@@ -197,12 +197,21 @@ namespace UI_DSM.Server.Modules
                 foreach (var model in models)
                 {
                     var frozenIteration = model.IterationSetup.Where(iteration => !iteration.IsDeleted && iteration.FrozenOn != null);
-
-                    response.AvailableModels[model.Iid] = frozenIteration.Select(x =>
-                        new Tuple<Guid, string>(x.IterationIid, $"Iteration {x.IterationNumber}")).ToList();
-
-                    response.ModelNames[model.Iid] = model.Name;
+                    
+                    response.AvailableModels.Add(new EngineeringModelData()
+                    {
+                        EngineeringModelName = model.Name,
+                        EngineeringId = model.Iid,
+                        Iterations = frozenIteration.Select(x =>
+                            new IterationData()
+                            {
+                                IterationId = x.IterationIid,
+                                IterationName = $"Iteration {x.IterationNumber}"
+                            }).ToList()
+                    });
                 }
+
+                response.IsRequestSuccessful = true;
             }
             catch (Exception exception)
             {

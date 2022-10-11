@@ -82,7 +82,9 @@ namespace UI_DSM.Client
             builder.Services.AddScoped<IJsonSerializer, JsonSerializer>();
 
             builder.Services.AddScoped(_ => new HttpClient
-                { BaseAddress = new Uri(builder.Configuration["apiUri"]) });
+            {
+                BaseAddress = new Uri($"{builder.HostEnvironment.BaseAddress}api/")
+            });
 
             builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProvider>();
 

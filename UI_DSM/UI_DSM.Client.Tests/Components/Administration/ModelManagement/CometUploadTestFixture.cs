@@ -92,16 +92,61 @@ namespace UI_DSM.Client.Tests.Components.Administration.ModelManagement
 
             var modelsData = new ModelsDataResponse()
             {
-                ModelNames = new Dictionary<Guid, string>(),
-                AvailableModels = new Dictionary<Guid, List<Tuple<Guid, string>>>()
+                AvailableModels =
+                {
+                    new EngineeringModelData()
+                    {
+                        EngineeringModelName = "LOFT",
+                        EngineeringId = modelGuid,
+                        Iterations = new List<IterationData>
+                        {
+                            new ()
+                            {
+                                IterationId = iterationGuid,
+                                IterationName = "Iteration 1"
+                            }
+                        }
+                    },
+                    new EngineeringModelData()
+                    {
+                    EngineeringModelName = "LOFT",
+                    EngineeringId = Guid.NewGuid(),
+                    Iterations = new List<IterationData>
+                    {
+                        new ()
+                        {
+                            IterationId = Guid.NewGuid(),
+                            IterationName = "Iteration 1"
+                        }
+                    }
+                }
+                }
             };
 
-            modelsData.ModelNames[modelGuid] = "LOFT";
-
-            modelsData.AvailableModels[modelGuid] = new List<Tuple<Guid, string>>
+            Assert.Multiple(() =>
             {
-                new (iterationGuid, "Iteration 1")
-            };
+                Assert.That(modelsData.AvailableModels.First(), Is.EqualTo(new EngineeringModelData()
+                {
+                    EngineeringId = modelGuid,
+                    EngineeringModelName = "LOFT"
+                }));
+
+                Assert.That(modelsData.AvailableModels.First(), Is.Not.EqualTo(modelsData.AvailableModels.Last()));
+
+                Assert.That(modelsData.AvailableModels.First().Iterations.First(), Is.EqualTo(new IterationData()
+                {
+                    IterationId = iterationGuid,
+                    IterationName = "Iteration 1"
+                }));
+
+                Assert.That(modelsData.AvailableModels.First().Iterations.First(), Is.Not.EqualTo(modelsData.AvailableModels.Last()
+                    .Iterations.First()));
+
+                Assert.That(modelsData.AvailableModels.First(), Is.Not.EqualTo(null));
+                Assert.That(modelsData.AvailableModels.First().Iterations.First(), Is.Not.EqualTo(null));
+                Assert.That(modelsData.AvailableModels.First().GetHashCode(), Is.Not.EqualTo(0));
+                Assert.That(modelsData.AvailableModels.First().Iterations.First().GetHashCode(), Is.Not.EqualTo(0));
+            });
 
             this.cometService.Setup(x => x.GetAvailableEngineeringModels(It.IsAny<Guid>()))
                 .ReturnsAsync(modelsData);
@@ -124,7 +169,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ModelManagement
                 }
             });
 
-            this.viewModel.SelectedEngineeringModelSetup = new Tuple<Guid, string>(modelGuid, "LOFT");
+            this.viewModel.SelectedEngineeringModelSetup = modelsData.AvailableModels.First();
 
             this.cometService.Setup(x => x.UploadIteration(sessionId, modelGuid, iterationGuid))
                 .ReturnsAsync(new ModelUploadResponse()
