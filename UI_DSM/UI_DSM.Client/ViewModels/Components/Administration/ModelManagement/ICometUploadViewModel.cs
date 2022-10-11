@@ -29,24 +29,19 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
     public interface ICometUploadViewModel : IDisposable
     {
         /// <summary>
-        ///     A collection of available <see cref="Tuple{T1,T2}" />
+        ///     A collection of available <see cref="IterationData" />
         /// </summary>
-        IEnumerable<Tuple<Guid, string>> AvailableEngineeringModels { get; set; }
+        IEnumerable<IterationData> AvailableIterationsSetup { get; set; }
 
         /// <summary>
-        ///     A collection of available <see cref="Tuple{T1,T2}" />
+        ///     The currently selected <see cref="EngineeringModelData" />
         /// </summary>
-        IEnumerable<Tuple<Guid, string>> AvailableIterationsSetup { get; set; }
+        EngineeringModelData SelectedEngineeringModelSetup { get; set; }
 
         /// <summary>
-        ///     The currently selected <see cref="Tuple{Guid, String}" />
+        ///     The currently selected <see cref="IterationData" />
         /// </summary>
-        Tuple<Guid, string> SelectedEngineeringModelSetup { get; set; }
-
-        /// <summary>
-        ///     The currently selected <see cref="Tuple{Guid, String}" />
-        /// </summary>
-        Tuple<Guid, string> SelectedIterationSetup { get; set; }
+        IterationData SelectedIterationSetup { get; set; }
 
         /// <summary>
         ///     <see cref="EventCallback" /> to invoke after selecting the <see cref="IterationSetup" />
@@ -77,6 +72,11 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
         ///     Gets the <see cref="IBrowserFile" /> to upload
         /// </summary>
         IBrowserFile BrowserFile { get; }
+
+        /// <summary>
+        ///     A collection of <see cref="EngineeringModelData"/>
+        /// </summary>
+        List<EngineeringModelData> AvailableModels { get; set; }
 
         /// <summary>
         ///     Tries to establish a connection to a Comet instance

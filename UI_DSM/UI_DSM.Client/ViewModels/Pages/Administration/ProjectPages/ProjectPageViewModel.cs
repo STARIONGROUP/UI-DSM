@@ -191,7 +191,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
             if (uploadResponse.IsRequestSuccessful)
             {
                 var uploadModelResponse = await this.artifactService.UploadModel(this.ProjectDetailsViewModel.Project.Id, uploadResponse.UploadedFilePath,
-                    $"{this.CometUploadViewModel.SelectedEngineeringModelSetup.Item2} - {this.CometUploadViewModel.SelectedIterationSetup.Item2}");
+                    $"{this.CometUploadViewModel.SelectedEngineeringModelSetup.EngineeringModelName} - {this.CometUploadViewModel.SelectedIterationSetup.IterationName}");
 
                 if (uploadModelResponse.IsRequestSuccessful)
                 {

@@ -44,9 +44,9 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
         private readonly List<IDisposable> disposables = new();
 
         /// <summary>
-        ///     <see cref="Dictionary{TKey,TValue}" /> that stores available models with frozen Iteration
+        ///     A collection of <see cref="EngineeringModelData"/>
         /// </summary>
-        private Dictionary<Guid, List<Tuple<Guid, string>>> availableModels;
+        public List<EngineeringModelData> AvailableModels { get; set; }
 
         /// <summary>
         ///     Backing field for <see cref="BrowserFile" />
@@ -71,12 +71,12 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
         /// <summary>
         ///     Backing field for <see cref="SelectedEngineeringModelSetup" />
         /// </summary>
-        private Tuple<Guid, string> selectedEngineeringModelSetup;
+        private EngineeringModelData selectedEngineeringModelSetup;
 
         /// <summary>
         ///     Backing field for <see cref="SelectedIterationSetup" />
         /// </summary>
-        private Tuple<Guid, string> selectedIterationSetup;
+        private IterationData selectedIterationSetup;
 
         /// <summary>
         ///     The <see cref="Guid" /> of the session with the API
@@ -102,29 +102,24 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
         }
 
         /// <summary>
-        ///     A collection of available <see cref="Tuple{Guid,String}" />
+        ///     A collection of available <see cref="IterationData" />
         /// </summary>
-        public IEnumerable<Tuple<Guid, string>> AvailableEngineeringModels { get; set; } = new List<Tuple<Guid, string>>();
+        public IEnumerable<IterationData> AvailableIterationsSetup { get; set; } = new List<IterationData>();
 
         /// <summary>
-        ///     A collection of available <see cref="Tuple{Guid, String}" />
+        ///     The currently selected <see cref="EngineeringModelData"/>
         /// </summary>
-        public IEnumerable<Tuple<Guid, string>> AvailableIterationsSetup { get; set; } = new List<Tuple<Guid, string>>();
-
-        /// <summary>
-        ///     The currently selected <see cref="Tuple{Guid, String}" />
-        /// </summary>
-        public Tuple<Guid, string> SelectedEngineeringModelSetup
+        public EngineeringModelData SelectedEngineeringModelSetup
         {
             get => this.selectedEngineeringModelSetup;
             set => this.RaiseAndSetIfChanged(ref this.selectedEngineeringModelSetup, value);
         }
 
         /// <summary>
-        ///     The currently selected <see cref="Tuple{Guid, String}" />
+        ///     The currently selected <see cref="IterationData" />
         /// </summary>
         [Required]
-        public Tuple<Guid, string> SelectedIterationSetup
+        public IterationData SelectedIterationSetup
         {
             get => this.selectedIterationSetup;
             set => this.RaiseAndSetIfChanged(ref this.selectedIterationSetup, value);
@@ -186,10 +181,7 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
                 this.UploadData.Password = string.Empty;
                 this.ErrorMessage = string.Empty;
                 var models = await this.cometService.GetAvailableEngineeringModels(this.sessionId);
-                this.availableModels = models.AvailableModels;
-
-                this.AvailableEngineeringModels = models.ModelNames.Keys
-                    .Select(modelName => new Tuple<Guid, string>(modelName, models.ModelNames[modelName])).ToList();
+                this.AvailableModels = models.AvailableModels;
             }
             else
             {
@@ -222,13 +214,12 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
             this.UploadData.Password = string.Empty;
             this.ErrorMessage = string.Empty;
             this.UploadData.Url = string.Empty;
-            this.AvailableEngineeringModels = new List<Tuple<Guid, string>>();
             this.SelectedEngineeringModelSetup = null;
             this.SelectedIterationSetup = null;
             this.BrowserFile = null;
             this.UploadData.UploadFromFile = false;
             this.IterationUploadStatus = UploadStatus.None;
-            this.availableModels = new Dictionary<Guid, List<Tuple<Guid, string>>>();
+            this.AvailableModels = new List<EngineeringModelData>();
 
             this.disposables.Add(this.WhenAnyValue(x => x.SelectedEngineeringModelSetup)
                 .Subscribe(_ => this.UpdateAvailableIterationsSetup()));
@@ -250,7 +241,7 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
         public Task<ModelUploadResponse> UploadSelectedIteration()
         {
             this.IterationUploadStatus = UploadStatus.Uploading;
-            return this.cometService.UploadIteration(this.sessionId, this.SelectedEngineeringModelSetup.Item1, this.SelectedIterationSetup.Item1);
+            return this.cometService.UploadIteration(this.sessionId, this.SelectedEngineeringModelSetup.EngineeringId, this.SelectedIterationSetup.IterationId);
         }
 
         /// <summary>
@@ -299,11 +290,9 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
                 return;
             }
 
-            this.AvailableIterationsSetup = this.availableModels.TryGetValue(this.SelectedEngineeringModelSetup.Item1, out var iterations)
-                ? iterations
-                : new List<Tuple<Guid, string>>();
+            this.AvailableIterationsSetup = this.SelectedEngineeringModelSetup.Iterations;
 
-            this.SelectedIterationSetup = this.AvailableIterationsSetup?.FirstOrDefault();
+            this.SelectedIterationSetup = this.AvailableIterationsSetup.FirstOrDefault();
         }
     }
 }

@@ -1,0 +1,24 @@
+version: '3.5'
+
+services:
+  postgres:
+    container_name: uidsm_db
+    image: postgres
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'pass'
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - "5433:5432"
+    networks:
+      - uidsm_net
+    restart: unless-stopped
+
+networks:
+  uidsm_net:
+    driver: bridge
+
+volumes:
+    postgres:

@@ -92,15 +92,22 @@ namespace UI_DSM.Client.Tests.Components.Administration.ModelManagement
 
             var modelsData = new ModelsDataResponse()
             {
-                ModelNames = new Dictionary<Guid, string>(),
-                AvailableModels = new Dictionary<Guid, List<Tuple<Guid, string>>>()
-            };
-
-            modelsData.ModelNames[modelGuid] = "LOFT";
-
-            modelsData.AvailableModels[modelGuid] = new List<Tuple<Guid, string>>
-            {
-                new (iterationGuid, "Iteration 1")
+                AvailableModels =
+                {
+                    new EngineeringModelData()
+                    {
+                        EngineeringModelName = "LOFT",
+                        EngineeringId = modelGuid,
+                        Iterations = new List<IterationData>
+                        {
+                            new ()
+                            {
+                                IterationId = iterationGuid,
+                                IterationName = "Iteration 1"
+                            }
+                        }
+                    }
+                }
             };
 
             this.cometService.Setup(x => x.GetAvailableEngineeringModels(It.IsAny<Guid>()))
@@ -124,7 +131,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ModelManagement
                 }
             });
 
-            this.viewModel.SelectedEngineeringModelSetup = new Tuple<Guid, string>(modelGuid, "LOFT");
+            this.viewModel.SelectedEngineeringModelSetup = modelsData.AvailableModels.First();
 
             this.cometService.Setup(x => x.UploadIteration(sessionId, modelGuid, iterationGuid))
                 .ReturnsAsync(new ModelUploadResponse()

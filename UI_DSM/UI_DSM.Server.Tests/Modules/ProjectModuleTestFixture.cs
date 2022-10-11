@@ -186,13 +186,11 @@ namespace UI_DSM.Server.Tests.Modules
         [Test]
         public async Task VerifyGetOpenTasksAndComments()
         {
-            var projects = new List<Project>
-            {
-                new(Guid.NewGuid())
-            };
             this.projectManager.As<IProjectManager>().Setup(x => x.GetAvailableProjectsForUser(It.IsAny<string>()))
                 .ReturnsAsync(this.projects);
-            var guids = projects.Select(x => x.Id).ToList();
+
+            var guids = this.projects.Select(x => x.Id).ToList();
+
             var result = new Dictionary<Guid, ComputedProjectProperties>
             {
                 [guids[0]] = new()
@@ -201,10 +199,12 @@ namespace UI_DSM.Server.Tests.Modules
                     TaskCount = 12
                 }
             };
-            this.projectManager.As<IProjectManager>().Setup(x => x.GetOpenTasksAndComments(It.IsAny<IEnumerable<Guid>>(), "user"))
+
+            this.projectManager.As<IProjectManager>().Setup(x => x.GetOpenTasksAndComments(guids, "user"))
                 .ReturnsAsync(result);
-            await this.module.GetOpenTasksAndComments(this.projectManager.As<IProjectManager>().Object, this.httpContext.Object);
-            this.projectManager.As<IProjectManager>().Verify(x => x.GetOpenTasksAndComments(It.IsAny<IEnumerable<Guid>>(), "user"), Times.Once);
+
+            await this.module.GetOpenTasksAndComments(this.projectManager.As<IProjectManager>().Object, guids, this.httpContext.Object);
+            this.projectManager.As<IProjectManager>().Verify(x => x.GetOpenTasksAndComments(guids, "user"), Times.Once);
         }
     }
 }

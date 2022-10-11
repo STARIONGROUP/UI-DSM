@@ -11,6 +11,7 @@
 -------------------------------------------------------------------------------------------------------->
 @using UI_DSM.Client.Enumerator
 @using CDP4JsonSerializer.JsonConverter
+@using UI_DSM.Shared.DTO.CometData
 
 @if (this.ViewModel.CometConnectionStatus != AuthenticationStatus.Success)
 {
@@ -51,14 +52,14 @@ else
 		<p class="alert-danger">@this.ViewModel.ErrorMessage</p>
 		<DxFormLayout>
 			<DxFormLayoutItem Caption="Engineering Model :" ColSpanMd="12">
-				<DxComboBox Data="@this.ViewModel.AvailableEngineeringModels"
+				<DxComboBox Data="@this.ViewModel.AvailableModels"
 				            @bind-Value="this.ViewModel.SelectedEngineeringModelSetup" 
-				            TextFieldName="Item2"/>
+				            TextFieldName="@nameof(EngineeringModelData.EngineeringModelName)"/>
 			</DxFormLayoutItem>
 			<DxFormLayoutItem Caption="Iteration number :" ColSpanMd="12">
 				<DxComboBox Data="@this.ViewModel.AvailableIterationsSetup"
 				            @bind-Value="this.ViewModel.SelectedIterationSetup"
-				            TextFieldName="Item2"/>
+				            TextFieldName="@nameof(IterationData.IterationName)"/>
 			</DxFormLayoutItem>
 		</DxFormLayout>
 		<div class="modal-footer m-top-10px">
