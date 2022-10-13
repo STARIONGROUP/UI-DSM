@@ -65,7 +65,7 @@ namespace UI_DSM.Client.Services.ThingService
             }
 
             var thingsDto = this.jsonService.Deserialize<IEnumerable<CDP4Common.DTO.Thing>>(await response.Content.ReadAsStreamAsync());
-            var assembler = new Assembler(new Uri("http://localhost"));
+            var assembler = new Assembler(this.HttpClient.BaseAddress);
             await assembler.Synchronize(thingsDto);
             var things = assembler.Cache.Values.Where(x => x.IsValueCreated).Select(x => x.Value).ToList();
             return things;

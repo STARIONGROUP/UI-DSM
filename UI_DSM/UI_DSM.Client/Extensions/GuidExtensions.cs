@@ -34,12 +34,12 @@ namespace UI_DSM.Client.Extensions
         {
             if (!guids.StartsWith("["))
             {
-                throw new ArgumentException("Invalid Guid Array, must start with [", nameof(guids));
+                InvalidGuidArray("must start with [", guids);
             }
 
             if (!guids.EndsWith("]"))
             {
-                throw new ArgumentException("Invalid Guid Array, must end with ]", nameof(guids));
+                InvalidGuidArray("must end with ]", guids);
             }
 
             var listOfGuids = guids.TrimStart('[').TrimEnd(']').Split(';');
@@ -52,7 +52,7 @@ namespace UI_DSM.Client.Extensions
                 }
                 else
                 {
-                    throw new ArgumentException($"Invalid Guid Array, unparsable Guid found: {guid}", nameof(guids));
+                    InvalidGuidArray($"unparsable Guid found: {guid}", guids);
                 }
             }
         }
@@ -65,6 +65,16 @@ namespace UI_DSM.Client.Extensions
         public static string ToGuidArray(this IEnumerable<Guid> guids)
         {
             return "[" + string.Join(";", guids.Select(x => x.ToString())) + "]";
+        }
+
+        /// <summary>
+        ///     Throws an <see cref="Exception" /> because the given <see cref="guids" /> is invalid
+        /// </summary>
+        /// <param name="reason">The reason</param>
+        /// <param name="guids">The array of guid, as string</param>
+        private static void InvalidGuidArray(string reason, string guids)
+        {
+            throw new ArgumentException($"{guids} : Invalid Guid Array, {reason}", nameof(guids));
         }
     }
 }
