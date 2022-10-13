@@ -13,12 +13,8 @@
 
 namespace UI_DSM.Shared.Extensions
 {
-    using System.Collections.Concurrent;
-
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
-    using CDP4Common.Helpers;
-    using CDP4Common.Types;
 
     /// <summary>
     ///     Extension class for <see cref="Thing" /> object
