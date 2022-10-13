@@ -94,25 +94,5 @@ namespace UI_DSM.Shared.Extensions
             things = collectionSelect(iteration);
             return true;
         }
-
-        /// <summary>
-        ///     Instantiate all <see cref="Thing" /> based on <see cref="CDP4Common.DTO.Thing" />
-        /// </summary>
-        /// <param name="dtos">The collection of dto</param>
-        /// <returns>The collection of POCO</returns>
-        public static List<Thing> InstantiatePocos(this IEnumerable<CDP4Common.DTO.Thing> dtos)
-        {
-            var cache = new ConcurrentDictionary<CacheKey, Lazy<Thing>>();
-            var things = new List<Thing>();
-
-            foreach (var thing in dtos)
-            {
-                var poco = thing.InstantiatePoco(cache, null);
-                PocoThingFactory.ResolveDependencies(thing, poco);
-                things.Add(poco);
-            }
-
-            return things;
-        }
     }
 }
