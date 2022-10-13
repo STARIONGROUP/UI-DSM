@@ -15,6 +15,11 @@ namespace UI_DSM.Client.Services.JsonService
 {
     using System.Text.Json;
 
+    using CDP4Common.CommonData;
+    using CDP4Common.MetaInfo;
+
+    using CDP4JsonSerializer;
+
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -26,6 +31,11 @@ namespace UI_DSM.Client.Services.JsonService
     /// </summary>
     public class JsonService : IJsonService
     {
+        /// <summary>
+        ///     The <see cref="ICdp4JsonSerializer" />
+        /// </summary>
+        private readonly ICdp4JsonSerializer cdp4JsonSerializer;
+
         /// <summary>
         ///     The <see cref="IJsonDeserializer" /> to deserialize <see cref="EntityDto" />
         /// </summary>
@@ -51,10 +61,13 @@ namespace UI_DSM.Client.Services.JsonService
         /// </summary>
         /// <param name="deserializer">The <see cref="IJsonDeserializer" /></param>
         /// <param name="serializer">The <see cref="IJsonSerializer" /></param>
-        public JsonService(IJsonDeserializer deserializer, IJsonSerializer serializer)
+        /// <param name="cdp4JsonSerializer">The <see cref="ICdp4JsonSerializer" /></param>
+        public JsonService(IJsonDeserializer deserializer, IJsonSerializer serializer, ICdp4JsonSerializer cdp4JsonSerializer)
         {
             this.deserializer = deserializer;
             this.serializer = serializer;
+            this.cdp4JsonSerializer = cdp4JsonSerializer;
+            this.cdp4JsonSerializer.Initialize(new MetaDataProvider(), new Version("2.4.1"));
 
             this.options = new JsonSerializerOptions
             {
@@ -85,6 +98,11 @@ namespace UI_DSM.Client.Services.JsonService
                 return this.deserializer.DeserializeEntityRequestResponseDto(stream) as T;
             }
 
+            if (typeof(T).IsAssignableTo(typeof(IEnumerable<CDP4Common.DTO.Thing>)))
+            {
+                return (T)this.cdp4JsonSerializer.Deserialize(stream);
+            }
+
             return JsonSerializer.Deserialize<T>(stream, this.options);
         }
 
@@ -108,6 +126,13 @@ namespace UI_DSM.Client.Services.JsonService
                     break;
                 case EntityRequestResponseDto requestDto:
                     this.serializer.SerializeEntityRequestDto(requestDto, stream, this.writerOptions);
+                    break;
+                case Thing thing:
+                    this.cdp4JsonSerializer.SerializeToStream(thing, stream, false);
+                    break;
+                case IEnumerable<Thing> things:
+                    var thingsDto = things.Select(x => x.ToDto());
+                    this.cdp4JsonSerializer.SerializeToStream(thingsDto, stream);
                     break;
                 default:
                     JsonSerializer.Serialize(stream, value);

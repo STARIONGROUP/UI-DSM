@@ -46,6 +46,9 @@ namespace UI_DSM.Serializer.Json
             writer.WritePropertyName("modelName");
             writer.WriteStringValue(dto.ModelName);
 
+            writer.WritePropertyName("iterationId");
+            writer.WriteStringValue(dto.IterationId);
+
             writer.WritePropertyName("fileName");
             writer.WriteStringValue(dto.FileName);
 

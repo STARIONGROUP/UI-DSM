@@ -26,7 +26,7 @@ namespace UI_DSM.Client.Tests.Services.AuthenticationService
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.AuthenticationService;
     using UI_DSM.Client.Services.JsonService;
-    using UI_DSM.Serializer.Json;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Shared.DTO.UserManagement;
 
     [TestFixture]
@@ -47,7 +47,7 @@ namespace UI_DSM.Client.Tests.Services.AuthenticationService
             var httpClient = this.httpMessageHandler.ToHttpClient();
             httpClient.BaseAddress = new Uri("http://localhost/api");
             ServiceBase.RegisterService<AuthenticationService>();
-            this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer());
+            this.jsonService = JsonSerializerHelper.CreateService();
 
             this.service = new AuthenticationService(httpClient, this.jsonService,
                 this.authenticationProvider.Object, this.sessionStorage.Object);

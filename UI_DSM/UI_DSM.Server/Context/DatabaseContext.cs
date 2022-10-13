@@ -123,7 +123,10 @@ namespace UI_DSM.Server.Context
         /// </summary>
         private void EnsureCreated()
         {
-            this.Database.EnsureCreated();
+            if (this.Database.GetPendingMigrations().Any())
+            {
+                this.Database.Migrate();
+            }
         }
 
         /// <summary>

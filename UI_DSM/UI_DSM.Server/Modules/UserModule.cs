@@ -13,6 +13,7 @@
 
 namespace UI_DSM.Server.Modules
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Text;
@@ -57,6 +58,7 @@ namespace UI_DSM.Server.Modules
         ///     Adds routes to the <see cref="IEndpointRouteBuilder" />
         /// </summary>
         /// <param name="app">The <see cref="IEndpointRouteBuilder" /></param>
+        [ExcludeFromCodeCoverage]
         public override void AddRoutes(IEndpointRouteBuilder app)
         {
             base.AddRoutes(app);

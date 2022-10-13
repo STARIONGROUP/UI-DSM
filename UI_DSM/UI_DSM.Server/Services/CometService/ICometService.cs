@@ -20,6 +20,7 @@ namespace UI_DSM.Server.Services.CometService
 
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Shared.DTO.CometData;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     Interface definition for <see cref="CometService" />
@@ -82,5 +83,12 @@ namespace UI_DSM.Server.Services.CometService
         /// <param name="authenticationData">The <see cref="CometAuthenticationData" /></param>
         /// <returns>A <see cref="Task" /> with the result of the operation</returns>
         Task<Tuple<AuthenticationStatus, Guid>> ReadAnnexC3File(IFormFile file, CometAuthenticationData authenticationData);
+
+        /// <summary>
+        ///     Gets the <see cref="Iteration" /> contained into a <see cref="Model" />
+        /// </summary>
+        /// <param name="model">The <see cref="Model" /></param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Iteration" /></returns>
+        Task<Iteration> GetIteration(Model model);
     }
 }

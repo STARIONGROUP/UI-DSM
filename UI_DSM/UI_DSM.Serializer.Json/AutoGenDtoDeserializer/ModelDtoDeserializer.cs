@@ -62,6 +62,16 @@ namespace UI_DSM.Serializer.Json
                 dto.ModelName = modelNameProperty.GetString();
             }
 
+            if (jsonElement.TryGetProperty("iterationId", out var iterationIdProperty))
+            {
+                var propertyValue = iterationIdProperty.GetString();
+
+                if (propertyValue != null)
+                {
+                    dto.IterationId = Guid.Parse(propertyValue);
+                }
+            }
+
             if (jsonElement.TryGetProperty("fileName", out var fileNameProperty))
             {
                 dto.FileName = fileNameProperty.GetString();

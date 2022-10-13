@@ -73,5 +73,12 @@ namespace UI_DSM.Server.Services.FileService
         /// <param name="fileName">The name of the file</param>
         /// <returns>A <see cref="Task" /></returns>
         Task WriteToFile(IFormFile file, string fileName);
+
+        /// <summary>
+        ///     Retrieves the full path of the provides file
+        /// </summary>
+        /// <param name="fileName">The filename</param>
+        /// <returns>The full path</returns>
+        string GetFullPath(string fileName);
     }
 }

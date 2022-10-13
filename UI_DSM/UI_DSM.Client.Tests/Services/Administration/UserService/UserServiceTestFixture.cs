@@ -22,7 +22,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.Administration.UserService;
     using UI_DSM.Client.Services.JsonService;
-    using UI_DSM.Serializer.Json;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
@@ -42,7 +42,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
             httpClient.BaseAddress = new Uri("http://localhost/api");
 
             ServiceBase.RegisterService<UserService>();
-            this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer());
+            this.jsonService = JsonSerializerHelper.CreateService();
             this.service = new UserService(httpClient, this.jsonService);
         }
 

@@ -28,6 +28,7 @@ namespace UI_DSM.Server.Services.CometService
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Server.Services.FileService;
     using UI_DSM.Shared.DTO.CometData;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     Service that provides helper methods related to Comet
@@ -238,13 +239,25 @@ namespace UI_DSM.Server.Services.CometService
         }
 
         /// <summary>
+        ///     Gets the <see cref="Iteration" /> contained into a <see cref="Model" />
+        /// </summary>
+        /// <param name="model">The <see cref="Model" /></param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Iteration" /></returns>
+        public async Task<Iteration> GetIteration(Model model)
+        {
+            var session = await this.GetSession(model);
+
+            return session.OpenIterations.Keys.FirstOrDefault(x => x.Iid == model.IterationId) ?? await this.OpenIteration(session, model.IterationId);
+        }
+
+        /// <summary>
         ///     Tries to open an <see cref="ISession" /> from an Annex C3 file
         /// </summary>
         /// <param name="filePath">The file path </param>
         /// <param name="userName">The username</param>
         /// <param name="password">The password</param>
         /// <returns>A <see cref="Task" /> with the result of the operation</returns>
-        public async Task<Tuple<AuthenticationStatus, ISession>> OpenSession(string filePath, string userName = "admin", string password = "Password")
+        public async Task<Tuple<AuthenticationStatus, ISession>> OpenSession(string filePath, string userName = "admin", string password = "pass")
         {
             try
             {
@@ -269,6 +282,20 @@ namespace UI_DSM.Server.Services.CometService
         }
 
         /// <summary>
+        ///     Opens an <see cref="Iteration" /> based on its <see cref="Guid" />
+        /// </summary>
+        /// <param name="session">The <see cref="ISession" /></param>
+        /// <param name="iterationId">The <see cref="Iteration" /> id</param>
+        /// <returns>A <see cref="Task" /> with the opened <see cref="Iteration" /></returns>
+        private Task<Iteration> OpenIteration(ISession session, Guid iterationId)
+        {
+            var siteDirectory = session.RetrieveSiteDirectory();
+            var engineeringModel = siteDirectory.Model.First(x => x.IterationSetup.Any(iterationSetup => iterationSetup.IterationIid == iterationId));
+            var iterationSetup = engineeringModel.IterationSetup.First(x => x.IterationIid == iterationId);
+            return this.ReadIteration(iterationId, iterationSetup);
+        }
+
+        /// <summary>
         ///     Gets the correct <see cref="ISession" />.
         /// </summary>
         /// <param name="sessionId">The <see cref="Guid" /> of the <see cref="ISession" /></param>
@@ -285,6 +312,28 @@ namespace UI_DSM.Server.Services.CometService
             }
 
             return session;
+        }
+
+        /// <summary>
+        ///     Gets an <see cref="ISession" /> for the <see cref="Model" />
+        /// </summary>
+        /// <param name="model">The <see cref="Model" /></param>
+        /// <returns>A <see cref="Task" /> with the <see cref="ISession" /></returns>
+        private async Task<ISession> GetSession(Model model)
+        {
+            if (!this.currentSessions.ContainsKey(model.IterationId))
+            {
+                var openSession = await this.OpenSession(this.fileService.GetFullPath(model.FileName));
+
+                if (openSession.Item1 != AuthenticationStatus.Success)
+                {
+                    throw new InvalidOperationException($"Failed to open a session based on the model {model.Id}");
+                }
+
+                this.currentSessions[model.IterationId] = openSession.Item2;
+            }
+
+            return this.currentSessions[model.IterationId];
         }
     }
 }

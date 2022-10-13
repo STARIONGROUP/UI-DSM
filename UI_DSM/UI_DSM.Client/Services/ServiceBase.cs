@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.Services
 {
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.WebUtilities;
 
     using UI_DSM.Client.Services.JsonService;
 
@@ -52,7 +53,7 @@ namespace UI_DSM.Client.Services
         /// <summary>
         ///     Main Route for the <see cref="ServiceBase" />
         /// </summary>
-        protected string MainRoute { get; private set; }
+        protected string MainRoute { get; set; }
 
         /// <summary>
         ///     Register a <see cref="Type" /> if this <see cref="Type" /> derives from <see cref="ServiceBase" />
@@ -98,7 +99,7 @@ namespace UI_DSM.Client.Services
         ///     Gets the main route for a service
         /// </summary>
         /// <returns>The main route</returns>
-        private string GetRoute()
+        protected string GetRoute()
         {
             var type = this.GetType();
             return ServiceRoute.ContainsKey(type) ? ServiceRoute[type] : string.Empty;

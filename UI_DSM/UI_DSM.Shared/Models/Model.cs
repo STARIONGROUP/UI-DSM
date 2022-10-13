@@ -45,6 +45,12 @@ namespace UI_DSM.Shared.Models
         public string ModelName { get; set; }
 
         /// <summary>
+        ///     The <see cref="Guid" /> of the <see cref="CDP4Common.EngineeringModelData.Iteration" />
+        /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid IterationId { get; set; }
+
+        /// <summary>
         ///     Resolve the properties of the current <see cref="Entity" /> from its <see cref="EntityDto" /> counter-part
         /// </summary>
         /// <param name="entityDto">The source <see cref="EntityDto" /></param>
@@ -59,6 +65,7 @@ namespace UI_DSM.Shared.Models
             }
 
             this.ModelName = modelDto.ModelName;
+            this.IterationId = modelDto.IterationId;
         }
 
         /// <summary>
@@ -69,7 +76,8 @@ namespace UI_DSM.Shared.Models
         {
             var dto = new ModelDto(this.Id)
             {
-                ModelName = this.ModelName
+                ModelName = this.ModelName,
+                IterationId = this.IterationId
             };
 
             dto.IncludeCommonProperties(this);

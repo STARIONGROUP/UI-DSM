@@ -25,6 +25,7 @@ namespace UI_DSM.Server.Tests.Services
     using UI_DSM.Server.Services.CometService;
     using UI_DSM.Server.Services.FileService;
     using UI_DSM.Shared.DTO.CometData;
+    using UI_DSM.Shared.Models;
 
     [TestFixture]
     public class CometServiceTestFixture
@@ -67,7 +68,7 @@ namespace UI_DSM.Server.Tests.Services
         }
 
         [Test]
-        public async Task VerifyReadAnnexC3File()
+        public async Task VerifyReadAnnexC3FileAndGetIteration()
         {
             this.fileService.Setup(x => x.GetTempFolder()).Returns(TestContext.CurrentContext.TestDirectory);
             var formFile = new Mock<IFormFile>();
@@ -82,7 +83,9 @@ namespace UI_DSM.Server.Tests.Services
 
             Assert.That(readResult.Item1, Is.EqualTo(AuthenticationStatus.ServerFailure));
 
-            var filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Data", "26699a14-79d0-4f10-bcf1-15979ef3968f.zip");
+            const string directoryName = "Data";
+            var fileId = Guid.Parse("26699a14-79d0-4f10-bcf1-15979ef3968f");
+            var filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, directoryName, $"{fileId}.zip");
             var fileToDelete = string.Empty;
 
             this.fileService.Setup(x => x.WriteToFile(It.IsAny<IFormFile>(), It.IsAny<string>()))
@@ -114,7 +117,34 @@ namespace UI_DSM.Server.Tests.Services
             {
                 Assert.That(File.Exists(newAnnexC3File), Is.True);
                 Assert.That(iteration, Is.Not.Null);
-                Assert.That(async () => await this.cometService.Close(session), Throws.Nothing);
+            });
+
+            var model = new Model()
+            {
+                IterationId = Guid.NewGuid(),
+                FileName = "invalidPath.zip"
+            };
+
+            this.fileService.Setup(x => x.GetFullPath(model.FileName))
+                .Returns(Path.Combine(TestContext.CurrentContext.TestDirectory, directoryName, model.FileName));
+
+            Assert.That(async () => await this.cometService.GetIteration(model), Throws.Exception);
+            model.FileName = Path.Combine(directoryName, $"{fileId}.zip");
+            Assert.That(async () => await this.cometService.Close(session), Throws.Nothing);
+
+            model.IterationId = iterationId;
+
+            this.fileService.Setup(x => x.GetFullPath(model.FileName))
+                .Returns(Path.Combine(TestContext.CurrentContext.TestDirectory, model.FileName));
+
+            var iterationFromModel = await this.cometService.GetIteration(model);
+            Assert.That(iterationFromModel, Is.Not.Null);
+
+            iterationFromModel = await this.cometService.GetIteration(model);
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(iterationFromModel, Is.Not.Null);
             });
 
             File.Delete(fileToDelete);

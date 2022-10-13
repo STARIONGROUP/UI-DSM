@@ -23,7 +23,6 @@ namespace UI_DSM.Client.Tests.Services.ReviewService
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Tests.Helpers;
-    using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Extensions;
@@ -75,7 +74,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewService
             };
 
             ServiceBase.RegisterService<ReviewService>();
-            this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer());
+            this.jsonService = JsonSerializerHelper.CreateService();
             this.service = new ReviewService(httpClient, this.jsonService);
         }
 
@@ -245,7 +244,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewService
             var httpResponse = new HttpResponseMessage();
             httpResponse.StatusCode = HttpStatusCode.BadRequest;
 
-            Project project = new Project(Guid.NewGuid());
+            var project = new Project(Guid.NewGuid());
 
             var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Project/{project.Id}/Review/OpenTasksAndComments");
             request.Respond(_ => httpResponse);

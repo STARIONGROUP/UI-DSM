@@ -18,6 +18,8 @@ namespace UI_DSM.Client
 
     using Blazored.SessionStorage;
 
+    using CDP4JsonSerializer;
+
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -42,7 +44,7 @@ namespace UI_DSM.Client
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
-
+            
             AddServices(builder);
             AddViewModels(builder);
 
@@ -78,8 +80,9 @@ namespace UI_DSM.Client
         /// <param name="builder">The <see cref="WebAssemblyHostBuilder" /></param>
         private static void AddServices(WebAssemblyHostBuilder builder)
         {
-            builder.Services.AddScoped<IJsonDeserializer, JsonDeserializer>();
-            builder.Services.AddScoped<IJsonSerializer, JsonSerializer>();
+            builder.Services.AddSingleton<IJsonSerializer, JsonSerializer>();
+            builder.Services.AddSingleton<IJsonDeserializer, JsonDeserializer>();
+            builder.Services.AddSingleton<ICdp4JsonSerializer, Cdp4JsonSerializer>();
 
             builder.Services.AddScoped(_ => new HttpClient
             {

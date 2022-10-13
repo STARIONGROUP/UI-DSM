@@ -15,6 +15,8 @@ namespace UI_DSM.Client.Tests.Services.Administration.CometService
 {
     using System.Net;
 
+    using CDP4JsonSerializer;
+
     using Microsoft.AspNetCore.Components.Forms;
     using Moq;
     using NUnit.Framework;
@@ -42,7 +44,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.CometService
             httpClient.BaseAddress = new Uri("http://localhost/api");
 
             ServiceBase.RegisterService<CometService>();
-            this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer());
+            this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer(), new Cdp4JsonSerializer());
             this.service = new CometService(httpClient, this.jsonService);
         }
 

@@ -115,7 +115,7 @@ namespace UI_DSM.Server.Tests.Modules
         {
             var modelDto = new ModelDto()
             {
-                FileName = "filename.zip",
+                FileName = $"{Guid.NewGuid()}.zip",
                 ModelName = "Model"
             };
             

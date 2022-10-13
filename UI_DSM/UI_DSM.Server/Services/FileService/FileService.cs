@@ -176,5 +176,15 @@ namespace UI_DSM.Server.Services.FileService
             await using var fileStream = File.Create(Path.Combine(this.GetTempFolder(), fileName));
             await file.CopyToAsync(fileStream);
         }
+
+        /// <summary>
+        ///     Retrieves the full path of the provides file
+        /// </summary>
+        /// <param name="fileName">The filename</param>
+        /// <returns>The full path</returns>
+        public string GetFullPath(string fileName)
+        {
+            return Path.IsPathFullyQualified(fileName) ? fileName : Path.Combine(this.mainPath, fileName);
+        }
     }
 }
