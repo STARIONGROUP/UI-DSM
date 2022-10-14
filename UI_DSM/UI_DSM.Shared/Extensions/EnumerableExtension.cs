@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Shared.Extensions
 {
+    using CDP4Common.CommonData;
+
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
@@ -34,11 +36,11 @@ namespace UI_DSM.Shared.Extensions
         /// <summary>
         ///     Resolve the <see cref="List{TEntity}" /> from the <see cref="IEnumerable{Guid}" />
         /// </summary>
-        /// <param name="collection">The collection of <see cref="TEntity"/></param>
+        /// <param name="collection">The collection of <see cref="TEntity" /></param>
         /// <param name="guids">A collection of <see cref="Guid" /> of <see cref="Entity" /> to find</param>
         /// <param name="resolvedEntity">A <see cref="Dictionary{TKey,TValue}" /> of all <see cref="Entity" /></param>
-        /// <typeparam name="TEntity">An <see cref="Entity"/></typeparam>
-        public static void ResolveList<TEntity>(this List<TEntity> collection, IEnumerable<Guid> guids, Dictionary<Guid, Entity> resolvedEntity) where TEntity: Entity
+        /// <typeparam name="TEntity">An <see cref="Entity" /></typeparam>
+        public static void ResolveList<TEntity>(this List<TEntity> collection, IEnumerable<Guid> guids, Dictionary<Guid, Entity> resolvedEntity) where TEntity : Entity
         {
             collection.Clear();
 
@@ -49,6 +51,16 @@ namespace UI_DSM.Shared.Extensions
                     collection.Add(foundEntity);
                 }
             }
+        }
+
+        /// <summary>
+        ///     Distincts a collection of <see cref="Thing" /> by its <see cref="Thing.Iid" />
+        /// </summary>
+        /// <param name="things">The collection of <see cref="Thing" /></param>
+        /// <returns>The distincted collection</returns>
+        public static List<Thing> DistinctById(this IEnumerable<Thing> things)
+        {
+            return things.DistinctBy(x => x.Iid).ToList();
         }
     }
 }

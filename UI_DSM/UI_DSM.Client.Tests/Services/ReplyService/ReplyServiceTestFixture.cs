@@ -23,7 +23,6 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Client.Services.ReplyService;
     using UI_DSM.Client.Tests.Helpers;
-    using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Extensions;
@@ -73,7 +72,7 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
             };
 
             ServiceBase.RegisterService<ReplyService>();
-            this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer());
+            this.jsonService = JsonSerializerHelper.CreateService();
             this.service = new ReplyService(httpClient, this.jsonService);
         }
 

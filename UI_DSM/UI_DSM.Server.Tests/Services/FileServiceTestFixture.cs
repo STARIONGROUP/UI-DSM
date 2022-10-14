@@ -33,8 +33,17 @@ namespace UI_DSM.Server.Tests.Services
         [TearDown]
         public void TearDown()
         {
-            Directory.Delete(this.fileService.GetTempFolder(), true);
-            Directory.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, this.projectId.ToString()), true);
+            if (Directory.Exists(this.fileService.GetTempFolder()))
+            {
+                Directory.Delete(this.fileService.GetTempFolder(), true);
+            }
+
+            var directoryPath = Path.Combine(TestContext.CurrentContext.TestDirectory, this.projectId.ToString());
+
+            if (Directory.Exists(directoryPath))
+            {
+                Directory.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, this.projectId.ToString()), true);
+            }
         }
 
         [Test]
@@ -78,6 +87,20 @@ namespace UI_DSM.Server.Tests.Services
                 Assert.That(() => this.fileService.DeleteTemporaryFile(fileName), Throws.Nothing);
                 Assert.That(this.fileService.TempFileExists(fileName), Is.False);
                 Assert.That(() => this.fileService.DeleteTemporaryFile(fileName), Throws.Nothing);
+            });
+        }
+
+        [Test]
+        public void VerifyGetFullPath()
+        {
+            const string fileName = "aName.zip";
+            var fullPath = this.fileService.GetFullPath(fileName);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(fullPath, Is.Not.EqualTo(fileName));
+                Assert.That(fullPath, Is.EqualTo(Path.Combine(TestContext.CurrentContext.TestDirectory, fileName)));
+                Assert.That(fullPath, Is.EqualTo(this.fileService.GetFullPath(fullPath)));
             });
         }
     }

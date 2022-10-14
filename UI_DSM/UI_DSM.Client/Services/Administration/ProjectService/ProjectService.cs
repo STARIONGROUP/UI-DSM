@@ -13,8 +13,6 @@
 
 namespace UI_DSM.Client.Services.Administration.ProjectService
 {
-    using System.Text;
-
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Client.Services.JsonService;
@@ -145,6 +143,7 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
             {
                 throw new HttpRequestException(response.ReasonPhrase);
             }
+
             return this.jsonService.Deserialize<Dictionary<Guid, ComputedProjectProperties>>(await response.Content.ReadAsStreamAsync());
         }
     }

@@ -23,7 +23,6 @@ namespace UI_DSM.Client.Tests.Services.ReviewTaskService
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Client.Services.ReviewTaskService;
     using UI_DSM.Client.Tests.Helpers;
-    using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
@@ -84,7 +83,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewTaskService
             };
 
             ServiceBase.RegisterService<ReviewTaskService>();
-            this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer());
+            this.jsonService = JsonSerializerHelper.CreateService();
             this.service = new ReviewTaskService(httpClient, this.jsonService);
         }
 

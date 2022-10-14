@@ -21,6 +21,7 @@ namespace UI_DSM.Server.Tests.Managers
 
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Managers.ModelManager;
+    using UI_DSM.Server.Services.CometService;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -38,7 +39,7 @@ namespace UI_DSM.Server.Tests.Managers
         {
             this.context = new Mock<DatabaseContext>();
             this.context.CreateDbSetForContext(out this.modelDbSet, out this.projectDbSet);
-
+            
             this.manager = new ModelManager(this.context.Object);
             Program.RegisterEntities();
         }

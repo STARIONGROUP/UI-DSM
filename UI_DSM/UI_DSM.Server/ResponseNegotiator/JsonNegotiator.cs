@@ -13,18 +13,12 @@
 
 namespace UI_DSM.Server.ResponseNegotiator
 {
-    using System.Text.Json;
-
     using Carter;
 
     using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
 
-    using UI_DSM.Serializer.Json;
-    using UI_DSM.Shared.DTO.Common;
-    using UI_DSM.Shared.DTO.Models;
-
-    using JsonSerializer = System.Text.Json.JsonSerializer;
+    using UI_DSM.Client.Services.JsonService;
 
     /// <summary>
     ///     <see cref="IResponseNegotiator" /> to use the custom Json serializer
@@ -32,26 +26,16 @@ namespace UI_DSM.Server.ResponseNegotiator
     public class JsonNegotiator : IResponseNegotiator
     {
         /// <summary>
-        ///     The <see cref="JsonWriterOptions" />
+        ///     The <see cref="IJsonService" />
         /// </summary>
-        private readonly JsonWriterOptions settings;
-
-        /// <summary>
-        /// The <see cref="IJsonSerializer"/>
-        /// </summary>
-        private readonly IJsonSerializer serializer;
+        private readonly IJsonService jsonService;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="JsonNegotiator" /> class.
         /// </summary>
-        public JsonNegotiator(IJsonSerializer serializer)
+        public JsonNegotiator(IJsonService jsonService)
         {
-            this.serializer = serializer;
-
-            this.settings = new JsonWriterOptions()
-            {
-                Indented = true
-            };
+            this.jsonService = jsonService;
         }
 
         /// <summary>
@@ -80,25 +64,8 @@ namespace UI_DSM.Server.ResponseNegotiator
         /// </returns>
         public Task Handle(HttpRequest req, HttpResponse res, object model, CancellationToken cancellationToken)
         {
-            if (model is EntityDto dto)
-            {
-                return this.serializer.SerializeAsync(dto, res.Body, this.settings);
-            }
-
-            if (model is IEnumerable<EntityDto> dtos)
-            {
-                return this.serializer.SerializeAsync(dtos, res.Body, this.settings);
-            }
-
-            if (model is EntityRequestResponseDto entityRequest)
-            {
-                return this.serializer.SerializeEntityRequestDtoAsync(entityRequest, res.Body, this.settings);
-            }
-
-            return res.WriteAsync(JsonSerializer.Serialize(model, new JsonSerializerOptions()
-            {
-                PropertyNameCaseInsensitive = false
-            }), cancellationToken);
+            res.Headers.ContentType = "application/json";
+            return res.WriteAsync(this.jsonService.Serialize(model), cancellationToken);
         }
     }
 }

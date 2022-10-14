@@ -27,7 +27,6 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
     /// </summary>
     public class NormalProjectPageViewModel : ReactiveObject, INormalProjectPageViewModel
     {
-
         /// <summary>
         ///     The <see cref="IProjectService" />
         /// </summary>
@@ -38,16 +37,17 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
         /// </summary>
         private readonly IReviewService reviewService;
 
-
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ProjectPageViewModel" /> class.
+        ///     Initializes a new instance of the <see cref="NormalProjectPageViewModel" /> class.
         /// </summary>
         /// <param name="projectService">The <see cref="IProjectService" /></param>
-        public NormalProjectPageViewModel(IProjectService projectService, IReviewService reviewService, IProjectReviewViewModel projectReviewViewModal)
+        /// <param name="reviewService">The <see cref="IReviewService" /></param>
+        /// <param name="projectReviewViewModel">The <see cref="IProjectReviewViewModel" /></param>
+        public NormalProjectPageViewModel(IProjectService projectService, IReviewService reviewService, IProjectReviewViewModel projectReviewViewModel)
         {
             this.projectService = projectService;
             this.reviewService = reviewService;
-            this.ProjectReviewViewModel = projectReviewViewModal;
+            this.ProjectReviewViewModel = projectReviewViewModel;
         }
 
         /// <summary>
@@ -55,12 +55,10 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
         /// </summary>
         public IProjectReviewViewModel ProjectReviewViewModel { get; }
 
-
         /// <summary>
         ///     Gets the <see cref="IErrorMessageViewModel" />
         /// </summary>
         public IErrorMessageViewModel ErrorMessageViewModel { get; } = new ErrorMessageViewModel();
-
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its
@@ -74,7 +72,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
         {
             var projectResponse = await this.projectService.GetProject(projectGuid, 1);
             this.ProjectReviewViewModel.Project = projectResponse;
-            ProjectReviewViewModel.CommentsAndTasks = await this.reviewService.GetOpenTasksAndComments(projectGuid);
+            this.ProjectReviewViewModel.CommentsAndTasks = await this.reviewService.GetOpenTasksAndComments(projectGuid);
         }
     }
 }

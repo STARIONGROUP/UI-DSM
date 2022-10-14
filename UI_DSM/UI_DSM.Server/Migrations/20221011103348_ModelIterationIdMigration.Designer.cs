@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UI_DSM.Server.Context;
@@ -10,13 +11,11 @@ using UI_DSM.Server.Context;
 
 namespace UI_DSM.Server.Migrations
 {
-    using System.Diagnostics.CodeAnalysis;
-
-    [ExcludeFromCodeCoverage]
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20221011103348_ModelIterationIdMigration")]
+    partial class ModelIterationIdMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

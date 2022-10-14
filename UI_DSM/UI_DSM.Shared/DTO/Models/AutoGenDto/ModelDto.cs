@@ -45,6 +45,11 @@ namespace UI_DSM.Shared.DTO.Models
         public string ModelName { get; set; }
 
         /// <summary>
+        ///    Gets or sets the IterationId of the Model
+        /// </summary>
+        public Guid IterationId { get; set; }
+
+        /// <summary>
         ///    Instantiate a <see cref="Entity" /> from a <see cref="EntityDto" />
         /// </summary>
         public override Entity InstantiatePoco()

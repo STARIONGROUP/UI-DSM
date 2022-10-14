@@ -19,6 +19,8 @@ namespace UI_DSM.Server
 
     using Carter;
 
+    using CDP4JsonSerializer;
+
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
@@ -26,8 +28,10 @@ namespace UI_DSM.Server
 
     using NLog;
 
+    using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Server.Context;
+    using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Modules;
     using UI_DSM.Server.Services.CometService;
     using UI_DSM.Server.Services.FileService;
@@ -70,8 +74,15 @@ namespace UI_DSM.Server
             builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DatabaseContext>();
             builder.Services.AddSingleton<IJsonSerializer, JsonSerializer>();
             builder.Services.AddSingleton<IJsonDeserializer, JsonDeserializer>();
+            builder.Services.AddSingleton<ICdp4JsonSerializer, Cdp4JsonSerializer>();
+            builder.Services.AddSingleton<IJsonService, JsonService>();
             builder.Services.AddSingleton<ICometService, CometService>();
             builder.Services.AddSingleton<IFileService, FileService>(_ => new FileService(builder.Configuration["StoragePath"]));
+
+            builder.Services.AddRouting(options =>
+            {
+                options.ConstraintMap.Add("EnumerableOfGuid", typeof(EnumerableOfGuidRouteConstraint));
+            });
 
             RegisterManagers(builder);
             RegisterModules();

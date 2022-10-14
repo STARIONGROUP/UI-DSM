@@ -129,6 +129,11 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
+            if (dto is ModelDto modelDto)
+            {
+                modelDto.IterationId = Guid.Parse(dto.FileName.Split('.')[0]);
+            }
+
             dto.FileName = this.fileService.MoveFile(dto.FileName, projectId.ToString());
             await base.CreateEntity(manager, dto, context, deepLevel);
         }
