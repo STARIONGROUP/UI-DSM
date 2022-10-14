@@ -13,7 +13,17 @@
 <div class="project-page">
   <div class="page-header">
         <h1 class="h3">Review plans for @this.ViewModel.Project.ProjectName</h1>
+        <AppButton Click="@this.ViewModel.OpenCreatePopup" Type="button">
+            <FeatherPlusCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Create review</span>
+        </AppButton>
   </div>
+  <DxPopup CloseOnOutsideClick="false" HeaderText="Create Review" @bind-Visible="@this.ViewModel.IsOnCreationMode">
+		<Content>
+			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+				<ReviewCreation ProjectId="@this.ViewModel.Project.Id.ToString()" ViewModel="@this.ViewModel.ReviewCreationViewModel"/>
+			</CascadingValue>
+		</Content>
+	</DxPopup>
   <div class="projects-overview">
       @foreach (var review in this.ViewModel.Project.Reviews)
 	  {

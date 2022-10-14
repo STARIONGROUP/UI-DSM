@@ -13,9 +13,12 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 {
+    using UI_DSM.Client.Components.NormalUser.ProjectReview;
+    
     using Microsoft.AspNetCore.Components;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
+    using UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement;
 
     /// <summary>
     ///     Interface definition for <see cref="ProjectReviewViewModel" />
@@ -32,12 +35,40 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         /// </summary>
         Dictionary<Guid, ComputedProjectProperties> CommentsAndTasks { get; set; }
 
+        /// <summary>
+        ///     Value indicating the user is currently creating a new <see cref="Review"/>
+        /// </summary>
+        bool IsOnCreationMode { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IErrorMessageViewModel" />
+        /// </summary>
+        IErrorMessageViewModel ErrorMessageViewModel { get; }
+
+        /// <summary>
+        ///     The <see cref="IReviewCreationViewModel" />
+        /// </summary>
+        IReviewCreationViewModel ReviewCreationViewModel { get; }
 
         /// <summary>
         ///     Navigate to the page dedicated to the given <see cref="Review" />
         /// </summary>
         /// <param name="review">The <see cref="Review" /></param>
         void GoToReviewPage(Review review);
+
+        /// <summary>
+        ///     Opens the <see cref="ReviewCreation" /> as a popup
+        /// </summary>
+        void OpenCreatePopup();
+
+        /// <summary>
+        ///     Method invoked when the component is ready to start, having received its
+        ///     initial parameters from its parent in the render tree.
+        ///     Override this method if you will perform an asynchronous operation and
+        ///     want the component to refresh when that operation is completed.
+        /// </summary>
+        /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
+        Task OnInitializedAsync();
 
         /// <summary>
         ///     Gets or sets the <see cref="NavigationManager" />

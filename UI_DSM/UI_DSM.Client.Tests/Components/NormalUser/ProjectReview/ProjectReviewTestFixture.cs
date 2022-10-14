@@ -44,7 +44,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
             this.errorMessage = new ErrorMessageViewModel();
             this.context.ConfigureDevExpressBlazor();
 
-            this.viewModel = new ProjectReviewViewModel(null)
+            this.viewModel = new ProjectReviewViewModel(null,null,null)
             {
                 Project = new Project()
             };

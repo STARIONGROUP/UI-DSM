@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="ProjectReview.razor.cs" company="RHEA System S.A.">
+// <copyright file="ReviewCreation.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -15,35 +15,29 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
 {
     using Microsoft.AspNetCore.Components;
 
-    using ReactiveUI;
-
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     This components provide <see cref="Project" /> reviews
+    ///     This component is used to create new <see cref="Review" />
     /// </summary>
-    public partial class ProjectReview : IDisposable
+    public partial class ReviewCreation
     {
-        /// <summary>
-        ///     A collection of <see cref="IDisposable" />
-        /// </summary>
-        private readonly List<IDisposable> disposables = new();
 
         /// <summary>
-        ///     The <see cref="IProjectReviewViewModel" /> for the component
+        ///     The <see cref="Guid" /> of the project
         /// </summary>
         [Parameter]
-        public IProjectReviewViewModel ViewModel { get; set; }
+        public string ProjectId { get; set; }
+
+       
+        public Model Model { get; set; }
 
         /// <summary>
-        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        ///     The <see cref="IReviewCreationViewModel" /> for the component
         /// </summary>
-        public void Dispose()
-        {
-            this.disposables.ForEach(x => x.Dispose());
-            this.disposables.Clear();
-        }
+        [Parameter]
+        public IReviewCreationViewModel ViewModel { get; set; }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its
@@ -54,10 +48,8 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
         protected override async Task OnInitializedAsync()
         {
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCreationMode)
-                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
-            await this.ViewModel.OnInitializedAsync();
+            await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId));
         }
     }
 }

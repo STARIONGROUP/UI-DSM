@@ -45,7 +45,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ProjectPage
         public void Setup()
         {
             this.context = new TestContext();
-            this.projectReviewViewModel = new ProjectReviewViewModel(null);
+            this.projectReviewViewModel = new ProjectReviewViewModel(null,null,null);
             this.projectService = new Mock<IProjectService>();
             this.reviewService = new Mock<IReviewService>();
             this.viewModel = new NormalProjectPageViewModel(this.projectService.Object, this.reviewService.Object, this.projectReviewViewModel);

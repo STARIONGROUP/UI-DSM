@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="ProjectReview.razor.cs" company="RHEA System S.A.">
+// <copyright file="IReviewCreationViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,39 +11,37 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Components.NormalUser.ProjectReview
+namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 {
     using Microsoft.AspNetCore.Components;
 
-    using ReactiveUI;
-
-    using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Shared.Models;
+    using UI_DSM.Shared.Wrappers;
 
     /// <summary>
-    ///     This components provide <see cref="Project" /> reviews
+    ///     Interface definition for <see cref="ReviewCreationViewModel" />
     /// </summary>
-    public partial class ProjectReview : IDisposable
+    public interface IReviewCreationViewModel
     {
         /// <summary>
-        ///     A collection of <see cref="IDisposable" />
+        ///     The <see cref="Review" /> to create
         /// </summary>
-        private readonly List<IDisposable> disposables = new();
+        Review Review { get; set; }
 
         /// <summary>
-        ///     The <see cref="IProjectReviewViewModel" /> for the component
+        ///     The <see cref="EventCallback" /> to call for data submit
         /// </summary>
-        [Parameter]
-        public IProjectReviewViewModel ViewModel { get; set; }
+        EventCallback OnValidSubmit { get; set; }
 
         /// <summary>
-        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        ///     A collection of <see cref="Model" /> that has been selected
         /// </summary>
-        public void Dispose()
-        {
-            this.disposables.ForEach(x => x.Dispose());
-            this.disposables.Clear();
-        }
+        IEnumerable<Model> SelectedModels { get; set; }
+
+        /// <summary>
+        ///     A collection of <see cref="Model" /> a project model
+        /// </summary>
+        IEnumerable<Model> ProjectModels { get; set; }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its
@@ -51,13 +49,8 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
         ///     Override this method if you will perform an asynchronous operation and
         ///     want the component to refresh when that operation is completed.
         /// </summary>
+        /// <param name="projectGuid">The <see cref="Guid" /> of the <see cref="Project" /></param>
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
-        protected override async Task OnInitializedAsync()
-        {
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCreationMode)
-                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
-
-            await this.ViewModel.OnInitializedAsync();
-        }
+        Task OnInitializedAsync(Guid projectGuid);
     }
 }
