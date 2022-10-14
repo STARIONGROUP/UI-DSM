@@ -20,7 +20,7 @@
   <DxPopup CloseOnOutsideClick="false" HeaderText="Create Review" @bind-Visible="@this.ViewModel.IsOnCreationMode">
 		<Content>
 			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
-				<ReviewCreation ProjectId="@this.ViewModel.Project.Id.ToString()" ViewModel="@this.ViewModel.ReviewCreationViewModel"/>
+                <ReviewCreation ProjectArtifacts="@this.ViewModel.Project.Artifacts" ViewModel="@this.ViewModel.ReviewCreationViewModel" />
 			</CascadingValue>
 		</Content>
 	</DxPopup>

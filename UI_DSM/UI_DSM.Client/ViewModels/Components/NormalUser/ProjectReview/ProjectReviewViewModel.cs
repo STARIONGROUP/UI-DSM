@@ -50,11 +50,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         private readonly IReviewService reviewService;
 
         /// <summary>
-        ///     The <see cref="IProjectService" />
-        /// </summary>
-        private readonly IProjectService projectService;
-
-        /// <summary>
         ///     Backing field for <see cref="IsOnCreationMode" />
         /// </summary>
         private bool isOnCreationMode;
@@ -73,7 +68,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         {
             this.NavigationManager = navigationManager;
             this.reviewService = reviewService;
-            this.projectService = projectService;
             
             this.ReviewCreationViewModel = new ReviewCreationViewModel(projectService)
             {

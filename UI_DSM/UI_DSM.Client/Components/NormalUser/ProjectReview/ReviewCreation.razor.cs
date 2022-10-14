@@ -25,12 +25,19 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
     {
 
         /// <summary>
-        ///     The <see cref="Guid" /> of the project
+        ///     A collection of <see cref="Model" /> a project artifact
         /// </summary>
         [Parameter]
-        public string ProjectId { get; set; }
+        public IEnumerable<Artifact> ProjectArtifacts { get; set; }
 
-       
+        /// <summary>
+        ///     A collection of <see cref="Model" /> a project model
+        /// </summary>
+        public IEnumerable<Model> ProjectModels { get; set; } = new List<Model>();
+
+        /// <summary>
+        ///     The <see cref="Model" /> of the project
+        /// </summary>
         public Model Model { get; set; }
 
         /// <summary>
@@ -39,17 +46,9 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
         [Parameter]
         public IReviewCreationViewModel ViewModel { get; set; }
 
-        /// <summary>
-        ///     Method invoked when the component is ready to start, having received its
-        ///     initial parameters from its parent in the render tree.
-        ///     Override this method if you will perform an asynchronous operation and
-        ///     want the component to refresh when that operation is completed.
-        /// </summary>
-        /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
-
-            await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId));
+            this.ProjectModels = this.ProjectArtifacts.OfType<Model>().ToList();
         }
     }
 }

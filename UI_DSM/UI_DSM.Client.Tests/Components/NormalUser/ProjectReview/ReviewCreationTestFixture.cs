@@ -66,19 +66,11 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
         [Test]
         public async Task VerifyComponent()
         {
-            var projectGuid = Guid.NewGuid();
-            var project = new Project(projectGuid)
-            {
-                ProjectName = "Project"
-            };
-
-            this.projectService.Setup(x => x.GetProject(projectGuid, 1)).ReturnsAsync(project);
-            
             var renderer = this.context.RenderComponent<ReviewCreation>(parameters =>
             {
                 parameters.AddCascadingValue(this.errorMessageViewModel);
                 parameters.Add(p => p.ViewModel, this.reviewCreationViewModel);
-                parameters.Add(p => p.ProjectId, projectGuid.ToString());
+                parameters.Add(p => p.ProjectArtifacts, new List<Artifact>());
             });
 
             var textBox = renderer.FindComponent<DxTextBox>();

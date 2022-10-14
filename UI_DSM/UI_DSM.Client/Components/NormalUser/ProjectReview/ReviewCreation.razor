@@ -20,7 +20,7 @@
 			<DxTextBox @bind-Text="@this.ViewModel.Review.Description" NullText="Enter the description of the review" />
 		</DxFormLayoutItem>
 		<DxFormLayoutItem Caption="Engineering Models :" ColSpanMd="12">
-			<DxListBox Data="@this.ViewModel.ProjectModels"
+			<DxListBox Data="@this.ProjectModels"
 					   @bind-Values="@this.ViewModel.SelectedModels"
 					   ShowCheckboxes="true"
 					   SelectionMode="ListBoxSelectionMode.Multiple" 

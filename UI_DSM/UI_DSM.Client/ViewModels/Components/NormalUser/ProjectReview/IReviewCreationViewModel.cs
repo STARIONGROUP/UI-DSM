@@ -16,7 +16,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Shared.Models;
-    using UI_DSM.Shared.Wrappers;
 
     /// <summary>
     ///     Interface definition for <see cref="ReviewCreationViewModel" />
@@ -37,20 +36,5 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         ///     A collection of <see cref="Model" /> that has been selected
         /// </summary>
         IEnumerable<Model> SelectedModels { get; set; }
-
-        /// <summary>
-        ///     A collection of <see cref="Model" /> a project model
-        /// </summary>
-        IEnumerable<Model> ProjectModels { get; set; }
-
-        /// <summary>
-        ///     Method invoked when the component is ready to start, having received its
-        ///     initial parameters from its parent in the render tree.
-        ///     Override this method if you will perform an asynchronous operation and
-        ///     want the component to refresh when that operation is completed.
-        /// </summary>
-        /// <param name="projectGuid">The <see cref="Guid" /> of the <see cref="Project" /></param>
-        /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
-        Task OnInitializedAsync(Guid projectGuid);
     }
 }
