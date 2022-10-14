@@ -69,7 +69,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
             this.NavigationManager = navigationManager;
             this.reviewService = reviewService;
             
-            this.ReviewCreationViewModel = new ReviewCreationViewModel(projectService)
+            this.ReviewCreationViewModel = new ReviewCreationViewModel
             {
                 OnValidSubmit = new EventCallbackFactory().Create(this, this.CreateReview)
             };
@@ -98,18 +98,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         ///     The <see cref="IReviewCreationViewModel" />
         /// </summary>
         public IReviewCreationViewModel ReviewCreationViewModel { get; private set; }
-
-        /// <summary>
-        ///     Method invoked when the component is ready to start, having received its
-        ///     initial parameters from its parent in the render tree.
-        ///     Override this method if you will perform an asynchronous operation and
-        ///     want the component to refresh when that operation is completed.
-        /// </summary>
-        /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
-        public async Task OnInitializedAsync()
-        {
-            
-        }
 
         /// <summary>
         ///     Navigate to the page dedicated to the given <see cref="Review" />

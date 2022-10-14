@@ -80,12 +80,8 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ProjectPage
             this.projectService.Setup(x => x.GetProject(projectGuid, 1)).ReturnsAsync(project);
 
             await this.viewModel.OnInitializedAsync(projectGuid);
-            renderer.Render();
 
             Assert.That(this.viewModel.ProjectReviewViewModel.Project, Is.Not.Null);
-
-            var projectsComponent = renderer.FindComponents<ProjectReview>();
-            Assert.That(projectsComponent, Has.Count.EqualTo(1));
         }
     }
 }

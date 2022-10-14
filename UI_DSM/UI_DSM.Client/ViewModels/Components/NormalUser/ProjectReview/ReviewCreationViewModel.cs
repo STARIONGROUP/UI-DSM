@@ -25,21 +25,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
     public class ReviewCreationViewModel : IReviewCreationViewModel
     {
         /// <summary>
-        ///     The <see cref="IProjectService" />
-        /// </summary>
-        private readonly IProjectService projectService;
-
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ProjectPageViewModel" /> class.
-        /// </summary>
-        /// <param name="projectService">The <see cref="IProjectService" /></param>
-        public ReviewCreationViewModel(IProjectService projectService)
-        {
-            this.projectService = projectService;
-        }
-
-        /// <summary>
         ///     The <see cref="Review" /> to create
         /// </summary>
         public Review Review { get; set; }

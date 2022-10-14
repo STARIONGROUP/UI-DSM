@@ -25,12 +25,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
     using NUnit.Framework;
 
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
-    using UI_DSM.Client.Services.Administration.ProjectService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Shared.Models;
-    using UI_DSM.Shared.Wrappers;
 
     using TestContext = Bunit.TestContext;
 
@@ -40,7 +38,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
         private TestContext context;
         private IReviewCreationViewModel reviewCreationViewModel;
         private IErrorMessageViewModel errorMessageViewModel;
-        private Mock<IProjectService> projectService;
 
         [SetUp]
         public void Setup()
@@ -48,9 +45,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
             this.context = new TestContext();
             this.context.ConfigureDevExpressBlazor();
             this.errorMessageViewModel = new ErrorMessageViewModel();
-            this.projectService = new Mock<IProjectService>();
 
-            this.reviewCreationViewModel = new ReviewCreationViewModel(projectService.Object)
+            this.reviewCreationViewModel = new ReviewCreationViewModel()
             {
                 Review = new Review(),
                 OnValidSubmit = new EventCallbackFactory().Create(this, () => this.reviewCreationViewModel.Review = new Review())

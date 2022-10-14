@@ -62,15 +62,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         void OpenCreatePopup();
 
         /// <summary>
-        ///     Method invoked when the component is ready to start, having received its
-        ///     initial parameters from its parent in the render tree.
-        ///     Override this method if you will perform an asynchronous operation and
-        ///     want the component to refresh when that operation is completed.
-        /// </summary>
-        /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
-        Task OnInitializedAsync();
-
-        /// <summary>
         ///     Gets or sets the <see cref="NavigationManager" />
         /// </summary>
         NavigationManager NavigationManager { get; set; }

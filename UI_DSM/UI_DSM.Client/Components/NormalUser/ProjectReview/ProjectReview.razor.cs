@@ -48,16 +48,13 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
-        ///     Override this method if you will perform an asynchronous operation and
-        ///     want the component to refresh when that operation is completed.
         /// </summary>
-        /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCreationMode)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
-            await this.ViewModel.OnInitializedAsync();
+
         }
     }
 }
