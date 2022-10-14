@@ -134,7 +134,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
 
                 Assert.Multiple(() =>
                 {
-                    Assert.That(this.viewModel.ErrorMessageViewModel.Errors.Count, Is.EqualTo(1));
+                    Assert.That(this.viewModel.ErrorMessageViewModel.Errors, Has.Count.EqualTo(1));
                     Assert.That(this.viewModel.IsOnCreationMode, Is.True);
                 });
 
@@ -153,7 +153,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
                     .ThrowsAsync(new HttpRequestException());
 
                 await this.viewModel.ReviewCreationViewModel.OnValidSubmit.InvokeAsync();
-                Assert.That(this.viewModel.ErrorMessageViewModel.Errors.Count, Is.EqualTo(1));
+                Assert.That(this.viewModel.ErrorMessageViewModel.Errors, Has.Count.EqualTo(1));
             }
             catch
             {
@@ -166,7 +166,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
         {
             var review = new Review(Guid.NewGuid());
             this.viewModel.GoToReviewPage(review);
-            Assert.That(this.viewModel.NavigationManager.Uri.Contains($"Review/{review.Id}"), Is.True);
+            Assert.That(this.viewModel.NavigationManager.Uri, Does.Contain($"Review/{review.Id}"));
         }
     }
 }
