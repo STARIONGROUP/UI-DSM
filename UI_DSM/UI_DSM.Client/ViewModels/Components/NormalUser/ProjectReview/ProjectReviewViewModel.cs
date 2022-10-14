@@ -23,7 +23,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
-    using UI_DSM.Shared.Wrappers;
 
     /// <summary>
     ///     View model for the <see cref="ProjectReview" /> component
