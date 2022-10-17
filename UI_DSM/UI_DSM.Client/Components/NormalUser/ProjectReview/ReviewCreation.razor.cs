@@ -23,7 +23,6 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
     /// </summary>
     public partial class ReviewCreation
     {
-
         /// <summary>
         ///     A collection of <see cref="Model" /> a project artifact
         /// </summary>
@@ -46,6 +45,10 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
         [Parameter]
         public IReviewCreationViewModel ViewModel { get; set; }
 
+        /// <summary>
+        ///     Method invoked when the component is ready to start, having received its
+        ///     initial parameters from its parent in the render tree.
+        /// </summary>
         protected override void OnInitialized()
         {
             this.ProjectModels = this.ProjectArtifacts.OfType<Model>().ToList();
