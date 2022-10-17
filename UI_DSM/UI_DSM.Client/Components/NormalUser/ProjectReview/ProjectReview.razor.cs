@@ -53,8 +53,6 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
         {
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCreationMode)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
-
-
         }
     }
 }

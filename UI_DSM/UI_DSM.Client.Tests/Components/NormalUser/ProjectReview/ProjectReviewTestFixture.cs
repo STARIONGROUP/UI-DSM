@@ -18,10 +18,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
     using Bunit;
     using Bunit.TestDoubles;
 
+    using Microsoft.Extensions.DependencyInjection;
+
     using Moq;
 
-    using Microsoft.Extensions.DependencyInjection;
-    
     using NUnit.Framework;
 
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
@@ -29,12 +29,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
-    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
+    using UI_DSM.Shared.Types;
 
     using TestContext = Bunit.TestContext;
-    using UI_DSM.Client.Services.Administration.RoleService;
-    using UI_DSM.Shared.Types;
 
     [TestFixture]
     public class ProjectReviewTestFixture
@@ -52,8 +50,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
             this.context.ConfigureDevExpressBlazor();
             this.reviewService = new Mock<IReviewService>();
 
-
-            this.viewModel = new ProjectReviewViewModel(null,null,null)
+            this.viewModel = new ProjectReviewViewModel(null, this.reviewService.Object)
             {
                 Project = new Project()
             };
@@ -94,6 +91,13 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
             }
         }
 
+        [Test]
+        public void VerifyGoToPage()
+        {
+            var review = new Review(Guid.NewGuid());
+            this.viewModel.GoToReviewPage(review);
+            Assert.That(this.viewModel.NavigationManager.Uri, Does.Contain($"Review/{review.Id}"));
+        }
 
         [Test]
         public async Task VerifyOpenCreationPopupAndCreateReview()
@@ -101,14 +105,20 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
             try
             {
                 var projectGuid = Guid.NewGuid();
+
                 var project = new Project(projectGuid)
                 {
                     ProjectName = "Project"
                 };
 
                 this.viewModel.Project = project;
+
+                var renderer = this.context.RenderComponent<ProjectReview>(parameters =>
+                {
+                    parameters.Add(p => p.ViewModel, this.viewModel);
+                    parameters.AddCascadingValue(this.errorMessage);
+                }); 
                 
-                var renderer = this.context.RenderComponent<ProjectReview>();
                 var appButton = renderer.FindComponent<AppButton>();
                 var currentCreationReview = this.viewModel.ReviewCreationViewModel.Review;
                 Assert.That(this.viewModel.IsOnCreationMode, Is.False);
@@ -124,10 +134,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
 
                 this.viewModel.ReviewCreationViewModel.Review.Title = "Review 1";
 
-                this.reviewService.Setup(x => x.CreateReview(projectGuid,this.viewModel.ReviewCreationViewModel.Review))
-                    .ReturnsAsync(EntityRequestResponse<Review>.Fail(new List<string>()
+                this.reviewService.Setup(x => x.CreateReview(projectGuid, this.viewModel.ReviewCreationViewModel.Review))
+                    .ReturnsAsync(EntityRequestResponse<Review>.Fail(new List<string>
                     {
-                    "A review with the same name already exists"
+                        "A review with the same name already exists"
                     }));
 
                 await this.viewModel.ReviewCreationViewModel.OnValidSubmit.InvokeAsync();
@@ -138,7 +148,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
                     Assert.That(this.viewModel.IsOnCreationMode, Is.True);
                 });
 
-                this.reviewService.Setup(x => x.CreateReview(projectGuid,this.viewModel.ReviewCreationViewModel.Review))
+                this.reviewService.Setup(x => x.CreateReview(projectGuid, this.viewModel.ReviewCreationViewModel.Review))
                     .ReturnsAsync(EntityRequestResponse<Review>.Success(new Review()));
 
                 await this.viewModel.ReviewCreationViewModel.OnValidSubmit.InvokeAsync();
@@ -159,14 +169,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
             {
                 // On GitHub, exception is thrown even if the JSRuntime has been configured
             }
-        }
-
-        [Test]
-        public void VerifyGoToPage()
-        {
-            var review = new Review(Guid.NewGuid());
-            this.viewModel.GoToReviewPage(review);
-            Assert.That(this.viewModel.NavigationManager.Uri, Does.Contain($"Review/{review.Id}"));
         }
     }
 }

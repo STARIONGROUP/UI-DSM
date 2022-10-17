@@ -17,8 +17,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
 
     using DevExpress.Blazor;
 
-    using Moq;
-
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
 
@@ -31,9 +29,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
     using UI_DSM.Shared.Models;
 
     using TestContext = Bunit.TestContext;
-    using AppComponents;
-    using UI_DSM.Client.Pages.Administration;
-    using UI_DSM.Shared.Types;
 
     [TestFixture]
     public class ReviewCreationTestFixture
@@ -76,6 +71,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
 
                 var textBox = renderer.FindComponent<DxTextBox>();
                 var listBox = renderer.FindComponent<DxListBox<Model, Model>>();
+                
                 Assert.Multiple(() =>
                 {
                     Assert.That(textBox.Instance.Text, Is.Null);
@@ -92,7 +88,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
 
                 Assert.That(this.reviewCreationViewModel.Review.Title, Is.Null);
             }
-            catch (Exception e)
+            catch
             {
                 // On GitHub, exception is thrown even if the JSRuntime has been configured
             }
