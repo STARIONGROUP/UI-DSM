@@ -49,6 +49,12 @@ namespace UI_DSM.Serializer.Json
             writer.WritePropertyName("description");
             writer.WriteStringValue(dto.Description);
 
+            writer.WritePropertyName("reviewObjectiveKind");
+            writer.WriteStringValue(dto.ReviewObjectiveKind.ToString().ToUpper());
+
+            writer.WritePropertyName("reviewObjectiveKindNumber");
+            writer.WriteNumberValue(dto.ReviewObjectiveKindNumber);
+
             writer.WritePropertyName("reviewObjectiveNumber");
             writer.WriteNumberValue(dto.ReviewObjectiveNumber);
 
@@ -60,6 +66,15 @@ namespace UI_DSM.Serializer.Json
             foreach (var item in dto.ReviewTasks)
             {
                 writer.WriteStringValue(item);
+            }
+
+            writer.WriteEndArray();
+
+            writer.WriteStartArray("relatedViews");
+
+            foreach (var item in dto.RelatedViews)
+            {
+                writer.WriteStringValue(item.ToString().ToUpper());
             }
 
             writer.WriteEndArray();

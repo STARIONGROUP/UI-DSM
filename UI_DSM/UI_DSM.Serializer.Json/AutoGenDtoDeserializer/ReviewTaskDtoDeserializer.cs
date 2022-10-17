@@ -72,6 +72,41 @@ namespace UI_DSM.Serializer.Json
                 dto.TaskNumber = taskNumberProperty.GetInt32();
             }
 
+            if (jsonElement.TryGetProperty("mainView", out var mainViewProperty))
+            {
+                var propertyValue = mainViewProperty.GetString();
+
+                if (propertyValue != null)
+                {
+                    dto.MainView = ViewDeserializer.Deserialize(propertyValue);
+                }
+            }
+
+            if (jsonElement.TryGetProperty("optionalView", out var optionalViewProperty))
+            {
+                var propertyValue = optionalViewProperty.GetString();
+
+                if (propertyValue != null)
+                {
+                    dto.OptionalView = ViewDeserializer.Deserialize(propertyValue);
+                }
+            }
+
+            if (jsonElement.TryGetProperty("additionalView", out var additionalViewProperty))
+            {
+                var propertyValue = additionalViewProperty.GetString();
+
+                if (propertyValue != null)
+                {
+                    dto.AdditionalView = ViewDeserializer.Deserialize(propertyValue);
+                }
+            }
+
+            if (jsonElement.TryGetProperty("hasPrimaryView", out var hasPrimaryViewProperty))
+            {
+                dto.HasPrimaryView = hasPrimaryViewProperty.GetBoolean();
+            }
+
             if (jsonElement.TryGetProperty("status", out var statusProperty))
             {
                 var propertyValue = statusProperty.GetString();

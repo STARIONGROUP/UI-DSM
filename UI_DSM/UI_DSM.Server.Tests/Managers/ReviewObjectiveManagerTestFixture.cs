@@ -73,7 +73,6 @@ namespace UI_DSM.Server.Tests.Managers
                     Description = "A review objective",
                     ReviewObjectiveNumber = 1,
                     Status = StatusKind.Closed,
-                    Title = "Review objective 1"
                 },
                 new(Guid.NewGuid())
                 {
@@ -82,7 +81,6 @@ namespace UI_DSM.Server.Tests.Managers
                     Description = "Another review objective",
                     ReviewObjectiveNumber = 1,
                     Status = StatusKind.Open,
-                    Title = "Review objective 2"
                 }
             };
 
@@ -115,7 +113,6 @@ namespace UI_DSM.Server.Tests.Managers
         {
             var reviewObjective = new ReviewObjective()
             {
-                Title = "ReviewObjective Title",
                 Author = new Participant(Guid.NewGuid())
             };
 
@@ -152,7 +149,6 @@ namespace UI_DSM.Server.Tests.Managers
         {
             var reviewObjective = new ReviewObjective(Guid.NewGuid())
             {
-                Title = "Review Title",
                 Author = new Participant(Guid.NewGuid())
             };
 
@@ -172,6 +168,7 @@ namespace UI_DSM.Server.Tests.Managers
             };
 
             this.reviewDbSet.UpdateDbSetCollection(reviews);
+            this.reviewObjectiveDbSet.UpdateDbSetCollection(reviews.First().ReviewObjectives);
             await this.manager.UpdateEntity(reviewObjective);
             this.context.Verify(x => x.Update(reviewObjective), Times.Once);
 

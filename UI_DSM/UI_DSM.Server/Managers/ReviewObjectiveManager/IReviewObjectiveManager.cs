@@ -13,6 +13,7 @@
 
 namespace UI_DSM.Server.Managers.ReviewObjectiveManager
 {
+    using UI_DSM.Server.Types;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -20,5 +21,13 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
     /// </summary>
     public interface IReviewObjectiveManager : IContainedEntityManager<ReviewObjective>
     {
+        /// <summary>
+        ///     Creates an <see cref="ReviewObjective" /> based on a template
+        /// </summary>
+        /// <param name="template">The <see cref="ReviewObjective" /> template</param>
+        /// <param name="container">The <see cref="Review" /> container</param>
+        /// <param name="author">The <see cref="Participant" /> author</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="EntityOperationResult{TEntity}" /></returns>
+        Task<EntityOperationResult<ReviewObjective>> CreateEntityBasedOnTemplate(ReviewObjective template, Review container, Participant author);
     }
 }

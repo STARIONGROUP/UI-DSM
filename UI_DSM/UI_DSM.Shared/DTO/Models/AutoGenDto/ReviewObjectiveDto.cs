@@ -31,6 +31,7 @@ namespace UI_DSM.Shared.DTO.Models
         public ReviewObjectiveDto()
         {
             this.ReviewTasks = new List<Guid>();
+            this.RelatedViews = new List<View>();
         }
 
         /// <summary>
@@ -40,6 +41,7 @@ namespace UI_DSM.Shared.DTO.Models
         public ReviewObjectiveDto(Guid id) : base(id)
         {
             this.ReviewTasks = new List<Guid>();
+            this.RelatedViews = new List<View>();
         }
 
         /// <summary>
@@ -51,6 +53,16 @@ namespace UI_DSM.Shared.DTO.Models
         ///    Gets or sets the Description of the ReviewObjective
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the ReviewObjectiveKind of the ReviewObjective
+        /// </summary>
+        public ReviewObjectiveKind ReviewObjectiveKind { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the ReviewObjectiveKindNumber of the ReviewObjective
+        /// </summary>
+        public int ReviewObjectiveKindNumber { get; set; }
 
         /// <summary>
         ///    Gets or sets the ReviewObjectiveNumber of the ReviewObjective
@@ -66,6 +78,11 @@ namespace UI_DSM.Shared.DTO.Models
         ///    Gets or sets the ReviewTasks of the ReviewObjective
         /// </summary>
         public List<Guid> ReviewTasks { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the RelatedViews of the ReviewObjective
+        /// </summary>
+        public List<View> RelatedViews { get; set; }
 
         /// <summary>
         ///    Instantiate a <see cref="Entity" /> from a <see cref="EntityDto" />

@@ -67,6 +67,21 @@ namespace UI_DSM.Serializer.Json
                 dto.Description = descriptionProperty.GetString();
             }
 
+            if (jsonElement.TryGetProperty("reviewObjectiveKind", out var reviewObjectiveKindProperty))
+            {
+                var propertyValue = reviewObjectiveKindProperty.GetString();
+
+                if (propertyValue != null)
+                {
+                    dto.ReviewObjectiveKind = ReviewObjectiveKindDeserializer.Deserialize(propertyValue);
+                }
+            }
+
+            if (jsonElement.TryGetProperty("reviewObjectiveKindNumber", out var reviewObjectiveKindNumberProperty))
+            {
+                dto.ReviewObjectiveKindNumber = reviewObjectiveKindNumberProperty.GetInt32();
+            }
+
             if (jsonElement.TryGetProperty("reviewObjectiveNumber", out var reviewObjectiveNumberProperty))
             {
                 dto.ReviewObjectiveNumber = reviewObjectiveNumberProperty.GetInt32();
@@ -91,6 +106,19 @@ namespace UI_DSM.Serializer.Json
                     if (propertyValue != null)
                     {
                         dto.ReviewTasks.Add(Guid.Parse(propertyValue));
+                    }
+                }
+            }
+
+            if (jsonElement.TryGetProperty("relatedViews", out var relatedViewsProperty))
+            {
+                foreach (var item in relatedViewsProperty.EnumerateArray())
+                {
+                    var propertyValue = item.GetString();
+
+                    if (propertyValue != null)
+                    {
+                        dto.RelatedViews.Add(ViewDeserializer.Deserialize(propertyValue));
                     }
                 }
             }

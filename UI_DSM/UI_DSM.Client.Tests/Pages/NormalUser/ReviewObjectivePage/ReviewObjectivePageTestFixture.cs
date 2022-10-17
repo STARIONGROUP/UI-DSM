@@ -82,10 +82,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewObjectivePage
                 Title = "Review",
             };
 
-            var reviewObjective = new ReviewObjective(reviewGuid)
-            {
-                Title = "Review Objective",
-            };
+            var reviewObjective = new ReviewObjective(reviewGuid);
 
             this.reviewObjectiveService.Setup(x => x.GetReviewObjectiveOfReview(projectGuid, reviewGuid, reviewObjectiveGuid, 1)).ReturnsAsync(reviewObjective);
 

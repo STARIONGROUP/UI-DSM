@@ -146,9 +146,10 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            var container = await containerManager.FindEntity(this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey));
+            var containerEntity = (await containerManager.GetEntity(this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey)))
+                .FirstOrDefault(x => x is TEntityContainer);
 
-            if (container == null)
+            if (containerEntity is not TEntityContainer container)
             {
                 context.Response.StatusCode = 400;
 

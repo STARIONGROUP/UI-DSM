@@ -16,7 +16,6 @@ namespace UI_DSM.CodeGenerator.Generators
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
-    using System.Threading.Tasks;
 
     using HandlebarsDotNet;
     using HandlebarsDotNet.Helpers;
@@ -28,7 +27,7 @@ namespace UI_DSM.CodeGenerator.Generators
     /// <summary>
     ///     Base class for all generators that will use HandleBars
     /// </summary>
-    public abstract class HandleBarsGenerator
+    public abstract class HandleBarsGenerator : Generator
     {
         /// <summary>
         ///     The <see cref="IHandlebars" /> instance used to generate code with
@@ -59,17 +58,6 @@ namespace UI_DSM.CodeGenerator.Generators
         ///     Gets the path where the template are stored
         /// </summary>
         public string TemplateFolderPath { get; private set; }
-
-        /// <summary>
-        ///     Generates code specific to the concrete implementation
-        /// </summary>
-        /// <param name="outputDirectory">
-        ///     The target <see cref="DirectoryInfo" />
-        /// </param>
-        /// <returns>
-        ///     An awaitable <see cref="Task" />
-        /// </returns>
-        public abstract Task Generate(DirectoryInfo outputDirectory);
 
         /// <summary>
         ///     Register the code templates
@@ -117,27 +105,6 @@ namespace UI_DSM.CodeGenerator.Generators
             generatedCode = formattedSyntaxNode.SyntaxTree.GetText().ToString();
 
             return generatedCode;
-        }
-
-        /// <summary>
-        ///     Writes the generated code to disk
-        /// </summary>
-        /// <param name="generatedCode">
-        ///     The generated code that needs to be written to disk
-        /// </param>
-        /// <param name="outputDirectory">
-        ///     The target <see cref="DirectoryInfo" />
-        /// </param>
-        /// <param name="fileName">
-        ///     The name of the file
-        /// </param>
-        /// <returns>
-        ///     an awaitable <see cref="Task" />
-        /// </returns>
-        protected static async Task Write(string generatedCode, DirectoryInfo outputDirectory, string fileName)
-        {
-            var filePath = Path.Combine(outputDirectory.FullName, fileName);
-            await File.WriteAllTextAsync(filePath, generatedCode);
         }
 
         /// <summary>

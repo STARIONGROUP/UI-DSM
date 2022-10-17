@@ -13,11 +13,14 @@
 
 namespace UI_DSM.Server.Managers.ReviewObjectiveManager
 {
+    using Microsoft.EntityFrameworkCore;
+
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.AnnotationManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReviewTaskManager;
+    using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
@@ -75,6 +78,65 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
             relatedEntities.InsertEntityCollection(await this.reviewTaskManager.FindEntities(reviewObjectiveDto.ReviewTasks));
             relatedEntities.InsertEntityCollection(await this.annotationManager.FindEntities(reviewObjectiveDto.Annotations));
             entity.ResolveProperties(reviewObjectiveDto, relatedEntities);
+        }
+
+        /// <summary>
+        ///     Updates a <see cref="ReviewObjective" />
+        /// </summary>
+        /// <param name="entity">The <see cref="ReviewObjective" /> to update</param>
+        /// <returns>A <see cref="Task" /> with the result of the update</returns>
+        public override async Task<EntityOperationResult<ReviewObjective>> UpdateEntity(ReviewObjective entity)
+        {
+            if (!this.ValidateCurrentEntity(entity, out var entityOperationResult))
+            {
+                return entityOperationResult;
+            }
+
+            var foundEntity = await this.FindEntity(entity.Id);
+            entity.ReviewObjectiveKind = foundEntity.ReviewObjectiveKind;
+
+            return await this.UpdateEntityIntoContext(entity);
+        }
+
+        /// <summary>
+        ///     Creates an <see cref="ReviewObjective" /> based on a template
+        /// </summary>
+        /// <param name="template">The <see cref="ReviewObjective" /> template</param>
+        /// <param name="container">The <see cref="Review" /> container</param>
+        /// <param name="author">The <see cref="Participant" /> author</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="EntityOperationResult{TEntity}" /></returns>
+        public async Task<EntityOperationResult<ReviewObjective>> CreateEntityBasedOnTemplate(ReviewObjective template, Review container, Participant author)
+        {
+            if (container.ReviewObjectives.Any(x => x.ReviewObjectiveKind == template.ReviewObjectiveKind
+                                                    && x.ReviewObjectiveKindNumber == template.ReviewObjectiveKindNumber))
+            {
+                return EntityOperationResult<ReviewObjective>.Failed($"A ReviewObjective {template.Title} already exists inside the Review");
+            }
+
+            var reviewObjective = new ReviewObjective(template)
+            {
+                Author = author
+            };
+
+            container.ReviewObjectives.Add(reviewObjective);
+            this.SetSpecificPropertiesBeforeCreate(reviewObjective);
+            var operationResult = new EntityOperationResult<ReviewObjective>(this.Context.Add(reviewObjective), EntityState.Added);
+
+            if (operationResult.Entity != null)
+            {
+                this.reviewTaskManager.CreateEntitiesBasedOnTemplate(operationResult.Entity, template.ReviewTasks, author);
+            }
+
+            try
+            {
+                await this.Context.SaveChangesAsync();
+            }
+            catch (Exception exception)
+            {
+                this.HandleException(exception, operationResult);
+            }
+
+            return operationResult;
         }
 
         /// <summary>

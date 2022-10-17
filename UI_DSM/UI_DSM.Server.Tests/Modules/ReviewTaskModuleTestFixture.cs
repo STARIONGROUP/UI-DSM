@@ -215,42 +215,14 @@ namespace UI_DSM.Server.Tests.Modules
         [Test]
         public async Task VerifyCreateEntity()
         {
-            var participant = new Participant(Guid.NewGuid())
-            {
-                Role = new Role(Guid.NewGuid()),
-                User = new UserEntity(Guid.NewGuid())
-            };
-
             var dto = new ReviewTaskDto()
             {
                 Description = "Description",
                 Title = "Title"
             };
 
-            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
-
             await this.module.CreateEntity(this.reviewTaskManager.Object, dto, this.context.Object);
-            this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
-
-            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(participant);
-
-            var reviewObjective = new ReviewObjective(this.reviewObjectiveId);
-
-            this.reviewObjectiveManager.As<IContainedEntityManager<ReviewObjective>>()
-                .Setup(x => x.EntityIsContainedBy(this.reviewObjectiveId, this.reviewId)).ReturnsAsync(true);
-
-            this.reviewManager.As<IContainedEntityManager<Review>>()
-                .Setup(x => x.EntityIsContainedBy(this.reviewId, this.projectId)).ReturnsAsync(true);
-
-            this.reviewTaskManager.Setup(x => x.CreateEntity(It.IsAny<ReviewTask>())).ReturnsAsync(EntityOperationResult<ReviewTask>
-                .Success(new ReviewTask(Guid.NewGuid())
-                {
-                    Author = participant
-                }));
-
-            this.reviewObjectiveManager.Setup(x => x.FindEntity(this.reviewObjectiveId)).ReturnsAsync(reviewObjective);
-            await this.module.CreateEntity(this.reviewTaskManager.Object, dto, this.context.Object);
-            this.response.VerifySet(x => x.StatusCode = 201, Times.Once);
+            this.response.VerifySet(x => x.StatusCode = 405, Times.Once);
         }
 
         [Test]

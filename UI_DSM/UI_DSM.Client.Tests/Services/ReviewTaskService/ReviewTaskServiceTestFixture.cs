@@ -132,48 +132,6 @@ namespace UI_DSM.Client.Tests.Services.ReviewTaskService
         }
 
         [Test]
-        public async Task VerifyCreateReviewTask()
-        {
-            var reviewTask = new ReviewTask()
-            {
-                Description = "Review Task description",
-                Title = "Review Task title"
-            };
-
-            var httpResponse = new HttpResponseMessage();
-
-            var entityRequestResponse = new EntityRequestResponseDto()
-            {
-                IsRequestSuccessful = false
-            };
-
-            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
-            var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Project/{this.projectId}/Review/{this.reviewId}/ReviewObjective/{this.reviewObjectiveId}/ReviewTask/Create");
-            request.Respond(_ => httpResponse);
-
-            var requestResponse = await this.service.CreateReviewTask(this.projectId, this.reviewId, this.reviewObjectiveId, reviewTask);
-            Assert.That(requestResponse.IsRequestSuccessful, Is.False);
-
-            entityRequestResponse.IsRequestSuccessful = true;
-
-            entityRequestResponse.Entities = reviewTask.GetAssociatedEntities().ToDtos();
-
-            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
-
-            requestResponse = await this.service.CreateReviewTask(this.projectId, this.reviewId, this.reviewObjectiveId, reviewTask);
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(requestResponse.IsRequestSuccessful, Is.True);
-                Assert.That(requestResponse.Entity, Is.Not.Null);
-            });
-
-            httpResponse.Content = new StringContent(string.Empty);
-
-            Assert.That(async () => await this.service.CreateReviewTask(this.projectId, this.reviewId, this.reviewObjectiveId, reviewTask), Throws.Exception);
-        }
-
-        [Test]
         public async Task VerifyDeleteReviewTask()
         {
             var reviewTask = new ReviewTask(Guid.NewGuid())
