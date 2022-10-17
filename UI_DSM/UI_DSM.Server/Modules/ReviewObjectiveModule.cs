@@ -54,7 +54,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="jsonService">The <see cref="IJsonService" /></param>
         public ReviewObjectiveModule(IJsonService jsonService)
         {
-            var dtos = jsonService.Deserialize<List<EntityDto>>(File.OpenRead(@"Data\ReviewObjectives.json"));
+            var dtos = jsonService.Deserialize<List<EntityDto>>(File.OpenRead(Path.Combine("Data","ReviewObjectives.json")));
             this.reviewObjectivesTemplates = Assembler.CreateEntities<ReviewObjective>(dtos).ToList();
         }
 
