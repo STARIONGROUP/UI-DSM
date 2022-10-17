@@ -102,27 +102,38 @@ figure {
   margin: 0;
 }
 
-.account-dropdown {
+.account-dropdown,
+.list-dropdown {
   padding: 0;
 }
 
-.account-dropdown ul {
+.account-dropdown ul,
+.list-dropdown ul {
   padding: 0;
   width: 100%;
   margin-bottom: 0;
   list-style: none;
 }
 
-.account-dropdown li {
+.account-dropdown li,
+.list-dropdown li {
   border-bottom: 1px solid var(--colors-gray-100);
 }
 
+.list-dropdown {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.list-dropdown button,
+.list-dropdown a,
 .account-dropdown button,
 .account-dropdown a {
   display: flex;
-  padding: var(--spacing-4) var(--spacing-6);
+  padding: var(--spacing-4);
   font-weight: 700;
   gap: var(--spacing-2);
+  white-space: nowrap;
 }
 
 .dropdown-menu {

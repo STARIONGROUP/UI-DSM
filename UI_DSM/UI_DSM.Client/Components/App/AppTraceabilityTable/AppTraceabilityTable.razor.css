@@ -1,9 +1,10 @@
 .app-traceability-table {
   overflow: scroll;
-  width: 100%;
   max-height: calc(100vh - 200px);
   border-radius: var(--radius-1);
   font-size: var(--text-sm);
+  width: 100%;
+  border: 1px solid var(--colors-gray-100);
 }
 
 table { 
@@ -12,7 +13,7 @@ table {
   border: none;
   border-collapse: separate;
   border-spacing: 0;
-  table-layout: fixed;
+  width: 100%;
 }
 
 table td,
@@ -21,15 +22,16 @@ table th {
   border-bottom: 1px solid var(--colors-gray-100);
   padding: var(--spacing-3);
 }
+
+table td:first-child,
+table th:first-child {
+  border-left: none;
+}
   
 
-table thead th {
-  border-top: 1px solid var(--colors-gray-100);
-}
-
-table th:last-child,
-table td:last-child {
-  border-right: 1px solid var(--colors-gray-100);
+table tr:last-child th,
+table tr:last-child td {
+  border-bottom: none;
 }
 
 table thead th {
