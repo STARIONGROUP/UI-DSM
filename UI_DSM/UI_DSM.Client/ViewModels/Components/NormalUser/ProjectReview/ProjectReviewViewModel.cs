@@ -13,10 +13,14 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 {
+    using DynamicData;
+
     using Microsoft.AspNetCore.Components;
+
     using ReactiveUI;
 
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
+    using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
 
@@ -26,9 +30,35 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
     public class ProjectReviewViewModel : ReactiveObject, IProjectReviewViewModel
     {
         /// <summary>
+        ///     The <see cref="IReviewService" />
+        /// </summary>
+        private readonly IReviewService reviewService;
+
+        /// <summary>
+        ///     Backing field for <see cref="IsOnCreationMode" />
+        /// </summary>
+        private bool isOnCreationMode;
+
+        /// <summary>
         ///     Backing field for <see cref="Project" />
         /// </summary>
         private Project project;
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ProjectReviewViewModel" /> class.
+        /// </summary>
+        /// <param name="navigationManager">The <see cref="NavigationManager" /></param>
+        /// <param name="reviewService">The <see cref="IReviewService" /></param>
+        public ProjectReviewViewModel(NavigationManager navigationManager, IReviewService reviewService)
+        {
+            this.NavigationManager = navigationManager;
+            this.reviewService = reviewService;
+
+            this.ReviewCreationViewModel = new ReviewCreationViewModel
+            {
+                OnValidSubmit = new EventCallbackFactory().Create(this, this.CreateReview)
+            };
+        }
 
         /// <summary>
         ///     The <see cref="Project" />
@@ -45,18 +75,28 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         public Dictionary<Guid, ComputedProjectProperties> CommentsAndTasks { get; set; } = new();
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ProjectReviewViewModel" /> class.
-        /// </summary>
-        /// <param name="navigationManager">The <see cref="NavigationManager" /></param>
-        public ProjectReviewViewModel(NavigationManager navigationManager)
-        {
-            this.NavigationManager = navigationManager;
-        }
-
-        /// <summary>
         ///     Gets or sets the <see cref="NavigationManager" />
         /// </summary>
         public NavigationManager NavigationManager { get; set; }
+
+        /// <summary>
+        ///     Value indicating the user is currently creating a new <see cref="Review" />
+        /// </summary>
+        public bool IsOnCreationMode
+        {
+            get => this.isOnCreationMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnCreationMode, value);
+        }
+
+        /// <summary>
+        ///     The <see cref="IErrorMessageViewModel" />
+        /// </summary>
+        public IErrorMessageViewModel ErrorMessageViewModel { get; } = new ErrorMessageViewModel();
+
+        /// <summary>
+        ///     The <see cref="IReviewCreationViewModel" />
+        /// </summary>
+        public IReviewCreationViewModel ReviewCreationViewModel { get; private set; }
 
         /// <summary>
         ///     Navigate to the page dedicated to the given <see cref="Review" />
@@ -65,6 +105,49 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         public void GoToReviewPage(Review review)
         {
             this.NavigationManager.NavigateTo($"{this.NavigationManager.Uri}/Review/{review.Id}");
+        }
+
+        /// <summary>
+        ///     Opens the <see cref="ReviewCreation" /> as a popup
+        /// </summary>
+        public void OpenCreatePopup()
+        {
+            this.ReviewCreationViewModel.Review = new Review();
+            this.ReviewCreationViewModel.SelectedModels = new List<Model>();
+            this.ErrorMessageViewModel.Errors.Clear();
+            this.IsOnCreationMode = true;
+        }
+
+        /// <summary>
+        ///     Tries to create a new <see cref="Review" />
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task CreateReview()
+        {
+            try
+            {
+                this.ReviewCreationViewModel.Review.Artifacts.Add(this.ReviewCreationViewModel.SelectedModels);
+
+                var creationResult = await this.reviewService.CreateReview(this.project.Id, this.ReviewCreationViewModel.Review);
+                this.ErrorMessageViewModel.Errors.Clear();
+
+                if (creationResult.Errors.Any())
+                {
+                    this.ErrorMessageViewModel.Errors.AddRange(creationResult.Errors);
+                }
+
+                if (creationResult.IsRequestSuccessful)
+                {
+                    this.Project.Reviews.Add(creationResult.Entity);
+                }
+
+                this.IsOnCreationMode = !creationResult.IsRequestSuccessful;
+            }
+            catch (Exception exception)
+            {
+                this.ErrorMessageViewModel.Errors.Clear();
+                this.ErrorMessageViewModel.Errors.Add(exception.Message);
+            }
         }
     }
 }

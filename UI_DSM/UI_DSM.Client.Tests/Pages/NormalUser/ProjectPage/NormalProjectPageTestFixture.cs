@@ -21,7 +21,6 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ProjectPage
 
     using NUnit.Framework;
 
-    using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.Services.Administration.ProjectService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Tests.Helpers;
@@ -45,9 +44,9 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ProjectPage
         public void Setup()
         {
             this.context = new TestContext();
-            this.projectReviewViewModel = new ProjectReviewViewModel(null);
-            this.projectService = new Mock<IProjectService>();
             this.reviewService = new Mock<IReviewService>();
+            this.projectService = new Mock<IProjectService>();
+            this.projectReviewViewModel = new ProjectReviewViewModel(null,this.reviewService.Object);
             this.viewModel = new NormalProjectPageViewModel(this.projectService.Object, this.reviewService.Object, this.projectReviewViewModel);
             this.context.Services.AddSingleton(this.viewModel);
         }
@@ -80,12 +79,8 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ProjectPage
             this.projectService.Setup(x => x.GetProject(projectGuid, 1)).ReturnsAsync(project);
 
             await this.viewModel.OnInitializedAsync(projectGuid);
-            renderer.Render();
 
             Assert.That(this.viewModel.ProjectReviewViewModel.Project, Is.Not.Null);
-
-            var projectsComponent = renderer.FindComponents<ProjectReview>();
-            Assert.That(projectsComponent, Has.Count.EqualTo(1));
         }
     }
 }

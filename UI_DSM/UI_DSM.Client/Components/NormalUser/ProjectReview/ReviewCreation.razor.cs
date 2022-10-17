@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="ProjectReview.razor.cs" company="RHEA System S.A.">
+// <copyright file="ReviewCreation.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -15,35 +15,35 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
 {
     using Microsoft.AspNetCore.Components;
 
-    using ReactiveUI;
-
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     This components provide <see cref="Project" /> reviews
+    ///     This component is used to create new <see cref="Review" />
     /// </summary>
-    public partial class ProjectReview : IDisposable
+    public partial class ReviewCreation
     {
         /// <summary>
-        ///     A collection of <see cref="IDisposable" />
-        /// </summary>
-        private readonly List<IDisposable> disposables = new();
-
-        /// <summary>
-        ///     The <see cref="IProjectReviewViewModel" /> for the component
+        ///     A collection of <see cref="Model" /> a project artifact
         /// </summary>
         [Parameter]
-        public IProjectReviewViewModel ViewModel { get; set; }
+        public IEnumerable<Artifact> ProjectArtifacts { get; set; }
 
         /// <summary>
-        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        ///     A collection of <see cref="Model" /> a project model
         /// </summary>
-        public void Dispose()
-        {
-            this.disposables.ForEach(x => x.Dispose());
-            this.disposables.Clear();
-        }
+        public IEnumerable<Model> ProjectModels { get; set; } = new List<Model>();
+
+        /// <summary>
+        ///     The <see cref="Model" /> of the project
+        /// </summary>
+        public Model Model { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IReviewCreationViewModel" /> for the component
+        /// </summary>
+        [Parameter]
+        public IReviewCreationViewModel ViewModel { get; set; }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its
@@ -51,8 +51,7 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
         /// </summary>
         protected override void OnInitialized()
         {
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCreationMode)
-                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+            this.ProjectModels = this.ProjectArtifacts.OfType<Model>().ToList();
         }
     }
 }
