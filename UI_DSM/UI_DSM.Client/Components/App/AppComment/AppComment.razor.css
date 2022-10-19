@@ -19,6 +19,12 @@
   font-weight: 600;
 }
 
+.app-comment__button {
+  color: var(--colors-primary-500);
+  font-weight: 600;
+  text-align: left;
+}
+
 .app-comment__name {
   font-weight: 600;
   color: var(--colors-gray-900);

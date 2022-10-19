@@ -10,11 +10,15 @@
 .task-page__sidebar__left {
   grid-area: a;
   border-right: 1px solid var(--colors-gray-100);
+  overflow: auto;
+  height: calc(100vh - 114px);
 }
 
 .task-page__sidebar__right {
   grid-area: c;
   border-left: 1px solid var(--colors-gray-100);
+  overflow: auto;
+  height: calc(100vh - 114px);
 }
 
 .task-page__body {

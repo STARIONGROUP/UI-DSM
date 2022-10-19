@@ -27,9 +27,9 @@
 }
 
 .app-accordion__button--default {
-  padding: var(--spacing-4);
+  padding: var(--spacing-3) var(--spacing-4);
   background: var(--colors-gray-50);
-  color: var(--colors-primary-500);
+  color: var(--colors-primary-700);
   font-weight: 700;
   font-size: var(--text-base);
 }
@@ -37,4 +37,11 @@
 .app-accordion__button--small {
   padding: var(--spacing-2) var(--spacing-4);
   font-size: var(--text-base);
+}
+
+.app-accordion__button--tiny {
+  color: var(--colors-primary-700);
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--text-sm);
+  line-height: 130%;
 }
