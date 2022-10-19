@@ -152,6 +152,7 @@ namespace UI_DSM.Server.Tests.Managers
             Assert.That(operationResult.Succeeded, Is.False);
 
             reviewTask.Description = "Review new Description";
+            
             var reviewObjectives = new List<ReviewObjective>()
             {
                 new(Guid.NewGuid())
@@ -163,6 +164,7 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
+            this.reviewTaskDbSet.UpdateDbSetCollection(reviewObjectives.SelectMany(x => x.ReviewTasks).ToList());
             this.reviewObjectiveDbSet.UpdateDbSetCollection(reviewObjectives);
 
             await this.manager.UpdateEntity(reviewTask);

@@ -56,6 +56,26 @@ namespace UI_DSM.Shared.DTO.Models
         public int TaskNumber { get; set; }
 
         /// <summary>
+        ///    Gets or sets the MainView of the ReviewTask
+        /// </summary>
+        public View MainView { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the OptionalView of the ReviewTask
+        /// </summary>
+        public View OptionalView { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the AdditionalView of the ReviewTask
+        /// </summary>
+        public View AdditionalView { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the HasPrimaryView of the ReviewTask
+        /// </summary>
+        public bool HasPrimaryView { get; set; }
+
+        /// <summary>
         ///    Gets or sets the Status of the ReviewTask
         /// </summary>
         public StatusKind Status { get; set; }

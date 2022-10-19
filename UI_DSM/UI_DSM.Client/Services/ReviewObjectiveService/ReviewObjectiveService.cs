@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Services.ReviewObjectiveService
 {
+    using System.Text;
+
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Client.Services.JsonService;
@@ -82,14 +84,19 @@ namespace UI_DSM.Client.Services.ReviewObjectiveService
         /// </summary>
         /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
         /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
-        /// <param name="reviewObjective">The <see cref="ReviewObjective" />to create</param>
+        /// <param name="reviewObjective">The <see cref="ReviewObjectiveCreationDto" />to create</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{ReviewObjective}" /></returns>
-        public async Task<EntityRequestResponse<ReviewObjective>> CreateReviewObjective(Guid projectId, Guid reviewId, ReviewObjective reviewObjective)
+        public async Task<EntityRequestResponse<ReviewObjective>> CreateReviewObjective(Guid projectId, Guid reviewId, ReviewObjectiveCreationDto reviewObjective)
         {
             try
             {
                 this.ComputeMainRoute(projectId, reviewId);
-                return await this.CreateEntity(reviewObjective, 0);
+
+                var content = this.jsonService.Serialize(reviewObjective);
+                var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
+                var response = await this.HttpClient.PostAsync(this.CreateUri(Path.Combine(this.MainRoute, "CreateTemplate"), 1), bodyContent);
+                var entityRequest =  this.jsonService.Deserialize<EntityRequestResponseDto>(await response.Content.ReadAsStreamAsync());
+                return HandleEntityRequestResponse(entityRequest);
             }
             catch (Exception exception)
             {

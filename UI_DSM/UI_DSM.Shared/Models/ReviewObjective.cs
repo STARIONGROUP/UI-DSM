@@ -46,16 +46,40 @@ namespace UI_DSM.Shared.Models
         }
 
         /// <summary>
+        ///     Initiliazes a <see cref="ReviewObjective" /> based on a template
+        /// </summary>
+        /// <param name="toCopy">The <see cref="ReviewObjective" /> template</param>
+        public ReviewObjective(ReviewObjective toCopy)
+        {
+            this.InitializeCollections();
+
+            this.Description = toCopy.Description;
+            this.RelatedViews = toCopy.RelatedViews;
+            this.ReviewObjectiveKind = toCopy.ReviewObjectiveKind;
+            this.ReviewObjectiveKindNumber = toCopy.ReviewObjectiveKindNumber;
+        }
+
+        /// <summary>
         ///     Gets or sets the <see cref="ReviewObjective" /> title
         /// </summary>
-        [Required]
-        public string Title { get; set; }
+        public string Title => $"{this.ReviewObjectiveKind.ToString().ToUpper()} - {this.ReviewObjectiveKindNumber}";
 
         /// <summary>
         ///     Gets or sets the <see cref="ReviewObjective" /> description
         /// </summary>
         [Required]
         public string Description { get; set; }
+
+        /// <summary>
+        ///     The <see cref="ReviewObjectiveKind" />
+        /// </summary>
+        public ReviewObjectiveKind ReviewObjectiveKind { get; set; }
+
+        /// <summary>
+        ///     Unique number to distinct <see cref="ReviewObjective" /> of same <see cref="ReviewObjectiveKind" />
+        /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ReviewObjectiveKindNumber { get; set; }
 
         /// <summary>
         ///     The number of the <see cref="ReviewObjective" /> inside the <see cref="Review" />
@@ -75,6 +99,12 @@ namespace UI_DSM.Shared.Models
         public EntityContainerList<ReviewTask> ReviewTasks { get; protected set; }
 
         /// <summary>
+        ///     Represents a collection of <see cref="View" /> that are not part of a specific <see cref="ReviewTask" />
+        /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public List<View> RelatedViews { get; set; }
+
+        /// <summary>
         ///     Instantiate a <see cref="EntityDto" /> from a <see cref="Entity" />
         /// </summary>
         /// <returns>A new <see cref="EntityDto" /></returns>
@@ -86,6 +116,11 @@ namespace UI_DSM.Shared.Models
                 Description = this.Description,
                 ReviewObjectiveNumber = this.ReviewObjectiveNumber,
                 Status = this.Status,
+                RelatedViews = this.RelatedViews,
+                ReviewObjectiveKind = this.ReviewObjectiveKind,
+                Author = this.Author?.Id ?? Guid.Empty,
+                CreatedOn = this.CreatedOn,
+                ReviewObjectiveKindNumber = this.ReviewObjectiveKindNumber,
                 ReviewTasks = this.ReviewTasks.Select(x => x.Id).ToList()
             };
 
@@ -109,9 +144,11 @@ namespace UI_DSM.Shared.Models
 
             this.Description = reviewObjectiveDto.Description;
             this.Status = reviewObjectiveDto.Status;
-            this.Title = reviewObjectiveDto.Title;
             this.ReviewObjectiveNumber = reviewObjectiveDto.ReviewObjectiveNumber;
             this.ReviewTasks.ResolveList(reviewObjectiveDto.ReviewTasks, resolvedEntity);
+            this.RelatedViews = reviewObjectiveDto.RelatedViews;
+            this.ReviewObjectiveKind = reviewObjectiveDto.ReviewObjectiveKind;
+            this.ReviewObjectiveKindNumber = reviewObjectiveDto.ReviewObjectiveKindNumber;
         }
 
         /// <summary>
@@ -120,6 +157,7 @@ namespace UI_DSM.Shared.Models
         private void InitializeCollections()
         {
             this.ReviewTasks = new EntityContainerList<ReviewTask>(this);
+            this.RelatedViews = new List<View>();
         }
     }
 }

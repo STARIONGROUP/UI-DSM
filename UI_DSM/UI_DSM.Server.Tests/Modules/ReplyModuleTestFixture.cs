@@ -228,7 +228,7 @@ namespace UI_DSM.Server.Tests.Modules
                     Author = participant
                 }));
 
-            this.annotationManager.Setup(x => x.FindEntity(this.commentId)).ReturnsAsync(comment);
+            this.annotationManager.Setup(x => x.GetEntity(this.commentId,0)).ReturnsAsync(comment.GetAssociatedEntities());
             await this.module.CreateEntity(this.replyManager.Object, dto, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 201, Times.Once);
         }

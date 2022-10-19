@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.2.0" />
   </ItemGroup>
     <ItemGroup>
+    <ProjectReference Include="..\UI_DSM.Serializer.Json\UI_DSM.Serializer.Json.csproj" />
     <ProjectReference Include="..\UI_DSM.Shared\UI_DSM.Shared.csproj" />
   </ItemGroup>
 

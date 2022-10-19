@@ -46,9 +46,9 @@ namespace UI_DSM.Client.Services.ReviewObjectiveService
         /// </summary>
         /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
         /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
-        /// <param name="reviewObjective">The <see cref="ReviewObjective" />to create</param>
+        /// <param name="reviewObjective">The <see cref="ReviewObjectiveCreationDto" />to create</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{ReviewObjective}" /></returns>
-        Task<EntityRequestResponse<ReviewObjective>> CreateReviewObjective(Guid projectId, Guid reviewId, ReviewObjective reviewObjective);
+        Task<EntityRequestResponse<ReviewObjective>> CreateReviewObjective(Guid projectId, Guid reviewId, ReviewObjectiveCreationDto reviewObjective);
 
         /// <summary>
         ///     Updates a <see cref="ReviewObjective" />

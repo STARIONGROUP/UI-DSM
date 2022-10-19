@@ -130,10 +130,10 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
         [Test]
         public async Task VerifyCreateReviewObjective()
         {
-            var reviewObjective = new ReviewObjective()
+            var reviewObjective = new ReviewObjectiveCreationDto()
             {
-                Description = "Review description",
-                Title = "Review title"
+                Kind = ReviewObjectiveKind.Prr,
+                KindNumber = 0
             };
 
             var projectId = Guid.NewGuid();
@@ -147,7 +147,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
             };
 
             httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
-            var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Project/{projectId}/Review/{reviewId}/ReviewObjective/Create");
+            var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Project/{projectId}/Review/{reviewId}/ReviewObjective/CreateTemplate");
             request.Respond(_ => httpResponse);
 
             var requestResponse = await this.service.CreateReviewObjective(projectId, reviewId, reviewObjective);
@@ -155,7 +155,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
 
             entityRequestResponse.IsRequestSuccessful = true;
 
-            entityRequestResponse.Entities = reviewObjective.GetAssociatedEntities().ToDtos();
+            entityRequestResponse.Entities = new ReviewObjective().GetAssociatedEntities().ToDtos();
 
             httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
 
@@ -178,7 +178,6 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
             var reviewObjective = new ReviewObjective(Guid.NewGuid())
             {
                 Description = "Review description",
-                Title = "Review title",
                 ReviewObjectiveNumber = 1,
                 Author = new Participant(Guid.NewGuid())
             };
@@ -208,7 +207,6 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
             var reviewObjective = new ReviewObjective(Guid.NewGuid())
             {
                 Description = "Review description",
-                Title = "Review title",
                 ReviewObjectiveNumber = 1,
                 Author = new Participant(Guid.NewGuid())
                 {

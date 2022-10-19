@@ -52,6 +52,18 @@ namespace UI_DSM.Serializer.Json
             writer.WritePropertyName("taskNumber");
             writer.WriteNumberValue(dto.TaskNumber);
 
+            writer.WritePropertyName("mainView");
+            writer.WriteStringValue(dto.MainView.ToString().ToUpper());
+
+            writer.WritePropertyName("optionalView");
+            writer.WriteStringValue(dto.OptionalView.ToString().ToUpper());
+
+            writer.WritePropertyName("additionalView");
+            writer.WriteStringValue(dto.AdditionalView.ToString().ToUpper());
+
+            writer.WritePropertyName("hasPrimaryView");
+            writer.WriteBooleanValue(dto.HasPrimaryView);
+
             writer.WritePropertyName("status");
             writer.WriteStringValue(dto.Status.ToString().ToUpper());
 

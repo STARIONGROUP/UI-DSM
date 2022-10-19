@@ -191,7 +191,7 @@ namespace UI_DSM.Server.Tests.Modules
 
             await this.module.CreateEntity(this.annotationManager.Object, dto, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 400, Times.Once);
-            this.projectManager.Setup(x => x.FindEntity(project.Id)).ReturnsAsync(project);
+            this.projectManager.Setup(x => x.GetEntity(project.Id,0)).ReturnsAsync(project.GetAssociatedEntities());
 
             this.annotationManager.Setup(x => x.CreateEntity(It.IsAny<Annotation>()))
                 .ReturnsAsync(EntityOperationResult<Annotation>.Success(new Comment(Guid.NewGuid())));

@@ -20,5 +20,12 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
     /// </summary>
     public interface IReviewTaskManager : IContainedEntityManager<ReviewTask>
     {
+        /// <summary>
+        ///     Create <see cref="ReviewTask" />s based on templates
+        /// </summary>
+        /// <param name="container">The <see cref="ReviewObjective" /> container</param>
+        /// <param name="templateReviewTasks">A collection of <see cref="ReviewTask" /></param>
+        /// <param name="author">The <see cref="Participant" /> author</param>
+        void CreateEntitiesBasedOnTemplate(ReviewObjective container, List<ReviewTask> templateReviewTasks, Participant author);
     }
 }

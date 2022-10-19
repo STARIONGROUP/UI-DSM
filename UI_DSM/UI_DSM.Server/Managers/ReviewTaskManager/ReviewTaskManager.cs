@@ -16,6 +16,7 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.ParticipantManager;
+    using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
@@ -41,6 +42,27 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
         }
 
         /// <summary>
+        ///     Updates a <see cref="ReviewTask" />
+        /// </summary>
+        /// <param name="entity">The <see cref="ReviewTask" /> to update</param>
+        /// <returns>A <see cref="Task" /> with the result of the update</returns>
+        public override async Task<EntityOperationResult<ReviewTask>> UpdateEntity(ReviewTask entity)
+        {
+            if (!this.ValidateCurrentEntity(entity, out var entityOperationResult))
+            {
+                return entityOperationResult;
+            }
+
+            var foundEntity = await this.FindEntity(entity.Id);
+            entity.AdditionalView = foundEntity.AdditionalView;
+            entity.MainView = foundEntity.MainView;
+            entity.OptionalView = foundEntity.OptionalView;
+            entity.HasPrimaryView = foundEntity.HasPrimaryView;
+
+            return await this.UpdateEntityIntoContext(entity);
+        }
+
+        /// <summary>
         ///     Resolve all properties for the <see cref="ReviewTask" />
         /// </summary>
         /// <param name="entity">The <see cref="ReviewTask" /></param>
@@ -60,15 +82,35 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
         }
 
         /// <summary>
+        ///     Create <see cref="ReviewTask" />s based on templates
+        /// </summary>
+        /// <param name="container">The <see cref="ReviewObjective" /> container</param>
+        /// <param name="templateReviewTasks">A collection of <see cref="ReviewTask" /></param>
+        /// <param name="author">The <see cref="Participant" /> author</param>
+        public void CreateEntitiesBasedOnTemplate(ReviewObjective container, List<ReviewTask> templateReviewTasks, Participant author)
+        {
+            foreach (var templateReviewTask in templateReviewTasks)
+            {
+                var reviewTask = new ReviewTask(templateReviewTask)
+                {
+                    Author = author
+                };
+
+                this.SetSpecificPropertiesBeforeCreate(reviewTask);
+
+                container.ReviewTasks.Add(reviewTask);
+                this.Context.Add(reviewTask);
+            }
+        }
+
+        /// <summary>
         ///     Sets specific properties before the creation of the <see cref="ReviewTask" />
         /// </summary>
         /// <param name="entity">The <see cref="ReviewTask" /></param>
         protected override void SetSpecificPropertiesBeforeCreate(ReviewTask entity)
         {
-            var reviewObjective = entity.EntityContainer as ReviewObjective;
             entity.CreatedOn = DateTime.UtcNow;
             entity.Status = StatusKind.Open;
-            entity.TaskNumber = reviewObjective!.ReviewTasks.Max(x => x.TaskNumber) + 1;
         }
     }
 }

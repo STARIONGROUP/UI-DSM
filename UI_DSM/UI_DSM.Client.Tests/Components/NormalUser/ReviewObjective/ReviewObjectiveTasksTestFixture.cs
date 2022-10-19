@@ -70,7 +70,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ReviewObjective
             var reviewObjectiveTaskItem = renderer.FindComponents<TaskItem>();
             Assert.That(reviewObjectiveTaskItem, Has.Count.EqualTo(0));
 
-            this.viewModel.ReviewObjective.Title = "Review Objective 1";
             this.viewModel.ReviewObjective.ReviewTasks.Add(new ReviewTask(Guid.NewGuid()));
 
             renderer.Render();

@@ -89,17 +89,10 @@ namespace UI_DSM.Server.Modules
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public override async Task CreateEntity(IEntityManager<ReviewTask> manager, ReviewTaskDto dto, HttpContext context, int deepLevel = 0)
+        public override Task CreateEntity(IEntityManager<ReviewTask> manager, ReviewTaskDto dto, HttpContext context, int deepLevel = 0)
         {
-            var participant = await this.GetParticipantBasedOnRequest(context, ProjectKey);
-
-            if (participant == null)
-            {
-                return;
-            }
-
-            dto.Author = participant.Id;
-            await base.CreateEntity(manager, dto, context, deepLevel);
+            context.Response.StatusCode = 405;
+            return Task.CompletedTask;
         }
 
         /// <summary>

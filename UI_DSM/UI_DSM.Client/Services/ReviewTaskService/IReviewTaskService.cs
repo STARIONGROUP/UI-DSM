@@ -49,16 +49,6 @@ namespace UI_DSM.Client.Services.ReviewTaskService
         Task<ReviewTask> GetTaskOfReviewObjective(Guid projectId, Guid reviewId, Guid reviewObjectiveId, Guid taskReviewId, int deepLevel = 0);
 
         /// <summary>
-        ///     Creates a new <see cref="ReviewTask" /> inside a <see cref="ReviewObjective" />
-        /// </summary>
-        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
-        /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
-        /// <param name="reviewObjectiveId">The <see cref="Guid" /> of the <see cref="ReviewObjective" /></param>
-        /// <param name="reviewTask">The <see cref="ReviewTask" />to create</param>
-        /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{ReviewTask}" /></returns>
-        Task<EntityRequestResponse<ReviewTask>> CreateReviewTask(Guid projectId, Guid reviewId, Guid reviewObjectiveId, ReviewTask reviewTask);
-
-        /// <summary>
         ///     Updates a <see cref="ReviewTask" />
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>

@@ -363,6 +363,13 @@ namespace UI_DSM.Server.Modules
         private Task ConvertEntityAndCreate(IEntityManager<TEntity> manager, IJsonDeserializer deserializer, HttpContext context, [FromQuery] int deepLevel = 0)
         {
             var dto = this.DeserializeBodyRequest(deserializer, context);
+
+            if (dto == null)
+            {
+                context.Response.StatusCode = 400;
+                return Task.CompletedTask;
+            }
+
             return this.CreateEntity(manager, dto, context, deepLevel);
         }
 
@@ -378,6 +385,13 @@ namespace UI_DSM.Server.Modules
         private Task ConvertEntityAndUpdate(IEntityManager<TEntity> manager, IJsonDeserializer deserializer, Guid entityId, HttpContext context, [FromQuery] int deepLevel = 0)
         {
             var dto = this.DeserializeBodyRequest(deserializer, context);
+
+            if (dto == null)
+            {
+                context.Response.StatusCode = 400;
+                return Task.CompletedTask;
+            }
+
             return this.UpdateEntity(manager, entityId, dto, context, deepLevel);
         }
     }

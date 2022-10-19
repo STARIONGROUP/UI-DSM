@@ -42,15 +42,29 @@ namespace UI_DSM.Shared.Models
         }
 
         /// <summary>
-        ///     The title of the <see cref="ReviewTask" />
+        ///     Initializes a new <see cref="ReviewTask" /> based on a template
         /// </summary>
-        [Required]
+        /// <param name="toCopy">The <see cref="ReviewTask" /> template</param>
+        public ReviewTask(ReviewTask toCopy)
+        {
+            this.Description = toCopy.Description;
+            this.TaskNumber = toCopy.TaskNumber;
+            this.MainView = toCopy.MainView;
+            this.OptionalView = toCopy.OptionalView;
+            this.AdditionalView = toCopy.AdditionalView;
+            this.HasPrimaryView = toCopy.HasPrimaryView;
+        }
+
+        /// <summary>
+        ///     The title of the <see cref="ReviewTask" />. Currently not used.
+        /// </summary>
         public string Title { get; set; }
 
         /// <summary>
         ///     The description of the <see cref="ReviewTask" />
         /// </summary>
         [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Description { get; set; }
 
         /// <summary>
@@ -58,6 +72,27 @@ namespace UI_DSM.Shared.Models
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TaskNumber { get; set; }
+
+        /// <summary>
+        ///     The main <see cref="View" /> for the <see cref="ReviewTask" />
+        /// </summary>
+        public View MainView { get; set; }
+
+        /// <summary>
+        ///     An optional <see cref="View" /> for the <see cref="ReviewTask" />
+        /// </summary>
+        public View OptionalView { get; set; }
+
+        /// <summary>
+        ///     An additionnal <see cref="View" /> for the <see cref="ReviewTask" />
+        /// </summary>
+        public View AdditionalView { get; set; }
+
+        /// <summary>
+        ///     Value indicating if the <see cref="MainView" /> is the Primary <see cref="View" /> for the
+        ///     <see cref="ReviewObjective" /> of the <see cref="ReviewTask" />
+        /// </summary>
+        public bool HasPrimaryView { get; set; }
 
         /// <summary>
         ///     The current <see cref="StatusKind" />
@@ -97,7 +132,11 @@ namespace UI_DSM.Shared.Models
                 IsAssignedTo = this.IsAssignedTo?.Id ?? Guid.Empty,
                 Status = this.Status,
                 TaskNumber = this.TaskNumber,
-                Title = this.Title
+                Title = this.Title,
+                AdditionalView = this.AdditionalView,
+                HasPrimaryView = this.HasPrimaryView,
+                MainView = this.MainView,
+                OptionalView = this.OptionalView
             };
         }
 
@@ -120,6 +159,10 @@ namespace UI_DSM.Shared.Models
             this.Status = reviewTaskDto.Status;
             this.TaskNumber = reviewTaskDto.TaskNumber;
             this.CreatedOn = reviewTaskDto.CreatedOn;
+            this.AdditionalView = reviewTaskDto.AdditionalView;
+            this.HasPrimaryView = reviewTaskDto.HasPrimaryView;
+            this.MainView = reviewTaskDto.MainView;
+            this.OptionalView = reviewTaskDto.OptionalView;
         }
     }
 }
