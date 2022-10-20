@@ -75,8 +75,8 @@ namespace UI_DSM.Client.Extensions
         /// <returns>The <see cref="Definition" /> content</returns>
         public static string GetSingleDefinition(this DefinedThing thing, string languageCode = "en")
         {
-            var englishDefinition = thing.Definition.FirstOrDefault(x => x.LanguageCode == languageCode);
-            return englishDefinition != null ? englishDefinition.Content : thing.Definition.FirstOrDefault()?.Content;
+            var definition = thing.Definition.FirstOrDefault(x => x.LanguageCode == languageCode);
+            return definition != null ? definition.Content : thing.Definition.FirstOrDefault()?.Content;
         }
 
         /// <summary>

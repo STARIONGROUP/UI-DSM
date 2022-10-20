@@ -22,7 +22,6 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Services.Administration.CometService;
     using UI_DSM.Client.Services.ReviewService;
-    using UI_DSM.Client.Services.ReviewTaskService;
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Services.ViewProviderService;
     using UI_DSM.Shared.Models;
@@ -36,11 +35,6 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         ///     The <see cref="IReviewService" />
         /// </summary>
         private readonly IReviewService reviewService;
-
-        /// <summary>
-        ///     The <see cref="IReviewTaskService" />
-        /// </summary>
-        private readonly IReviewTaskService reviewTaskService;
 
         /// <summary>
         ///     The <see cref="ICometService" />
@@ -70,14 +64,12 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         /// <summary>
         ///     Initializes a new instance of the <see cref="ReviewTaskPageViewModel" /> class.
         /// </summary>
-        /// <param name="reviewTaskService">The <see cref="IReviewTaskService" /></param>
         /// <param name="thingService">The <see cref="IThingService" /></param>
         /// <param name="reviewService">The <see cref="IReviewService" /></param>
         /// <param name="viewProviderService">The <see cref="IViewProviderService" /></param>
-        public ReviewTaskPageViewModel(IReviewTaskService reviewTaskService, IThingService thingService, IReviewService reviewService,
+        public ReviewTaskPageViewModel(IThingService thingService, IReviewService reviewService,
             IViewProviderService viewProviderService)
         {
-            this.reviewTaskService = reviewTaskService;
             this.thingService = thingService;
             this.reviewService = reviewService;
             this.viewProviderService = viewProviderService;

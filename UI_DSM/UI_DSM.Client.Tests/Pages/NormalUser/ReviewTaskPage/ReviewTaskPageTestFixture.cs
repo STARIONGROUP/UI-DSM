@@ -25,7 +25,6 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
 
     using UI_DSM.Client.Pages.NormalUser.ReviewTaskPage;
     using UI_DSM.Client.Services.ReviewService;
-    using UI_DSM.Client.Services.ReviewTaskService;
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Services.ViewProviderService;
     using UI_DSM.Client.Tests.Helpers;
@@ -42,7 +41,6 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
         private TestContext context;
         private IReviewTaskPageViewModel viewModel;
         private Mock<IReviewService> reviewService;
-        private Mock<IReviewTaskService> reviewTaskService;
         private Mock<IThingService> thingService;
         private IViewProviderService viewProviderService;
         private ISelectedItemCardViewModel selectedItemCard;
@@ -55,11 +53,10 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
         public void Setup()
         {
             this.reviewService = new Mock<IReviewService>();
-            this.reviewTaskService = new Mock<IReviewTaskService>();
             this.thingService = new Mock<IThingService>();
             this.viewProviderService = new ViewProviderService();
             this.context = new TestContext();
-            this.viewModel = new ReviewTaskPageViewModel(this.reviewTaskService.Object, this.thingService.Object, this.reviewService.Object, this.viewProviderService);
+            this.viewModel = new ReviewTaskPageViewModel(this.thingService.Object, this.reviewService.Object, this.viewProviderService);
             this.selectedItemCard = new SelectedItemCardViewModel();
             this.projectId = Guid.NewGuid();
             this.reviewId = Guid.NewGuid();

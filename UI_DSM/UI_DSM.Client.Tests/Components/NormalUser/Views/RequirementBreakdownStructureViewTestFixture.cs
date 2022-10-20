@@ -76,8 +76,13 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             things.Add(requirementsSpecificiation);
 
             await renderer.InvokeAsync(() => renderer.Instance.InitializeViewModel(things));
-            Assert.That(this.viewModel.Things, Is.Not.Empty);
-            Assert.That(this.viewModel.SelectedElement, Is.Null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.Things, Is.Not.Empty);
+                Assert.That(this.viewModel.SelectedElement, Is.Null);
+            });
+
             this.viewModel.SelectedElement = group;
 
             Assert.Multiple(() =>

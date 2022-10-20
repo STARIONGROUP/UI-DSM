@@ -12,11 +12,11 @@
 -------------------------------------------------------------------------------------------------------->
 
 <div class="task-item">
-  <div class="task-item__header">
-	  <h2 class="h4">@this.ReviewTask.Description</h2>
-    @if (this.ReviewTask.Status == StatusKind.Done)
-    {
-      <FeatherCheckCircle Size="24" Color="#1FAB77" StrokeWidth="2" />
-    }
-  </div>
+	<div class="task-item__header">
+		<h2 class="h4">@(this.ReviewTask.Description)</h2>
+		@if (this.ReviewTask.Status == StatusKind.Done)
+		{
+			<FeatherCheckCircle Size="24" Color="#1FAB77" StrokeWidth="2"/>
+		}
+	</div>
 </div>
