@@ -12,12 +12,13 @@
 @namespace AppComponents
 
 <div class="app-key-value  @(this.componentVariant)">
-  <span class="app-key-value__key">@Key</span>
-  <span class="app-key-value__value">@Value</span>
+	<span class="app-key-value__key">@(this.Key)</span>
+	<span class="app-key-value__value">@(this.Value)</span>
 </div>
 
 @code {
-  /// <summary>
+
+	/// <summary>
 	///     Different variants on the button, for styling purpose
 	/// </summary>
 	public enum VariantValue
@@ -26,14 +27,14 @@
 		Vertical
 	}
 
-  /// <summary>
-	///   Key label name
+	/// <summary>
+	///     Key label name
 	/// </summary>
 	[Parameter]
 	public string Key { get; set; }
 
-  /// <summary>
-	///   Value string
+	/// <summary>
+	///     Value string
 	/// </summary>
 	[Parameter]
 	public string Value { get; set; }
@@ -60,6 +61,7 @@
 			VariantValue.Horizontal => "app-key-value--horizontal",
 			VariantValue.Vertical => "app-key-value--vertical",
 			_ => ""
-		};
+			};
 	}
+
 }
