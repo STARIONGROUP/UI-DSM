@@ -13,10 +13,11 @@
 @namespace AppComponents
 
 <div id="@(this.Id)" class="app-accordion">
-	<button class="app-accordion__button @(this.ButtonClass) @(this.accordionVariant)" @onclick="this.TogglePanel" aria-label="@(this.Label)">
+	<button class="app-accordion__button @(this.ButtonClass) @(this.accordionVariant)" @onclick="this.TogglePanel"
+		aria-label="@(this.Label)">
 		<span>@(this.Label)</span>
 		<span class="app-accordion__icon">
-			<FeatherChevronUp Size="24" Color="currentColor" StrokeWidth="2"/>
+			<FeatherChevronUp Size="20" Color="currentColor" StrokeWidth="2" />
 		</span>
 	</button>
 	<div class="app-accordion__panel @(this.PanelClass)">
@@ -27,38 +28,39 @@
 @code {
 
 	/// <summary>
-	///     The css class to apply to panel
+	/// The css class to apply to panel
 	/// </summary>
 	private string PanelClass => this.PanelOpen ? "app-accordion__panel--is-open" : null;
 
 	/// <summary>
-	///     The css class to apply to button
+	/// The css class to apply to button
 	/// </summary>
 	private string ButtonClass => this.PanelOpen ? "app-accordion__button--is-active" : null;
 
 	/// <summary>
-	///     Different variants on the button, for styling purpose
+	/// Different variants on the button, for styling purpose
 	/// </summary>
 	public enum VariantValue
 	{
 		Default,
-		Small
+		Small,
+		Tiny
 	}
 
 	/// <summary>
-	///     Gets or sets the <see cref="VariantValue" />
+	/// Gets or sets the <see cref="VariantValue" />
 	/// </summary>
 	[Parameter]
 	public VariantValue Variant { get; set; } = VariantValue.Default;
 
 	/// <summary>
-	///     String value conversion based on <see cref="VariantValue" />
+	/// String value conversion based on <see cref="VariantValue" />
 	/// </summary>
 	private string accordionVariant { get; set; }
 
 	/// <summary>
-	///     Method invoked when the component is ready to start, having received its
-	///     initial parameters from its parent in the render tree.
+	/// Method invoked when the component is ready to start, having received its
+	/// initial parameters from its parent in the render tree.
 	/// </summary>
 	protected override void OnInitialized()
 	{
@@ -66,36 +68,37 @@
 		{
 			VariantValue.Default => "app-accordion__button--default",
 			VariantValue.Small => "app-accordion__button--small",
+			VariantValue.Tiny => "app-accordion__button--tiny",
 			_ => ""
 		};
 	}
 
 	/// <summary>
-	///     Button label used as aria label and innerhtml
+	/// Button label used as aria label and innerhtml
 	/// </summary>
 	[Parameter]
 	public string Label { get; set; }
 
 	/// <summary>
-	///     HTML ID for the app accordion
+	/// HTML ID for the app accordion
 	/// </summary>
 	[Parameter]
 	public string Id { get; set; }
 
 	/// <summary>
-	///     HTML child content for the panel
+	/// HTML child content for the panel
 	/// </summary>
 	[Parameter]
 	public RenderFragment ChildContent { get; set; }
 
 	/// <summary>
-	///     Bool to keep track of the open state of the panel
+	/// Bool to keep track of the open state of the panel
 	/// </summary>
 	[Parameter]
 	public bool PanelOpen { get; set; } = true;
 
 	/// <summary>
-	///     Method to toggle panel state
+	/// Method to toggle panel state
 	/// </summary>
 	private void TogglePanel()
 	{

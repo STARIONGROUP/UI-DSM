@@ -1,0 +1,67 @@
+<!--------------------------------------------------------------------------------------------------------
+// AppKeyValue.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@namespace AppComponents
+
+<div class="app-key-value  @(this.componentVariant)">
+	<span class="app-key-value__key">@(this.Key)</span>
+	<span class="app-key-value__value">@(this.Value)</span>
+</div>
+
+@code {
+
+	/// <summary>
+	///     Different variants on the button, for styling purpose
+	/// </summary>
+	public enum VariantValue
+	{
+		Horizontal,
+		Vertical
+	}
+
+	/// <summary>
+	///     Key label name
+	/// </summary>
+	[Parameter]
+	public string Key { get; set; }
+
+	/// <summary>
+	///     Value string
+	/// </summary>
+	[Parameter]
+	public string Value { get; set; }
+
+	/// <summary>
+	///     Gets or sets the <see cref="VariantValue" />
+	/// </summary>
+	[Parameter]
+	public VariantValue Variant { get; set; } = VariantValue.Horizontal;
+
+	/// <summary>
+	///     String value conversion based on <see cref="VariantValue" />
+	/// </summary>
+	private string componentVariant { get; set; }
+
+	/// <summary>
+	///     Method invoked when the component is ready to start, having received its
+	///     initial parameters from its parent in the render tree.
+	/// </summary>
+	protected override void OnInitialized()
+	{
+		this.componentVariant = this.Variant switch
+		{
+			VariantValue.Horizontal => "app-key-value--horizontal",
+			VariantValue.Vertical => "app-key-value--vertical",
+			_ => ""
+			};
+	}
+
+}
