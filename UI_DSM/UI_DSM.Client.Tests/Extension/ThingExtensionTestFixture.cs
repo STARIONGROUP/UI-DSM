@@ -166,7 +166,7 @@ namespace UI_DSM.Client.Tests.Extension
                 new(Guid.NewGuid(), 0)
                 {
                     IsDeprecated = true,
-                    Name = "derives"
+                    Name = "derivesDeprecated"
                 },
                 new(Guid.NewGuid(), 0)
                 {
@@ -175,7 +175,7 @@ namespace UI_DSM.Client.Tests.Extension
                 new(Guid.NewGuid(), 0)
                 {
                     IsDeprecated = true,
-                    Name = "req"
+                    Name = "reqDeprecated"
                 },
                 new(Guid.NewGuid(), 0)
                 {
@@ -183,8 +183,8 @@ namespace UI_DSM.Client.Tests.Extension
                 }
             };
 
-            var reqCategory = categories.Where(x => x.Name == "req").Select(x => x.Iid).ToList();
-            var relationCategory = categories.Where(x => x.Name == "derives").Select(x => x.Iid).ToList();
+            var reqCategory = categories.Where(x => x.Name.StartsWith("req")).Select(x => x.Iid).ToList();
+            var relationCategory = categories.Where(x => x.Name.StartsWith("derives")).Select(x => x.Iid).ToList();
 
             var requirementSourceDto = new CDP4Common.DTO.Requirement(Guid.NewGuid(), 0)
             {
@@ -233,7 +233,6 @@ namespace UI_DSM.Client.Tests.Extension
                 Assert.That(requirements[0].GetRelatedThingName("derives", ClassKind.ElementDefinition, "req"), Is.Empty);
                 Assert.That(requirements[0].GetRelatedThingName("derives", ClassKind.Requirement, "req"), Is.EqualTo(requirementTargetDto.Name));
                 Assert.That(requirements[1].GetRelatedThingName("derives", ClassKind.Requirement, "req"), Is.Empty);
-                Assert.That(requirements[1].GetRelatedThingName("derives", ClassKind.Requirement, "req", false), Is.EqualTo(requirementSourceDto.Name));
                 Assert.That(requirements[1].GetRelatedThingName("derives", ClassKind.Requirement, "req", false), Is.EqualTo(requirementSourceDto.Name));
                 Assert.That(requirements[1].GetRelatedThingName("derives", ClassKind.Requirement, "req", false), Is.EqualTo(requirementSourceDto.Name));
             });
