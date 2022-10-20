@@ -25,6 +25,7 @@ namespace UI_DSM.Client.Tests.Extension
     using UI_DSM.Client.Extensions;
 
     [TestFixture]
+    [Apartment(ApartmentState.STA)]
     public class ThingExtensionTestFixture
     {
         [Test]
@@ -215,8 +216,10 @@ namespace UI_DSM.Client.Tests.Extension
             };
 
             await assembler.Synchronize(things);
+            _ = assembler.Cache.Select(x => x.Value.Value);
             
-            var requirements = assembler.Cache.Values
+            var requirements = assembler.Cache.Where(x => x.Value.IsValueCreated)
+                .Select(x => x.Value)
                 .Where(x => x.Value.ClassKind == ClassKind.Requirement)
                 .Select(x => x.Value)
                 .ToList();
@@ -236,6 +239,8 @@ namespace UI_DSM.Client.Tests.Extension
                 Assert.That(requirements[1].GetRelatedThingName("derives", ClassKind.Requirement, "req", false), Is.EqualTo(requirementSourceDto.Name));
                 Assert.That(requirements[1].GetRelatedThingName("derives", ClassKind.Requirement, "req", false), Is.EqualTo(requirementSourceDto.Name));
             });
+
+            await assembler.Clear();
         }
     }
 }
