@@ -33,6 +33,7 @@ namespace UI_DSM.Shared.DTO.Models
             this.Reviews = new List<Guid>();
             this.Annotations = new List<Guid>();
             this.Artifacts = new List<Guid>();
+            this.ReviewCategories = new List<Guid>();
         }
 
         /// <summary>
@@ -45,6 +46,7 @@ namespace UI_DSM.Shared.DTO.Models
             this.Reviews = new List<Guid>();
             this.Annotations = new List<Guid>();
             this.Artifacts = new List<Guid>();
+            this.ReviewCategories = new List<Guid>();
         }
 
         /// <summary>
@@ -71,6 +73,11 @@ namespace UI_DSM.Shared.DTO.Models
         ///    Gets or sets the Artifacts of the Project
         /// </summary>
         public List<Guid> Artifacts { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the ReviewCategories of the Project
+        /// </summary>
+        public List<Guid> ReviewCategories { get; set; }
 
         /// <summary>
         ///    Gets or sets the CreatedOn of the Project

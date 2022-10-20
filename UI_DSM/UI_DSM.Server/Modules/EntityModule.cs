@@ -248,6 +248,7 @@ namespace UI_DSM.Server.Modules
             if (!validationResult.IsValid)
             {
                 requestResponse.Errors = validationResult.Errors.Select(x => x.ErrorMessage).ToList();
+
                 context.Response.StatusCode = 422;
                 await context.Response.Negotiate(requestResponse);
                 return;

@@ -105,6 +105,11 @@ namespace UI_DSM.Server.Context
         public virtual DbSet<Model> Models { get; set; }
 
         /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="ReviewCategory" />
+        /// </summary>
+        public virtual DbSet<ReviewCategory> ReviewCategories { get; set; }
+
+        /// <summary>
         ///     Tries to validate an object
         /// </summary>
         /// <param name="instance">The <see cref="object" /> to validate</param>
@@ -142,6 +147,7 @@ namespace UI_DSM.Server.Context
             builder.Entity<Project>().HasIndex(x => x.ProjectName).IsUnique();
             builder.Entity<Role>().HasIndex(x => x.RoleName).IsUnique();
             builder.Entity<Model>().HasIndex(x => x.FileName).IsUnique();
+            builder.Entity<ReviewCategory>().HasIndex(x => x.ReviewCategoryName).IsUnique();  
 
             builder.Entity<Project>().HasMany(p => p.Participants)
                 .WithOne(p => (Project)p.EntityContainer)
