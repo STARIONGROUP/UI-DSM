@@ -127,6 +127,7 @@ figure {
 
 .list-dropdown button,
 .list-dropdown a,
+.list-dropdown .dxbs-checkbox,
 .account-dropdown button,
 .account-dropdown a {
   display: flex;
