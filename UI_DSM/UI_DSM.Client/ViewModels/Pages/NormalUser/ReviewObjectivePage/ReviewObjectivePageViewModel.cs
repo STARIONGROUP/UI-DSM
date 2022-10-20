@@ -15,12 +15,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
 {
     using ReactiveUI;
 
-    using UI_DSM.Client.Components.NormalUser.ReviewObjective;
     using UI_DSM.Client.Services.ReviewObjectiveService;
-
-    using UI_DSM.Client.ViewModels.Components;
-    using UI_DSM.Client.ViewModels.Components.NormalUser.ReviewObjective;
-
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -37,21 +32,15 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         ///     Initializes a new instance of the <see cref="ReviewObjectivePageViewModel" /> class.
         /// </summary>
         /// <param name="reviewObjectiveService">The <see cref="IReviewObjectiveService" /></param>
-        public ReviewObjectivePageViewModel(IReviewObjectiveTasksViewModel reviewObjectiveTasksViewModal,IReviewObjectiveService reviewObjectiveService)
+        public ReviewObjectivePageViewModel(IReviewObjectiveService reviewObjectiveService)
         {
-            this.ReviewObjectiveTasksViewModel = reviewObjectiveTasksViewModal;
             this.reviewObjectiveService = reviewObjectiveService;
         }
 
         /// <summary>
-        ///     The <see cref="IReviewObjectiveTasksViewModel" /> for the <see cref="ReviewObjectiveTasks" /> component
+        ///     The <see cref="IReviewObjectivePageViewModel.ReviewObjective" /> of the page
         /// </summary>
-        public IReviewObjectiveTasksViewModel ReviewObjectiveTasksViewModel { get; }
-
-        /// <summary>
-        ///     Gets the <see cref="IErrorMessageViewModel" />
-        /// </summary>
-        public IErrorMessageViewModel ErrorMessageViewModel { get; } = new ErrorMessageViewModel();
+        public ReviewObjective ReviewObjective { get; private set; }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its
@@ -65,8 +54,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
         public async Task OnInitializedAsync(Guid projectGuid, Guid reviewGuid, Guid reviewObjectiveId)
         {
-            var reviewObjectiveResponse = await this.reviewObjectiveService.GetReviewObjectiveOfReview(projectGuid, reviewGuid, reviewObjectiveId, 1);
-            this.ReviewObjectiveTasksViewModel.ReviewObjective = reviewObjectiveResponse;
+            this.ReviewObjective = await this.reviewObjectiveService.GetReviewObjectiveOfReview(projectGuid, reviewGuid, reviewObjectiveId, 1);
         }
     }
 }

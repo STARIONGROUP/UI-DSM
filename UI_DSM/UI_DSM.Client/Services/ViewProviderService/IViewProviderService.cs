@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="ReviewObjectiveTasks.razor.cs" company="RHEA System S.A.">
+// <copyright file="IViewProviderService.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,22 +11,20 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Components.NormalUser.ReviewObjective
+namespace UI_DSM.Client.Services.ViewProviderService
 {
-    using Microsoft.AspNetCore.Components;
-
-    using UI_DSM.Client.ViewModels.Components.NormalUser.ReviewObjective;
-    using UI_DSM.Shared.Models;
+    using UI_DSM.Shared.Enumerator;
 
     /// <summary>
-    ///     This components provide <see cref="ReviewObjective" /> tasks
+    ///     Interface definition for <see cref="ViewProviderService" />
     /// </summary>
-    public partial class ReviewObjectiveTasks
+    public interface IViewProviderService
     {
         /// <summary>
-        ///     The <see cref="IReviewObjectiveTasksViewModel" /> for the component
+        ///     Tries to get the correct <see cref="Type" /> for that correspond for the provided <see cref="View" />
         /// </summary>
-        [Parameter]
-        public IReviewObjectiveTasksViewModel ViewModel { get; set; }
+        /// <param name="view">The <see cref="View" /></param>
+        /// <returns>The retrieves <see cref="Type" /></returns>
+        Type GetViewType(View view);
     }
 }

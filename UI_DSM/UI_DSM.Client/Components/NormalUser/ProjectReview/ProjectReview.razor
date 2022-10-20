@@ -25,7 +25,7 @@
 		</Content>
 	</DxPopup>
   <div class="projects-overview">
-      @foreach (var review in this.ViewModel.Project.Reviews)
+      @foreach (var review in this.ViewModel.Project.Reviews.OrderBy(x => x.ReviewNumber))
 	  {
           <NavLink href=@("/Project/"+this.ViewModel.Project.Id+"/Review/"+review.Id)>
                 @if (this.ViewModel.CommentsAndTasks.ContainsKey(review.Id))

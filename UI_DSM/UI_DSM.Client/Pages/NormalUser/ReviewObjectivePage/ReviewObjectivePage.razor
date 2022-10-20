@@ -14,7 +14,7 @@
 
 <PageTitle>Review Objective | UI-DSM</PageTitle>
 
-@if (this.ViewModel.ReviewObjectiveTasksViewModel.ReviewObjective == null)
+@if (this.ViewModel.ReviewObjective == null)
 {
 	<div>
 		Review Objective not found...
@@ -22,8 +22,23 @@
 }
 else
 {
-	<UI_DSM.Client.Components.NormalUser.ReviewObjective.ReviewObjectiveTasks ViewModel="@this.ViewModel.ReviewObjectiveTasksViewModel" />
-}
+	<div class="objective-page">
+
+		<AppReviewHeader Title="@this.ViewModel.ReviewObjective.Title" Description="@this.ViewModel.ReviewObjective.Description" />
+
+		<div class="task-section">
+			<h1 class="h3">Objective tasks</h1>
+			<div class="task-overview">
+
+				@foreach (var task in this.ViewModel.ReviewObjective.ReviewTasks.OrderBy(x => x.TaskNumber))
+				{
+					<NavLink href=@($"/Project/{this.ProjectId}/Review/{this.ReviewId}/ReviewObjective/{this.ReviewObjectiveId}/ReviewTask/{task.Id}")>
+						<ReviewTaskCard ReviewTask="@task"/>
+					</NavLink>
+				}
+			</div>
+		</div>
+	</div>}
 
 
 

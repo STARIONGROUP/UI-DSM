@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IReviewObjectiveTasksViewModel.cs" company="RHEA System S.A.">
+// <copyright file="IRequirementBreakdownStructureViewViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,24 +11,18 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.Components.NormalUser.ReviewObjective
+namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
-    using Microsoft.AspNetCore.Components;
-    using UI_DSM.Shared.Models;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>
-    ///     Interface definition for <see cref="ReviewObjectiveTasksViewModel" />
+    ///     Interface definition for <see cref="RequirementBreakdownStructureViewViewModel" />
     /// </summary>
-    public interface IReviewObjectiveTasksViewModel
+    public interface IRequirementBreakdownStructureViewViewModel: IBaseViewViewModel
     {
         /// <summary>
-        ///     The <see cref="ReviewObjective" />
+        ///     A collection of <see cref="RequirementBreakdownStructureViewRowViewModel" />
         /// </summary>
-        ReviewObjective ReviewObjective { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the <see cref="NavigationManager" />
-        /// </summary>
-        NavigationManager NavigationManager { get; set; }
+        IEnumerable<RequirementBreakdownStructureViewRowViewModel> Rows { get; }
     }
 }

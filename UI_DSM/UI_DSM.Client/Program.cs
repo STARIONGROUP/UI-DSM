@@ -26,6 +26,7 @@ namespace UI_DSM.Client
 
     using UI_DSM.Client.Services;
     using UI_DSM.Client.Services.AuthenticationService;
+    using UI_DSM.Client.Services.ViewProviderService;
     using UI_DSM.Serializer.Json;
 
     /// <summary>
@@ -64,6 +65,7 @@ namespace UI_DSM.Client
             {
                 var viewModel = Assembly.GetCallingAssembly().GetExportedTypes()
                     .FirstOrDefault(x => x.IsClass
+                                         && !x.IsAbstract
                                          && x.Name == viewModelInterface.Name.Remove(0, 1)
                                          && x.GetInterface(viewModelInterface.Name) == viewModelInterface);
 
@@ -108,6 +110,7 @@ namespace UI_DSM.Client
                 }
             }
 
+            ViewProviderService.RegisterViews();
             builder.Services.AddAuthorizationCore();
 
             builder.Services.AddBlazoredSessionStorage();

@@ -1,0 +1,46 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// RequirementBreakdownStructureView.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+@inherits GenericBaseView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IRequirementBreakdownStructureViewViewModel>
+
+<DxButton Text="Column Chooser"
+          RenderStyle="ButtonRenderStyle.Secondary"
+          CssClass="column-chooser-button"
+          Click="this.OnClick" />
+
+<DxGrid @ref="@this.DxGrid"
+		Data="@(this.ViewModel.Rows)"
+        @bind-SelectedDataItem="@this.ViewModel.SelectedElement"
+        SelectionMode="GridSelectionMode.Single"
+        AllowSelectRowByClick="true"
+		ShowFilterRow="true">
+	<Columns>
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Id)" Caption="ID" />
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Name)" />
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Definition)"/>
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Categories)" AllowSort="false">
+			<CellDisplayTemplate>
+				<ul>
+					@foreach (var category in (IEnumerable<string>)context.Value)
+					{
+						<li>@category</li>
+					}
+				</ul>
+			</CellDisplayTemplate>
+		</DxGridDataColumn>
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Justification)"/>
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.DerivesFrom)"/>
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.DerivesTo)"/>
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.SatisfyByFunction)"/>
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.SatisfyByProduct)"/>
+	</Columns>
+</DxGrid>

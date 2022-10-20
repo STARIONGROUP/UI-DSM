@@ -138,6 +138,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 
                 if (creationResult.IsRequestSuccessful)
                 {
+                    this.CommentsAndTasks[creationResult.Entity.Id] = new ComputedProjectProperties();
                     this.Project.Reviews.Add(creationResult.Entity);
                 }
 

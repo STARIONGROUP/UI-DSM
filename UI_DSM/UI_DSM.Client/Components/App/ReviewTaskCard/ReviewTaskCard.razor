@@ -1,3 +1,4 @@
+@using UI_DSM.Shared.Enumerator
 <!--------------------------------------------------------------------------------------------------------
 // TaskItem.razor
 // Copyright (c) 2022 RHEA System S.A.
@@ -10,37 +11,12 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
-@namespace AppComponents
-
 <div class="task-item">
   <div class="task-item__header">
-    <h2 class="h4">@TaskTitle</h2>
-    @if (isDone)
+	  <h2 class="h4">@this.ReviewTask.Description</h2>
+    @if (this.ReviewTask.Status == StatusKind.Done)
     {
       <FeatherCheckCircle Size="24" Color="#1FAB77" StrokeWidth="2" />
     }
   </div>
-  <div class="task-item__body">
-    @TaskDescription
-  </div>
 </div>
-
-@code {
-  /// <summary>
-  /// title text for the Task
-  /// </summary>
-  [Parameter]
-  public string TaskTitle { get; set; }
-
-  /// <summary>
-  /// Description text for the Task
-  /// </summary>
-  [Parameter]
-  public string TaskDescription { get; set; }
-
-  /// <summary>
-  /// Keep track if the task is done.
-  /// </summary>
-  [Parameter]
-  public bool isDone { get; set; }
-}

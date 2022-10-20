@@ -16,7 +16,7 @@
   </div>
 
   <div class="objective-overview">
-		@foreach (var reviewObjective in this.ViewModel.Review.ReviewObjectives)
+		@foreach (var reviewObjective in this.ViewModel.Review.ReviewObjectives.OrderBy(x => x.ReviewObjectiveNumber))
 		{
 
 			<div div @onclick="@(() => this.ViewModel.GoToReviewObjectivePage(reviewObjective))">
