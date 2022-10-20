@@ -37,6 +37,11 @@ namespace UI_DSM.Shared.Extensions
                 things.Remove(deprecatedThing);
             }
 
+            foreach (var containedThing in things.ToList())
+            {
+                things.AddRange(containedThing.QueryRelationships);
+            }
+
             foreach (var containedThings in things.ToList())
             {
                 things.AddRange(containedThings.QueryReferencedThingsDeep());

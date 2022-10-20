@@ -38,9 +38,45 @@
 			</CellDisplayTemplate>
 		</DxGridDataColumn>
 		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Justification)"/>
-		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.DerivesFrom)"/>
-		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.DerivesTo)"/>
-		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.SatisfyByFunction)"/>
-		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.SatisfyByProduct)"/>
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.DerivesFrom)" AllowSort="false">
+			<CellDisplayTemplate>
+				<ul>
+					@foreach (var derivesFrom in (IEnumerable<string>)context.Value)
+					{
+						<li>@derivesFrom</li>
+					}
+				</ul>
+			</CellDisplayTemplate>
+		</DxGridDataColumn>
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.DerivesTo)" AllowSort="false">
+			<CellDisplayTemplate>
+				<ul>
+					@foreach (var derivesTo in (IEnumerable<string>)context.Value)
+					{
+						<li>@derivesTo</li>
+					}
+				</ul>
+			</CellDisplayTemplate>
+		</DxGridDataColumn>
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.SatisfyByFunction)" AllowSort="false">
+			<CellDisplayTemplate>
+				<ul>
+					@foreach (var satisfyByFunction in (IEnumerable<string>)context.Value)
+					{
+						<li>@satisfyByFunction</li>
+					}
+				</ul>
+			</CellDisplayTemplate>
+		</DxGridDataColumn>
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.SatisfyByProduct)" AllowSort="false">
+			<CellDisplayTemplate>
+				<ul>
+					@foreach (var satisfyByProduct in (IEnumerable<string>)context.Value)
+					{
+						<li>@satisfyByProduct</li>
+					}
+				</ul>
+			</CellDisplayTemplate>
+		</DxGridDataColumn>
 	</Columns>
 </DxGrid>

@@ -88,23 +88,23 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public string VerificationStage => this.AssociatedRequirement.GetSimpleParameterValue("verification stage");
 
         /// <summary>
-        ///     The name of the <see cref="Thing" /> from which the <see cref="Requirement" /> derives
+        ///     The names of the <see cref="Thing" />s from which the <see cref="Requirement" /> derives
         /// </summary>
-        public string DerivesFrom => this.AssociatedRequirement.GetRelatedThingName("derives", ClassKind.Requirement, false);
+        public IEnumerable<string> DerivesFrom => this.AssociatedRequirement.GetRelatedThingsName("derives", ClassKind.Requirement, false);
 
         /// <summary>
-        ///     The name of the <see cref="Thing" /> to which the <see cref="Requirement" /> derives
+        ///     The names of the <see cref="Thing" />s to which the <see cref="Requirement" /> derives
         /// </summary>
-        public string DerivesTo => this.AssociatedRequirement.GetRelatedThingName("derives", ClassKind.Requirement);
+        public IEnumerable<string> DerivesTo => this.AssociatedRequirement.GetRelatedThingsName("derives", ClassKind.Requirement);
 
         /// <summary>
-        ///     The name of the function that satisfies the <see cref="Requirement" />
+        ///     The names of functions that satisfies the <see cref="Requirement" />
         /// </summary>
-        public string SatisfyByFunction => this.AssociatedRequirement.GetRelatedThingName("satisfy", ClassKind.ElementDefinition, "function", false);
+        public IEnumerable<string> SatisfyByFunction => this.AssociatedRequirement.GetRelatedThingsName("satisfy", ClassKind.ElementDefinition, "function", false, false);
 
         /// <summary>
-        ///     The name of the product that satisfies the <see cref="Requirement" />
+        ///     The names of products that satisfies the <see cref="Requirement" />
         /// </summary>
-        public string SatisfyByProduct => this.AssociatedRequirement.GetRelatedThingName("satisfy", ClassKind.ElementDefinition, "product", false);
+        public IEnumerable<string> SatisfyByProduct => this.AssociatedRequirement.GetRelatedThingsName("satisfy", ClassKind.ElementDefinition, "product", false, false);
     }
 }
