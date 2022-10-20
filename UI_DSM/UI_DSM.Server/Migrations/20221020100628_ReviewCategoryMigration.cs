@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace UI_DSM.Server.Migrations
 {
+    using System.Diagnostics.CodeAnalysis;
+    
     [ExcludeFromCodeCoverage]
     public partial class ReviewCategoryMigration : Migration
     {

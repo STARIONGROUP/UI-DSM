@@ -17,7 +17,7 @@ namespace UI_DSM.Server.Managers.ReviewCategoryManager
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     This manager handles operation to the Database for <see cref="Role" />s
+    ///     This manager handles operation to the Database for <see cref="ReviewCategory" />s
     /// </summary>
     public class ReviewCategoryManager : EntityManager<ReviewCategory>, IReviewCategoryManager
     {
@@ -32,7 +32,7 @@ namespace UI_DSM.Server.Managers.ReviewCategoryManager
         /// <summary>
         ///     Resolve all properties for the <see cref="ReviewCategory" />
         /// </summary>
-        /// <param name="entity">The <see cref="Role" /></param>
+        /// <param name="entity">The <see cref="ReviewCategory" /></param>
         /// <param name="dto">The <see cref="EntityDto" /></param>
         /// <returns>A <see cref="Task" /></returns>
         public override async Task ResolveProperties(ReviewCategory entity, EntityDto dto)
