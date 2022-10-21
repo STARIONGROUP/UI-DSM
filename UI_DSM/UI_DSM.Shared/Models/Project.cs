@@ -18,6 +18,7 @@ namespace UI_DSM.Shared.Models
 
     using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Types;
 
@@ -75,6 +76,12 @@ namespace UI_DSM.Shared.Models
         public EntityContainerList<Artifact> Artifacts { get; set; }
 
         /// <summary>
+        ///     A collection of given <see cref="ReviewCategory" />
+        /// </summary>
+        [DeepLevel(0)]
+        public List<ReviewCategory> ReviewCategories { get; set; } = new();
+
+        /// <summary>
         ///     The <see cref="DateTime" /> where the <see cref="Project" /> has been created
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -93,7 +100,8 @@ namespace UI_DSM.Shared.Models
                 Participants = new List<Guid>(this.Participants.Select(x => x.Id)),
                 Reviews = new List<Guid>(this.Reviews.Select(x => x.Id)),
                 Annotations = new List<Guid>(this.Annotations.Select(x => x.Id)),
-                Artifacts = new List<Guid>(this.Artifacts.Select(x => x.Id))
+                Artifacts = new List<Guid>(this.Artifacts.Select(x => x.Id)),
+                ReviewCategories = new List<Guid>(this.ReviewCategories.Select(x => x.Id))
             };
 
             return dto;
@@ -117,6 +125,7 @@ namespace UI_DSM.Shared.Models
             this.Reviews.ResolveList(projectDto.Reviews, resolvedEntity);
             this.Annotations.ResolveList(projectDto.Annotations, resolvedEntity);
             this.Artifacts.ResolveList(projectDto.Artifacts, resolvedEntity);
+            this.ReviewCategories.ResolveList(projectDto.ReviewCategories, resolvedEntity);
         }
 
         /// <summary>
@@ -128,6 +137,7 @@ namespace UI_DSM.Shared.Models
             this.Reviews = new EntityContainerList<Review>(this);
             this.Annotations = new EntityContainerList<Annotation>(this);
             this.Artifacts = new EntityContainerList<Artifact>(this);
+            this.ReviewCategories = new List<ReviewCategory>();
         }
     }
 }

@@ -82,6 +82,15 @@ namespace UI_DSM.Serializer.Json
 
             writer.WriteEndArray();
 
+            writer.WriteStartArray("reviewCategories");
+
+            foreach (var item in dto.ReviewCategories)
+            {
+                writer.WriteStringValue(item);
+            }
+
+            writer.WriteEndArray();
+
             writer.WritePropertyName("createdOn");
             writer.WriteStringValue(dto.CreatedOn);
 

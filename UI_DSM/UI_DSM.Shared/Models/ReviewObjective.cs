@@ -105,6 +105,12 @@ namespace UI_DSM.Shared.Models
         public List<View> RelatedViews { get; set; }
 
         /// <summary>
+        ///     A collection of given <see cref="ReviewCategory" />
+        /// </summary>
+        [DeepLevel(0)]
+        public List<ReviewCategory> ReviewCategories { get; set; } = new();
+
+        /// <summary>
         ///     Instantiate a <see cref="EntityDto" /> from a <see cref="Entity" />
         /// </summary>
         /// <returns>A new <see cref="EntityDto" /></returns>
@@ -121,7 +127,8 @@ namespace UI_DSM.Shared.Models
                 Author = this.Author?.Id ?? Guid.Empty,
                 CreatedOn = this.CreatedOn,
                 ReviewObjectiveKindNumber = this.ReviewObjectiveKindNumber,
-                ReviewTasks = this.ReviewTasks.Select(x => x.Id).ToList()
+                ReviewTasks = this.ReviewTasks.Select(x => x.Id).ToList(),
+                ReviewCategories = this.ReviewCategories.Select(x => x.Id).ToList()
             };
 
             dto.IncludeCommonProperties(this);
@@ -149,6 +156,7 @@ namespace UI_DSM.Shared.Models
             this.RelatedViews = reviewObjectiveDto.RelatedViews;
             this.ReviewObjectiveKind = reviewObjectiveDto.ReviewObjectiveKind;
             this.ReviewObjectiveKindNumber = reviewObjectiveDto.ReviewObjectiveKindNumber;
+            this.ReviewCategories.ResolveList(reviewObjectiveDto.ReviewCategories, resolvedEntity);
         }
 
         /// <summary>
@@ -158,6 +166,7 @@ namespace UI_DSM.Shared.Models
         {
             this.ReviewTasks = new EntityContainerList<ReviewTask>(this);
             this.RelatedViews = new List<View>();
+            this.ReviewCategories = new List<ReviewCategory>();
         }
     }
 }

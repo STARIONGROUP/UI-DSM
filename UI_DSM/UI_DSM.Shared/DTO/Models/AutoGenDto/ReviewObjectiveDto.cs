@@ -32,6 +32,7 @@ namespace UI_DSM.Shared.DTO.Models
         {
             this.ReviewTasks = new List<Guid>();
             this.RelatedViews = new List<View>();
+            this.ReviewCategories = new List<Guid>();
         }
 
         /// <summary>
@@ -42,6 +43,7 @@ namespace UI_DSM.Shared.DTO.Models
         {
             this.ReviewTasks = new List<Guid>();
             this.RelatedViews = new List<View>();
+            this.ReviewCategories = new List<Guid>();
         }
 
         /// <summary>
@@ -83,6 +85,11 @@ namespace UI_DSM.Shared.DTO.Models
         ///    Gets or sets the RelatedViews of the ReviewObjective
         /// </summary>
         public List<View> RelatedViews { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the ReviewCategories of the ReviewObjective
+        /// </summary>
+        public List<Guid> ReviewCategories { get; set; }
 
         /// <summary>
         ///    Instantiate a <see cref="Entity" /> from a <see cref="EntityDto" />

@@ -37,6 +37,7 @@ namespace UI_DSM.Serializer.Json
             { "ParticipantDto", ParticipantDtoDeserializer.Deserialize },
             { "ProjectDto", ProjectDtoDeserializer.Deserialize },
             { "ReplyDto", ReplyDtoDeserializer.Deserialize },
+            { "ReviewCategoryDto", ReviewCategoryDtoDeserializer.Deserialize },
             { "ReviewDto", ReviewDtoDeserializer.Deserialize },
             { "ReviewObjectiveDto", ReviewObjectiveDtoDeserializer.Deserialize },
             { "ReviewTaskDto", ReviewTaskDtoDeserializer.Deserialize },
