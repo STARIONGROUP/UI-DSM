@@ -43,6 +43,7 @@ namespace UI_DSM.Server.Managers.ReviewCategoryManager
             }
 
             entity.ResolveProperties(reviewCategoryDto, null);
+            await Task.CompletedTask;
         }
     }
 }

@@ -32,7 +32,7 @@ namespace UI_DSM.Shared.Models
         /// </summary>
         public ReviewCategory()
         {
-            
+            this.InitializeCollections();
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace UI_DSM.Shared.Models
         /// <param name="id">The <see cref="Guid" /> of the <see cref="ReviewCategory" /></param>
         public ReviewCategory(Guid id) : base(id)
         {
-           
+            this.InitializeCollections();
         }
 
         /// <summary>
@@ -104,6 +104,15 @@ namespace UI_DSM.Shared.Models
             this.ReviewCategoryName = reviewCategoryDto.ReviewCategoryName;
             this.Description = reviewCategoryDto.Description;
             this.TagColor = reviewCategoryDto.TagColor;
+        }
+
+        /// <summary>
+        ///     Initializes all collections for this <see cref="ReviewCategory" />
+        /// </summary>
+        private void InitializeCollections()
+        {
+            this.Projects = new List<Project>();
+            this.ReviewObjectives = new List<ReviewObjective>();
         }
 
     }

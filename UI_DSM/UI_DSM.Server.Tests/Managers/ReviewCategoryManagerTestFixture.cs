@@ -24,7 +24,6 @@ namespace UI_DSM.Server.Tests.Managers
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Managers.ReviewCategoryManager;
     using UI_DSM.Server.Tests.Helpers;
-    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     [TestFixture]

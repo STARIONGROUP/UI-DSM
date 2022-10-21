@@ -75,6 +75,13 @@ namespace UI_DSM.Serializer.Json.Tests
             var noteGuid = Guid.NewGuid();
             var feedbackGuid = Guid.NewGuid();
 
+            var reviewCategory = new ReviewCategoryDto(Guid.NewGuid())
+            {
+                ReviewCategoryName = "ReviewCategory",
+                Description = "ReviewCategory description",
+                TagColor = "#CB7777"
+            };
+
             var reviewObjective = new ReviewObjectiveDto(reviewObjectiveGuid)
             {
                 Author = participant.Id,
@@ -84,7 +91,8 @@ namespace UI_DSM.Serializer.Json.Tests
                 ReviewObjectiveNumber = 2,
                 Status = StatusKind.Open,
                 Annotations = new List<Guid>{commentGuid, feedbackGuid, noteGuid},
-                ReviewTasks = new List<Guid>{reviewTask.Id}
+                ReviewTasks = new List<Guid>{reviewTask.Id},
+                ReviewCategories = new List<Guid> { reviewCategory.Id }
             };
 
             var reply = new ReplyDto(Guid.NewGuid())
@@ -142,8 +150,10 @@ namespace UI_DSM.Serializer.Json.Tests
                 Participants = new List<Guid>{participant.Id},
                 Reviews = new List<Guid>{review.Id},
                 Annotations = new List<Guid>{commentGuid, noteGuid, feedbackGuid},
-                Artifacts = new List<Guid>{model.Id}
+                Artifacts = new List<Guid>{model.Id},
+                ReviewCategories = new List<Guid> { reviewCategory.Id }
             };
+
 
             var dtos = new List<EntityDto>
             {
@@ -184,10 +194,21 @@ namespace UI_DSM.Serializer.Json.Tests
                 Role = role.Id
             };
 
+            var reviewCategory = new ReviewCategoryDto(Guid.NewGuid())
+            {
+                ReviewCategoryName = "ReviewCategory",
+                Description = "ReviewCategory description",
+                TagColor = "#CB7777"
+            };
+
             var stream = new MemoryStream();
             var jsonOptions = new JsonWriterOptions { Indented = true };
-            Assert.That(() => this.serializer.Serialize(participant, stream, jsonOptions), Throws.Nothing);
-
+            Assert.Multiple(() =>
+            {
+                Assert.That(() => this.serializer.Serialize(participant, stream, jsonOptions), Throws.Nothing);
+                Assert.That(() => this.serializer.Serialize(reviewCategory, stream, jsonOptions), Throws.Nothing);
+            });
+            
             var jsonOutput = Encoding.UTF8.GetString(stream.ToArray());
             Console.WriteLine(jsonOutput);
         }
