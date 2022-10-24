@@ -55,7 +55,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     The <see cref="Definition" /> content of the <see cref="Requirement" />
         /// </summary>
-        public string Definition => this.AssociatedRequirement.GetSingleDefinition();
+        public string Definition => this.AssociatedRequirement.GetFirstDefinition();
 
         /// <summary>
         ///     The collection of <see cref="Category" /> name

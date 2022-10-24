@@ -73,7 +73,7 @@ namespace UI_DSM.Client.Extensions
         /// <param name="thing">The <see cref="DefinedThing" /></param>
         /// <param name="languageCode">The language code</param>
         /// <returns>The <see cref="Definition" /> content</returns>
-        public static string GetSingleDefinition(this DefinedThing thing, string languageCode = "en")
+        public static string GetFirstDefinition(this DefinedThing thing, string languageCode = "en")
         {
             var definition = thing.Definition.FirstOrDefault(x => x.LanguageCode == languageCode);
             return definition != null ? definition.Content : thing.Definition.FirstOrDefault()?.Content;
