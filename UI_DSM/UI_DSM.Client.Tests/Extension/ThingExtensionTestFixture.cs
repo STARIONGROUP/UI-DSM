@@ -136,7 +136,7 @@ namespace UI_DSM.Client.Tests.Extension
             var requirement = new Requirement();
             const string englishContent = "A content";
             const string frenchContent = "Le contenu d'une définition";
-            Assert.That(requirement.GetSingleDefinition(), Is.Null);
+            Assert.That(requirement.GetFirstDefinition(), Is.Null);
 
             requirement.Definition.Add(new Definition()
             {
@@ -152,9 +152,9 @@ namespace UI_DSM.Client.Tests.Extension
 
             Assert.Multiple(() =>
             {
-                Assert.That(requirement.GetSingleDefinition(), Is.EqualTo(englishContent));
-                Assert.That(requirement.GetSingleDefinition("fr"), Is.EqualTo(frenchContent));
-                Assert.That(requirement.GetSingleDefinition("nl"), Is.EqualTo(englishContent));
+                Assert.That(requirement.GetFirstDefinition(), Is.EqualTo(englishContent));
+                Assert.That(requirement.GetFirstDefinition("fr"), Is.EqualTo(frenchContent));
+                Assert.That(requirement.GetFirstDefinition("nl"), Is.EqualTo(englishContent));
             });
         }
 
