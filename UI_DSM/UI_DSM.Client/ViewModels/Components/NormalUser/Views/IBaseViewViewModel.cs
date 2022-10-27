@@ -15,6 +15,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
     using CDP4Common.CommonData;
 
+    using UI_DSM.Shared.Models;
+
     /// <summary>
     ///     Interface definition for <see cref="BaseViewViewModel" />
     /// </summary>
@@ -34,6 +36,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Initialize this view model properties
         /// </summary>
         /// <param name="things">A collection of <see cref="BaseViewViewModel.Things" /></param>
-        void InitializeProperties(IEnumerable<Thing> things);
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <returns>A <see cref="Task" /></returns>
+        Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId);
     }
 }

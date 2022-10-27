@@ -39,6 +39,7 @@ namespace UI_DSM.Serializer.Json
             { typeof(ReplyDto), ReplyDtoSerializer.Serialize },
             { typeof(ReviewCategoryDto), ReviewCategoryDtoSerializer.Serialize },
             { typeof(ReviewDto), ReviewDtoSerializer.Serialize },
+            { typeof(ReviewItemDto), ReviewItemDtoSerializer.Serialize },
             { typeof(ReviewObjectiveDto), ReviewObjectiveDtoSerializer.Serialize },
             { typeof(ReviewTaskDto), ReviewTaskDtoSerializer.Serialize },
             { typeof(RoleDto), RoleDtoSerializer.Serialize },

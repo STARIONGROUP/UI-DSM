@@ -18,6 +18,7 @@ namespace UI_DSM.Server.Managers.ProjectManager
     using UI_DSM.Server.Managers.AnnotationManager;
     using UI_DSM.Server.Managers.ArtifactManager;
     using UI_DSM.Server.Managers.ParticipantManager;
+    using UI_DSM.Server.Managers.ReviewCategoryManager;
     using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -45,6 +46,11 @@ namespace UI_DSM.Server.Managers.ProjectManager
         private readonly IParticipantManager participantManager;
 
         /// <summary>
+        ///     The <see cref="IReviewCategoryManager" />
+        /// </summary>
+        private readonly IReviewCategoryManager reviewCategoryManager;
+
+        /// <summary>
         ///     The <see cref="IReviewManager" />
         /// </summary>
         private readonly IReviewManager reviewManager;
@@ -57,13 +63,15 @@ namespace UI_DSM.Server.Managers.ProjectManager
         /// <param name="reviewManager">The <see cref="IReviewManager" /></param>
         /// <param name="annotationManager">The <see cref="IAnnotationManager" /></param>
         /// <param name="artifactManager">The <see cref="IArtifactManager" /></param>
+        /// <param name="reviewCategoryManager">The <see cref="IReviewCategoryManager" /></param>
         public ProjectManager(DatabaseContext context, IParticipantManager participantManager, IReviewManager reviewManager,
-            IAnnotationManager annotationManager, IArtifactManager artifactManager) : base(context)
+            IAnnotationManager annotationManager, IArtifactManager artifactManager, IReviewCategoryManager reviewCategoryManager) : base(context)
         {
             this.participantManager = participantManager;
             this.reviewManager = reviewManager;
             this.annotationManager = annotationManager;
             this.artifactManager = artifactManager;
+            this.reviewCategoryManager = reviewCategoryManager;
         }
 
         /// <summary>
@@ -84,6 +92,7 @@ namespace UI_DSM.Server.Managers.ProjectManager
             relatedEntities.InsertEntityCollection(await this.reviewManager.FindEntities(projectDto.Reviews));
             relatedEntities.InsertEntityCollection(await this.annotationManager.FindEntities(projectDto.Annotations));
             relatedEntities.InsertEntityCollection(await this.artifactManager.FindEntities(projectDto.Artifacts));
+            relatedEntities.InsertEntityCollection(await this.reviewCategoryManager.FindEntities(projectDto.ReviewCategories));
             entity.ResolveProperties(projectDto, relatedEntities);
         }
 

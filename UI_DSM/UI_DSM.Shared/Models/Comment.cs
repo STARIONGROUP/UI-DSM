@@ -17,6 +17,7 @@ namespace UI_DSM.Shared.Models
 
     using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Types;
 
@@ -50,6 +51,16 @@ namespace UI_DSM.Shared.Models
         public EntityContainerList<Reply> Replies { get; protected set; }
 
         /// <summary>
+        ///     The <see cref="View" /> where the <see cref="Comment" /> has been created
+        /// </summary>
+        public View View { get; set; }
+
+        /// <summary>
+        ///     The <see cref="StatusKind" /> of the <see cref="Comment" />
+        /// </summary>
+        public StatusKind Status { get; set; }
+
+        /// <summary>
         ///     Instantiate a <see cref="EntityDto" /> from a <see cref="Entity" />
         /// </summary>
         /// <returns>A new <see cref="EntityDto" /></returns>
@@ -57,7 +68,9 @@ namespace UI_DSM.Shared.Models
         {
             var dto = new CommentDto(this.Id)
             {
-                Replies = this.Replies.Select(x => x.Id).ToList()
+                Replies = this.Replies.Select(x => x.Id).ToList(),
+                View = this.View,
+                Status = this.Status
             };
 
             dto.IncludeCommonProperties(this);
@@ -79,6 +92,8 @@ namespace UI_DSM.Shared.Models
             }
 
             this.Replies.ResolveList(commentDto.Replies, resolvedEntity);
+            this.View = commentDto.View;
+            this.Status = commentDto.Status;
         }
 
         /// <summary>

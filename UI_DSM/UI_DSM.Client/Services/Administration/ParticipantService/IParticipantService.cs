@@ -68,5 +68,12 @@ namespace UI_DSM.Client.Services.Administration.ParticipantService
         /// <param name="projectId"></param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="UserEntity" /></returns>
         Task<List<UserEntity>> GetAvailableUsersForCreation(Guid projectId);
+
+        /// <summary>
+        ///     Gets the current <see cref="Participant" /> for the logged user
+        /// </summary>
+        /// <param name="projectId">The <see cref="projectId" /></param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Participant" /></returns>
+        Task<Participant> GetCurrentParticipant(Guid projectId);
     }
 }

@@ -127,6 +127,11 @@ namespace UI_DSM.Serializer.Json.Tests
                 CreatedOn = DateTime.UtcNow
             };
 
+            var reviewItem = new ReviewItemDto(Guid.NewGuid())
+            {
+                ThingId = Guid.NewGuid()
+            };
+
             var review = new ReviewDto(Guid.NewGuid())
             {
                 Author = participant.Id,
@@ -135,7 +140,8 @@ namespace UI_DSM.Serializer.Json.Tests
                 CreatedOn = DateTime.UtcNow,
                 ReviewNumber = 2,
                 Status = StatusKind.Open,
-                ReviewObjectives = new List<Guid>{reviewObjective.Id}
+                ReviewObjectives = new List<Guid>{reviewObjective.Id},
+                ReviewItems = new List<Guid>{reviewItem.Id}
             };
 
             var model = new ModelDto(Guid.NewGuid())
@@ -154,11 +160,10 @@ namespace UI_DSM.Serializer.Json.Tests
                 ReviewCategories = new List<Guid> { reviewCategory.Id }
             };
 
-
             var dtos = new List<EntityDto>
             {
                 project, participant, user, role, reply, comment, feedback, note, review, reviewObjective, reviewTask,
-                 model
+                 model, reviewItem
             };
 
             var stream = new MemoryStream();
@@ -203,6 +208,7 @@ namespace UI_DSM.Serializer.Json.Tests
 
             var stream = new MemoryStream();
             var jsonOptions = new JsonWriterOptions { Indented = true };
+
             Assert.Multiple(() =>
             {
                 Assert.That(() => this.serializer.Serialize(participant, stream, jsonOptions), Throws.Nothing);

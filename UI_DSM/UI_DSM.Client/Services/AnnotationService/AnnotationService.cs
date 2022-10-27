@@ -98,15 +98,14 @@ namespace UI_DSM.Client.Services.AnnotationService
         /// <summary>
         ///     Updates a <see cref="Annotation" />
         /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
         /// <param name="annotation">The <see cref="Annotation" />to update</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{Annotation}" /></returns>
-        public async Task<EntityRequestResponse<Annotation>> UpdateAnnotation(Annotation annotation)
+        public async Task<EntityRequestResponse<Annotation>> UpdateAnnotation(Guid projectId, Annotation annotation)
         {
-            this.VerifyEntityAndContainer<Project>(annotation);
-
             try
             {
-                this.ComputeMainRoute(annotation.EntityContainer.Id);
+                this.ComputeMainRoute(projectId);
                 return await this.UpdateEntity(annotation, 0);
             }
             catch (Exception exception)
@@ -118,15 +117,14 @@ namespace UI_DSM.Client.Services.AnnotationService
         /// <summary>
         ///     Deletes a <see cref="Annotation" />
         /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
         /// <param name="annotation">The <see cref="Annotation" /> to delete</param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /></returns>
-        public async Task<RequestResponseDto> DeleteAnnotation(Annotation annotation)
+        public async Task<RequestResponseDto> DeleteAnnotation(Guid projectId, Annotation annotation)
         {
-            this.VerifyEntityAndContainer<Project>(annotation);
-
             try
             {
-                this.ComputeMainRoute(annotation.EntityContainer.Id);
+                this.ComputeMainRoute(projectId);
                 return await this.DeleteEntity(annotation);
             }
             catch (Exception exception)

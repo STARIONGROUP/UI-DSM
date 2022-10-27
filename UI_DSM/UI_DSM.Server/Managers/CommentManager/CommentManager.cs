@@ -18,7 +18,9 @@ namespace UI_DSM.Server.Managers.CommentManager
     using UI_DSM.Server.Managers.AnnotatableItemManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReplyManager;
+    using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -84,12 +86,32 @@ namespace UI_DSM.Server.Managers.CommentManager
         }
 
         /// <summary>
+        ///     Updates a <see cref="Comment" />
+        /// </summary>
+        /// <param name="entity">The <see cref="Comment" /> to update</param>
+        /// <returns>A <see cref="Task" /> with the result of the update</returns>
+        public override async Task<EntityOperationResult<Comment>> UpdateEntity(Comment entity)
+        {
+            if (!this.ValidateCurrentEntity(entity, out var entityOperationResult))
+            {
+                return entityOperationResult;
+            }
+
+            var foundEntity = await this.FindEntity(entity.Id);
+            entity.View = foundEntity.View;
+            entity.CreatedOn = foundEntity.CreatedOn.ToUniversalTime();
+
+            return await this.UpdateEntityIntoContext(entity);
+        }
+
+        /// <summary>
         ///     Sets specific properties before the creation of the <see cref="Comment" />
         /// </summary>
         /// <param name="entity">The <see cref="Comment" /></param>
         protected override void SetSpecificPropertiesBeforeCreate(Comment entity)
         {
             entity.CreatedOn = DateTime.UtcNow;
+            entity.Status = StatusKind.Open;
         }
     }
 }

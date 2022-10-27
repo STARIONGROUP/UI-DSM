@@ -31,6 +31,16 @@ namespace UI_DSM.Shared.Enumerator
         /// <summary>
         ///     When the thing is done and verified
         /// </summary>
-        Closed = 2
+        Closed = 2,
+
+        /// <summary>
+        ///     When the thing has been approved
+        /// </summary>
+        Approved = 3,
+
+        /// <summary>
+        ///     When the thing has been rejected
+        /// </summary>
+        Rejected = 4
     }
 }

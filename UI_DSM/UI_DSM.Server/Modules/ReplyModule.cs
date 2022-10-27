@@ -114,6 +114,18 @@ namespace UI_DSM.Server.Modules
                 return new RequestResponseDto();
             }
 
+            var reply = (await manager.GetEntity(entityId)).OfType<Reply>().FirstOrDefault();
+
+            if (reply?.Author.Id != participant.Id)
+            {
+                context.Response.StatusCode = 403;
+
+                return new RequestResponseDto()
+                {
+                    Errors = new List<string> { "Unable to delete a Comment from someelse" }
+                };
+            }
+
             return await base.DeleteEntity(manager, entityId, context);
         }
 
@@ -133,6 +145,14 @@ namespace UI_DSM.Server.Modules
 
             if (participant == null)
             {
+                return;
+            }
+
+            var reply = (await manager.GetEntity(entityId)).OfType<Reply>().FirstOrDefault();
+
+            if (reply?.Author.Id != participant.Id)
+            {
+                context.Response.StatusCode = 403;
                 return;
             }
 

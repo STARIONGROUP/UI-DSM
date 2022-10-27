@@ -342,5 +342,36 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
             var availableUsers = await this.service.GetAvailableUsersForCreation(projectId);
             Assert.That(availableUsers, Has.Count.EqualTo(3));
         }
+
+        [Test]
+        public async Task VerifyGetCurrentParticipant()
+        {
+            var projectId = Guid.NewGuid();
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.NotFound;
+
+            var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Project/{projectId}/Participant/LoggedUser");
+            request.Respond(_ => httpResponse);
+
+            Assert.That(async () => await this.service.GetCurrentParticipant(projectId), Throws.Exception);
+
+            httpResponse.StatusCode = HttpStatusCode.OK;
+
+            var entities = new List<Entity>()
+            {
+                new Participant(Guid.NewGuid())
+                {
+                    User = new UserEntity(Guid.NewGuid())
+                    {
+                        UserName = "user1"
+                    },
+                    Role = new Role(Guid.NewGuid())
+                }
+            };
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entities.ToDtos()));
+            var participant = await this.service.GetCurrentParticipant(projectId);
+            Assert.That(participant, Is.Not.Null);
+        }
     }
 }

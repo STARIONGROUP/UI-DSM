@@ -162,5 +162,31 @@ namespace UI_DSM.Client.Services.Administration.ParticipantService
                 throw new HttpRequestException(exception.Message);
             }
         }
+
+        /// <summary>
+        ///     Gets the current <see cref="Participant" /> for the logged user
+        /// </summary>
+        /// <param name="projectId">The <see cref="projectId" /></param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Participant" /></returns>
+        public async Task<Participant> GetCurrentParticipant(Guid projectId)
+        {
+            try
+            {
+                this.ComputeMainRoute(projectId);
+                var getResponse = await this.HttpClient.GetAsync(Path.Combine(this.MainRoute, "LoggedUser"));
+
+                if (!getResponse.IsSuccessStatusCode)
+                {
+                    throw new HttpRequestException(await getResponse.Content.ReadAsStringAsync());
+                }
+
+                var dtos = this.jsonService.Deserialize<IEnumerable<EntityDto>>(await getResponse.Content.ReadAsStreamAsync());
+                return Assembler.CreateEntities<Participant>(dtos).FirstOrDefault();
+            }
+            catch (Exception exception)
+            {
+                throw new HttpRequestException(exception.Message);
+            }
+        }
     }
 }

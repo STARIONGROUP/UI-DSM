@@ -29,6 +29,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Services.ViewProviderService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App;
+    using UI_DSM.Client.ViewModels.App.SelectedItemCard;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;

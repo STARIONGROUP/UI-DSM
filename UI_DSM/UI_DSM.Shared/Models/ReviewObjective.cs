@@ -60,6 +60,19 @@ namespace UI_DSM.Shared.Models
         }
 
         /// <summary>
+        ///     Gets or sets the author of the <see cref="AnnotatableItem" />
+        /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DeepLevel(0)]
+        public Participant Author { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="DateTime" /> for the creation of the <see cref="AnnotatableItem" />
+        /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime CreatedOn { get; set; }
+
+        /// <summary>
         ///     Gets or sets the <see cref="ReviewObjective" /> title
         /// </summary>
         public string Title => $"{this.ReviewObjectiveKind.ToString().ToUpper()} - {this.ReviewObjectiveKindNumber}";
@@ -156,6 +169,8 @@ namespace UI_DSM.Shared.Models
             this.RelatedViews = reviewObjectiveDto.RelatedViews;
             this.ReviewObjectiveKind = reviewObjectiveDto.ReviewObjectiveKind;
             this.ReviewObjectiveKindNumber = reviewObjectiveDto.ReviewObjectiveKindNumber;
+            this.Author = this.GetEntity<Participant>(reviewObjectiveDto.Author, resolvedEntity);
+            this.CreatedOn = reviewObjectiveDto.CreatedOn;
             this.ReviewCategories.ResolveList(reviewObjectiveDto.ReviewCategories, resolvedEntity);
         }
 

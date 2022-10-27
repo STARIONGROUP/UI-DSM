@@ -115,6 +115,19 @@ namespace UI_DSM.Serializer.Json
                 }
             }
 
+            if (jsonElement.TryGetProperty("reviewItems", out var reviewItemsProperty))
+            {
+                foreach (var item in reviewItemsProperty.EnumerateArray())
+                {
+                    var propertyValue = item.GetString();
+
+                    if (propertyValue != null)
+                    {
+                        dto.ReviewItems.Add(Guid.Parse(propertyValue));
+                    }
+                }
+            }
+
             if (jsonElement.TryGetProperty("artifacts", out var artifactsProperty))
             {
                 foreach (var item in artifactsProperty.EnumerateArray())

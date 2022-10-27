@@ -18,7 +18,9 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using DevExpress.Blazor;
 
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     Component for the <see cref="View.RequirementBreakdownStructureView" />
@@ -28,16 +30,18 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <summary>
         ///     The <see cref="DxGrid" />
         /// </summary>
-        public DxGrid DxGrid { get; set; }
+        private DxGrid DxGrid { get; set; }
 
         /// <summary>
         ///     Initialize the correspondant ViewModel for this component
         /// </summary>
         /// <param name="things">The collection of <see cref="Thing" /></param>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task InitializeViewModel(IEnumerable<Thing> things)
+        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
         {
-            this.ViewModel.InitializeProperties(things);
+            await this.ViewModel.InitializeProperties(things, projectId, reviewId);
             await this.InvokeAsync(this.StateHasChanged);
         }
 
@@ -47,6 +51,17 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         private void OnClick()
         {
             this.DxGrid.ShowColumnChooser(".column-chooser-button");
+        }
+
+        /// <summary>
+        ///     Checks if the current <see cref="RequirementBreakdownStructureViewRowViewModel" /> has a <see cref="Comment" />
+        /// </summary>
+        /// <param name="context">The <see cref="GridColumnCellDisplayTemplateContext" /></param>
+        /// <returns>The result of the check</returns>
+        private static bool HasComment(GridColumnCellDisplayTemplateContext context)
+        {
+            return context.DataItem is RequirementBreakdownStructureViewRowViewModel { ReviewItem: { } } row &&
+                   row.ReviewItem.Annotations.OfType<Comment>().Any();
         }
     }
 }

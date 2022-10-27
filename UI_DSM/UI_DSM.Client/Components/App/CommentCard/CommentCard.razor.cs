@@ -15,7 +15,8 @@ namespace UI_DSM.Client.Components.App.CommentCard
 {
     using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Shared.Models;
+    using UI_DSM.Client.ViewModels.App.CommentCard;
+    using UI_DSM.Shared.Enumerator;
 
     /// <summary>
     ///     UI Card for a <see cref="Shared.Models.Comment" />
@@ -23,9 +24,62 @@ namespace UI_DSM.Client.Components.App.CommentCard
     public partial class CommentCard
     {
         /// <summary>
-        ///     The <see cref="Comment" />
+        ///     All available <see cref="StatusKind" />
+        /// </summary>
+        private static readonly List<StatusKind> AvailableStatus = new()
+        {
+            StatusKind.Open,
+            StatusKind.Approved,
+            StatusKind.Rejected,
+            StatusKind.Closed
+        };
+
+        /// <summary>
+        ///     The <see cref="ICommentCardViewModel" />
         /// </summary>
         [Parameter]
-        public Comment Comment { get; set; }
+        public ICommentCardViewModel ViewModel { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [Parameter]
+        public EventCallback<CommentCard> OnClick { get; set; }
+
+        /// <summary>
+        ///     A value indicating if the <see cref="CommentCard" /> is selected
+        /// </summary>
+        public bool IsSelected { get; set; }
+
+        /// <summary>
+        ///     Value indicating if the component is on update mode
+        /// </summary>
+        public bool IsOnStatusUpdateMode { get; set; }
+
+        /// <summary>
+        ///     Handle the click event of the content edit button
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private Task OnContentEditClick()
+        {
+            return this.ViewModel.OnContentEditCallback.InvokeAsync(this.ViewModel.Comment);
+        }
+
+        /// <summary>
+        ///     Handle the click event of the content delete button
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private Task OnDeleteClick()
+        {
+            return this.ViewModel.OnDeleteCallback.InvokeAsync(this.ViewModel.Comment);
+        }
+
+        /// <summary>
+        ///     Handle the onClick event
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private Task OnClickEvent()
+        {
+            return this.OnClick.InvokeAsync(this);
+        }
     }
 }

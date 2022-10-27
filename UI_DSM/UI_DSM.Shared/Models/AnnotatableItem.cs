@@ -43,19 +43,6 @@ namespace UI_DSM.Shared.Models
         }
 
         /// <summary>
-        ///     Gets or sets the author of the <see cref="AnnotatableItem" />
-        /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [DeepLevel(0)]
-        public Participant Author { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the <see cref="DateTime" /> for the creation of the <see cref="AnnotatableItem" />
-        /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime CreatedOn { get; set; }
-
-        /// <summary>
         ///     A collection of <see cref="Annotation" />
         /// </summary>
         [DeepLevel(0)]
@@ -73,8 +60,6 @@ namespace UI_DSM.Shared.Models
                 throw new InvalidOperationException($"The DTO {entityDto.GetType()} does not match with the current AnnotatableItem POCO");
             }
 
-            this.Author = this.GetEntity<Participant>(annotatableItemDto.Author, resolvedEntity);
-            this.CreatedOn = annotatableItemDto.CreatedOn;
             this.Annotations.ResolveList(annotatableItemDto.Annotations, resolvedEntity);
         }
 

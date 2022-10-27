@@ -20,11 +20,15 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
     using Microsoft.Extensions.DependencyInjection;
 
+    using Moq;
+
     using NUnit.Framework;
 
     using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
+    using UI_DSM.Shared.Models;
 
     using TestContext = Bunit.TestContext;
 
@@ -33,12 +37,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     {
         private TestContext context;
         private IRequirementBreakdownStructureViewViewModel viewModel;
+        private Mock<IReviewItemService> reviewItemService;
 
         [SetUp]
         public void Setup()
         {
             this.context = new TestContext();
-            this.viewModel = new RequirementBreakdownStructureViewViewModel();
+            this.reviewItemService = new Mock<IReviewItemService>();
+            this.viewModel = new RequirementBreakdownStructureViewViewModel(this.reviewItemService.Object);
             this.context.ConfigureDevExpressBlazor();
             this.context.Services.AddSingleton(this.viewModel);
         }
@@ -59,7 +65,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             var group = new RequirementsGroup();
             requirementsSpecificiation.Group.Add(group);
             
-            requirementsSpecificiation.Requirement.Add(new Requirement()
+            requirementsSpecificiation.Requirement.Add(new Requirement(Guid.NewGuid(), null,null)
             {
                 Group = group,
                 Definition = 
@@ -71,11 +77,22 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 }
             });
 
-            requirementsSpecificiation.Requirement.Add(new Requirement());
+            requirementsSpecificiation.Requirement.Add(new Requirement(Guid.NewGuid(), null, null));
 
             things.Add(requirementsSpecificiation);
 
-            await renderer.InvokeAsync(() => renderer.Instance.InitializeViewModel(things));
+            var reviewItems = new List<ReviewItem> 
+            {
+                new ()
+                {
+                    ThingId = requirementsSpecificiation.Requirement.First().Iid
+                }
+            };
+
+            this.reviewItemService.Setup(x => x.GetReviewItemsForThings(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IEnumerable<Guid>>(), It.IsAny<int>()))
+                .ReturnsAsync(reviewItems);
+
+            await renderer.InvokeAsync(() => renderer.Instance.InitializeViewModel(things, Guid.NewGuid(), Guid.NewGuid()));
 
             Assert.Multiple(() =>
             {

@@ -19,6 +19,7 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.AnnotationManager;
     using UI_DSM.Server.Managers.ParticipantManager;
+    using UI_DSM.Server.Managers.ReviewCategoryManager;
     using UI_DSM.Server.Managers.ReviewTaskManager;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Models;
@@ -41,6 +42,11 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         private readonly IParticipantManager participantManager;
 
         /// <summary>
+        ///     The <see cref="IReviewCategoryManager" />
+        /// </summary>
+        private readonly IReviewCategoryManager reviewCategoryManager;
+
+        /// <summary>
         ///     The <see cref="IReviewTaskManager" />
         /// </summary>
         private readonly IReviewTaskManager reviewTaskManager;
@@ -52,12 +58,14 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
         /// <param name="reviewTaskManager">The <see cref="IReviewTaskManager" /></param>
         /// <param name="annotationManager">The <see cref="IAnnotationManager" /></param>
+        /// <param name="reviewCategoryManager">The <see cref="IReviewCategoryManager"/></param>
         public ReviewObjectiveManager(DatabaseContext context, IParticipantManager participantManager, IReviewTaskManager reviewTaskManager,
-            IAnnotationManager annotationManager) : base(context)
+            IAnnotationManager annotationManager, IReviewCategoryManager reviewCategoryManager) : base(context)
         {
             this.participantManager = participantManager;
             this.reviewTaskManager = reviewTaskManager;
             this.annotationManager = annotationManager;
+            this.reviewCategoryManager = reviewCategoryManager;
         }
 
         /// <summary>
@@ -77,6 +85,7 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
             relatedEntities.InsertEntity(await this.participantManager.FindEntity(reviewObjectiveDto.Author));
             relatedEntities.InsertEntityCollection(await this.reviewTaskManager.FindEntities(reviewObjectiveDto.ReviewTasks));
             relatedEntities.InsertEntityCollection(await this.annotationManager.FindEntities(reviewObjectiveDto.Annotations));
+            relatedEntities.InsertEntityCollection(await this.reviewCategoryManager.FindEntities(reviewObjectiveDto.ReviewCategories));
             entity.ResolveProperties(reviewObjectiveDto, relatedEntities);
         }
 

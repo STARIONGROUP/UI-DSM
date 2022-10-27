@@ -17,6 +17,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
     using ReactiveUI;
 
+    using UI_DSM.Client.Components.App.Comments;
     using UI_DSM.Client.Components.App.SelectedItemCard;
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage;
@@ -78,6 +79,11 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         public SelectedItemCard SelectedItemCard { get; set; }
 
         /// <summary>
+        ///     The <see cref="Comments" />
+        /// </summary>
+        public Comments Comments { get; set; }
+
+        /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
@@ -97,9 +103,6 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ReviewTask)
                 .Subscribe(async _ => await this.OnSelectedItemChanged(this.ViewModel.ReviewTask)));
 
-            this.disposables.Add(this.ViewModel.Comments.CountChanged
-                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
-
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.CurrentBaseView)
                 .Subscribe(async _ => await this.OnCurrentBaseViewChanged()));
 
@@ -117,8 +120,12 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
             if (this.BaseView?.Instance is BaseView baseView)
             {
-                await baseView.InitializeViewModel(this.ViewModel.Things);
+                var projectId = new Guid(this.ProjectId);
+                var reviewId = new Guid(this.ReviewId);
+                this.Comments.ViewModel.InitializesProperties(projectId, reviewId, this.ViewModel.CurrentView);
+                await baseView.InitializeViewModel(this.ViewModel.Things, projectId, reviewId);
                 this.disposables.Add(baseView.SelectedItemObservable.Subscribe(async x => await this.OnSelectedItemChanged(x)));
+                this.disposables.Add(this.Comments.ViewModel.Comments.CountChanged.Subscribe(async _ => await baseView.HasChanged()));
             }
         }
 
@@ -138,6 +145,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
             this.SelectedItem = newSelectedItem;
             this.SelectedItemCard.ViewModel.SelectedItem = this.SelectedItem;
+            this.Comments.ViewModel.SelectedItem = this.SelectedItem;
             await this.InvokeAsync(this.StateHasChanged);
         }
     }

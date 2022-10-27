@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Server.Tests.Modules
 {
+    using System.Security.Claims;
+
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Routing;
 
@@ -56,6 +58,11 @@ namespace UI_DSM.Server.Tests.Modules
             this.request.Setup(x => x.RouteValues).Returns(this.routeValues);
 
             this.serviceProvider.Setup(x => x.GetService(typeof(IEntityManager<Project>))).Returns(this.projectManager.Object);
+            
+            this.context.Setup(x => x.User).Returns(new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>()
+            {
+                new (ClaimTypes.Name, "user")
+            })));
 
             this.module = new ParticipantModule();
             Program.RegisterEntities();
@@ -241,6 +248,34 @@ namespace UI_DSM.Server.Tests.Modules
                 project.Id, this.context.Object);
 
             this.response.VerifySet(x => x.StatusCode = 404, Times.Once);
+        }
+
+        [Test]
+        public async Task VerifyGetLoggedParticipant()
+        {
+            var project = new Project(Guid.NewGuid());
+
+            this.projectManager.Setup(x => x.FindEntity(project.Id)).ReturnsAsync((Project)null);
+
+            await this.module.GetLoggedParticipant(this.participantManager.As<IParticipantManager>().Object, this.projectManager.Object,
+                project.Id, this.context.Object);
+
+            this.response.VerifySet(x => x.StatusCode = 404, Times.Once);
+
+            this.projectManager.Setup(x => x.FindEntity(project.Id)).ReturnsAsync(project);
+
+            this.participantManager.As<IParticipantManager>().Setup(x => x.GetParticipantForProject(project.Id, "user"))
+                .ReturnsAsync((Participant)null);
+
+            await this.module.GetLoggedParticipant(this.participantManager.As<IParticipantManager>().Object, this.projectManager.Object,
+                project.Id, this.context.Object);
+
+            this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
+
+            this.participantManager.As<IParticipantManager>().Setup(x => x.GetParticipantForProject(project.Id, "user"))
+                .ReturnsAsync(new Participant());
+         
+            this.response.VerifySet(x => x.StatusCode = It.IsAny<int>(), Times.Exactly(2));
         }
     }
 }

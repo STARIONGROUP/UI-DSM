@@ -17,6 +17,7 @@
 
 namespace UI_DSM.Shared.DTO.Models
 {
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -45,6 +46,16 @@ namespace UI_DSM.Shared.DTO.Models
         ///    Gets or sets the Replies of the Comment
         /// </summary>
         public List<Guid> Replies { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the View of the Comment
+        /// </summary>
+        public View View { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the Status of the Comment
+        /// </summary>
+        public StatusKind Status { get; set; }
 
         /// <summary>
         ///    Instantiate a <see cref="Entity" /> from a <see cref="EntityDto" />

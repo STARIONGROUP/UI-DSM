@@ -26,6 +26,7 @@ namespace UI_DSM.Server.Tests.Managers
     using UI_DSM.Server.Managers.ArtifactManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ProjectManager;
+    using UI_DSM.Server.Managers.ReviewCategoryManager;
     using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Shared.DTO.Common;
@@ -41,6 +42,7 @@ namespace UI_DSM.Server.Tests.Managers
         private Mock<IAnnotationManager> annotationManager;
         private Mock<IArtifactManager> artifactManager;
         private Mock<DbSet<Project>> projectDbSet;
+        private Mock<IReviewCategoryManager> reviewCategoryManager;
 
         [SetUp]
         public void Setup()
@@ -51,9 +53,10 @@ namespace UI_DSM.Server.Tests.Managers
             this.reviewManager = new Mock<IReviewManager>();
             this.annotationManager = new Mock<IAnnotationManager>();
             this.artifactManager = new Mock<IArtifactManager>();
-            
+            this.reviewCategoryManager = new Mock<IReviewCategoryManager>();
+
             this.manager = new ProjectManager(this.context.Object, this.participantManager.Object, this.reviewManager.Object,
-                this.annotationManager.Object, this.artifactManager.Object);
+                this.annotationManager.Object, this.artifactManager.Object, this.reviewCategoryManager.Object);
             
             Program.RegisterEntities();
         }

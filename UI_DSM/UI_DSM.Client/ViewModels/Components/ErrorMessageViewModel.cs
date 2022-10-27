@@ -26,5 +26,15 @@ namespace UI_DSM.Client.ViewModels.Components
         ///     A collection of error message to display
         /// </summary>
         public SourceList<string> Errors { get; private set; } = new();
+
+        /// <summary>
+        ///     Display the new collection of errors
+        /// </summary>
+        /// <param name="errors">The new collection of errors</param>
+        public void HandleErrors(IEnumerable<string> errors)
+        {
+            this.Errors.Clear();
+            this.Errors.AddRange(errors);
+        }
     }
 }

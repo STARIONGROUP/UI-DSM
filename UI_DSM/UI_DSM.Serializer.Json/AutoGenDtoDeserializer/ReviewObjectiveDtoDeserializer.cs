@@ -57,6 +57,26 @@ namespace UI_DSM.Serializer.Json
                 dto.Id = Guid.Parse(propertyValue);
             }
 
+            if (jsonElement.TryGetProperty("author", out var authorProperty))
+            {
+                var propertyValue = authorProperty.GetString();
+
+                if (propertyValue != null)
+                {
+                    dto.Author = Guid.Parse(propertyValue);
+                }
+            }
+
+            if (jsonElement.TryGetProperty("createdOn", out var createdOnProperty))
+            {
+                var propertyValue = createdOnProperty.GetString();
+
+                if (propertyValue != null)
+                {
+                    dto.CreatedOn = DateTime.Parse(propertyValue);
+                }
+            }
+
             if (jsonElement.TryGetProperty("title", out var titleProperty))
             {
                 dto.Title = titleProperty.GetString();
@@ -133,26 +153,6 @@ namespace UI_DSM.Serializer.Json
                     {
                         dto.ReviewCategories.Add(Guid.Parse(propertyValue));
                     }
-                }
-            }
-
-            if (jsonElement.TryGetProperty("author", out var authorProperty))
-            {
-                var propertyValue = authorProperty.GetString();
-
-                if (propertyValue != null)
-                {
-                    dto.Author = Guid.Parse(propertyValue);
-                }
-            }
-
-            if (jsonElement.TryGetProperty("createdOn", out var createdOnProperty))
-            {
-                var propertyValue = createdOnProperty.GetString();
-
-                if (propertyValue != null)
-                {
-                    dto.CreatedOn = DateTime.Parse(propertyValue);
                 }
             }
 

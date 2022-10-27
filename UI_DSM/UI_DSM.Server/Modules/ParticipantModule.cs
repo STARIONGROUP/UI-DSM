@@ -48,6 +48,42 @@ namespace UI_DSM.Server.Modules
                 .Produces<IEnumerable<EntityDto>>(404)
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/AvailableUsers");
+
+            app.MapGet($"{this.MainRoute}/LoggedUser", this.GetLoggedParticipant)
+                .Produces<IEnumerable<EntityDto>>()
+                .Produces<IEnumerable<EntityDto>>(404)
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/LoggedUser");
+        }
+
+        /// <summary>
+        ///     Gets the current logged <see cref="Participant" />
+        /// </summary>
+        /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
+        /// <param name="projectManager">The <see cref="IEntityManager{Project}" /></param>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        [Authorize]
+        public async Task GetLoggedParticipant(IParticipantManager participantManager, IEntityManager<Project> projectManager, Guid projectId, HttpContext context)
+        {
+            var project = await projectManager.FindEntity(projectId);
+
+            if (project == null)
+            {
+                context.Response.StatusCode = 404;
+                return;
+            }
+
+            var participant = await participantManager.GetParticipantForProject(projectId, context.User!.Identity!.Name);
+
+            if (participant == null)
+            {
+                context.Response.StatusCode = 401;
+                return;
+            }
+
+            await context.Response.Negotiate(participant.GetAssociatedEntities().ToDtos());
         }
 
         /// <summary>

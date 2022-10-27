@@ -1,0 +1,25 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// CommentCreation.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+<EditForm Context="editFormContext" Model="@this.ViewModel.Comment" OnValidSubmit="@this.ViewModel.OnValidSubmit">
+	<DataAnnotationsValidator />
+	<DxFormLayout>
+		<DxFormLayoutItem Caption="Comment content :" ColSpanMd="12">
+			<DxTextBox @bind-Text="@this.ViewModel.Comment.Content" NullText="Add your comment" ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+			           SizeMode="SizeMode.Medium"/>
+		</DxFormLayoutItem>
+	</DxFormLayout>
+	<ErrorMessage />
+	<ValidationSummary/>
+	<div class="modal-footer m-top-10px">
+		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Create" SubmitFormOnClick="true"/>
+	</div>
+</EditForm>

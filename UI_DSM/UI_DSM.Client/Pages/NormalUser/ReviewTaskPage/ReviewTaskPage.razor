@@ -46,13 +46,7 @@
 		}
 		<aside class="task-page__sidebar task-page__sidebar__right">
 			<SelectedItemCard @ref="this.SelectedItemCard"/>
-
-			<AppAccordion Label="Comments">
-				@foreach (var comment in this.ViewModel.Comments.Items)
-				{
-					<CommentCard Comment="comment"/>
-				}
-			</AppAccordion>
+			<Comments @ref="this.Comments"/>
 		</aside>
 	}
 </div>

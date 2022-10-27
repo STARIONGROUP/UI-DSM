@@ -18,6 +18,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using ReactiveUI;
 
     using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     View model for the <see cref="GenericBaseView{TViewModel}" /> component
@@ -32,10 +34,27 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
         /// </summary>
-        protected BaseViewViewModel()
+        /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
+        protected BaseViewViewModel(IReviewItemService reviewItemService)
         {
+            this.ReviewItemService = reviewItemService;
             this.Things = new List<Thing>();
         }
+
+        /// <summary>
+        ///     The <see cref="IReviewItemService" />
+        /// </summary>
+        protected IReviewItemService ReviewItemService { get; }
+
+        /// <summary>
+        ///     The <see cref="Project" /> id
+        /// </summary>
+        protected Guid ProjectId { get; private set; }
+
+        /// <summary>
+        ///     The <see cref="Review" /> id
+        /// </summary>
+        protected Guid ReviewId { get; private set; }
 
         /// <summary>
         ///     A collection of <see cref="Thing" />
@@ -55,9 +74,15 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Initialize this view model properties
         /// </summary>
         /// <param name="things">A collection of <see cref="Things" /></param>
-        public virtual void InitializeProperties(IEnumerable<Thing> things)
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public virtual Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
         {
             this.Things = things;
+            this.ProjectId = projectId;
+            this.ReviewId = reviewId;
+            return Task.CompletedTask;
         }
     }
 }
