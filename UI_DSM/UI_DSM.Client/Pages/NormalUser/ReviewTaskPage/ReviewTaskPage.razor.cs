@@ -122,7 +122,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
             {
                 var projectId = new Guid(this.ProjectId);
                 var reviewId = new Guid(this.ReviewId);
-                this.Comments.ViewModel.InitializesProperties(projectId, reviewId, this.ViewModel.CurrentView);
+                await this.Comments.ViewModel.InitializesProperties(projectId, reviewId, this.ViewModel.CurrentView);
                 await baseView.InitializeViewModel(this.ViewModel.Things, projectId, reviewId);
                 this.disposables.Add(baseView.SelectedItemObservable.Subscribe(async x => await this.OnSelectedItemChanged(x)));
                 this.disposables.Add(this.Comments.ViewModel.Comments.CountChanged.Subscribe(async _ => await baseView.HasChanged()));

@@ -50,8 +50,11 @@ namespace UI_DSM.Server.Tests.Managers
         [Test]
         public void VerifyResolveProperties()
         {
-            Assert.That(async () => await this.manager.ResolveProperties(new ReviewItem(), new CommentDto()), Throws.Nothing);
-            Assert.That(async () => await this.manager.ResolveProperties(new ReviewItem(), new ReviewItemDto()), Throws.Nothing);
+            Assert.Multiple(() =>
+            {
+                Assert.That(async () => await this.manager.ResolveProperties(new ReviewItem(), new CommentDto()), Throws.Nothing);
+                Assert.That(async () => await this.manager.ResolveProperties(new ReviewItem(), new ReviewItemDto()), Throws.Nothing);
+            });
         }
 
         [Test]
