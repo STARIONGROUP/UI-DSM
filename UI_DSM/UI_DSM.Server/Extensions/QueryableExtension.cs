@@ -35,7 +35,7 @@ namespace UI_DSM.Server.Extensions
             where TEntity : Entity
         {
             var currentType = typeof(TEntity);
-            var containedPropertyInfos = new List<PropertyInfo>();
+            var containedPropertyInfos = new Dictionary<Type, List<PropertyInfo>>();
 
             return queryable.BuildIncludeEntityQueryable(deepLevel + 1, currentType, containedPropertyInfos, string.Empty);
         }
@@ -47,41 +47,47 @@ namespace UI_DSM.Server.Extensions
         /// <param name="queryable">The <see cref="IQueryable{T}" /></param>
         /// <param name="deepLevel">The deep level</param>
         /// <param name="entityType">The current <see cref="Entity" /> type</param>
-        /// <param name="containedType">A collection of <see cref="PropertyInfo" /> to avoid adding duplicates</param>
+        /// <param name="containedType">A <see cref="Dictionary{TKey,TValue}"/>  to avoid adding duplicates</param>
         /// <param name="currentPath">The current path to add to the <see cref="IQueryable{T}" /></param>
         private static IQueryable<TEntity> BuildIncludeEntityQueryable<TEntity>(this IQueryable<TEntity> queryable, int deepLevel,
-            Type entityType, List<PropertyInfo> containedType, string currentPath)
+            Type entityType, Dictionary<Type, List<PropertyInfo>> containedType, string currentPath)
             where TEntity : Entity
         {
             var scopedProperties = Entity.GetScopedProperties(deepLevel, entityType);
 
-            return scopedProperties.Where(scopedProperty => !containedType.Contains(scopedProperty))
-                .Aggregate(queryable, (current, scopedProperty) => ComputeProperty(current, deepLevel, containedType, currentPath, scopedProperty));
+            if (!containedType.ContainsKey(entityType))
+            {
+                containedType.Add(entityType, new List<PropertyInfo>());
+            }
+
+            return scopedProperties.Where(scopedProperty => !containedType[entityType].Contains(scopedProperty))
+                .Aggregate(queryable, (current, scopedProperty) => ComputeProperty(current, deepLevel, entityType, containedType, currentPath, scopedProperty));
         }
 
         /// <summary>
-        /// Adds the property to the <see cref="IQueryable{T}"/>
+        ///     Adds the property to the <see cref="IQueryable{T}" />
         /// </summary>
-        /// <typeparam name="TEntity">An <see cref="Entity"/></typeparam>
-        /// <param name="queryable">The <see cref="IQueryable{T}"/></param>
+        /// <typeparam name="TEntity">An <see cref="Entity" /></typeparam>
+        /// <param name="queryable">The <see cref="IQueryable{T}" /></param>
         /// <param name="deepLevel">The deep level</param>
-        /// <param name="containedType">The <see cref="Type"/></param>
+        /// <param name="entityType">The current <see cref="Entity" /> type</param>
+        /// <param name="containedType">A <see cref="Dictionary{TKey,TValue}"/>  to avoid adding duplicates</param>
         /// <param name="currentPath">The current pass</param>
-        /// <param name="scopedProperty">The current <see cref="PropertyInfo"/></param>
-        /// <returns>The <see cref="IQueryable{T}"/></returns>
-        private static IQueryable<TEntity> ComputeProperty<TEntity>(IQueryable<TEntity> queryable, int deepLevel, List<PropertyInfo> containedType, string currentPath, PropertyInfo scopedProperty) where TEntity : Entity
+        /// <param name="scopedProperty">The current <see cref="PropertyInfo" /></param>
+        /// <returns>The <see cref="IQueryable{T}" /></returns>
+        private static IQueryable<TEntity> ComputeProperty<TEntity>(IQueryable<TEntity> queryable, int deepLevel, Type entityType, IDictionary<Type, List<PropertyInfo>> containedType, string currentPath, PropertyInfo scopedProperty) where TEntity : Entity
         {
             var propertyType = scopedProperty.PropertyType.GetCorrectTypeToCheck();
             var updatedPath = UpdatePath(currentPath, scopedProperty.Name);
 
             if (propertyType.IsAbstract)
             {
-                containedType.Add(scopedProperty);
+                containedType[entityType].Add(scopedProperty);
                 queryable = queryable.Include(updatedPath);
 
                 foreach (var concreteClass in Entity.GetConcreteClasses(propertyType))
                 {
-                    queryable = queryable.BuildIncludeEntityQueryable(deepLevel == 0 ? 0 : deepLevel - 1, concreteClass, containedType, updatedPath);
+                    queryable = queryable.BuildIncludeEntityQueryable(deepLevel == 0 ? deepLevel: deepLevel - 1, concreteClass, new Dictionary<Type, List<PropertyInfo>>(containedType), updatedPath);
                 }
             }
             else
@@ -90,10 +96,10 @@ namespace UI_DSM.Server.Extensions
 
                 if (propertyType.IsAssignableTo(typeof(Entity)))
                 {
-                    containedType.Add(scopedProperty);
+                    containedType[entityType].Add(scopedProperty);
 
                     queryable = queryable
-                        .BuildIncludeEntityQueryable(deepLevel == 0 ? 0 : deepLevel - 1, propertyType, containedType, updatedPath);
+                        .BuildIncludeEntityQueryable(deepLevel == 0 ? deepLevel : deepLevel - 1, propertyType, new Dictionary<Type, List<PropertyInfo>>(containedType), updatedPath);
                 }
             }
 

@@ -15,6 +15,7 @@ namespace UI_DSM.Client.Services.ThingService
 {
     using CDP4Common.CommonData;
 
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -39,5 +40,14 @@ namespace UI_DSM.Client.Services.ThingService
         /// <param name="classKind">The <see cref="ClassKind" /></param>
         /// <returns>A <see cref="Task" /> with the collection of retrieved <see cref="Thing" /></returns>
         Task<IEnumerable<Thing>> GetThings(Guid projectId, Guid modelId, ClassKind classKind = ClassKind.Iteration);
+
+        /// <summary>
+        ///     Gets a collection of <see cref="Thing" /> that will be needed for the current <see cref="View" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="modelsId">A collection of <see cref="Guid" /> for <see cref="Model" /></param>
+        /// <param name="currentView">The current <see cref="View" /></param>
+        /// <returns>A collection of <see cref="Thing" /></returns>
+        Task<IEnumerable<Thing>> GetThingsByView(Guid projectId, IEnumerable<Guid> modelsId, View currentView);
     }
 }

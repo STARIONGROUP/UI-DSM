@@ -16,6 +16,7 @@ namespace UI_DSM.Server.Managers
     using Microsoft.EntityFrameworkCore;
 
     using UI_DSM.Server.Context;
+    using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.Models;
 
@@ -62,8 +63,12 @@ namespace UI_DSM.Server.Managers
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
         public async Task<IEnumerable<Entity>> GetContainedEntities(Guid containerId, int deepLevel = 0)
         {
-            var entities = await this.EntityDbSet.Where(x => x.EntityContainer != null && x.EntityContainer.Id == containerId).ToListAsync();
-            return entities.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
+            var entities =  this.EntityDbSet.Where(x => x.EntityContainer != null && x.EntityContainer.Id == containerId)
+                .BuildIncludeEntityQueryable(deepLevel);
+                
+            var list = await entities.ToListAsync();
+
+            return list.SelectMany(x => x.GetAssociatedEntities(deepLevel)).DistinctBy(x => x.Id);
         }
 
         /// <summary>

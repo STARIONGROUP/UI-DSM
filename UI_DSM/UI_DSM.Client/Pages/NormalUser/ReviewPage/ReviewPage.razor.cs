@@ -67,6 +67,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewPage
         {
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ReviewObjectiveViewModel.Review)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
             await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId), new Guid(this.ReviewId));
         }
     }

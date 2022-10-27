@@ -27,6 +27,7 @@ namespace UI_DSM.Client.Tests.Services.ThingService
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Extensions;
 
     [TestFixture]
@@ -119,7 +120,10 @@ namespace UI_DSM.Client.Tests.Services.ThingService
             var request = this.httpMessageHandler.When($"/Project/{this.projectId}/Model/{this.modelsId.ToGuidArray()}/Thing");
             request.Respond(_ => httpResponse);
 
-            var things = await this.thingService.GetThings(this.projectId, this.modelsId.First());
+            var things = await this.thingService.GetThings(this.projectId, new List<Guid>());
+            Assert.That(things, Is.Empty);
+
+            things = await this.thingService.GetThings(this.projectId, this.modelsId.First());
             Assert.That(things, Is.Empty);
 
             httpResponse.StatusCode = HttpStatusCode.OK;
@@ -127,6 +131,16 @@ namespace UI_DSM.Client.Tests.Services.ThingService
             var dtos = this.jsonService.Serialize(this.iteration.RequirementsSpecification.GetContainedAndReferencedThings());
             httpResponse.Content = new StringContent(dtos);
             things = await this.thingService.GetThings(this.projectId, this.modelsId.First(), ClassKind.RequirementsSpecification);
+            Assert.That(things, Is.Not.Empty);
+
+            dtos = this.jsonService.Serialize(this.iteration.RequirementsSpecification.GetContainedAndReferencedThings());
+            httpResponse.Content = new StringContent(dtos);
+            things = await this.thingService.GetThingsByView(this.projectId, this.modelsId, View.RequirementBreakdownStructureView);
+            Assert.That(things, Is.Not.Empty);
+
+            dtos = this.jsonService.Serialize(this.iteration.RequirementsSpecification.GetContainedAndReferencedThings());
+            httpResponse.Content = new StringContent(dtos);
+            things = await this.thingService.GetThingsByView(this.projectId, this.modelsId, View.ProductBreakdownStructureView);
             Assert.That(things, Is.Not.Empty);
         }
     }

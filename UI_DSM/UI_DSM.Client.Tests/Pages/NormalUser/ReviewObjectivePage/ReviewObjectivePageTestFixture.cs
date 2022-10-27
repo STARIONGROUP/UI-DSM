@@ -21,11 +21,10 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewObjectivePage
 
     using NUnit.Framework;
 
-    using UI_DSM.Client.Components.NormalUser.ReviewObjective;
+    using UI_DSM.Client.Components.App.ReviewTaskCard;
     using UI_DSM.Client.Pages.NormalUser.ReviewObjectivePage;
     using UI_DSM.Client.Services.ReviewObjectiveService;
     using UI_DSM.Client.Tests.Helpers;
-    using UI_DSM.Client.ViewModels.Components.NormalUser.ReviewObjective;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage;
     using UI_DSM.Shared.Models;
 
@@ -36,16 +35,14 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewObjectivePage
     {
         private TestContext context;
         private IReviewObjectivePageViewModel viewModel;
-        private IReviewObjectiveTasksViewModel reviewObjectiveTasksViewModel;
         private Mock<IReviewObjectiveService> reviewObjectiveService;
 
         [SetUp]
         public void Setup()
         {
             this.context = new TestContext();
-            this.reviewObjectiveTasksViewModel = new ReviewObjectiveTasksViewModel(null);
             this.reviewObjectiveService = new Mock<IReviewObjectiveService>();
-            this.viewModel = new ReviewObjectivePageViewModel(this.reviewObjectiveTasksViewModel, this.reviewObjectiveService.Object);
+            this.viewModel = new ReviewObjectivePageViewModel(this.reviewObjectiveService.Object);
             this.context.Services.AddSingleton(this.viewModel);
         }
 
@@ -72,26 +69,29 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewObjectivePage
             var noReviewObjectiveFound = renderer.Find("div");
             Assert.That(noReviewObjectiveFound.InnerHtml, Does.Contain("Review Objective not found"));
 
-            var project = new Project(projectGuid)
+            _ = new Project(projectGuid)
             {
                 ProjectName = "Project",
             };
 
-            var review = new Review(reviewGuid)
+            _ = new Review(reviewGuid)
             {
                 Title = "Review",
             };
 
-            var reviewObjective = new ReviewObjective(reviewGuid);
+            var reviewObjective = new ReviewObjective(reviewGuid)
+            {
+                ReviewTasks = { new ReviewTask(Guid.NewGuid()) }
+            };
 
             this.reviewObjectiveService.Setup(x => x.GetReviewObjectiveOfReview(projectGuid, reviewGuid, reviewObjectiveGuid, 1)).ReturnsAsync(reviewObjective);
 
             await this.viewModel.OnInitializedAsync(projectGuid, reviewGuid, reviewObjectiveGuid);
             renderer.Render();
 
-            Assert.That(this.viewModel.ReviewObjectiveTasksViewModel.ReviewObjective, Is.Not.Null);
+            Assert.That(this.viewModel.ReviewObjective, Is.Not.Null);
 
-            var reviewObjectiveTask = renderer.FindComponents<ReviewObjectiveTasks>();
+            var reviewObjectiveTask = renderer.FindComponents<ReviewTaskCard>();
             Assert.That(reviewObjectiveTask, Has.Count.EqualTo(1));
         }
     }

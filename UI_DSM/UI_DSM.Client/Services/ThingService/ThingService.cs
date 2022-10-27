@@ -22,6 +22,7 @@ namespace UI_DSM.Client.Services.ThingService
 
     using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Services.JsonService;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -49,7 +50,14 @@ namespace UI_DSM.Client.Services.ThingService
         /// <returns>A <see cref="Task" /> with the collection of retrieved <see cref="Thing" /></returns>
         public async Task<IEnumerable<Thing>> GetThings(Guid projectId, IEnumerable<Guid> modelsId, ClassKind classKind = ClassKind.Iteration)
         {
-            this.ComputeMainRoute(projectId, modelsId);
+            var models = modelsId.ToList();
+
+            if (!models.Any())
+            {
+                return Enumerable.Empty<Thing>();
+            }
+
+            this.ComputeMainRoute(projectId, models);
             var uri = this.MainRoute;
 
             if (classKind != ClassKind.Iteration)
@@ -81,6 +89,30 @@ namespace UI_DSM.Client.Services.ThingService
         public Task<IEnumerable<Thing>> GetThings(Guid projectId, Guid modelId, ClassKind classKind = ClassKind.Iteration)
         {
             return this.GetThings(projectId, new List<Guid> { modelId }, classKind);
+        }
+
+        /// <summary>
+        ///     Gets a collection of <see cref="Thing" /> that will be needed for the current <see cref="View" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="modelsId">A collection of <see cref="Guid" /> for <see cref="Model" /></param>
+        /// <param name="currentView">The current <see cref="View" /></param>
+        /// <returns>A collection of <see cref="Thing" /></returns>
+        public async Task<IEnumerable<Thing>> GetThingsByView(Guid projectId, IEnumerable<Guid> modelsId, View currentView)
+        {
+            var things = new List<Thing>();
+
+            switch (currentView)
+            {
+                case View.RequirementBreakdownStructureView:
+                    things.AddRange(await this.GetThings(projectId, modelsId, ClassKind.RequirementsSpecification));
+                    break;
+                case View.ProductBreakdownStructureView:
+                    things.AddRange(await this.GetThings(projectId, modelsId, ClassKind.ElementDefinition));
+                    break;
+            }
+
+            return things;
         }
 
         /// <summary>

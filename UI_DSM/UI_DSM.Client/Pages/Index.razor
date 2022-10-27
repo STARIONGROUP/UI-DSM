@@ -21,7 +21,7 @@
         <h1 class="h3">Projects</h1>
     </div>
     <div class="projects-overview">
-        @foreach (var project in this.ViewModel.AvailableProject.Items)
+        @foreach (var project in this.ViewModel.AvailableProject.Items.OrderBy(x => x.CreatedOn))
         {
             <NavLink href=@("/Project/"+project.Id)>
                 @if (this.ViewModel.CommentsAndTasks.ContainsKey(project.Id))

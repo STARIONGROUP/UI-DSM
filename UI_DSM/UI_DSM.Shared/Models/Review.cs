@@ -90,7 +90,7 @@ namespace UI_DSM.Shared.Models
         /// <summary>
         ///     A collection of <see cref="Artifacts" />
         /// </summary>
-        [DeepLevel(1)]
+        [DeepLevel(0)]
         public List<Artifact> Artifacts { get; protected set; }
 
         /// <summary>

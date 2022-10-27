@@ -13,10 +13,6 @@
 
 namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
 {
-    using UI_DSM.Client.Components.NormalUser.ReviewObjective;
-    using UI_DSM.Client.ViewModels.Components;
-    using UI_DSM.Client.ViewModels.Components.NormalUser.ReviewObjective;
-
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -25,15 +21,9 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
     public interface IReviewObjectivePageViewModel
     {
         /// <summary>
-        ///     The <see cref="IReviewObjectiveTasksViewModel" /> for the <see cref="ReviewObjectiveTasks" /> component
+        ///     The <see cref="ReviewObjective" /> of the page
         /// </summary>
-        IReviewObjectiveTasksViewModel ReviewObjectiveTasksViewModel { get; }
-
-
-        /// <summary>
-        ///     Gets the <see cref="IErrorMessageViewModel" />
-        /// </summary>
-        IErrorMessageViewModel ErrorMessageViewModel { get; }
+        ReviewObjective ReviewObjective { get; }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its

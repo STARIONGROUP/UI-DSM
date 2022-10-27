@@ -1,0 +1,58 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// ReviewTaskPage.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@page "/Project/{ProjectId}/Review/{ReviewId}/ReviewObjective/{ReviewObjectiveId}/ReviewTask/{ReviewTaskId}"
+
+<PageTitle>Task | UI-DSM</PageTitle>
+<div class="task-page">
+	@if (this.ViewModel.ReviewTask == null)
+	{
+		<div>
+			Task not found...
+		</div>
+	}
+	else
+	{
+		if (this.ViewModel.ReviewObjective != null)
+		{
+			<aside class="task-page__sidebar task-page__sidebar__left">
+				<AppAccordion Label="Review objective">
+					<AppSidebarText Description="@this.ViewModel.ReviewObjective.Description" />
+				</AppAccordion>
+
+				<AppAccordion Label="Tasks">
+					@foreach (var task in this.ViewModel.ReviewObjective.ReviewTasks.OrderBy(x => x.TaskNumber))
+					{
+						<ReviewTaskCard ReviewTask="task"/>
+					}
+				</AppAccordion>
+			</aside>
+		}
+		if (this.ViewModel.CurrentBaseView != null)
+		{
+			<main class="task-page__body">
+				<div class="task-page__body-inner">
+					<DynamicComponent Type="@(this.ViewModel.CurrentBaseView)" @ref="this.BaseView"/>
+				</div>
+			</main>
+		}
+		<aside class="task-page__sidebar task-page__sidebar__right">
+			<SelectedItemCard @ref="this.SelectedItemCard"/>
+
+			<AppAccordion Label="Comments">
+				@foreach (var comment in this.ViewModel.Comments.Items)
+				{
+					<CommentCard Comment="comment"/>
+				}
+			</AppAccordion>
+		</aside>
+	}
+</div>
