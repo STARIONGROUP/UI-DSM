@@ -47,6 +47,9 @@ namespace UI_DSM.Client.Tests.Components.App.CommentCreation
             {
                 OnValidSubmit = new EventCallbackFactory().Create(this, () => this.eventCallbackCall++),
                 Comment = new Comment()
+                {
+                    Content = string.Empty
+                }
             };
         }
 
@@ -67,11 +70,18 @@ namespace UI_DSM.Client.Tests.Components.App.CommentCreation
 
             var editForm = renderer.FindComponent<EditForm>();
             await renderer.InvokeAsync(editForm.Instance.OnSubmit.InvokeAsync);
-
             Assert.That(this.eventCallbackCall, Is.EqualTo(0));
 
-            this.context.JSInterop.Mode = JSRuntimeMode.Strict;
-            this.context.JSInterop.Setup<string>("QuillFunctions.getQuillHTML", _ => true).SetResult("A content");
+            this.viewModel.Comment.Content = "<p><br></p>";
+            await renderer.InvokeAsync(editForm.Instance.OnSubmit.InvokeAsync);
+            Assert.That(this.eventCallbackCall, Is.EqualTo(0));
+
+            this.viewModel.Comment.Content = "<p>  </p>";
+            await renderer.InvokeAsync(editForm.Instance.OnSubmit.InvokeAsync);
+            Assert.That(this.eventCallbackCall, Is.EqualTo(0));
+
+            this.viewModel.Comment.Content = "<p>something</p>";
+
             await renderer.InvokeAsync(editForm.Instance.OnSubmit.InvokeAsync);
 
             Assert.That(this.eventCallbackCall, Is.EqualTo(1));
