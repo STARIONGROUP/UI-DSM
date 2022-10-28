@@ -51,15 +51,17 @@ namespace UI_DSM.Client.Services.Administration.ParticipantService
         ///     Updates a <see cref="Participant" />
         /// </summary>
         /// <param name="participant">The <see cref="Participant" />to update</param>
+        /// <param name="projectId">The <see cref="Guid" /> of the project</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{Participant}" /></returns>
-        Task<EntityRequestResponse<Participant>> UpdateParticipant(Participant participant);
+        Task<EntityRequestResponse<Participant>> UpdateParticipant(Participant participant, Guid projectId);
 
         /// <summary>
         ///     Deletes a <see cref="Participant" />
         /// </summary>
         /// <param name="participant">The <see cref="Participant" /> to delete</param>
+        /// <param name="projectId">The <see cref="Guid" /> of the project</param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /></returns>
-        Task<RequestResponseDto> DeleteParticipant(Participant participant);
+        Task<RequestResponseDto> DeleteParticipant(Participant participant, Guid projectId);
 
         /// <summary>
         ///     Gets a collection of <see cref="UserEntity" /> that can be used for the creation of <see cref="Participant" /> into a

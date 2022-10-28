@@ -92,6 +92,8 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
                 OnValidSubmit = new EventCallbackFactory().Create(this, this.CreateParticipant)
             };
 
+            this.ProjectDetailsViewModel = new ProjectDetailsViewModel(this.participantService, roleService);
+
             this.CometUploadViewModel = cometUploadViewModel;
             this.CometUploadViewModel.OnEventCallback = new EventCallbackFactory().Create(this, _ => this.UploadIteration());
 
@@ -110,7 +112,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         /// <summary>
         ///     The <see cref="IProjectDetailsViewModel" /> for the <see cref="ProjectDetails" /> component
         /// </summary>
-        public IProjectDetailsViewModel ProjectDetailsViewModel { get; } = new ProjectDetailsViewModel();
+        public IProjectDetailsViewModel ProjectDetailsViewModel { get; } 
 
         /// <summary>
         ///     Value indicating the user is currently creating a new <see cref="Shared.Models.Participant" />
