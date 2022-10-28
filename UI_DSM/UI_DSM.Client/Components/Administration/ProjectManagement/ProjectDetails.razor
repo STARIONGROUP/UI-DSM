@@ -2,13 +2,14 @@
 // ProjectDetails.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
-// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
 // 
 // This file is part of UI-DSM. 
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+<ConfirmCancelPopup ViewModel="@this.ViewModel.ConfirmCancelPopup" />
 <EditForm Context="editFormContext" Model="@this.ViewModel.Project">
 	<DxFormLayout>
 		<DxFormLayoutItem Caption="Project Id:" ColSpanMd="12">
@@ -22,3 +23,42 @@
 		</DxFormLayoutItem>
 	</DxFormLayout>
 </EditForm>
+<DxPopup CloseOnOutsideClick="false" HeaderText="Participant Details" @bind-Visible="@this.ViewModel.IsOnUpdateViewMode">
+	<Content>
+		<ParticipantDetails ViewModel="@this.ViewModel.ParticipantDetailsViewModel" />
+	</Content>
+</DxPopup>
+
+@if (this.ViewModel.Project.Participants.Count > 0)
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">Participant Name</th>
+				<th scope="col">Role</th>
+				<th scope="col">Update</th>
+				<th scope="col">Delete</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var participant in this.ViewModel.Project.Participants)
+			{
+				<tr>
+					<td class="align-middle">
+						@participant.User.UserName
+					</td>
+					<td class="align-middle">
+						@participant.Role.RoleName
+					</td>
+					<td class="align-middle">
+						<DxButton Text="Update" RenderStyle="ButtonRenderStyle.Info" Click="() => this.ViewModel.OpenUpdatePopup(participant)"/>
+					</td>
+
+					<td class="align-middle">
+						<DxButton Text="Delete" RenderStyle="ButtonRenderStyle.Danger" Click="() => this.ViewModel.AskConfirmDeleteUser(participant)" />
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
