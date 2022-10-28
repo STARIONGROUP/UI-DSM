@@ -26,7 +26,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ParticipantManagement
     using TestContext = Bunit.TestContext;
 
     [TestFixture]
-    public class UserDetailsTestFixture
+    public class ParticipantDetailsTestFixture
     {
         private TestContext context;
         private IParticipantDetailsViewModel viewModel;

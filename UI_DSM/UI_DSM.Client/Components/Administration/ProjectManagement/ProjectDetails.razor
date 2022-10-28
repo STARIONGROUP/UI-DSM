@@ -55,10 +55,7 @@
 					</td>
 
 					<td class="align-middle">
-						@if (!participant.User.IsAdmin)
-						{
-							<DxButton Text="Delete" RenderStyle="ButtonRenderStyle.Danger" Click="() => this.ViewModel.AskConfirmDeleteUser(participant)" />
-						}
+						<DxButton Text="Delete" RenderStyle="ButtonRenderStyle.Danger" Click="() => this.ViewModel.AskConfirmDeleteUser(participant)" />
 					</td>
 				</tr>
 			}
