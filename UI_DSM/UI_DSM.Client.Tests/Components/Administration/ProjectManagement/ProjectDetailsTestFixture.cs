@@ -220,7 +220,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ProjectManagement
             });
 
             await renderer.InvokeAsync(() => this.viewModel.ConfirmCancelPopup.OnConfirm.InvokeAsync());
-            Assert.That(this.viewModel.Project.Participants.Count, Is.EqualTo(1));
+            Assert.That(this.viewModel.Project.Participants, Has.Count.EqualTo(1));
         }
     }
 }
