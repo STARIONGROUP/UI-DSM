@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Blazored.SessionStorage" Version="2.2.0" />
+    <PackageReference Include="Blazored.TextEditor" Version="1.0.8" />
     <PackageReference Include="CDP4JsonFileDal-CE" Version="8.3.0" />
     <PackageReference Include="CDP4JsonSerializer-CE" Version="8.3.0" />
     <PackageReference Include="CDP4ServicesDal-CE" Version="8.3.0" />

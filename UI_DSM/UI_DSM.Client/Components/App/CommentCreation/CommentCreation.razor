@@ -9,15 +9,45 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-<EditForm Context="editFormContext" Model="@this.ViewModel.Comment" OnValidSubmit="@this.ViewModel.OnValidSubmit">
+<EditForm Context="editFormContext" Model="@this.ViewModel.Comment" OnSubmit="@this.OnSubmit">
 	<DataAnnotationsValidator />
 	<DxFormLayout>
-		<DxFormLayoutItem Caption="Comment content :" ColSpanMd="12">
-			<DxTextBox @bind-Text="@this.ViewModel.Comment.Content" NullText="Add your comment" ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
-			           SizeMode="SizeMode.Medium"/>
+		<DxFormLayoutItem ColSpanMd="12">
+			<BlazoredTextEditor @ref="this.TextEditor" Placeholder="Write a comment..." >
+				<ToolbarContent>
+					<select class="ql-header">
+						<option selected=""></option>
+						<option value="1"></option>
+						<option value="2"></option>
+						<option value="3"></option>
+						<option value="4"></option>
+						<option value="5"></option>
+					</select>
+					<span class="ql-formats">
+						<button class="ql-bold"></button>
+						<button class="ql-italic"></button>
+						<button class="ql-underline"></button>
+						<button class="ql-strike"></button>
+					</span>
+					<span class="ql-formats">
+						<select class="ql-color"></select>
+						<select class="ql-background"></select>
+					</span>
+					<span class="ql-formats">
+						<button class="ql-list" value="ordered"></button>
+						<button class="ql-list" value="bullet"></button>
+					</span>
+					<span class="ql-formats">
+						<button class="ql-link"></button>
+					</span>
+				</ToolbarContent>
+				<EditorContent>
+					@((MarkupString)this.Content)
+				</EditorContent>
+			</BlazoredTextEditor>
 		</DxFormLayoutItem>
 	</DxFormLayout>
-	<ErrorMessage />
+	<ErrorMessage @ref="this.ErrorMessage"/>
 	<ValidationSummary/>
 	<div class="modal-footer m-top-10px">
 		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Create" SubmitFormOnClick="true"/>
