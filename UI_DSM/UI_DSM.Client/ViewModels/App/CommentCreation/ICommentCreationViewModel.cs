@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="ISelectedItemCardViewModel.cs" company="RHEA System S.A.">
+// <copyright file="ICommentCreationViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,26 +11,25 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.App
+namespace UI_DSM.Client.ViewModels.App.CommentCreation
 {
+    using Microsoft.AspNetCore.Components;
+
+    using UI_DSM.Shared.Models;
+
     /// <summary>
-    ///     Interface definition for <see cref="SelectedItemCardViewModel" />
+    ///     Interface definition for <see cref="CommentCreationViewModel" />
     /// </summary>
-    public interface ISelectedItemCardViewModel
+    public interface ICommentCreationViewModel
     {
         /// <summary>
-        ///     The currently selected item
+        ///     The <see cref="Comment" />
         /// </summary>
-        object SelectedItem { get; set; }
+        Comment Comment { get; set; }
 
         /// <summary>
-        ///     The label to display
+        ///     The <see cref="EventCallback" /> for submit
         /// </summary>
-        string Label { get; }
-
-        /// <summary>
-        ///     The <see cref="Type" /> of the component
-        /// </summary>
-        Type ComponentType { get; }
+        EventCallback OnValidSubmit { get; set; }
     }
 }

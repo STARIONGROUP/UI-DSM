@@ -36,6 +36,8 @@ namespace UI_DSM.Serializer.Json
                 "OPEN" => StatusKind.Open,
                 "DONE" => StatusKind.Done,
                 "CLOSED" => StatusKind.Closed,
+                "APPROVED" => StatusKind.Approved,
+                "REJECTED" => StatusKind.Rejected,
                 _ => throw new ArgumentException($"{value} is not a valid StatusKind", nameof(value))
             };
         }

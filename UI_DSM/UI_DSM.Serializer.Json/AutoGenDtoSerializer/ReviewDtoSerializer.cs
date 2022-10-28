@@ -70,6 +70,15 @@ namespace UI_DSM.Serializer.Json
 
             writer.WriteEndArray();
 
+            writer.WriteStartArray("reviewItems");
+
+            foreach (var item in dto.ReviewItems)
+            {
+                writer.WriteStringValue(item);
+            }
+
+            writer.WriteEndArray();
+
             writer.WriteStartArray("artifacts");
 
             foreach (var item in dto.Artifacts)

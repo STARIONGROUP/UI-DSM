@@ -16,6 +16,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using CDP4Common.CommonData;
 
     using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     The top component for any Component that will render a specific <see cref="View" />
@@ -31,7 +32,18 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     Initialize the correspondant ViewModel for this component
         /// </summary>
         /// <param name="things">The collection of <see cref="Thing" /></param>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
         /// <returns>A <see cref="Task" /></returns>
-        public abstract Task InitializeViewModel(IEnumerable<Thing> things);
+        public abstract Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId);
+
+        /// <summary>
+        ///     Handle the fact that something has changed and needs to update the view
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        public async Task HasChanged()
+        {
+            await this.InvokeAsync(this.StateHasChanged);
+        }
     }
 }

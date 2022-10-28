@@ -26,8 +26,6 @@ namespace UI_DSM.Shared.DTO.Models
         /// <param name="annotatableItem">The <see cref="AnnotatableItem" /></param>
         public void IncludeCommonProperties(AnnotatableItem annotatableItem)
         {
-            this.Author = annotatableItem.Author?.Id ?? Guid.Empty;
-            this.CreatedOn = annotatableItem.CreatedOn;
             this.Annotations = annotatableItem.Annotations.Select(x => x.Id).ToList();
         }
     }

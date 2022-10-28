@@ -105,6 +105,11 @@ namespace UI_DSM.Server.Context
         public virtual DbSet<Model> Models { get; set; }
 
         /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="ReviewItems" />
+        /// </summary>
+        public virtual DbSet<ReviewItem> ReviewItems { get; set; }
+
+        /// <summary>
         ///     A <see cref="DbSet{TEntity}" /> of <see cref="ReviewCategory" />
         /// </summary>
         public virtual DbSet<ReviewCategory> ReviewCategories { get; set; }
@@ -171,6 +176,11 @@ namespace UI_DSM.Server.Context
 
             builder.Entity<Review>().HasMany(x => x.Artifacts)
                 .WithMany(x => x.Reviews);
+
+            builder.Entity<Review>().HasMany(x => x.ReviewItems)
+                .WithOne(ri => (Review)ri.EntityContainer)
+                .HasForeignKey("EntityContainerId")
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Review>().HasMany(x => x.ReviewObjectives)
                 .WithOne(ro => (Review)ro.EntityContainer)

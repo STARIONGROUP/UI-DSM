@@ -88,6 +88,12 @@ namespace UI_DSM.Shared.Models
         public EntityContainerList<ReviewObjective> ReviewObjectives { get; protected set; }
 
         /// <summary>
+        ///     A collection of contained <see cref="ReviewItem" />
+        /// </summary>
+        [DeepLevel(1)]
+        public EntityContainerList<ReviewItem> ReviewItems { get; protected set; }
+
+        /// <summary>
         ///     A collection of <see cref="Artifacts" />
         /// </summary>
         [DeepLevel(0)]
@@ -108,7 +114,8 @@ namespace UI_DSM.Shared.Models
                 Description = this.Description,
                 Status = this.Status,
                 ReviewObjectives = this.ReviewObjectives.Select(x => x.Id).ToList(),
-                Artifacts = this.Artifacts.Select(x => x.Id).ToList()
+                Artifacts = this.Artifacts.Select(x => x.Id).ToList(),
+                ReviewItems = this.ReviewItems.Select(x => x.Id).ToList()
             };
         }
 
@@ -132,6 +139,7 @@ namespace UI_DSM.Shared.Models
             this.Status = reviewDto.Status;
             this.ReviewObjectives.ResolveList(reviewDto.ReviewObjectives, resolvedEntity);
             this.Artifacts.ResolveList(reviewDto.Artifacts, resolvedEntity);
+            this.ReviewItems.ResolveList(reviewDto.ReviewItems, resolvedEntity);
         }
 
         /// <summary>
@@ -141,6 +149,7 @@ namespace UI_DSM.Shared.Models
         {
             this.ReviewObjectives = new EntityContainerList<ReviewObjective>(this);
             this.Artifacts = new List<Artifact>();
+            this.ReviewItems = new EntityContainerList<ReviewItem>(this);
         }
     }
 }

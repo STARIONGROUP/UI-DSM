@@ -11,7 +11,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.App
+namespace UI_DSM.Client.ViewModels.App.SelectedItemCard
 {
     using ReactiveUI;
 

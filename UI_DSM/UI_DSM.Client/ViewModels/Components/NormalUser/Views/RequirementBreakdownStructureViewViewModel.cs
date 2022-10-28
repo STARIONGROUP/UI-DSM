@@ -17,7 +17,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using CDP4Common.EngineeringModelData;
 
     using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     View model for the <see cref="RequirementBreakdownStructureView" /> component
@@ -27,7 +29,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     Initializes a new instance of the <see cref="RequirementBreakdownStructureViewViewModel" /> class.
         /// </summary>
-        public RequirementBreakdownStructureViewViewModel()
+        /// <param name="reviewItemService">The <see cref="IReviewItemService"/></param>
+        public RequirementBreakdownStructureViewViewModel(IReviewItemService reviewItemService) : base(reviewItemService)
         {
             this.Rows = new List<RequirementBreakdownStructureViewRowViewModel>();
         }
@@ -36,12 +39,23 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Initialize this view model properties
         /// </summary>
         /// <param name="things">A collection of <see cref="BaseViewViewModel.Things" /></param>
-        public override void InitializeProperties(IEnumerable<Thing> things)
+        /// <param name="projectId">The <see cref="Project"/> id</param>
+        /// <param name="reviewId">The <see cref="Review"/> id</param>
+        /// <returns>A <see cref="Task"/></returns>
+        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
         {
-            base.InitializeProperties(things);
+            await base.InitializeProperties(things, projectId, reviewId);
 
-            this.Rows = new List<RequirementBreakdownStructureViewRowViewModel>(this.Things.OfType<RequirementsSpecification>().SelectMany(x => x.Requirement)
-                .Select(x => new RequirementBreakdownStructureViewRowViewModel(x)));
+            var filteredThings = this.Things.OfType<RequirementsSpecification>()
+                .SelectMany(x => x.Requirement)
+                .OrderBy(x => x.ShortName)
+                .ToList();
+
+            var reviewItems = await this.ReviewItemService.GetReviewItemsForThings(this.ProjectId, this.ReviewId,
+                filteredThings.Select(x => x.Iid));
+
+            this.Rows = new List<RequirementBreakdownStructureViewRowViewModel>(filteredThings
+                .Select(x => new RequirementBreakdownStructureViewRowViewModel(x, reviewItems.FirstOrDefault(ri=> ri.ThingId == x.Iid))));
         }
 
         /// <summary>

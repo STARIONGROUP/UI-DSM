@@ -17,6 +17,7 @@ namespace UI_DSM.Server.Managers.ReviewManager
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.ArtifactManager;
     using UI_DSM.Server.Managers.ParticipantManager;
+    using UI_DSM.Server.Managers.ReviewItemManager;
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -39,6 +40,11 @@ namespace UI_DSM.Server.Managers.ReviewManager
         private readonly IParticipantManager participantManager;
 
         /// <summary>
+        ///     The <see cref="IReviewItemManager" />
+        /// </summary>
+        private readonly IReviewItemManager reviewItemManager;
+
+        /// <summary>
         ///     The <see cref="IReviewObjectiveManager" />
         /// </summary>
         private readonly IReviewObjectiveManager reviewObjectiveManager;
@@ -50,12 +56,14 @@ namespace UI_DSM.Server.Managers.ReviewManager
         /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
         /// <param name="reviewObjectiveManager">The <see cref="IReviewObjectiveManager" /></param>
         /// <param name="artifactManager">The <see cref="IArtifactManager" /></param>
+        /// <param name="reviewItemManager">The <see cref="IReviewItemManager" /></param>
         public ReviewManager(DatabaseContext context, IParticipantManager participantManager, IReviewObjectiveManager reviewObjectiveManager,
-            IArtifactManager artifactManager) : base(context)
+            IArtifactManager artifactManager, IReviewItemManager reviewItemManager) : base(context)
         {
             this.participantManager = participantManager;
             this.reviewObjectiveManager = reviewObjectiveManager;
             this.artifactManager = artifactManager;
+            this.reviewItemManager = reviewItemManager;
         }
 
         /// <summary>
@@ -75,20 +83,8 @@ namespace UI_DSM.Server.Managers.ReviewManager
             relatedEntities.InsertEntity(await this.participantManager.FindEntity(reviewDto.Author));
             relatedEntities.InsertEntityCollection(await this.reviewObjectiveManager.FindEntities(reviewDto.ReviewObjectives));
             relatedEntities.InsertEntityCollection(await this.artifactManager.FindEntities(reviewDto.Artifacts));
+            relatedEntities.InsertEntityCollection(await this.reviewItemManager.FindEntities(reviewDto.ReviewItems));
             entity.ResolveProperties(reviewDto, relatedEntities);
-        }
-
-        /// <summary>
-        ///     Sets specific properties before the creation of the <see cref="Review" />
-        /// </summary>
-        /// <param name="entity">The <see cref="Review" /></param>
-        protected override void SetSpecificPropertiesBeforeCreate(Review entity)
-        {
-            var project = entity.EntityContainer as Project;
-            entity.ReviewNumber = 0;
-            entity.ReviewNumber = project!.Reviews.Max(x => x.ReviewNumber) + 1;
-            entity.CreatedOn = DateTime.UtcNow;
-            entity.Status = StatusKind.Open;
         }
 
         /// <summary>
@@ -112,6 +108,19 @@ namespace UI_DSM.Server.Managers.ReviewManager
             }
 
             return dictionary;
+        }
+
+        /// <summary>
+        ///     Sets specific properties before the creation of the <see cref="Review" />
+        /// </summary>
+        /// <param name="entity">The <see cref="Review" /></param>
+        protected override void SetSpecificPropertiesBeforeCreate(Review entity)
+        {
+            var project = entity.EntityContainer as Project;
+            entity.ReviewNumber = 0;
+            entity.ReviewNumber = project!.Reviews.Max(x => x.ReviewNumber) + 1;
+            entity.CreatedOn = DateTime.UtcNow;
+            entity.Status = StatusKind.Open;
         }
 
         /// <summary>

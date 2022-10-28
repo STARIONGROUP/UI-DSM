@@ -42,16 +42,6 @@ namespace UI_DSM.Shared.DTO.Models
         }
 
         /// <summary>
-        ///    Gets or sets the Author of the AnnotatableItem
-        /// </summary>
-        public Guid Author { get; set; }
-
-        /// <summary>
-        ///    Gets or sets the CreatedOn of the AnnotatableItem
-        /// </summary>
-        public DateTime CreatedOn { get; set; }
-
-        /// <summary>
         ///    Gets or sets the Annotations of the AnnotatableItem
         /// </summary>
         public List<Guid> Annotations { get; set; }

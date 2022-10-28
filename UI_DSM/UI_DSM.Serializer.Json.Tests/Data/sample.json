@@ -90,6 +90,9 @@
     "reviewObjectives": [
       "e82db38e-a59e-4a2d-a299-1a54c687b256"
     ],
+    "reviewItems": [
+      "b76ee38f-3365-4e41-8ae3-2c543f551214"
+    ],
     "id": "18aa374f-13e9-4b59-8a1a-a030ad3f9400"
   },
   {
@@ -156,6 +159,13 @@
     ],
     "createdOn": "0001-01-01T00:00:00",
     "id": "4cc86577-53c3-4507-be50-021a08d37248"
+  },
+  {
+    "@type": "ReviewItemDto",
+    "reviewCategories": [],
+    "thingId": "98299d85-2fd0-4859-a44e-1eec69b31db8",
+    "annotations": [],
+    "id": "b76ee38f-3365-4e41-8ae3-2c543f551214"
   },
   {
     "@type": "ReviewObjectiveDto",

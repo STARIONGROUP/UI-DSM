@@ -38,7 +38,7 @@ namespace UI_DSM.Serializer.Json.Tests
             
             Assert.Multiple(() =>
             {
-                Assert.That(data, Has.Count.EqualTo(15));
+                Assert.That(data, Has.Count.EqualTo(16));
                 Assert.That(data.OfType<ProjectDto>(), Is.Not.Empty);
                 Assert.That(data.OfType<ProjectDto>().First().Id, Is.EqualTo(Guid.Parse("9417d7ea-ce53-4187-897f-f1a1cc2d104e")));
                 Assert.That(data.OfType<ParticipantDto>().FirstOrDefault(x => x.Id == Guid.Parse("3542293d-cdcd-4143-a546-436bc9d9a118")), Is.Not.Null);

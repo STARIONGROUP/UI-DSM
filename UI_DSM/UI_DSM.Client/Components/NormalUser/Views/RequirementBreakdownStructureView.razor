@@ -24,7 +24,17 @@
         AllowSelectRowByClick="true"
 		ShowFilterRow="true">
 	<Columns>
-		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Id)" Caption="ID" />
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Id)" Caption="ID">
+			<CellDisplayTemplate>
+				@if (HasComment(context))
+				{
+					<FeatherMessageCircle Size="20" Color="green" />
+				}
+				<p>
+					@context.Value
+				</p>
+			</CellDisplayTemplate>
+		</DxGridDataColumn>
 		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Name)" />
 		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Definition)"/>
 		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Categories)" AllowSort="false">

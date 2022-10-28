@@ -188,7 +188,7 @@ namespace UI_DSM.Server.Tests.Managers
             };
 
             this.projectDbSet.UpdateDbSetCollection(projects);
-
+            this.commentDbSet.UpdateDbSetCollection(new List<Comment>{comment});
             await this.manager.UpdateEntity(comment);
             this.context.Verify(x => x.Update(comment), Times.Once);
             this.context.Setup(x => x.SaveChangesAsync(default)).ThrowsAsync(new InvalidOperationException());

@@ -15,8 +15,6 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
 {
     using CDP4Common.CommonData;
 
-    using DynamicData;
-
     using ReactiveUI;
 
     using UI_DSM.Client.Components.NormalUser.Views;
@@ -24,6 +22,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Services.ViewProviderService;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -76,9 +75,9 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         }
 
         /// <summary>
-        ///     A collection of <see cref="Comment" />
+        ///     The current <see cref="View" />
         /// </summary>
-        public SourceList<Comment> Comments { get; set; } = new();
+        public View CurrentView { get; private set; }
 
         /// <summary>
         ///     The current <see cref="ReviewObjective" />
@@ -138,6 +137,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
                     , this.ReviewTask.MainView);
 
                 this.ReviewObjective = reviewObjectiveInsideReview;
+                this.CurrentView = this.ReviewTask.MainView;
                 this.CurrentBaseView = this.viewProviderService.GetViewType(this.ReviewTask.MainView);
             }
         }

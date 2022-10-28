@@ -70,6 +70,26 @@ namespace UI_DSM.Serializer.Json
                 }
             }
 
+            if (jsonElement.TryGetProperty("view", out var viewProperty))
+            {
+                var propertyValue = viewProperty.GetString();
+
+                if (propertyValue != null)
+                {
+                    dto.View = ViewDeserializer.Deserialize(propertyValue);
+                }
+            }
+
+            if (jsonElement.TryGetProperty("status", out var statusProperty))
+            {
+                var propertyValue = statusProperty.GetString();
+
+                if (propertyValue != null)
+                {
+                    dto.Status = StatusKindDeserializer.Deserialize(propertyValue);
+                }
+            }
+
             if (jsonElement.TryGetProperty("author", out var authorProperty))
             {
                 var propertyValue = authorProperty.GetString();

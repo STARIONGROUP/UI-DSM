@@ -52,6 +52,12 @@ namespace UI_DSM.Serializer.Json
 
             writer.WriteEndArray();
 
+            writer.WritePropertyName("view");
+            writer.WriteStringValue(dto.View.ToString().ToUpper());
+
+            writer.WritePropertyName("status");
+            writer.WriteStringValue(dto.Status.ToString().ToUpper());
+
             writer.WritePropertyName("author");
             writer.WriteStringValue(dto.Author);
 

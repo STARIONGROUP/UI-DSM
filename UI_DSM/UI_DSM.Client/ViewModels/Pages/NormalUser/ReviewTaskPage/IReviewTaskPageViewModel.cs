@@ -15,9 +15,8 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
 {
     using CDP4Common.CommonData;
 
-    using DynamicData;
-
     using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -46,9 +45,9 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         ReviewTask ReviewTask { get; set; }
 
         /// <summary>
-        ///     A collection of <see cref="Comment" />
+        ///     The current <see cref="View" />
         /// </summary>
-        SourceList<Comment> Comments { get; set; }
+        View CurrentView { get; }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its
@@ -58,7 +57,9 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
         /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
-        /// <param name="reviewObjectiveId">The <see cref="Guid" /> of the <see cref="ReviewTaskPageViewModel.ReviewObjective" /></param>
+        /// <param name="reviewObjectiveId">
+        ///     The <see cref="Guid" /> of the <see cref="ReviewTaskPageViewModel.ReviewObjective" />
+        /// </param>
         /// <param name="reviewTaskId">The <see cref="Guid" /> of the <see cref="IReviewTaskPageViewModel.ReviewTask" /></param>
         /// <returns>A <see cref="Task" /></returns>
         Task OnInitializedAsync(Guid projectId, Guid reviewId, Guid reviewObjectiveId, Guid reviewTaskId);

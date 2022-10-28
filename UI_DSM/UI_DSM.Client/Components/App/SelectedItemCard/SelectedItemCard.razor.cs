@@ -18,6 +18,7 @@ namespace UI_DSM.Client.Components.App.SelectedItemCard
     using ReactiveUI;
 
     using UI_DSM.Client.ViewModels.App;
+    using UI_DSM.Client.ViewModels.App.SelectedItemCard;
 
     /// <summary>
     ///     Component that will provided related information for a selected item

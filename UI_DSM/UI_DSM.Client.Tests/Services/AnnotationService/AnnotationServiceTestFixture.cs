@@ -227,15 +227,13 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
             httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
             var request = this.httpMessageHandler.When(HttpMethod.Delete, $"/Project/{project.Id}/Annotation/{annotation.Id}");
             request.Respond(_ => httpResponse);
-
-            Assert.That(async () => await this.service.DeleteAnnotation(annotation), Throws.Exception);
-
             project.Annotations.Add(annotation);
-            var result = await this.service.DeleteAnnotation(annotation);
+
+            var result = await this.service.DeleteAnnotation(project.Id, annotation);
             Assert.That(result.IsRequestSuccessful, Is.True);
 
             httpResponse.Content = new StringContent(string.Empty);
-            Assert.That(async () => await this.service.DeleteAnnotation(annotation), Throws.Exception);
+            Assert.That(async () => await this.service.DeleteAnnotation(project.Id, annotation), Throws.Exception);
         }
 
         [Test]
@@ -258,11 +256,9 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
 
             var request = this.httpMessageHandler.When(HttpMethod.Put, $"/Project/{project.Id}/Annotation/{annotation.Id}");
             request.Respond(_ => httpResponse);
-
-            Assert.That(async () => await this.service.UpdateAnnotation(annotation), Throws.Exception);
             project.Annotations.Add(annotation);
 
-            var requestResult = await this.service.UpdateAnnotation(annotation);
+            var requestResult = await this.service.UpdateAnnotation(project.Id, annotation);
             Assert.That(requestResult.IsRequestSuccessful, Is.False);
 
             requestResponse.IsRequestSuccessful = true;
@@ -271,10 +267,10 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
 
             httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
 
-            requestResult = await this.service.UpdateAnnotation(annotation);
+            requestResult = await this.service.UpdateAnnotation(project.Id, annotation);
             Assert.That(requestResult.IsRequestSuccessful, Is.True);
             httpResponse.Content = new StringContent(string.Empty);
-            Assert.That(async () => await this.service.UpdateAnnotation(annotation), Throws.Exception);
+            Assert.That(async () => await this.service.UpdateAnnotation(project.Id, annotation), Throws.Exception);
         }
     }
 }

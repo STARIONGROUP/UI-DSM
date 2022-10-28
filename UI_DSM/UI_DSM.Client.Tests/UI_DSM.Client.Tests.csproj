@@ -26,13 +26,7 @@
     <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
   </ItemGroup>
-
     <ItemGroup>
     <ProjectReference Include="..\UI_DSM.Client\UI_DSM.Client.csproj" />
   </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Extension\" />
-    </ItemGroup>
-
 </Project>

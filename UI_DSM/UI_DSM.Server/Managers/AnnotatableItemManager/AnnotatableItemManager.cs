@@ -15,6 +15,7 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
 {
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Managers.AnnotationManager;
+    using UI_DSM.Server.Managers.ReviewItemManager;
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Models;
@@ -26,6 +27,11 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
     public class AnnotatableItemManager : IAnnotatableItemManager
     {
         /// <summary>
+        ///     The <see cref="IReviewItemManager" />
+        /// </summary>
+        private readonly IReviewItemManager reviewItemManager;
+
+        /// <summary>
         ///     The <see cref="IReviewObjectiveManager" />
         /// </summary>
         private readonly IReviewObjectiveManager reviewObjectiveManager;
@@ -34,10 +40,12 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
         ///     Initializes a new instance of the <see cref="AnnotatableItemManager" /> class.
         /// </summary>
         /// <param name="reviewObjectiveManager">The <see cref="IReviewObjectiveManager" /></param>
-        /// <param name="annotationManager">The <see cref="IAnnotationManager"/></param>
-        public AnnotatableItemManager(IReviewObjectiveManager reviewObjectiveManager, IAnnotationManager annotationManager)
+        /// <param name="annotationManager">The <see cref="IAnnotationManager" /></param>
+        /// <param name="reviewItemManager">The <see cref="IReviewItemManager" /></param>
+        public AnnotatableItemManager(IReviewObjectiveManager reviewObjectiveManager, IAnnotationManager annotationManager, IReviewItemManager reviewItemManager)
         {
             this.reviewObjectiveManager = reviewObjectiveManager;
+            this.reviewItemManager = reviewItemManager;
             annotationManager.InjectManager(this);
         }
 
@@ -50,6 +58,7 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
         {
             var annotatableItems = new List<Entity>();
             annotatableItems.AddRange(await this.reviewObjectiveManager.GetEntities(deepLevel));
+            annotatableItems.AddRange(await this.reviewItemManager.GetEntities(deepLevel));
             return annotatableItems.DistinctBy(x => x.Id);
         }
 
@@ -62,6 +71,12 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
         public async Task<IEnumerable<Entity>> GetEntity(Guid entityId, int deepLevel = 0)
         {
             var annotatableItem = (await this.reviewObjectiveManager.GetEntity(entityId, deepLevel)).ToList();
+
+            if (!annotatableItem.Any())
+            {
+                annotatableItem = (await this.reviewItemManager.GetEntity(entityId, deepLevel)).ToList();
+            }
+
             return annotatableItem;
         }
 
@@ -72,7 +87,8 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
         /// <returns>A <see cref="Task" /> with the <see cref="AnnotatableItem" /> if found</returns>
         public async Task<AnnotatableItem> FindEntity(Guid entityId)
         {
-            return await this.reviewObjectiveManager.FindEntity(entityId);
+            return ((AnnotatableItem)(await this.reviewObjectiveManager.FindEntity(entityId)))
+                   ?? await this.reviewItemManager.FindEntity(entityId);
         }
 
         /// <summary>

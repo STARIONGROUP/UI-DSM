@@ -1,0 +1,36 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// CommentCreation.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+<EditForm Context="editFormContext" Model="@this.ViewModel.Comment" OnSubmit="@this.OnSubmit">
+	<DataAnnotationsValidator />
+	<DxFormLayout>
+		<DxFormLayoutItem ColSpanMd="12">
+			<RadzenHtmlEditor @bind-Value="@this.ViewModel.Comment.Content" Placeholder="Write a comment...">
+				<RadzenHtmlEditorUndo />
+				<RadzenHtmlEditorRedo />
+				<RadzenHtmlEditorSeparator />
+				<RadzenHtmlEditorBold />
+				<RadzenHtmlEditorItalic />
+				<RadzenHtmlEditorUnderline />
+				<RadzenHtmlEditorStrikeThrough />
+				<RadzenHtmlEditorSeparator />
+				<RadzenHtmlEditorColor />
+				<RadzenHtmlEditorBackground />
+				<RadzenHtmlEditorRemoveFormat />
+			</RadzenHtmlEditor>
+		</DxFormLayoutItem>
+	</DxFormLayout>
+	<ErrorMessage @ref="this.ErrorMessage"/>
+	<ValidationSummary/>
+	<div class="modal-footer m-top-10px">
+		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Create" SubmitFormOnClick="true"/>
+	</div>
+</EditForm>

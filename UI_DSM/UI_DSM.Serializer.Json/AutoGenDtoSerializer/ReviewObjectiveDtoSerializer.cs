@@ -43,6 +43,12 @@ namespace UI_DSM.Serializer.Json
             writer.WritePropertyName("@type");
             writer.WriteStringValue("ReviewObjectiveDto");
 
+            writer.WritePropertyName("author");
+            writer.WriteStringValue(dto.Author);
+
+            writer.WritePropertyName("createdOn");
+            writer.WriteStringValue(dto.CreatedOn);
+
             writer.WritePropertyName("title");
             writer.WriteStringValue(dto.Title);
 
@@ -87,12 +93,6 @@ namespace UI_DSM.Serializer.Json
             }
 
             writer.WriteEndArray();
-
-            writer.WritePropertyName("author");
-            writer.WriteStringValue(dto.Author);
-
-            writer.WritePropertyName("createdOn");
-            writer.WriteStringValue(dto.CreatedOn);
 
             writer.WriteStartArray("annotations");
 

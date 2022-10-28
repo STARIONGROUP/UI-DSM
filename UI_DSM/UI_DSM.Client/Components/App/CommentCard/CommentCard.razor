@@ -9,17 +9,42 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-<div class="app-comment">
-  <div class="app-comment__header">
-    <FeatherMessageCircle Size="24" Color="currentColor" StrokeWidth="1.5f" />
-    <button>Mark as resolved</button>
-  </div>
+<div class="app-comment" @onclick="this.OnClickEvent">
+	<div class="app-comment__header">
+		@if (this.IsSelected)
+		{
+			<FeatherMessageCircle Size="24" Color="currentColor" StrokeWidth="1.5f"/>
+			@if (this.ViewModel.IsAllowedToEdit)
+			{
+				<FeatherEdit Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnContentEditClick"/>
+				<FeatherTrash2 Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnDeleteClick"/>
+			}
+			<button id="dropdownButton" @onclick="() => this.IsOnStatusUpdateMode = true">Mark as :</button>
+			<DxDropDown @bind-IsOpen="@this.IsOnStatusUpdateMode"
+			            Width="200"
+			            PositionTarget="#dropdownButton"
+			            PositionMode="DropDownPositionMode.Bottom">
+				<BodyTemplate>
+					@foreach (var status in AvailableStatus)
+					{
+						<div id="@status.ToString()" @onclick="() => this.ViewModel.UpdateStatus(status)">
+							@if (this.ViewModel.Comment.Status == status)
+							{
+								<FeatherCheck Size="20" Color="currentColor"/>
+							}
+							@status
+						</div>
+					}
+				</BodyTemplate>
+			</DxDropDown>
+		}
+	</div>
 
-  <div class="app-comment__body">
-    <span class="app-comment__title">
-      <span class="app-comment__name">@this.Comment.Author.User.UserName</span>
-      <span class="app-comment__date">@this.Comment.CreatedOn</span>
-    </span>
-    <span class="app-comment__description">@this.Comment.Content</span>
-  </div>
+	<div class="app-comment__body">
+		<span class="app-comment__title">
+			<span class="app-comment__name">@(this.ViewModel.Comment.Author.User.UserName)</span>
+			<span class="app-comment__date">@(this.ViewModel.Comment.CreatedOn)</span>
+		</span>
+		<span class="app-comment__description">@((MarkupString)this.ViewModel.Comment.Content)</span>
+	</div>
 </div>

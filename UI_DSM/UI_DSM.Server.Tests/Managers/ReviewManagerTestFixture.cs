@@ -22,6 +22,7 @@ namespace UI_DSM.Server.Tests.Managers
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Managers.ArtifactManager;
     using UI_DSM.Server.Managers.ParticipantManager;
+    using UI_DSM.Server.Managers.ReviewItemManager;
     using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
     using UI_DSM.Server.Tests.Helpers;
@@ -38,6 +39,7 @@ namespace UI_DSM.Server.Tests.Managers
         private Mock<IParticipantManager> participantManager;
         private Mock<IReviewObjectiveManager> reviewObjectiveManager;
         private Mock<IArtifactManager> artifactManager;
+        private Mock<IReviewItemManager> reviewItemManager;
         private Mock<DbSet<Review>> reviewDbSet;
         private Mock<DbSet<Project>> projectDbSet;
 
@@ -49,9 +51,10 @@ namespace UI_DSM.Server.Tests.Managers
             this.participantManager = new Mock<IParticipantManager>();
             this.reviewObjectiveManager = new Mock<IReviewObjectiveManager>();
             this.artifactManager = new Mock<IArtifactManager>();
+            this.reviewItemManager = new Mock<IReviewItemManager>();
             
             this.manager = new ReviewManager(this.context.Object, this.participantManager.Object, this.reviewObjectiveManager.Object,
-                this.artifactManager.Object);
+                this.artifactManager.Object, this.reviewItemManager.Object);
 
             Program.RegisterEntities();
         }
@@ -266,8 +269,7 @@ namespace UI_DSM.Server.Tests.Managers
             this.participantManager.Setup(x => x.GetParticipantForProject(project.Id, participant.User.UserName))
                 .ReturnsAsync(participant);
 
-
-            foreach (var reviewReviewObjective in project.Reviews.SelectMany(review => review.ReviewObjectives))
+            foreach (var reviewReviewObjective in project.Reviews.SelectMany(x => x.ReviewObjectives))
             {
                 reviewReviewObjective.ReviewTasks.AddRange(CreateEntity<ReviewTask>(4));
 

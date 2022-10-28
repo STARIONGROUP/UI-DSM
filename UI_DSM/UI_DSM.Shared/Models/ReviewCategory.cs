@@ -15,11 +15,8 @@ namespace UI_DSM.Shared.Models
 {
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Drawing;
-    using UI_DSM.Shared.Annotations;
+
     using UI_DSM.Shared.DTO.Models;
-    using UI_DSM.Shared.Extensions;
-    using UI_DSM.Shared.Types;
 
     /// <summary>
     ///     A <see cref="ReviewCategory" /> represents a container for reviews
@@ -72,6 +69,10 @@ namespace UI_DSM.Shared.Models
         /// </summary>
         public List<ReviewObjective> ReviewObjectives { get; set; }
 
+        /// <summary>
+        ///     A collection of <see cref="ReviewItem" />
+        /// </summary>
+        public List<ReviewItem> ReviewItems { get; set; }
 
         /// <summary>
         ///     Instantiate a <see cref="EntityDto" /> from a <see cref="Entity" />
@@ -113,7 +114,7 @@ namespace UI_DSM.Shared.Models
         {
             this.Projects = new List<Project>();
             this.ReviewObjectives = new List<ReviewObjective>();
+            this.ReviewItems = new List<ReviewItem>();
         }
-
     }
 }

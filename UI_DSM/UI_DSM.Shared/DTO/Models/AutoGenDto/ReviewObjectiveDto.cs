@@ -47,6 +47,16 @@ namespace UI_DSM.Shared.DTO.Models
         }
 
         /// <summary>
+        ///    Gets or sets the Author of the ReviewObjective
+        /// </summary>
+        public Guid Author { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the CreatedOn of the ReviewObjective
+        /// </summary>
+        public DateTime CreatedOn { get; set; }
+
+        /// <summary>
         ///    Gets or sets the Title of the ReviewObjective
         /// </summary>
         public string Title { get; set; }

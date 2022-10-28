@@ -245,7 +245,10 @@ namespace UI_DSM.Server.Tests.Modules
             this.annotationManager.As<IContainedEntityManager<Annotation>>()
                 .Setup(x => x.EntityIsContainedBy(this.commentId, this.projectId)).ReturnsAsync(false);
 
-            var reply = new Reply(Guid.NewGuid());
+            var reply = new Reply(Guid.NewGuid())
+            {
+                Author = new Participant(Guid.NewGuid())
+            };
 
             var comment = new Comment(this.commentId)
             {
@@ -258,6 +261,12 @@ namespace UI_DSM.Server.Tests.Modules
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(participant);
+            this.replyManager.Setup(x => x.GetEntity(reply.Id, 0)).ReturnsAsync(new List<Entity> { reply });
+
+            await this.module.DeleteEntity(this.replyManager.Object, reply.Id, this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 403, Times.Once);
+
+            reply.Author = participant;
 
             await this.module.DeleteEntity(this.replyManager.Object, reply.Id, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 400, Times.Once);
@@ -305,6 +314,12 @@ namespace UI_DSM.Server.Tests.Modules
 
             await this.module.UpdateEntity(this.replyManager.Object, reply.Id, dto, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
+
+            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(new Participant(Guid.NewGuid()));
+            this.replyManager.Setup(x => x.GetEntity(reply.Id, 0)).ReturnsAsync(new List<Entity> { reply });
+
+            await this.module.UpdateEntity(this.replyManager.Object, reply.Id, dto, this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 403, Times.Once);
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(reply.Author);
 

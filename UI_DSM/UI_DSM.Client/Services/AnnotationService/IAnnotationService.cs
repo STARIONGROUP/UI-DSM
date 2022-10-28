@@ -50,15 +50,17 @@ namespace UI_DSM.Client.Services.AnnotationService
         /// <summary>
         ///     Updates a <see cref="Annotation" />
         /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
         /// <param name="annotation">The <see cref="Annotation" />to update</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{Annotation}" /></returns>
-        Task<EntityRequestResponse<Annotation>> UpdateAnnotation(Annotation annotation);
+        Task<EntityRequestResponse<Annotation>> UpdateAnnotation(Guid projectId, Annotation annotation);
 
         /// <summary>
         ///     Deletes a <see cref="Annotation" />
         /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
         /// <param name="annotation">The <see cref="Annotation" /> to delete</param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /></returns>
-        Task<RequestResponseDto> DeleteAnnotation(Annotation annotation);
+        Task<RequestResponseDto> DeleteAnnotation(Guid projectId, Annotation annotation);
     }
 }

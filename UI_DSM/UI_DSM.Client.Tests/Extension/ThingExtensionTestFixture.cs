@@ -159,7 +159,6 @@ namespace UI_DSM.Client.Tests.Extension
         }
 
         [Test]
-        [Apartment(ApartmentState.STA)]
         public async Task VerifyGetRelatedThingName()
         {
             var categories = new List<CDP4Common.DTO.Category>
@@ -226,19 +225,20 @@ namespace UI_DSM.Client.Tests.Extension
 
             Assert.Multiple(() =>
             {
-                Assert.That(requirements[0].GetRelatedThingsName("de", ClassKind.Requirement), Is.Empty);
-                Assert.That(requirements[0].GetRelatedThingsName("derives", ClassKind.ElementDefinition), Is.Empty);
-                Assert.That(requirements[0].GetRelatedThingsName("derives", ClassKind.Requirement), Is.Not.Empty);
-                Assert.That(requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement), Is.Empty);
-                Assert.That(requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, false), Is.Not.Empty);
-                Assert.That(requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, false), Is.Not.Empty);
-                Assert.That(requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, false), Is.Not.Empty);
-                Assert.That(requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, false, false), Is.Not.Empty);
-                Assert.That(requirements[0].GetRelatedThingsName("derives", ClassKind.ElementDefinition, "req"), Is.Empty);
-                Assert.That(requirements[0].GetRelatedThingsName("derives", ClassKind.Requirement, "req"), Is.Not.Empty);
-                Assert.That(requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, "req"), Is.Empty);
-                Assert.That(requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, "req", false), Is.Not.Empty);
-                Assert.That(requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, "req", false), Is.Not.Empty);
+                Assert.That(() => requirements[0].GetRelatedThingsName("de", ClassKind.Requirement), Throws.Nothing);
+                Assert.That(() => requirements[0].GetRelatedThingsName("derives", ClassKind.ElementDefinition), Throws.Nothing);
+                Assert.That(() => requirements[0].GetRelatedThingsName("derives", ClassKind.Requirement, getShortname: false), Throws.Nothing);
+                Assert.That(() => requirements[0].GetRelatedThingsName("derives", ClassKind.Requirement), Throws.Nothing);
+                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement), Throws.Nothing);
+                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, false), Throws.Nothing);
+                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, false), Throws.Nothing);
+                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, false), Throws.Nothing);
+                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, false, false), Throws.Nothing);
+                Assert.That(() => requirements[0].GetRelatedThingsName("derives", ClassKind.ElementDefinition, "req"), Throws.Nothing);
+                Assert.That(() => requirements[0].GetRelatedThingsName("derives", ClassKind.Requirement, "req"), Throws.Nothing);
+                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, "req"), Throws.Nothing);
+                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, "req", false), Throws.Nothing);
+                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, "req", false), Throws.Nothing);
             });
         }
     }
