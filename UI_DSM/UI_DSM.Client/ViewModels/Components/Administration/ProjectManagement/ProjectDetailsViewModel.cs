@@ -86,6 +86,7 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement
                 ConfirmRenderStyle = ButtonRenderStyle.Danger,
                 OnCancel = new EventCallbackFactory().Create(this, this.OnCancelDelete),
                 OnConfirm = new EventCallbackFactory().Create(this, this.OnConfirmDelete),
+                ContentText = "Are you sure to want to remove this participant ?",
                 HeaderText = "Are you sure ?"
             };
         }
