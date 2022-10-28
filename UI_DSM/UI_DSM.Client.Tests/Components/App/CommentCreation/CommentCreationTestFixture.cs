@@ -76,10 +76,6 @@ namespace UI_DSM.Client.Tests.Components.App.CommentCreation
             await renderer.InvokeAsync(editForm.Instance.OnSubmit.InvokeAsync);
             Assert.That(this.eventCallbackCall, Is.EqualTo(0));
 
-            this.viewModel.Comment.Content = "<p>  </p>";
-            await renderer.InvokeAsync(editForm.Instance.OnSubmit.InvokeAsync);
-            Assert.That(this.eventCallbackCall, Is.EqualTo(0));
-
             this.viewModel.Comment.Content = "<p>something</p>";
 
             await renderer.InvokeAsync(editForm.Instance.OnSubmit.InvokeAsync);

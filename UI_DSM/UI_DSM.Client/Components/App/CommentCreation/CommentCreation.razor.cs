@@ -42,11 +42,9 @@ namespace UI_DSM.Client.Components.App.CommentCreation
         /// <returns>A <see cref="Task" /></returns>
         private async Task OnSubmit()
         {
-            if (this.ViewModel.Comment.Content == "<p><br></p>" ||
-                string.IsNullOrEmpty(this.ViewModel.Comment.Content) ||
-                string.IsNullOrWhiteSpace(XElement.Parse(this.ViewModel.Comment.Content.Replace("&nbsp;", "")).Value))
+            if (this.ViewModel.Comment.Content == "<p><br></p>" || string.IsNullOrEmpty(this.ViewModel.Comment.Content))
             {
-                this.ErrorMessage.ViewModel.HandleErrors(new List<string> { "The comment cannot have an empty content" });
+                this.ErrorMessage.ViewModel.HandleErrors(new List<string> { "The comment cannot be empty" });
             }
             else
             {
