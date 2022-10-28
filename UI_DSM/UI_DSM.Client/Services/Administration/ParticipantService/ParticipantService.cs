@@ -100,14 +100,13 @@ namespace UI_DSM.Client.Services.Administration.ParticipantService
         ///     Updates a <see cref="Participant" />
         /// </summary>
         /// <param name="participant">The <see cref="Participant" />to update</param>
+        /// <param name="projectId">The <see cref="Guid" /> of the project</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{Participant}" /></returns>
-        public async Task<EntityRequestResponse<Participant>> UpdateParticipant(Participant participant)
+        public async Task<EntityRequestResponse<Participant>> UpdateParticipant(Participant participant, Guid projectId)
         {
-            this.VerifyEntityAndContainer<Project>(participant);
-
             try
             {
-                this.ComputeMainRoute(participant.EntityContainer.Id);
+                this.ComputeMainRoute(projectId);
                 return await this.UpdateEntity(participant, 0);
             }
             catch (Exception exception)
@@ -120,14 +119,13 @@ namespace UI_DSM.Client.Services.Administration.ParticipantService
         ///     Deletes a <see cref="Participant" />
         /// </summary>
         /// <param name="participant">The <see cref="Participant" /> to delete</param>
+        /// <param name="projectId">The <see cref="Guid" /> of the project</param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /></returns>
-        public async Task<RequestResponseDto> DeleteParticipant(Participant participant)
+        public async Task<RequestResponseDto> DeleteParticipant(Participant participant, Guid projectId)
         {
-            this.VerifyEntityAndContainer<Project>(participant);
-
             try
             {
-                this.ComputeMainRoute(participant.EntityContainer.Id);
+                this.ComputeMainRoute(projectId);
                 return await this.DeleteEntity(participant);
             }
             catch (Exception exception)

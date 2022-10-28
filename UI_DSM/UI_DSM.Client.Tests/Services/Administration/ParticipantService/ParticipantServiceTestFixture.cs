@@ -251,14 +251,12 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
             var request = this.httpMessageHandler.When(HttpMethod.Delete, $"/Project/{project.Id}/Participant/{participant.Id}");
             request.Respond(_ => httpResponse);
 
-            Assert.That(async () => await this.service.DeleteParticipant(participant), Throws.Exception);
-
             project.Participants.Add(participant);
-            var result = await this.service.DeleteParticipant(participant);
+            var result = await this.service.DeleteParticipant(participant, project.Id);
             Assert.That(result.IsRequestSuccessful, Is.True);
 
             httpResponse.Content = new StringContent(string.Empty);
-            Assert.That(async () => await this.service.DeleteParticipant(participant), Throws.Exception);
+            Assert.That(async () => await this.service.DeleteParticipant(participant, project.Id), Throws.Exception);
         }
 
         [Test]
@@ -289,10 +287,9 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
             var request = this.httpMessageHandler.When(HttpMethod.Put, $"/Project/{project.Id}/Participant/{participant.Id}");
             request.Respond(_ => httpResponse);
 
-            Assert.That(async () => await this.service.UpdateParticipant(participant), Throws.Exception);
             project.Participants.Add(participant);
 
-            var requestResult = await this.service.UpdateParticipant(participant);
+            var requestResult = await this.service.UpdateParticipant(participant, project.Id);
             Assert.That(requestResult.IsRequestSuccessful, Is.False);
 
             requestResponse.IsRequestSuccessful = true;
@@ -301,10 +298,10 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
 
             httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
 
-            requestResult = await this.service.UpdateParticipant(participant);
+            requestResult = await this.service.UpdateParticipant(participant, project.Id);
             Assert.That(requestResult.IsRequestSuccessful, Is.True);
             httpResponse.Content = new StringContent(string.Empty);
-            Assert.That(async () => await this.service.UpdateParticipant(participant), Throws.Exception);
+            Assert.That(async () => await this.service.UpdateParticipant(participant, project.Id), Throws.Exception);
         }
 
         [Test]
