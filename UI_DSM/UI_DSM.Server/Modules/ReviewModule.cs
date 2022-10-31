@@ -183,7 +183,8 @@ namespace UI_DSM.Server.Modules
         public async Task GetOpenTasksAndComments(IReviewManager reviewManager,Guid projectId, HttpContext context)
         {
             var reviewsId = (await reviewManager.GetContainedEntities(projectId)).Select(x => x.Id);
-            var computedProperties =  reviewManager.GetOpenTasksAndComments(reviewsId);
+            
+            var computedProperties = await reviewManager.GetOpenTasksAndComments(reviewsId, context.User.Identity?.Name);
             await context.Response.Negotiate(computedProperties);
         }
     }

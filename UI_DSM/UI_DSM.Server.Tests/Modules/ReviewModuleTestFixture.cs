@@ -298,9 +298,9 @@ namespace UI_DSM.Server.Tests.Modules
                     TaskCount = 12
                 }
             };
-            this.reviewManager.As<IReviewManager>().Setup(x => x.GetOpenTasksAndComments(It.IsAny<IEnumerable<Guid>>())).Returns(result);
+            this.reviewManager.As<IReviewManager>().Setup(x => x.GetOpenTasksAndComments(It.IsAny<IEnumerable<Guid>>(), "user")).ReturnsAsync(result);
             await this.module.GetOpenTasksAndComments(this.reviewManager.As<IReviewManager>().Object,project.Id, this.context.Object);
-            this.reviewManager.As<IReviewManager>().Verify(x => x.GetOpenTasksAndComments(It.IsAny<IEnumerable<Guid>>()), Times.Once);
+            this.reviewManager.As<IReviewManager>().Verify(x => x.GetOpenTasksAndComments(It.IsAny<IEnumerable<Guid>>(), "user"), Times.Once);
         }
     }
 }

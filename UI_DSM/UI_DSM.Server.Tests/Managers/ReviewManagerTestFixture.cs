@@ -250,7 +250,7 @@ namespace UI_DSM.Server.Tests.Managers
         }
 
         [Test]
-        public void VerifyGetOpenTasksAndComments()
+        public async Task VerifyGetOpenTasksAndComments()
         {
             var participant = new Participant(Guid.NewGuid())
             {
@@ -265,6 +265,7 @@ namespace UI_DSM.Server.Tests.Managers
             var review = new Review(Guid.NewGuid());
             project.Reviews.Add(review);
             project.Reviews[0].ReviewObjectives.AddRange(CreateEntity<ReviewObjective>(3));
+            project.Reviews[0].ReviewItems.AddRange(CreateEntity<ReviewItem>(3));
 
             this.participantManager.Setup(x => x.GetParticipantForProject(project.Id, participant.User.UserName))
                 .ReturnsAsync(participant);
@@ -276,7 +277,7 @@ namespace UI_DSM.Server.Tests.Managers
                 reviewReviewObjective.ReviewTasks[0].IsAssignedTo = participant;
             }
 
-            project.Reviews[0].ReviewObjectives[0].Annotations.AddRange(CreateEntity<Comment>(8));
+            project.Reviews[0].ReviewItems[0].Annotations.AddRange(CreateEntity<Comment>(8));
 
             projects.Add(project);
 
@@ -284,12 +285,12 @@ namespace UI_DSM.Server.Tests.Managers
             this.reviewDbSet.UpdateDbSetCollection(project.Reviews);
             
             var guids = project.Reviews.Select(x => x.Id).ToList();
-            var computedProjectProperties = this.manager.GetOpenTasksAndComments(guids);
+            var computedProjectProperties = await this.manager.GetOpenTasksAndComments(guids, participant.User.UserName);
 
             var expectedComputed = new ComputedProjectProperties
             {
                 CommentCount = 8,
-                TaskCount = 12
+                TaskCount = 3
             };
 
             Assert.Multiple(() =>
