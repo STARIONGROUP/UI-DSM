@@ -285,7 +285,7 @@ namespace UI_DSM.Server.Tests.Managers
             this.reviewDbSet.UpdateDbSetCollection(project.Reviews);
             
             var guids = project.Reviews.Select(x => x.Id).ToList();
-            var computedProjectProperties = await this.manager.GetOpenTasksAndComments(guids, participant.User.UserName);
+            var computedProjectProperties = await this.manager.GetOpenTasksAndComments(guids, project.Id, participant.User.UserName);
 
             var expectedComputed = new ComputedProjectProperties
             {

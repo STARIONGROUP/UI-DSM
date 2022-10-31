@@ -184,7 +184,7 @@ namespace UI_DSM.Server.Modules
         {
             var reviewsId = (await reviewManager.GetContainedEntities(projectId)).Select(x => x.Id);
             
-            var computedProperties = await reviewManager.GetOpenTasksAndComments(reviewsId, context.User.Identity?.Name);
+            var computedProperties = await reviewManager.GetOpenTasksAndComments(reviewsId, projectId, context.User.Identity?.Name);
             await context.Response.Negotiate(computedProperties);
         }
     }
