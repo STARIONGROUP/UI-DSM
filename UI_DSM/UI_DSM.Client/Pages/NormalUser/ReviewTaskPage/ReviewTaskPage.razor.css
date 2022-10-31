@@ -1,34 +1,40 @@
 ﻿.task-page {
-    height: 100%;
-    display: grid;
-    grid-template-areas: "a b c";
-    grid-template-columns: 18vw 64vw 18vw;
+  height: 100%;
+  display: grid;
+  grid-template-areas: "a b c";
+  grid-template-columns: 320px calc(100% - 640px) 320px;
 }
 
 .task-page__sidebar__left {
-    grid-area: a;
-    border-right: 1px solid var(--colors-gray-100);
+  grid-area: a;
+  border-right: 1px solid var(--colors-gray-100);
+  height: calc(100vh - 114px);
+  overflow: auto;
 }
 
 .task-page__sidebar__right {
-    grid-area: c;
-    border-left: 1px solid var(--colors-gray-100);
+  grid-area: c;
+  border-left: 1px solid var(--colors-gray-100);
+  height: calc(100vh - 114px);
+  overflow: auto;
 }
 
 .task-page__body {
-    grid-area: b;
-    padding: var(--spacing-8);
+  grid-area: b;
+  padding: var(--spacing-8);
+  height: calc(100vh - 114px);
+  overflow: auto;
 }
 
 .task-page__body-inner {
-    display: grid;
-    align-items: flex-start;
-    gap: var(--spacing-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
 }
 
 .task-page__actions {
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
-    gap: var(--spacing-2);
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  gap: var(--spacing-2);
 }

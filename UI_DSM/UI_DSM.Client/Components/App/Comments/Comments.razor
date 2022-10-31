@@ -1,26 +1,32 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
 // Comments.razor
 // Copyright (c) 2022 RHEA System S.A.
-// 
+//
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
-// 
-// This file is part of UI-DSM. 
+//
+// This file is part of UI-DSM.
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 <AppAccordion Label="Comments">
-	<AppButton Click="@(this.ViewModel.OpenCommentCreationPopup)">
-		Create Comment
-	</AppButton>
-	<DxPopup CloseOnOutsideClick="false" HeaderText="Create Comment" @bind-Visible="@(this.ViewModel.IsOnCommentCreationMode)">
+
+
+	<div class="comments__header">
+		<button class="comments__add-button" onclick="@(this.ViewModel.OpenCommentCreationPopup)">
+			<FeatherMessageCircle Size="24" Color="currentColor" StrokeWidth="1.5f" /> Leave a comment
+		</button>
+	</div>
+
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Add comment" @bind-Visible="@(this.ViewModel.IsOnCommentCreationMode)">
 		<Content>
 			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
 				<CommentCreation ViewModel="@(this.ViewModel.CommentCreationViewModel)"/>
 			</CascadingValue>
 		</Content>
 	</DxPopup>
-	<DxPopup CloseOnOutsideClick="false" HeaderText="Update Comment" @bind-Visible="@(this.ViewModel.IsOnCommentUpdateMode)">
+
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Update comment" @bind-Visible="@(this.ViewModel.IsOnCommentUpdateMode)">
 		<Content>
 			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
 				<CommentCreation ViewModel="@(this.ViewModel.CommentCreationViewModel)"/>

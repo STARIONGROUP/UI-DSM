@@ -1,45 +1,73 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
 // RequirementBreakdownStructureView.razor
 // Copyright (c) 2022 RHEA System S.A.
-// 
+//
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
-// 
-// This file is part of UI-DSM. 
+//
+// This file is part of UI-DSM.
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
 @inherits GenericBaseView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IRequirementBreakdownStructureViewViewModel>
 
-<DxButton Text="Column Chooser"
-          RenderStyle="ButtonRenderStyle.Secondary"
-          CssClass="column-chooser-button"
-          Click="this.OnClick" />
 
-<DxGrid @ref="@this.DxGrid"
-		Data="@(this.ViewModel.Rows)"
-        @bind-SelectedDataItem="@this.ViewModel.SelectedElement"
-        SelectionMode="GridSelectionMode.Single"
-        AllowSelectRowByClick="true"
-		ShowFilterRow="true">
+<header>
+	<div class="view-header">
+		<h2>Read related requirements</h2>
+
+		<div class="view-actions">
+			<div class="column-chooser">
+				<AppButton Label="Select visible columns" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="this.OnClick">
+					<FeatherColumns Size="20" Color="currentColor" StrokeWidth="2" /> <span>Columns</span>
+				</AppButton>
+			</div>
+
+			<AppButton Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success">
+				<FeatherCheckCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Done</span>
+			</AppButton>
+		</div>
+	</div>
+</header>
+
+<div class="breakdown-view">
+<DxGrid
+	PageSize="8"
+	CssClass="default-grid"
+	@ref="@this.DxGrid"
+	Data="@(this.ViewModel.Rows)"
+	@bind-SelectedDataItem="@this.ViewModel.SelectedElement"
+	SelectionMode="GridSelectionMode.Single"
+	AllowSelectRowByClick="true"
+	ShowFilterRow="true"
+	HorizontalScrollBarMode="ScrollBarMode.Visible"
+>
 	<Columns>
-		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Id)" Caption="ID">
+
+		<DxGridDataColumn  ShowInColumnChooser="false">
+			<FilterRowCellTemplate />
 			<CellDisplayTemplate>
 				@if (HasComment(context))
 				{
 					<FeatherMessageCircle Size="20" Color="green" />
 				}
+			</CellDisplayTemplate>
+		</DxGridDataColumn>
+
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Id)" Caption="ID" Width="150">
+			<CellDisplayTemplate>
+				
 				<p>
 					@context.Value
 				</p>
 			</CellDisplayTemplate>
 		</DxGridDataColumn>
-		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Name)" />
-		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Definition)"/>
-		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Categories)" AllowSort="false">
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Name)"  Width="200" />
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Definition)"  Width="400" />
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Categories)"   Width="300" AllowSort="false">
 			<CellDisplayTemplate>
-				<ul>
+				<ul class="grid-list">
 					@foreach (var category in (IEnumerable<string>)context.Value)
 					{
 						<li>@category</li>
@@ -47,10 +75,10 @@
 				</ul>
 			</CellDisplayTemplate>
 		</DxGridDataColumn>
-		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Justification)"/>
-		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.DerivesFrom)" AllowSort="false">
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.Justification)"  Width="250" />
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.DerivesFrom)" AllowSort="false"  Width="250">
 			<CellDisplayTemplate>
-				<ul>
+				<ul class="grid-list">
 					@foreach (var derivesFrom in (IEnumerable<string>)context.Value)
 					{
 						<li>@derivesFrom</li>
@@ -58,9 +86,9 @@
 				</ul>
 			</CellDisplayTemplate>
 		</DxGridDataColumn>
-		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.DerivesTo)" AllowSort="false">
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.DerivesTo)" AllowSort="false"  Width="250">
 			<CellDisplayTemplate>
-				<ul>
+				<ul class="grid-list">
 					@foreach (var derivesTo in (IEnumerable<string>)context.Value)
 					{
 						<li>@derivesTo</li>
@@ -68,9 +96,9 @@
 				</ul>
 			</CellDisplayTemplate>
 		</DxGridDataColumn>
-		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.SatisfyByFunction)" AllowSort="false">
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.SatisfyByFunction)" AllowSort="false" Width="250">
 			<CellDisplayTemplate>
-				<ul>
+				<ul class="grid-list">
 					@foreach (var satisfyByFunction in (IEnumerable<string>)context.Value)
 					{
 						<li>@satisfyByFunction</li>
@@ -78,9 +106,9 @@
 				</ul>
 			</CellDisplayTemplate>
 		</DxGridDataColumn>
-		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.SatisfyByProduct)" AllowSort="false">
+		<DxGridDataColumn FieldName="@nameof(RequirementBreakdownStructureViewRowViewModel.SatisfyByProduct)" AllowSort="false" Width="250">
 			<CellDisplayTemplate>
-				<ul>
+				<ul class="grid-list">
 					@foreach (var satisfyByProduct in (IEnumerable<string>)context.Value)
 					{
 						<li>@satisfyByProduct</li>
@@ -90,3 +118,4 @@
 		</DxGridDataColumn>
 	</Columns>
 </DxGrid>
+</div>
