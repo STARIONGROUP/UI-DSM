@@ -10,24 +10,39 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 <AppAccordion Label="Comments">
-	<AppButton Click="@(this.ViewModel.OpenCreationPopup)">
+	<AppButton Click="@(this.ViewModel.OpenCommentCreationPopup)">
 		Create Comment
 	</AppButton>
-	<DxPopup CloseOnOutsideClick="false" HeaderText="Create Comment" @bind-Visible="@(this.ViewModel.IsOnCreationMode)">
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Create Comment" @bind-Visible="@(this.ViewModel.IsOnCommentCreationMode)">
 		<Content>
 			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
 				<CommentCreation ViewModel="@(this.ViewModel.CommentCreationViewModel)"/>
 			</CascadingValue>
 		</Content>
 	</DxPopup>
-	<DxPopup CloseOnOutsideClick="false" HeaderText="Update Comment" @bind-Visible="@(this.ViewModel.IsOnUpdateMode)">
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Update Comment" @bind-Visible="@(this.ViewModel.IsOnCommentUpdateMode)">
 		<Content>
 			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
 				<CommentCreation ViewModel="@(this.ViewModel.CommentCreationViewModel)"/>
 			</CascadingValue>
 		</Content>
 	</DxPopup>
-	<ConfirmCancelPopup ViewModel="@this.ViewModel.ConfirmCancelPopupViewModel"/>
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Create Reply" @bind-Visible="@(this.ViewModel.IsOnReplyCreationMode)">
+		<Content>
+			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+				<ReplyCreation ViewModel="@(this.ViewModel.ReplyCreationViewModel)"/>
+			</CascadingValue>
+		</Content>
+	</DxPopup>
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Update Comment" @bind-Visible="@(this.ViewModel.IsOnReplyUpdateMode)">
+		<Content>
+			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+				<ReplyCreation ViewModel="@(this.ViewModel.ReplyCreationViewModel)"/>
+			</CascadingValue>
+		</Content>
+	</DxPopup>
+	<ConfirmCancelPopup ViewModel="@this.ViewModel.CommentConfirmCancelPopupViewModel"/>
+	<ConfirmCancelPopup ViewModel="@this.ViewModel.ReplyConfirmCancelPopupViewModel"/>
 	@foreach (var comment in this.ViewModel.Comments.Items.OrderBy(x => x.CreatedOn))
 	{
 		<CommentCard ViewModel="@this.CreateCommentCardViewModel(comment)" OnClick="this.OnCommentCardClick"/>

@@ -15,13 +15,17 @@ namespace UI_DSM.Client.Components.App.CommentCard
 {
     using Microsoft.AspNetCore.Components;
 
+    using UI_DSM.Client.Components.App.ReplyCard;
+    using UI_DSM.Client.Components.App.SelectableComponent;
     using UI_DSM.Client.ViewModels.App.CommentCard;
+    using UI_DSM.Client.ViewModels.App.ReplyCard;
     using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     UI Card for a <see cref="Shared.Models.Comment" />
     /// </summary>
-    public partial class CommentCard
+    public partial class CommentCard : SelectableComponent
     {
         /// <summary>
         ///     All available <see cref="StatusKind" />
@@ -35,25 +39,44 @@ namespace UI_DSM.Client.Components.App.CommentCard
         };
 
         /// <summary>
+        ///     The currently selected <see cref="ReplyCard" />
+        /// </summary>
+        private ReplyCard selectedReplyCard;
+
+        /// <summary>
         ///     The <see cref="ICommentCardViewModel" />
         /// </summary>
         [Parameter]
         public ICommentCardViewModel ViewModel { get; set; }
 
         /// <summary>
+        ///     <see cref="EventCallback{CommentCard}" /> when a click is performed
         /// </summary>
         [Parameter]
         public EventCallback<CommentCard> OnClick { get; set; }
 
         /// <summary>
-        ///     A value indicating if the <see cref="CommentCard" /> is selected
-        /// </summary>
-        public bool IsSelected { get; set; }
-
-        /// <summary>
         ///     Value indicating if the component is on update mode
         /// </summary>
         public bool IsOnStatusUpdateMode { get; set; }
+
+        /// <summary>
+        ///     Selects the current component
+        /// </summary>
+        public override void Select()
+        {
+            this.DeselectReplyCard();
+            base.Select();
+        }
+
+        /// <summary>
+        ///     Deselects the current component
+        /// </summary>
+        public override void Deselect()
+        {
+            this.DeselectReplyCard();
+            base.Deselect();
+        }
 
         /// <summary>
         ///     Handle the click event of the content edit button
@@ -80,6 +103,36 @@ namespace UI_DSM.Client.Components.App.CommentCard
         private Task OnClickEvent()
         {
             return this.OnClick.InvokeAsync(this);
+        }
+
+        /// <summary>
+        ///     Creates a new <see cref="IReplyCardViewModel" /> based on a <see cref="Reply" />
+        /// </summary>
+        /// <param name="reply">The <see cref="Reply" /></param>
+        /// <returns>The initialized <see cref="IReplyCardViewModel" /></returns>
+        private IReplyCardViewModel CreateReplyCardViewModel(Reply reply)
+        {
+            return new ReplyCardViewModel(reply, this.ViewModel.OnContentEditReplyCallback, this.ViewModel.OnDeleteReplyCallback, this.ViewModel.CurrentParticipant);
+        }
+
+        /// <summary>
+        ///     Handle the selection of a <see cref="ReplyCard" />
+        /// </summary>
+        /// <param name="replyCard">The new selected <see cref="ReplyCard" /></param>
+        private void OnReplyCardClick(ReplyCard replyCard)
+        {
+            this.selectedReplyCard?.Deselect();
+            this.selectedReplyCard = replyCard;
+            this.selectedReplyCard.Select();
+        }
+
+        /// <summary>
+        ///     Force to deselect and reset the <see cref="selectedReplyCard" />
+        /// </summary>
+        private void DeselectReplyCard()
+        {
+            this.selectedReplyCard?.Deselect();
+            this.selectedReplyCard = null;
         }
     }
 }

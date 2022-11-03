@@ -54,16 +54,18 @@ namespace UI_DSM.Client.Services.ReplyService
         ///     Updates a <see cref="Reply" />
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="commentId">The <see cref="Guid"/> of the <see cref="Comment"/></param>
         /// <param name="reply">The <see cref="Reply" />to update</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{Reply}" /></returns>
-        Task<EntityRequestResponse<Reply>> UpdateReply(Guid projectId, Reply reply);
+        Task<EntityRequestResponse<Reply>> UpdateReply(Guid projectId, Guid commentId, Reply reply);
 
         /// <summary>
         ///     Deletes a <see cref="Reply" />
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="commentId">The <see cref="Guid"/> of the <see cref="Comment"/></param>
         /// <param name="reply">The <see cref="Reply" /> to delete</param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /></returns>
-        Task<RequestResponseDto> DeleteReply(Guid projectId, Reply reply);
+        Task<RequestResponseDto> DeleteReply(Guid projectId, Guid commentId, Reply reply);
     }
 }

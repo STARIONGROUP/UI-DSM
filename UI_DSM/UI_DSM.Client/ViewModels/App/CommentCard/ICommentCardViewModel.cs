@@ -15,6 +15,7 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
 {
     using Microsoft.AspNetCore.Components;
 
+    using UI_DSM.Client.Components.App.ReplyCard;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
@@ -44,9 +45,29 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
         bool IsAllowedToEdit { get; }
 
         /// <summary>
-        ///     The <see cref="EventCallback" /> to update the status of the <see cref="Comment" />
+        ///     The <see cref="EventCallback" /> when the user wants to reply to the <see cref="Comment" />
         /// </summary>
-        EventCallback<Comment> OnUpdateStatusCallback { get; set; }
+        EventCallback OnReplyCallback { get; set; }
+
+        /// <summary>
+        ///     The current selected <see cref="ReplyCard" />
+        /// </summary>
+        ReplyCard SelectedReplyCard { get; set; }
+
+        /// <summary>
+        ///     The currently logged <see cref="Participant" />
+        /// </summary>
+        Participant CurrentParticipant { get; }
+
+        /// <summary>
+        ///     <see cref="EventCallback{TValue}" /> when we want to edit a <see cref="Reply" />
+        /// </summary>
+        EventCallback<Reply> OnContentEditReplyCallback { get; set; }
+
+        /// <summary>
+        ///     <see cref="EventCallback{TValue}" /> when we want to delete a <see cref="Reply" />
+        /// </summary>
+        EventCallback<Reply> OnDeleteReplyCallback { get; set; }
 
         /// <summary>
         ///     Update the status of the <see cref="Comment" />
