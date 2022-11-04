@@ -210,7 +210,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
                 });
 
                 var commentCard = renderer.FindComponent<CommentCard>();
-                await renderer.InvokeAsync(commentCard.Instance.ViewModel.OnReplyCallback.InvokeAsync);
+                await renderer.InvokeAsync(() => commentCard.Instance.ViewModel.OnReplyCallback.InvokeAsync(commentCard.Instance.ViewModel.Comment));
                 Assert.That(this.viewModel.IsOnReplyCreationMode, Is.True);
 
                 this.replyService.Setup(x => x.CreateReply(this.viewModel.ProjectId, commentCard.Instance.ViewModel.Comment.Id, It.IsAny<Reply>()))
