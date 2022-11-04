@@ -158,15 +158,8 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
                 Assert.That(this.viewModel.Comments, Has.Count.EqualTo(1));
 
                 var commentCard = renderer.FindComponent<CommentCard>();
-                Assert.That(commentCard.Instance.IsSelected, Is.False);
 
-                await renderer.InvokeAsync(() => commentCard.Instance.OnClick.InvokeAsync(commentCard.Instance));
-
-                Assert.Multiple(() =>
-                {
-                    Assert.That(commentCard.Instance.ViewModel.IsAllowedToEdit, Is.True);
-                    Assert.That(commentCard.Instance.IsSelected, Is.True);
-                });
+                Assert.That(commentCard.Instance.ViewModel.IsAllowedToEdit, Is.True);
 
                 await renderer.InvokeAsync(() => commentCard.Instance.ViewModel.OnContentEditCallback.InvokeAsync(commentCard.Instance.ViewModel.Comment));
                 Assert.That(this.viewModel.IsOnCommentUpdateMode, Is.True);
@@ -217,14 +210,8 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
                 });
 
                 var commentCard = renderer.FindComponent<CommentCard>();
-                await renderer.InvokeAsync(() => commentCard.Instance.OnClick.InvokeAsync(commentCard.Instance));
                 await renderer.InvokeAsync(commentCard.Instance.ViewModel.OnReplyCallback.InvokeAsync);
-
-                Assert.Multiple(() =>
-                {
-                    Assert.That(this.viewModel.IsOnReplyCreationMode, Is.True);
-                    Assert.That(commentCard.Instance.IsSelected, Is.True);
-                });
+                Assert.That(this.viewModel.IsOnReplyCreationMode, Is.True);
 
                 this.replyService.Setup(x => x.CreateReply(this.viewModel.ProjectId, commentCard.Instance.ViewModel.Comment.Id, It.IsAny<Reply>()))
                     .ReturnsAsync(EntityRequestResponse<Reply>.Fail(new List<string>{"An error"}));
@@ -240,9 +227,6 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
 
                 var replyCard = renderer.FindComponent<ReplyCard>();
                 Assert.That(replyCard, Is.Not.Null);
-
-                await renderer.InvokeAsync(() => replyCard.Instance.OnClick.InvokeAsync(replyCard.Instance));
-                Assert.That(replyCard.Instance.IsSelected);
 
                 await renderer.InvokeAsync(() => replyCard.Instance.ViewModel.OnContentEditCallback.InvokeAsync(replyCard.Instance.ViewModel.Reply));
                 Assert.That(this.viewModel.IsOnReplyUpdateMode, Is.True);

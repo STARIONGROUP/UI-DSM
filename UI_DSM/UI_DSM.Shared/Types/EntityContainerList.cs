@@ -94,5 +94,34 @@ namespace UI_DSM.Shared.Types
                 this.Add(entity);
             }
         }
+
+        /// <summary>
+        ///     Replace an element into the <see cref="List{T}" /> and sets the <see cref="Entity.EntityContainer" /> property
+        /// </summary>
+        /// <param name="original">The original item</param>
+        /// <param name="update">The item to replace by</param>
+        public void Replace(TEntity original, TEntity update)
+        {
+            if (original is null)
+            {
+                throw new ArgumentNullException(nameof(original));
+            }
+
+            if (update is null)
+            {
+                throw new ArgumentNullException(nameof(update));
+            }
+
+            var index = this.IndexOf(original);
+
+            if (index == -1)
+            {
+                throw new ArgumentException("Cannot find index of original item. Either it does not exist in the list or the hashcode has mutated");
+            }
+
+            this.Remove(original);
+            this.Insert(index, update);
+            update.EntityContainer = this.entityContainer;
+        }
     }
 }

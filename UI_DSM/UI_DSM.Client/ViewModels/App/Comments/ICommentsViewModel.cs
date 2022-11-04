@@ -96,7 +96,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <summary>
         ///     Event callback when a user wants to reply to a <see cref="Comment" />
         /// </summary>
-        EventCallback OnReplyCallback { get; set; }
+        EventCallback<Comment> OnReplyCallback { get; set; }
 
         /// <summary>
         ///     Event callback when a user wants to edit the content of a <see cref="Reply" />

@@ -34,7 +34,7 @@
 			</CascadingValue>
 		</Content>
 	</DxPopup>
-	<DxPopup CloseOnOutsideClick="false" HeaderText="Update Comment" @bind-Visible="@(this.ViewModel.IsOnReplyUpdateMode)">
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Update Reply" @bind-Visible="@(this.ViewModel.IsOnReplyUpdateMode)">
 		<Content>
 			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
 				<ReplyCreation ViewModel="@(this.ViewModel.ReplyCreationViewModel)"/>
@@ -45,6 +45,6 @@
 	<ConfirmCancelPopup ViewModel="@this.ViewModel.ReplyConfirmCancelPopupViewModel"/>
 	@foreach (var comment in this.ViewModel.Comments.Items.OrderBy(x => x.CreatedOn))
 	{
-		<CommentCard ViewModel="@this.CreateCommentCardViewModel(comment)" OnClick="this.OnCommentCardClick"/>
+		<CommentCard ViewModel="@this.CreateCommentCardViewModel(comment)"/>
 	}
 </AppAccordion>

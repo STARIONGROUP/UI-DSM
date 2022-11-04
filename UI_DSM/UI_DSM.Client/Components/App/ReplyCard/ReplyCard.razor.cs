@@ -30,12 +30,6 @@ namespace UI_DSM.Client.Components.App.ReplyCard
         public IReplyCardViewModel ViewModel { get; set; }
 
         /// <summary>
-        ///     <see cref="EventCallback{ReplyCard}" /> when a click is performed
-        /// </summary>
-        [Parameter]
-        public EventCallback<ReplyCard> OnClick { get; set; }
-
-        /// <summary>
         ///     Handle the click event of the content edit button
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>
@@ -51,15 +45,6 @@ namespace UI_DSM.Client.Components.App.ReplyCard
         private Task OnDeleteClick()
         {
             return this.ViewModel.OnDeleteCallback.InvokeAsync(this.ViewModel.Reply);
-        }
-
-        /// <summary>
-        ///     Handle the onClick event
-        /// </summary>
-        /// <returns>A <see cref="Task" /></returns>
-        private Task OnClickEvent()
-        {
-            return this.InvokeAsync(() => this.OnClick.InvokeAsync(this));
         }
     }
 }

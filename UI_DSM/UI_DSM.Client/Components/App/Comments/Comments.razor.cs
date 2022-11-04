@@ -35,11 +35,6 @@ namespace UI_DSM.Client.Components.App.Comments
         private readonly List<IDisposable> disposables = new();
 
         /// <summary>
-        ///     The currently selected <see cref="CommentCard" />
-        /// </summary>
-        private CommentCard selectedCommentCard;
-
-        /// <summary>
         ///     The <see cref="ICommentsViewModel" />
         /// </summary>
         [Inject]
@@ -83,18 +78,6 @@ namespace UI_DSM.Client.Components.App.Comments
             return new CommentCardViewModel(comment, this.ViewModel.Participant, this.ViewModel.OnCommentEditCallback, this.ViewModel.OnDeleteCallback, 
                 this.ViewModel.OnUpdateStatusCallback, this.ViewModel.OnReplyCallback, this.ViewModel.OnReplyEditContentCallback,
                 this.ViewModel.OnDeleteReplyCallback);
-        }
-
-        /// <summary>
-        ///     Handle the selection of a <see cref="CommentCard" />
-        /// </summary>
-        /// <param name="commentCard">The new selected <see cref="CommentCard" /></param>
-        private void OnCommentCardClick(CommentCard commentCard)
-        {
-            this.selectedCommentCard?.Deselect();
-            this.selectedCommentCard = commentCard;
-            this.selectedCommentCard.Select();
-            this.ViewModel.SetCurrentComment(this.selectedCommentCard.ViewModel.Comment);
         }
     }
 }

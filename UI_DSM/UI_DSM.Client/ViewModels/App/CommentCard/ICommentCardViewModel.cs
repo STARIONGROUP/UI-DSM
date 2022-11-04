@@ -47,7 +47,7 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
         /// <summary>
         ///     The <see cref="EventCallback" /> when the user wants to reply to the <see cref="Comment" />
         /// </summary>
-        EventCallback OnReplyCallback { get; set; }
+        EventCallback<Comment> OnReplyCallback { get; set; }
 
         /// <summary>
         ///     The current selected <see cref="ReplyCard" />

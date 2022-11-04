@@ -9,17 +9,13 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-@inherits SelectableComponent
 
-<div class="app-reply" @onclick="this.OnClickEvent">
+<div class="app-reply">
 	<div class="app-reply__header">
-		@if (this.IsSelected)
+		@if (this.ViewModel.IsAllowedToEdit)
 		{
-			@if (this.ViewModel.IsAllowedToEdit)
-			{
-				<FeatherEdit Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnContentEditClick"/>
-				<FeatherTrash2 Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnDeleteClick"/>
-			}
+			<FeatherEdit Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnContentEditClick"/>
+			<FeatherTrash2 Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnDeleteClick"/>
 		}
 	</div>
 

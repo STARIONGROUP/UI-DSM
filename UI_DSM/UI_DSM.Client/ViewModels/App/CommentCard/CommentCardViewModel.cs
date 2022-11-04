@@ -37,7 +37,7 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
         /// <param name="onDeleteReplyCallback">The <see cref="EventCallback{TValue}" /> for delete reply</param>
         public CommentCardViewModel(Comment comment, Participant currentParticipant,
             EventCallback<Comment> onContentEditCallback, EventCallback<Comment> onDeleteCallback, EventCallback<Comment> onUpdateStatusCallback,
-            EventCallback onReplyCallback, EventCallback<Reply> onContentEditReplyCallback, EventCallback<Reply> onDeleteReplyCallback)
+            EventCallback<Comment> onReplyCallback, EventCallback<Reply> onContentEditReplyCallback, EventCallback<Reply> onDeleteReplyCallback)
         {
             this.Comment = comment;
             this.CurrentParticipant = currentParticipant;
@@ -78,7 +78,7 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
         ///     The <see cref="EventCallback" /> when the user wants to reply to the
         ///     <see cref="ICommentCardViewModel.Comment" />
         /// </summary>
-        public EventCallback OnReplyCallback { get; set; }
+        public EventCallback<Comment> OnReplyCallback { get; set; }
 
         /// <summary>
         ///     The current selected <see cref="ReplyCard" />

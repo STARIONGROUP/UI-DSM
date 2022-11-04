@@ -126,7 +126,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
             this.OnCommentEditCallback = new EventCallbackFactory().Create(this, (Comment comment) => this.OpenUpdateComment(comment));
             this.OnDeleteCallback = new EventCallbackFactory().Create(this, (Comment comment) => this.AskToDeleteComment(comment));
             this.OnUpdateStatusCallback = new EventCallbackFactory().Create(this, (Comment comment) => this.UpdateCommentStatus(comment));
-            this.OnReplyCallback = new EventCallbackFactory().Create(this, this.OpenReplyCreationPopup);
+            this.OnReplyCallback = new EventCallbackFactory().Create(this, (Comment comment) => this.OpenReplyCreationPopup(comment));
             this.OnReplyEditContentCallback = new EventCallbackFactory().Create(this, (Reply reply) => this.OpenUpdateReply(reply));
             this.OnDeleteReplyCallback = new EventCallbackFactory().Create(this, (Reply reply) => this.AskToDeleteReply(reply));
 
@@ -192,7 +192,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <summary>
         ///     Event callback when a user wants to reply to a <see cref="Comment" />
         /// </summary>
-        public EventCallback OnReplyCallback { get; set; }
+        public EventCallback<Comment> OnReplyCallback { get; set; }
 
         /// <summary>
         ///     Event callback when a user wants to edit the content of a <see cref="Reply" />
@@ -346,6 +346,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <param name="reply">The <see cref="Reply" /> to update</param>
         private void OpenUpdateReply(Reply reply)
         {
+            this.selectedComment = reply.EntityContainer as Comment;
             this.ReplyCreationViewModel.Reply = reply;
             this.ErrorMessageViewModel.Errors.Clear();
             this.IsOnReplyUpdateMode = true;
@@ -420,8 +421,10 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <summary>
         ///     Opens the creation popup for a <see cref="Reply" />
         /// </summary>
-        private void OpenReplyCreationPopup()
+        /// <param name="comment">The <see cref="Comment"/></param>
+        private void OpenReplyCreationPopup(Comment comment)
         {
+            this.selectedComment = comment;
             this.ReplyCreationViewModel.Reply = new Reply();
             this.ErrorMessageViewModel.Errors.Clear();
             this.IsOnReplyCreationMode = true;

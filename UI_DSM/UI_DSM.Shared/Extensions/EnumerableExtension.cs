@@ -17,6 +17,7 @@ namespace UI_DSM.Shared.Extensions
 
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
+    using UI_DSM.Shared.Types;
 
     /// <summary>
     ///     Extension class for <see cref="IEnumerable{Entity}" />
@@ -41,6 +42,26 @@ namespace UI_DSM.Shared.Extensions
         /// <param name="resolvedEntity">A <see cref="Dictionary{TKey,TValue}" /> of all <see cref="Entity" /></param>
         /// <typeparam name="TEntity">An <see cref="Entity" /></typeparam>
         public static void ResolveList<TEntity>(this List<TEntity> collection, IEnumerable<Guid> guids, Dictionary<Guid, Entity> resolvedEntity) where TEntity : Entity
+        {
+            collection.Clear();
+
+            foreach (var guid in guids)
+            {
+                if (resolvedEntity.TryGetValue(guid, out var entity) && entity is TEntity foundEntity)
+                {
+                    collection.Add(foundEntity);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Resolve the <see cref="List{TEntity}" /> from the <see cref="IEnumerable{Guid}" />
+        /// </summary>
+        /// <param name="collection">The <see cref="EntityContainerList{TEntity}"/> of <see cref="TEntity" /></param>
+        /// <param name="guids">A collection of <see cref="Guid" /> of <see cref="Entity" /> to find</param>
+        /// <param name="resolvedEntity">A <see cref="Dictionary{TKey,TValue}" /> of all <see cref="Entity" /></param>
+        /// <typeparam name="TEntity">An <see cref="Entity" /></typeparam>
+        public static void ResolveList<TEntity>(this EntityContainerList<TEntity> collection, IEnumerable<Guid> guids, Dictionary<Guid, Entity> resolvedEntity) where TEntity : Entity
         {
             collection.Clear();
 
