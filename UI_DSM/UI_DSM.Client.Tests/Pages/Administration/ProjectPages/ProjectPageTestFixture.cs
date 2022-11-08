@@ -27,6 +27,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
     using UI_DSM.Client.Services.Administration.ProjectService;
     using UI_DSM.Client.Services.Administration.RoleService;
     using UI_DSM.Client.Services.ArtifactService;
+    using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components.Administration.ModelManagement;
     using UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages;
     using UI_DSM.Shared.Models;
@@ -49,6 +50,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
         public void Setup()
         {
             this.context = new TestContext();
+            this.context.ConfigureDevExpressBlazor();
             this.projectService = new Mock<IProjectService>();
             this.participantService = new Mock<IParticipantService>();
             this.roleService = new Mock<IRoleService>();
@@ -64,7 +66,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
         [TearDown]
         public void Teardown()
         {
-            this.context.Dispose();
+            this.context.CleanContext();
         }
 
         [Test]
@@ -73,10 +75,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
             var projectGuid = Guid.NewGuid();
             this.projectService.Setup(x => x.GetProject(projectGuid, 0)).ReturnsAsync((Project)null);
 
-            var renderer = this.context.RenderComponent<ProjectPage>(parameters =>
-            {
-                parameters.Add(p => p.ProjectId, projectGuid.ToString());
-            });
+            var renderer = this.context.RenderComponent<ProjectPage>(parameters => { parameters.Add(p => p.ProjectId, projectGuid.ToString()); });
 
             Assert.That(() => renderer.FindComponent<ProjectDetails>(), Throws.Exception);
 
@@ -94,7 +93,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
 
             this.roleService.Setup(x => x.GetRoles(0)).ReturnsAsync(new List<Role>()
             {
-                new (Guid.NewGuid())
+                new(Guid.NewGuid())
                 {
                     RoleName = "Reviewer"
                 }
@@ -102,7 +101,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
 
             this.participantService.Setup(x => x.GetAvailableUsersForCreation(projectGuid)).ReturnsAsync(new List<UserEntity>()
             {
-                new (Guid.NewGuid())
+                new(Guid.NewGuid())
                 {
                     UserName = "user"
                 }
@@ -117,7 +116,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
             await renderer.InvokeAsync(() => this.viewModel.ParticipantCreationViewModel.OnValidSubmit.InvokeAsync());
 
             Assert.That(this.viewModel.IsOnCreationMode, Is.True);
-           
+
             this.participantService.Setup(x => x.CreateParticipant(projectGuid, It.IsAny<Participant>()))
                 .ReturnsAsync(EntityRequestResponse<Participant>.Success(new Participant()));
 

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IRequirementBreakdownStructureViewViewModel.cs" company="RHEA System S.A.">
+// <copyright file="TraceabilityToVisibilityState.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,18 +11,26 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
+namespace UI_DSM.Client.Enumerator
 {
-    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
-
     /// <summary>
-    ///     Interface definition for <see cref="RequirementBreakdownStructureViewViewModel" />
+    ///     Represents visibility state based on traceability
     /// </summary>
-    public interface IRequirementBreakdownStructureViewViewModel: IBaseViewViewModel
+    public enum TraceabilityToVisibilityState
     {
         /// <summary>
-        ///     A collection of <see cref="RequirementRowViewModel" />
+        ///     Visible even without any trace
         /// </summary>
-        IEnumerable<RequirementRowViewModel> Rows { get; }
+        All,
+
+        /// <summary>
+        ///     Visible only if has trace
+        /// </summary>
+        WithTrace,
+
+        /// <summary>
+        ///     Visible only if does not have trace
+        /// </summary>
+        WithoutTrace
     }
 }

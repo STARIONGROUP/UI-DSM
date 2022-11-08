@@ -73,7 +73,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     Initialize this view model properties
         /// </summary>
-        /// <param name="things">A collection of <see cref="Things" /></param>
+        /// <param name="things">A collection of <see cref="Thing" /></param>
         /// <param name="projectId">The <see cref="Project" /> id</param>
         /// <param name="reviewId">The <see cref="Review" /> id</param>
         /// <returns>A <see cref="Task" /></returns>

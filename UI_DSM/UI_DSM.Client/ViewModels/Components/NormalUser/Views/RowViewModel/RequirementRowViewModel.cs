@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="RequirementBreakdownStructureViewRowViewModel.cs" company="RHEA System S.A.">
+// <copyright file="RequirementRowViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -23,22 +23,21 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
     /// <summary>
     ///     Row view model to display content for a <see cref="Requirement" />
     /// </summary>
-    public class RequirementBreakdownStructureViewRowViewModel : HaveThingRowViewModel<Requirement>
+    public class RequirementRowViewModel : HaveThingRowViewModel<Requirement>
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="HaveThingRowViewModel{TThing}" /> class.
+        ///     Initializes a new instance of the <see cref="RequirementRowViewModel" /> class.
         /// </summary>
         /// <param name="thing">The <see cref="Requirement" /></param>
         /// <param name="reviewItem">The <see cref="ReviewItem" /></param>
-        public RequirementBreakdownStructureViewRowViewModel(Requirement thing, ReviewItem reviewItem) : base(thing)
+        public RequirementRowViewModel(Requirement thing, ReviewItem reviewItem) : base(thing, reviewItem)
         {
-            this.UpdateReviewItem(reviewItem);
         }
 
         /// <summary>
         ///     The ShortName of the <see cref="Requirement" />
         /// </summary>
-        public string Id => this.Thing.ShortName;
+        public override string Id => this.Thing.ShortName;
 
         /// <summary>
         ///     The Name of the <see cref="Requirement" />
@@ -104,5 +103,20 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         ///     The names of products that satisfies the <see cref="Requirement" />
         /// </summary>
         public IEnumerable<string> SatisfyByProduct => this.Thing.GetRelatedThingsName("satisfy", ClassKind.ElementDefinition, "product", false, false);
+
+        /// <summary>
+        ///     The name of the <see cref="RequirementsSpecification" />
+        /// </summary>
+        public string Specification => this.Thing.GetSpecificationName();
+
+        /// <summary>
+        ///     The name of the <see cref="RequirementsGroup" />
+        /// </summary>
+        public string Group => this.Thing.Group?.ShortName;
+
+        /// <summary>
+        ///     A collection of name for <see cref="Requirement" />s that trace this <see cref="Requirement" />
+        /// </summary>
+        public IEnumerable<string> Traces => this.Thing.GetRelatedThingsName("trace", ClassKind.Requirement);
     }
 }

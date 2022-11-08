@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IRequirementBreakdownStructureViewViewModel.cs" company="RHEA System S.A.">
+// <copyright file="IRequirementTraceabilityToRequirementViewViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -13,16 +13,10 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
-    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
-
     /// <summary>
-    ///     Interface definition for <see cref="RequirementBreakdownStructureViewViewModel" />
+    ///     Interface definition for <see cref="RequirementTraceabilityToRequirementViewViewModel" />
     /// </summary>
-    public interface IRequirementBreakdownStructureViewViewModel: IBaseViewViewModel
+    public interface IRequirementTraceabilityToRequirementViewViewModel : IHaveTraceabilityTableViewModel
     {
-        /// <summary>
-        ///     A collection of <see cref="RequirementRowViewModel" />
-        /// </summary>
-        IEnumerable<RequirementRowViewModel> Rows { get; }
     }
 }

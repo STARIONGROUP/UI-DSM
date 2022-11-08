@@ -71,8 +71,12 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
         public async Task OnInitializedAsync(Guid projectGuid)
         {
             var projectResponse = await this.projectService.GetProject(projectGuid, 1);
-            this.ProjectReviewViewModel.Project = projectResponse;
-            this.ProjectReviewViewModel.CommentsAndTasks = await this.reviewService.GetOpenTasksAndComments(projectGuid);
+
+            if (projectResponse != null)
+            {
+                this.ProjectReviewViewModel.Project = projectResponse;
+                this.ProjectReviewViewModel.CommentsAndTasks = await this.reviewService.GetOpenTasksAndComments(projectGuid);
+            }
         }
     }
 }

@@ -1,0 +1,49 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// Filter.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.Model
+
+<div id="@this.Id">
+	<AppButton Type="button" Variant="AppButton.VariantValue.Tertiary" Click="this.OpenCloseFilter">
+		@this.ChildContent
+	</AppButton>
+</div>
+<DxDropDown @bind-IsOpen="@this.ViewModel.IsFilterVisible"
+	PreventCloseOnPositionTargetClick="true"
+            Width="200"
+            MaxHeight="500"
+            PositionTarget="@this.TargetPosition"
+            PositionMode="DropDownPositionMode.Bottom">
+	<BodyTemplate>
+		<button @onclick="() => this.SelectDeselectAll(true)">Select All</button>
+		<button @onclick="() => this.SelectDeselectAll(false)">Deselect All</button>
+		<div>Filter on : </div>
+		<DxComboBox Data="@this.ViewModel.AvailableFilters"
+		            @bind-Value="@this.ViewModel.SelectedFilterModel"
+		            TextFieldName="@nameof(FilterModel.DisplayName)"/>
+
+		@foreach (var filter in this.ViewModel.SelectedFilters[this.ViewModel.SelectedFilterModel.ClassKind])
+		{
+			<div @onclick="() => this.ViewModel.OnChangeValue(filter)">
+				<input type="checkbox" checked="@filter.IsSelected"/>
+
+				@if (this.ViewModel.SelectedFilterModel.UseShortName)
+				{
+					<p>@filter.DefinedThing.ShortName</p>
+				}
+				else
+				{
+					<p>@filter.DefinedThing.Name</p>
+				}
+			</div>
+		}
+	</BodyTemplate>
+</DxDropDown>

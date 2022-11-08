@@ -77,7 +77,6 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ProjectPage
             };
 
             this.projectService.Setup(x => x.GetProject(projectGuid, 1)).ReturnsAsync(project);
-
             await this.viewModel.OnInitializedAsync(projectGuid);
 
             Assert.That(this.viewModel.ProjectReviewViewModel.Project, Is.Not.Null);

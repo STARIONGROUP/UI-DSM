@@ -1,0 +1,58 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// TraceabilityTable.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@if (this.ViewModel != null)
+{
+	<div class="app-traceability-table">
+		<div>
+			<table>
+				<thead>
+				<tr>
+					<th>@this.ViewModel.HeaderName</th>
+					@foreach (var column in this.ViewModel.VisibleColumns)
+					{
+						<th @onclick="() => this.ViewModel.SelectElement(column)">
+							@if (column.HasComment())
+							{
+								<FeatherMessageCircle Size="20" Color="green"/>
+							}
+							@column.Id
+						</th>
+					}
+				</tr>
+				</thead>
+				<tbody>
+				@foreach (var currentRow in this.ViewModel.VisibleRows)
+				{
+					<tr class="@this.GetTrClass(currentRow)">
+						<th @onclick="() => this.ViewModel.SelectElement(currentRow)">
+							@if (currentRow.HasComment())
+							{
+								<FeatherMessageCircle Size="20" Color="green"/>
+							}
+							@currentRow.Id
+						</th>
+							@foreach (var currentColumn in this.ViewModel.VisibleColumns)
+						{
+							<td class="@GetTdClass(currentRow, currentColumn)">
+								@if (this.ViewModel.DoesRowTracesColumn(currentRow, currentColumn))
+								{
+									<FeatherCheck Size="24" Color="currentColor" StrokeWidth="2"/>
+								}
+							</td>
+						}
+					</tr>
+				}
+				</tbody>
+			</table>
+		</div>
+	</div>
+}

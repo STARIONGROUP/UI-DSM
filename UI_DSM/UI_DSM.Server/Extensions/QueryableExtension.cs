@@ -53,6 +53,11 @@ namespace UI_DSM.Server.Extensions
             Type entityType, Dictionary<Type, List<PropertyInfo>> containedType, string currentPath)
             where TEntity : Entity
         {
+            if (deepLevel < 0)
+            {
+                return queryable;
+            }
+
             var scopedProperties = Entity.GetScopedProperties(deepLevel, entityType);
 
             if (!containedType.ContainsKey(entityType))
@@ -87,7 +92,7 @@ namespace UI_DSM.Server.Extensions
 
                 foreach (var concreteClass in Entity.GetConcreteClasses(propertyType))
                 {
-                    queryable = queryable.BuildIncludeEntityQueryable(deepLevel == 0 ? deepLevel: deepLevel - 1, concreteClass, new Dictionary<Type, List<PropertyInfo>>(containedType), updatedPath);
+                    queryable = queryable.BuildIncludeEntityQueryable(deepLevel - 1, concreteClass, new Dictionary<Type, List<PropertyInfo>>(containedType), updatedPath);
                 }
             }
             else
@@ -99,7 +104,7 @@ namespace UI_DSM.Server.Extensions
                     containedType[entityType].Add(scopedProperty);
 
                     queryable = queryable
-                        .BuildIncludeEntityQueryable(deepLevel == 0 ? deepLevel : deepLevel - 1, propertyType, new Dictionary<Type, List<PropertyInfo>>(containedType), updatedPath);
+                        .BuildIncludeEntityQueryable(deepLevel - 1, propertyType, new Dictionary<Type, List<PropertyInfo>>(containedType), updatedPath);
                 }
             }
 

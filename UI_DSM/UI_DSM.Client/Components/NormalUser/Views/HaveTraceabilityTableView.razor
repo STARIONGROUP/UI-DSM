@@ -1,5 +1,5 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
-// ReviewTaskSelectedItem.razor
+// HaveTraceabilityTableView.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -9,5 +9,5 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-@inherits SelectedItemBase<UI_DSM.Shared.Models.ReviewTask>
-<AppSidebarText Description="@(this.RowViewModel.Description)"/>
+@typeparam TViewModel where TViewModel: UI_DSM.Client.ViewModels.Components.NormalUser.Views.IHaveTraceabilityTableViewModel
+@inherits GenericBaseView<TViewModel>

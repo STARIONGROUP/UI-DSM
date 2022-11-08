@@ -64,8 +64,8 @@ namespace UI_DSM.Client.Tests.Components.App.SelectedItemCard
 
             Assert.That(renderer.FindComponent<ReviewTaskSelectedItem>(), Is.Not.Null);
 
-            this.viewModel.SelectedItem = new RequirementBreakdownStructureViewRowViewModel(new Requirement(), null);
-            Assert.That(renderer.FindComponent<RequirementBreakdownStructureViewSelectedItem>(), Is.Not.Null);
+            this.viewModel.SelectedItem = new RequirementRowViewModel(new Requirement(), null);
+            Assert.That(renderer.FindComponent<RequirementSelectedItem>(), Is.Not.Null);
         }
     }
 }

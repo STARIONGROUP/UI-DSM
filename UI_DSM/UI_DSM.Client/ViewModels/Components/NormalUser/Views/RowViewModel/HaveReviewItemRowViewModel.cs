@@ -23,14 +23,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
     ///     Interface that defines that a row view model is linked to a <see cref="TThing" />
     /// </summary>
     /// <typeparam name="TThing">A <see cref="Thing" /></typeparam>
-    public class HaveThingRowViewModel<TThing> : ReactiveObject, IHaveThingRowViewModel where TThing : Thing
+    public abstract class HaveThingRowViewModel<TThing> : ReactiveObject, IHaveThingRowViewModel where TThing : Thing
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="HaveThingRowViewModel{TThing}" /> class.
         /// </summary>
-        public HaveThingRowViewModel(TThing thing)
+        /// <param name="thing">The <see cref="TThing" /></param>
+        /// <param name="reviewItem">The associated <see cref="ReviewItem" /></param>
+        protected HaveThingRowViewModel(TThing thing, ReviewItem reviewItem)
         {
             this.Thing = thing;
+            this.UpdateReviewItem(reviewItem);
         }
 
         /// <summary>
@@ -59,6 +62,48 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
             {
                 this.ReviewItem = item;
             }
+        }
+
+        /// <summary>
+        ///     Gets the Id of the current <see cref="IHaveThingRowViewModel" />
+        /// </summary>
+        public abstract string Id { get; }
+
+        /// <summary>
+        ///     A value indicating if the row is visible or not
+        /// </summary>
+        public bool IsVisible { get; set; }
+
+        /// <summary>Determines whether the specified object is equal to the current object.</summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the specified object  is equal to the current object; otherwise,
+        ///     <see langword="false" />.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if (obj is HaveThingRowViewModel<TThing> other)
+            {
+                return other.ThingId == this.ThingId;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        ///     Indicates if the current associated <see cref="ReviewItem" /> has some <see cref="Comment" />
+        /// </summary>
+        /// <returns>The assert</returns>
+        public bool HasComment()
+        {
+            return this.ReviewItem != null && this.ReviewItem.Annotations.OfType<Comment>().Any();
+        }
+
+        /// <summary>Serves as the default hash function.</summary>
+        /// <returns>A hash code for the current object.</returns>
+        public override int GetHashCode()
+        {
+            return this.ThingId.GetHashCode();
         }
     }
 }
