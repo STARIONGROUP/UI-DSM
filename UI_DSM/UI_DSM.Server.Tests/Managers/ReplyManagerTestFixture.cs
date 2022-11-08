@@ -137,6 +137,7 @@ namespace UI_DSM.Server.Tests.Managers
             };
 
             this.commentDbSet.UpdateDbSetCollection(new List<Comment>{comment});
+            this.replyDbSet.UpdateDbSetCollection(new List<Reply>{reply});
 
             await this.manager.UpdateEntity(reply);
             this.context.Verify(x => x.Update(reply), Times.Once);

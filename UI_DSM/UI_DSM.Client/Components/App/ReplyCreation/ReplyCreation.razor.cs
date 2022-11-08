@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="CommentCreation.razor.cs" company="RHEA System S.A.">
+// <copyright file="ReplyCreation.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,23 +11,23 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Components.App.CommentCreation
+namespace UI_DSM.Client.Components.App.ReplyCreation
 {
     using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Client.ViewModels.App.CommentCreation;
+    using UI_DSM.Client.ViewModels.App.ReplyCreation;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     Component to allow a user to create a <see cref="Comment" />
+    ///     Component that allow a user to create or edit a <see cref="Reply" />
     /// </summary>
-    public partial class CommentCreation
+    public partial class ReplyCreation
     {
         /// <summary>
-        ///     The <see cref="ICommentCreationViewModel" />
+        ///     The <see cref="IReplyCreationViewModel" />
         /// </summary>
         [Parameter]
-        public ICommentCreationViewModel ViewModel { get; set; }
+        public IReplyCreationViewModel ViewModel { get; set; }
 
         /// <summary>
         ///     Handle the update of the current content of the <see cref="Comment" />
@@ -36,7 +36,7 @@ namespace UI_DSM.Client.Components.App.CommentCreation
         /// <returns>A <see cref="Task" /></returns>
         private async Task OnValidSubmit(string content)
         {
-            this.ViewModel.Comment.Content = content;
+            this.ViewModel.Reply.Content = content;
             await this.InvokeAsync(this.ViewModel.OnValidSubmit.InvokeAsync);
         }
     }

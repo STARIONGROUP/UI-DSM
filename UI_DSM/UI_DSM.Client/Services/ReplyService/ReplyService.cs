@@ -40,7 +40,9 @@ namespace UI_DSM.Client.Services.ReplyService
         /// <summary>
         ///     Gets all <see cref="Reply" />s contained inside a <see cref="Comment" />
         /// </summary>
-        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /> of the <see cref="Comment" /></param>
+        /// <param name="projectId">
+        ///     The <see cref="Entity.Id" /> of the <see cref="Project" /> of the <see cref="Comment" />
+        /// </param>
         /// <param name="annotationId">The <see cref="Entity.Id" /> of the <see cref="Comment" /></param>
         /// <param name="deepLevel">The deep level to get associated entities from the server</param>
         /// <returns>A <see cref="Task" /> with the collection of <see cref="Reply" /></returns>
@@ -102,15 +104,14 @@ namespace UI_DSM.Client.Services.ReplyService
         ///     Updates a <see cref="Reply" />
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="commentId">The <see cref="Guid" /> of the <see cref="Comment" /></param>
         /// <param name="reply">The <see cref="Reply" />to update</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{Reply}" /></returns>
-        public async Task<EntityRequestResponse<Reply>> UpdateReply(Guid projectId, Reply reply)
+        public async Task<EntityRequestResponse<Reply>> UpdateReply(Guid projectId, Guid commentId, Reply reply)
         {
-            this.VerifyEntityAndContainer<Comment>(reply);
-
             try
             {
-                this.ComputeMainRoute(projectId, reply.EntityContainer.Id);
+                this.ComputeMainRoute(projectId, commentId);
                 return await this.UpdateEntity(reply, 0);
             }
             catch (Exception exception)
@@ -123,15 +124,14 @@ namespace UI_DSM.Client.Services.ReplyService
         ///     Deletes a <see cref="Reply" />
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="commentId">The <see cref="Guid" /> of the <see cref="Comment" /></param>
         /// <param name="reply">The <see cref="Reply" /> to delete</param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /></returns>
-        public async Task<RequestResponseDto> DeleteReply(Guid projectId, Reply reply)
+        public async Task<RequestResponseDto> DeleteReply(Guid projectId, Guid commentId, Reply reply)
         {
-            this.VerifyEntityAndContainer<Comment>(reply);
-
             try
             {
-                this.ComputeMainRoute(projectId, reply.EntityContainer.Id);
+                this.ComputeMainRoute(projectId, commentId);
                 return await this.DeleteEntity(reply);
             }
             catch (Exception exception)

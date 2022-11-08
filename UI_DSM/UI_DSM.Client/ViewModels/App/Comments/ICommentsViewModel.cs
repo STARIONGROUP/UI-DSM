@@ -18,6 +18,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Client.ViewModels.App.CommentCreation;
+    using UI_DSM.Client.ViewModels.App.ReplyCreation;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
@@ -48,9 +49,9 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         Guid ReviewId { get; }
 
         /// <summary>
-        ///     Value indicating if the current view is on creation
+        ///     Value indicating if the current view is on creation mode for <see cref="Comment" />
         /// </summary>
-        bool IsOnCreationMode { get; set; }
+        bool IsOnCommentCreationMode { get; set; }
 
         /// <summary>
         ///     The <see cref="ICommentCreationViewModel" />
@@ -80,17 +81,52 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <summary>
         ///     The <see cref="IConfirmCancelPopupViewModel" />
         /// </summary>
-        IConfirmCancelPopupViewModel ConfirmCancelPopupViewModel { get; set; }
+        IConfirmCancelPopupViewModel CommentConfirmCancelPopupViewModel { get; set; }
 
         /// <summary>
         ///     Value indicating if the current view is on update mode
         /// </summary>
-        bool IsOnUpdateMode { get; set; }
+        bool IsOnCommentUpdateMode { get; set; }
 
         /// <summary>
-        ///     Event callback when a user wants to update the stauts of a <see cref="Comment" />
+        ///     Event callback when a user wants to update the statis of a <see cref="Comment" />
         /// </summary>
         EventCallback<Comment> OnUpdateStatusCallback { get; set; }
+
+        /// <summary>
+        ///     Event callback when a user wants to reply to a <see cref="Comment" />
+        /// </summary>
+        EventCallback<Comment> OnReplyCallback { get; set; }
+
+        /// <summary>
+        ///     Event callback when a user wants to edit the content of a <see cref="Reply" />
+        /// </summary>
+        EventCallback<Reply> OnReplyEditContentCallback { get; set; }
+
+        /// <summary>
+        ///     Event callback when a user wants to delete a <see cref="Reply" />
+        /// </summary>
+        EventCallback<Reply> OnDeleteReplyCallback { get; set; }
+
+        /// <summary>
+        ///     Value indicating if the current view is on creation mode for <see cref="Reply" />
+        /// </summary>
+        bool IsOnReplyCreationMode { get; set; }
+
+        /// <summary>
+        ///     Value indicating if the current view is on update mode for <see cref="Reply" />
+        /// </summary>
+        bool IsOnReplyUpdateMode { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IReplyCreationViewModel" />
+        /// </summary>
+        IReplyCreationViewModel ReplyCreationViewModel { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IConfirmCancelPopupViewModel" /> for <see cref="Reply" />
+        /// </summary>
+        IConfirmCancelPopupViewModel ReplyConfirmCancelPopupViewModel { get; set; }
 
         /// <summary>
         ///     Initializes this viewModel properties
@@ -104,6 +140,12 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <summary>
         ///     Opens the creation popup
         /// </summary>
-        void OpenCreationPopup();
+        void OpenCommentCreationPopup();
+
+        /// <summary>
+        ///     Sets the current selected <see cref="Comment" />
+        /// </summary>
+        /// <param name="comment">The <see cref="Comment" /></param>
+        void SetCurrentComment(Comment comment);
     }
 }

@@ -15,11 +15,12 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
 {
     using Microsoft.AspNetCore.Components;
 
+    using UI_DSM.Client.Components.App.ReplyCard;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     View model for the <see cref="Client.Components.App.CommentCard" /> component
+    ///     View model for the <see cref="Client.Components.App.CommentCard.CommentCard" /> component
     /// </summary>
     public class CommentCardViewModel : ICommentCardViewModel
     {
@@ -31,20 +32,42 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
         /// <param name="onContentEditCallback">The <see cref="EventCallback{TValue}" /> for content edition</param>
         /// <param name="onDeleteCallback">The <see cref="EventCallback{TValue}" /> for delete</param>
         /// <param name="onUpdateStatusCallback">The <see cref="EventCallback" /> to update the <see cref="StatusKind" /></param>
+        /// <param name="onReplyCallback">The <see cref="EventCallback" /> to reply</param>
+        /// <param name="onContentEditReplyCallback">The <see cref="EventCallback{TValue}"/> for reply content edition</param>
+        /// <param name="onDeleteReplyCallback">The <see cref="EventCallback{TValue}" /> for delete reply</param>
         public CommentCardViewModel(Comment comment, Participant currentParticipant,
-            EventCallback<Comment> onContentEditCallback, EventCallback<Comment> onDeleteCallback, EventCallback<Comment> onUpdateStatusCallback)
+            EventCallback<Comment> onContentEditCallback, EventCallback<Comment> onDeleteCallback, EventCallback<Comment> onUpdateStatusCallback,
+            EventCallback<Comment> onReplyCallback, EventCallback<Reply> onContentEditReplyCallback, EventCallback<Reply> onDeleteReplyCallback)
         {
             this.Comment = comment;
             this.CurrentParticipant = currentParticipant;
             this.OnContentEditCallback = onContentEditCallback;
             this.OnDeleteCallback = onDeleteCallback;
             this.OnUpdateStatusCallback = onUpdateStatusCallback;
+            this.OnReplyCallback = onReplyCallback;
+            this.OnContentEditReplyCallback = onContentEditReplyCallback;
+            this.OnDeleteReplyCallback = onDeleteReplyCallback;
         }
 
         /// <summary>
         ///     The currently logged <see cref="Participant" />
         /// </summary>
-        private Participant CurrentParticipant { get; set; }
+        public Participant CurrentParticipant { get; private set; }
+
+        /// <summary>
+        ///     <see cref="EventCallback{TValue}" /> when we want to edit a <see cref="Reply" />
+        /// </summary>
+        public EventCallback<Reply> OnContentEditReplyCallback { get; set; }
+
+        /// <summary>
+        ///     <see cref="EventCallback{TValue}" /> when we want to delete a <see cref="Reply" />
+        /// </summary>
+        public EventCallback<Reply> OnDeleteReplyCallback { get; set; }
+
+        /// <summary>
+        ///     The <see cref="EventCallback" /> to update the status of the <see cref="ICommentCardViewModel.Comment" />
+        /// </summary>
+        public EventCallback<Comment> OnUpdateStatusCallback { get; set; }
 
         /// <summary>
         ///     Value asserting if the current <see cref="Participant" /> is allow to edit the <see cref="Comment" />
@@ -52,9 +75,15 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
         public bool IsAllowedToEdit => this.Comment.Author.Id == this.CurrentParticipant.Id;
 
         /// <summary>
-        ///     The <see cref="EventCallback" /> to update the status of the <see cref="ICommentCardViewModel.Comment" />
+        ///     The <see cref="EventCallback" /> when the user wants to reply to the
+        ///     <see cref="ICommentCardViewModel.Comment" />
         /// </summary>
-        public EventCallback<Comment> OnUpdateStatusCallback { get; set; }
+        public EventCallback<Comment> OnReplyCallback { get; set; }
+
+        /// <summary>
+        ///     The current selected <see cref="ReplyCard" />
+        /// </summary>
+        public ReplyCard SelectedReplyCard { get; set; }
 
         /// <summary>
         ///     The <see cref="Comment" />

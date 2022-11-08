@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="CommentCreation.razor.cs" company="RHEA System S.A.">
+// <copyright file="ReplyCard.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,33 +11,40 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Components.App.CommentCreation
+namespace UI_DSM.Client.Components.App.ReplyCard
 {
     using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Client.ViewModels.App.CommentCreation;
+    using UI_DSM.Client.ViewModels.App.ReplyCard;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     Component to allow a user to create a <see cref="Comment" />
+    ///     Component to display and manage <see cref="Reply" />
     /// </summary>
-    public partial class CommentCreation
+    public partial class ReplyCard
     {
         /// <summary>
-        ///     The <see cref="ICommentCreationViewModel" />
+        ///     The <see cref="IReplyCardViewModel" />
         /// </summary>
         [Parameter]
-        public ICommentCreationViewModel ViewModel { get; set; }
+        public IReplyCardViewModel ViewModel { get; set; }
 
         /// <summary>
-        ///     Handle the update of the current content of the <see cref="Comment" />
+        ///     Handle the click event of the content edit button
         /// </summary>
-        /// <param name="content">The new content</param>
         /// <returns>A <see cref="Task" /></returns>
-        private async Task OnValidSubmit(string content)
+        private Task OnContentEditClick()
         {
-            this.ViewModel.Comment.Content = content;
-            await this.InvokeAsync(this.ViewModel.OnValidSubmit.InvokeAsync);
+            return this.ViewModel.OnContentEditCallback.InvokeAsync(this.ViewModel.Reply);
+        }
+
+        /// <summary>
+        ///     Handle the click event of the content delete button
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private Task OnDeleteClick()
+        {
+            return this.ViewModel.OnDeleteCallback.InvokeAsync(this.ViewModel.Reply);
         }
     }
 }

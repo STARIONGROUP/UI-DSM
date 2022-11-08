@@ -15,12 +15,15 @@ namespace UI_DSM.Client.Tests.Components.App.CommentCreation
 {
     using Bunit;
 
+    using DevExpress.Blazor;
+
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
 
     using NUnit.Framework;
 
     using UI_DSM.Client.Components.App.CommentCreation;
+    using UI_DSM.Client.Components.App.TextEditor;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.CommentCreation;
     using UI_DSM.Client.ViewModels.Components;
@@ -68,17 +71,18 @@ namespace UI_DSM.Client.Tests.Components.App.CommentCreation
                 parameters.AddCascadingValue(this.errorMessage);
             });
 
-            var editForm = renderer.FindComponent<EditForm>();
-            await renderer.InvokeAsync(editForm.Instance.OnSubmit.InvokeAsync);
+            var textEditor = renderer.FindComponent<TextEditor>();
+            var button = renderer.FindComponent<DxButton>();
+            await renderer.InvokeAsync(button.Instance.Click.InvokeAsync);
             Assert.That(this.eventCallbackCall, Is.EqualTo(0));
 
-            this.viewModel.Comment.Content = "<p><br></p>";
-            await renderer.InvokeAsync(editForm.Instance.OnSubmit.InvokeAsync);
+            textEditor.Instance.Content = "<p><br></p>";
+            await renderer.InvokeAsync(button.Instance.Click.InvokeAsync);
             Assert.That(this.eventCallbackCall, Is.EqualTo(0));
 
-            this.viewModel.Comment.Content = "<p>something</p>";
+            textEditor.Instance.Content = "<p>something</p>";
 
-            await renderer.InvokeAsync(editForm.Instance.OnSubmit.InvokeAsync);
+            await renderer.InvokeAsync(button.Instance.Click.InvokeAsync);
 
             Assert.That(this.eventCallbackCall, Is.EqualTo(1));
         }

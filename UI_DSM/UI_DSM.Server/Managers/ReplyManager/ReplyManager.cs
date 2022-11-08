@@ -16,6 +16,7 @@ namespace UI_DSM.Server.Managers.ReplyManager
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.ParticipantManager;
+    using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
@@ -55,6 +56,24 @@ namespace UI_DSM.Server.Managers.ReplyManager
             var relatedEntities = new Dictionary<Guid, Entity>();
             relatedEntities.InsertEntity(await this.participantManager.FindEntity(replyDto.Author));
             entity.ResolveProperties(replyDto, relatedEntities);
+        }
+
+        /// <summary>
+        ///     Updates a <see cref="Reply" />
+        /// </summary>
+        /// <param name="entity">The <see cref="Reply" /> to update</param>
+        /// <returns>A <see cref="Task" /> with the result of the update</returns>
+        public override async Task<EntityOperationResult<Reply>> UpdateEntity(Reply entity)
+        {
+            if (!this.ValidateCurrentEntity(entity, out var entityOperationResult))
+            {
+                return entityOperationResult;
+            }
+
+            var foundEntity = await this.FindEntity(entity.Id);
+            entity.CreatedOn = foundEntity.CreatedOn.ToUniversalTime();
+
+            return await this.UpdateEntityIntoContext(entity);
         }
 
         /// <summary>

@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Components.App.Comments
 {
+    using System.Reactive.Linq;
+
     using Microsoft.AspNetCore.Components;
 
     using ReactiveUI;
@@ -31,11 +33,6 @@ namespace UI_DSM.Client.Components.App.Comments
         ///     A collection of <see cref="IDisposable" />
         /// </summary>
         private readonly List<IDisposable> disposables = new();
-
-        /// <summary>
-        ///     The currently selected <see cref="CommentCard" />
-        /// </summary>
-        private CommentCard selectedCommentCard;
 
         /// <summary>
         ///     The <see cref="ICommentsViewModel" />
@@ -59,8 +56,14 @@ namespace UI_DSM.Client.Components.App.Comments
         {
             this.disposables.Add(this.ViewModel.Comments.CountChanged.Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
             this.disposables.Add(this.ViewModel);
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCreationMode).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnUpdateMode).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCommentCreationMode).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCommentUpdateMode).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnReplyCreationMode).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnReplyUpdateMode).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+            
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ReplyConfirmCancelPopupViewModel.IsVisible)
+                .Where(x => !x).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
             this.disposables.Add(this.ViewModel.ErrorMessageViewModel.Errors.CountChanged.Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
             base.OnInitialized();
         }
@@ -72,22 +75,9 @@ namespace UI_DSM.Client.Components.App.Comments
         /// <returns>The initialized <see cref="ICommentCardViewModel" /></returns>
         private ICommentCardViewModel CreateCommentCardViewModel(Comment comment)
         {
-            return new CommentCardViewModel(comment, this.ViewModel.Participant, this.ViewModel.OnCommentEditCallback, this.ViewModel.OnDeleteCallback, this.ViewModel.OnUpdateStatusCallback);
-        }
-
-        /// <summary>
-        ///     Handle the selection of a <see cref="CommentCard" />
-        /// </summary>
-        /// <param name="commentCard">The new selected <see cref="CommentCard" /></param>
-        private void OnCommentCardClick(CommentCard commentCard)
-        {
-            if (this.selectedCommentCard != null)
-            {
-                this.selectedCommentCard.IsSelected = false;
-            }
-
-            this.selectedCommentCard = commentCard;
-            this.selectedCommentCard.IsSelected = true;
+            return new CommentCardViewModel(comment, this.ViewModel.Participant, this.ViewModel.OnCommentEditCallback, this.ViewModel.OnDeleteCallback, 
+                this.ViewModel.OnUpdateStatusCallback, this.ViewModel.OnReplyCallback, this.ViewModel.OnReplyEditContentCallback,
+                this.ViewModel.OnDeleteReplyCallback);
         }
     }
 }

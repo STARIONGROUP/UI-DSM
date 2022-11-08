@@ -21,8 +21,10 @@ namespace UI_DSM.Client.ViewModels.App.Comments
 
     using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.AnnotationService;
+    using UI_DSM.Client.Services.ReplyService;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.ViewModels.App.CommentCreation;
+    using UI_DSM.Client.ViewModels.App.ReplyCreation;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
@@ -49,19 +51,34 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         private readonly IParticipantService participantService;
 
         /// <summary>
+        ///     The <see cref="IReplyService" />
+        /// </summary>
+        private readonly IReplyService replyService;
+
+        /// <summary>
         ///     The <see cref="IReviewItemService" />
         /// </summary>
         private readonly IReviewItemService reviewItemService;
 
         /// <summary>
-        ///     Backing field for <see cref="IsOnCreationMode" />
+        ///     Backing field for <see cref="IsOnCommentCreationMode" />
         /// </summary>
-        private bool isOnCreationMode;
+        private bool isOnCommentCreationMode;
 
         /// <summary>
-        ///     Backing field for <see cref="IsOnUpdateMode" />
+        ///     Backing field for <see cref="IsOnCommentUpdateMode" />
         /// </summary>
-        private bool isOnUpdateMode;
+        private bool isOnCommentUpdateMode;
+
+        /// <summary>
+        ///     Backing field for <see cref="IsOnReplyCreationMode" />
+        /// </summary>
+        private bool isOnReplyCreationMode;
+
+        /// <summary>
+        ///     Backing field for <see cref="IsOnReplyUpdateMode" />
+        /// </summary>
+        private bool isOnReplyUpdateMode;
 
         /// <summary>
         ///     The currently selected <see cref="Comment" /> to update/delete
@@ -74,20 +91,33 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         private object selectedItem;
 
         /// <summary>
+        ///     The currently selected <see cref="Reply" /> to update/delete
+        /// </summary>
+        private Reply selectedReply;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="CommentsViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
         /// <param name="annotationService">The <see cref="IAnnotationService" /></param>
         /// <param name="participantService">The <see cref="IParticipantService" /></param>
-        public CommentsViewModel(IReviewItemService reviewItemService, IAnnotationService annotationService, IParticipantService participantService)
+        /// <param name="replyService">The <see cref="IReplyService" /></param>
+        public CommentsViewModel(IReviewItemService reviewItemService, IAnnotationService annotationService, IParticipantService participantService,
+            IReplyService replyService)
         {
             this.reviewItemService = reviewItemService;
             this.annotationService = annotationService;
             this.participantService = participantService;
+            this.replyService = replyService;
 
             this.CommentCreationViewModel = new CommentCreationViewModel
             {
                 OnValidSubmit = new EventCallbackFactory().Create(this, this.AddOrUpdateComment)
+            };
+
+            this.ReplyCreationViewModel = new ReplyCreationViewModel
+            {
+                OnValidSubmit = new EventCallbackFactory().Create(this, this.AddOrUpdateReply)
             };
 
             this.disposables.Add(this.WhenAnyValue(x => x.SelectedItem)
@@ -96,13 +126,24 @@ namespace UI_DSM.Client.ViewModels.App.Comments
             this.OnCommentEditCallback = new EventCallbackFactory().Create(this, (Comment comment) => this.OpenUpdateComment(comment));
             this.OnDeleteCallback = new EventCallbackFactory().Create(this, (Comment comment) => this.AskToDeleteComment(comment));
             this.OnUpdateStatusCallback = new EventCallbackFactory().Create(this, (Comment comment) => this.UpdateCommentStatus(comment));
+            this.OnReplyCallback = new EventCallbackFactory().Create(this, (Comment comment) => this.OpenReplyCreationPopup(comment));
+            this.OnReplyEditContentCallback = new EventCallbackFactory().Create(this, (Reply reply) => this.OpenUpdateReply(reply));
+            this.OnDeleteReplyCallback = new EventCallbackFactory().Create(this, (Reply reply) => this.AskToDeleteReply(reply));
 
-            this.ConfirmCancelPopupViewModel = new ConfirmCancelPopupViewModel
+            this.ReplyConfirmCancelPopupViewModel = new ConfirmCancelPopupViewModel
+            {
+                OnConfirm = new EventCallbackFactory().Create(this, this.DeleteReply),
+                HeaderText = "Delete Reply",
+                ContentText = "Are you sure to want to delete this reply ?",
+                OnCancel = new EventCallbackFactory().Create(this, () => this.ReplyConfirmCancelPopupViewModel.IsVisible = false)
+            };
+
+            this.CommentConfirmCancelPopupViewModel = new ConfirmCancelPopupViewModel
             {
                 OnConfirm = new EventCallbackFactory().Create(this, this.DeleteComment),
-                HeaderText = "Remove Comment",
-                ContentText = "Are you sure to want to remove this comment ?",
-                OnCancel = new EventCallbackFactory().Create(this, () => this.ConfirmCancelPopupViewModel.IsVisible = false)
+                HeaderText = "Delete Comment",
+                ContentText = "Are you sure to want to delete this comment ?",
+                OnCancel = new EventCallbackFactory().Create(this, () => this.CommentConfirmCancelPopupViewModel.IsVisible = false)
             };
         }
 
@@ -112,18 +153,56 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         public View CurrentView { get; set; }
 
         /// <summary>
-        ///     Value indicating if the current view is on update mode
+        ///     Value indicating if the current view is on creation mode for <see cref="Reply" />
         /// </summary>
-        public bool IsOnUpdateMode
+        public bool IsOnReplyCreationMode
         {
-            get => this.isOnUpdateMode;
-            set => this.RaiseAndSetIfChanged(ref this.isOnUpdateMode, value);
+            get => this.isOnReplyCreationMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnReplyCreationMode, value);
+        }
+
+        /// <summary>
+        ///     Value indicating if the current view is on update mode for <see cref="Reply" />
+        /// </summary>
+        public bool IsOnReplyUpdateMode
+        {
+            get => this.isOnReplyUpdateMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnReplyUpdateMode, value);
+        }
+
+        /// <summary>
+        ///     The <see cref="IReplyCreationViewModel" />
+        /// </summary>
+        public IReplyCreationViewModel ReplyCreationViewModel { get; set; }
+
+        /// <summary>
+        ///     Value indicating if the current view is on update mode for <see cref="Comment" />
+        /// </summary>
+        public bool IsOnCommentUpdateMode
+        {
+            get => this.isOnCommentUpdateMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnCommentUpdateMode, value);
         }
 
         /// <summary>
         ///     Event callback when a user wants to update the stauts of a <see cref="Comment" />
         /// </summary>
         public EventCallback<Comment> OnUpdateStatusCallback { get; set; }
+
+        /// <summary>
+        ///     Event callback when a user wants to reply to a <see cref="Comment" />
+        /// </summary>
+        public EventCallback<Comment> OnReplyCallback { get; set; }
+
+        /// <summary>
+        ///     Event callback when a user wants to edit the content of a <see cref="Reply" />
+        /// </summary>
+        public EventCallback<Reply> OnReplyEditContentCallback { get; set; }
+
+        /// <summary>
+        ///     Event callback when a user wants to delete a <see cref="Reply" />
+        /// </summary>
+        public EventCallback<Reply> OnDeleteReplyCallback { get; set; }
 
         /// <summary>
         ///     Event callback when a user wants to delete a <see cref="Comment" />
@@ -136,9 +215,14 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         public EventCallback<Comment> OnCommentEditCallback { get; private set; }
 
         /// <summary>
-        ///     The <see cref="IConfirmCancelPopupViewModel" />
+        ///     The <see cref="IConfirmCancelPopupViewModel" /> for <see cref="Comment" />
         /// </summary>
-        public IConfirmCancelPopupViewModel ConfirmCancelPopupViewModel { get; set; }
+        public IConfirmCancelPopupViewModel CommentConfirmCancelPopupViewModel { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IConfirmCancelPopupViewModel" /> for <see cref="Reply" />
+        /// </summary>
+        public IConfirmCancelPopupViewModel ReplyConfirmCancelPopupViewModel { get; set; }
 
         /// <summary>
         ///     The current <see cref="Participant" />
@@ -156,12 +240,12 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         public IErrorMessageViewModel ErrorMessageViewModel { get; set; } = new ErrorMessageViewModel();
 
         /// <summary>
-        ///     Value indicating if the current view is on creation mode
+        ///     Value indicating if the current view is on creation mode for <see cref="Comment" />
         /// </summary>
-        public bool IsOnCreationMode
+        public bool IsOnCommentCreationMode
         {
-            get => this.isOnCreationMode;
-            set => this.RaiseAndSetIfChanged(ref this.isOnCreationMode, value);
+            get => this.isOnCommentCreationMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnCommentCreationMode, value);
         }
 
         /// <summary>
@@ -212,13 +296,138 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         }
 
         /// <summary>
-        ///     Opens the creation popup
+        ///     Opens the creation popup for <see cref="Comment" />
         /// </summary>
-        public void OpenCreationPopup()
+        public void OpenCommentCreationPopup()
         {
             this.CommentCreationViewModel.Comment = new Comment();
             this.ErrorMessageViewModel.Errors.Clear();
-            this.IsOnCreationMode = true;
+            this.IsOnCommentCreationMode = true;
+        }
+
+        /// <summary>
+        ///     Sets the current selected <see cref="Comment" />
+        /// </summary>
+        /// <param name="comment">The <see cref="Comment" /></param>
+        public void SetCurrentComment(Comment comment)
+        {
+            this.selectedComment = comment;
+        }
+
+        /// <summary>
+        ///     Deletes the current selected <see cref="Reply" />
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task DeleteReply()
+        {
+            if (this.selectedReply != null && this.selectedComment != null)
+            {
+                await this.replyService.DeleteReply(this.ProjectId, this.selectedComment.Id, this.selectedReply);
+                var comment = this.Comments.Items.First(x => x.Id == this.selectedComment.Id);
+                comment.Replies.Remove(comment.Replies.FirstOrDefault(x => x.Id == this.selectedReply.Id));
+                this.selectedReply = null;
+                this.ReplyConfirmCancelPopupViewModel.IsVisible = false;
+            }
+        }
+
+        /// <summary>
+        ///     Asks the user to confirm the deletion of the <see cref="Reply" />
+        /// </summary>
+        /// <param name="reply">The <see cref="Reply" /> to delete</param>
+        private void AskToDeleteReply(Reply reply)
+        {
+            this.selectedReply = reply;
+            this.ReplyConfirmCancelPopupViewModel.IsVisible = true;
+        }
+
+        /// <summary>
+        ///     Open the update pop-up
+        /// </summary>
+        /// <param name="reply">The <see cref="Reply" /> to update</param>
+        private void OpenUpdateReply(Reply reply)
+        {
+            this.selectedComment = reply.EntityContainer as Comment;
+            this.ReplyCreationViewModel.Reply = reply;
+            this.ErrorMessageViewModel.Errors.Clear();
+            this.IsOnReplyUpdateMode = true;
+        }
+
+        /// <summary>
+        ///     Add a <see cref="Reply" /> on the selected comment
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task AddOrUpdateReply()
+        {
+            if (this.selectedComment != null)
+            {
+                var commentFromList = this.Comments.Items.First(x => x.Id == this.selectedComment.Id);
+
+                if (this.IsOnReplyCreationMode)
+                {
+                    await this.CreateReply(commentFromList, this.ReplyCreationViewModel.Reply);
+                }
+
+                if (this.IsOnReplyUpdateMode)
+                {
+                    await this.UpdateReply(commentFromList, this.ReplyCreationViewModel.Reply);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Updates a <see cref="Reply" />
+        /// </summary>
+        /// <param name="comment">The <see cref="Comment" /></param>
+        /// <param name="reply">The <see cref="Reply" /> to update</param>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task UpdateReply(Comment comment, Reply reply)
+        {
+            var replyUpdate = await this.replyService.UpdateReply(this.ProjectId, comment.Id, reply);
+
+            if (replyUpdate.IsRequestSuccessful)
+            {
+                var updatedReply = replyUpdate.Entity;
+                comment.Replies.Replace(comment.Replies.FirstOrDefault(x => x.Id == updatedReply!.Id), updatedReply);
+                this.IsOnReplyUpdateMode = false;
+            }
+            else
+            {
+                this.ErrorMessageViewModel.HandleErrors(replyUpdate.Errors);
+            }
+        }
+
+        /// <summary>
+        ///     Creates a new <see cref="Reply" /> into a <see cref="Comment" />
+        /// </summary>
+        /// <param name="comment">The <see cref="Comment" /></param>
+        /// <param name="reply">The <see cref="Reply" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task CreateReply(Comment comment, Reply reply)
+        {
+            var replyCreation = await this.replyService.CreateReply(this.ProjectId, comment.Id, reply);
+
+            if (replyCreation.IsRequestSuccessful)
+            {
+                var newReply = replyCreation.Entity;
+                comment.Replies.Add(newReply);
+                this.IsOnReplyCreationMode = false;
+            }
+            else
+            {
+                this.ErrorMessageViewModel.HandleErrors(replyCreation.Errors);
+            }
+        }
+
+        /// <summary>
+        ///     Opens the creation popup for a <see cref="Reply" />
+        /// </summary>
+        /// <param name="comment">The <see cref="Comment"/></param>
+        private void OpenReplyCreationPopup(Comment comment)
+        {
+            this.selectedComment = comment;
+            this.ReplyCreationViewModel.Reply = new Reply();
+            this.ErrorMessageViewModel.Errors.Clear();
+            this.IsOnReplyCreationMode = true;
         }
 
         /// <summary>
@@ -257,12 +466,12 @@ namespace UI_DSM.Client.ViewModels.App.Comments
                     }
                 }
 
-                if (this.IsOnCreationMode)
+                if (this.IsOnCommentCreationMode)
                 {
                     await this.CreateComment(thingRowViewModel, this.CommentCreationViewModel.Comment);
                 }
 
-                if (this.IsOnUpdateMode)
+                if (this.IsOnCommentUpdateMode)
                 {
                     await this.UpdateComment(thingRowViewModel, this.CommentCreationViewModel.Comment);
                 }
@@ -284,7 +493,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
                 var updatedComment = commentUpdate.Entity as Comment;
                 this.Comments.Replace(this.Comments.Items.FirstOrDefault(x => x.Id == updatedComment!.Id), updatedComment);
                 thingRowViewModel.ReviewItem.Annotations.Replace(thingRowViewModel.ReviewItem.Annotations.FirstOrDefault(x => x.Id == updatedComment!.Id), updatedComment);
-                this.IsOnUpdateMode = false;
+                this.IsOnCommentUpdateMode = false;
             }
             else
             {
@@ -310,7 +519,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
                 var newComment = commentCreation.Entity;
                 thingRowViewModel.ReviewItem?.Annotations.Add(newComment);
                 this.Comments.Add(newComment as Comment);
-                this.IsOnCreationMode = false;
+                this.IsOnCommentCreationMode = false;
             }
             else
             {
@@ -330,7 +539,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
                 this.Comments.Remove(this.Comments.Items.FirstOrDefault(x => x.Id == this.selectedComment.Id));
                 this.RemoveCommentFromSelectedItem();
                 this.selectedComment = null;
-                this.ConfirmCancelPopupViewModel.IsVisible = false;
+                this.CommentConfirmCancelPopupViewModel.IsVisible = false;
             }
         }
 
@@ -357,7 +566,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         private void AskToDeleteComment(Comment comment)
         {
             this.selectedComment = comment;
-            this.ConfirmCancelPopupViewModel.IsVisible = true;
+            this.CommentConfirmCancelPopupViewModel.IsVisible = true;
         }
 
         /// <summary>
@@ -368,7 +577,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         {
             this.CommentCreationViewModel.Comment = comment;
             this.ErrorMessageViewModel.Errors.Clear();
-            this.IsOnUpdateMode = true;
+            this.IsOnCommentUpdateMode = true;
         }
 
         /// <summary>

@@ -9,35 +9,33 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-<div class="app-comment" @onclick="this.OnClickEvent">
+
+<div class="app-comment">
 	<div class="app-comment__header">
-		@if (this.IsSelected)
+		<FeatherMessageCircle Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnReplyCallback"/>
+		@if (this.ViewModel.IsAllowedToEdit)
 		{
-			<FeatherMessageCircle Size="24" Color="currentColor" StrokeWidth="1.5f"/>
-			@if (this.ViewModel.IsAllowedToEdit)
-			{
-				<FeatherEdit Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnContentEditClick"/>
-				<FeatherTrash2 Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnDeleteClick"/>
-			}
-			<button id="dropdownButton" @onclick="() => this.IsOnStatusUpdateMode = true">Mark as :</button>
-			<DxDropDown @bind-IsOpen="@this.IsOnStatusUpdateMode"
-			            Width="200"
-			            PositionTarget="#dropdownButton"
-			            PositionMode="DropDownPositionMode.Bottom">
-				<BodyTemplate>
-					@foreach (var status in AvailableStatus)
-					{
-						<div id="@status.ToString()" @onclick="() => this.ViewModel.UpdateStatus(status)">
-							@if (this.ViewModel.Comment.Status == status)
-							{
-								<FeatherCheck Size="20" Color="currentColor"/>
-							}
-							@status
-						</div>
-					}
-				</BodyTemplate>
-			</DxDropDown>
+			<FeatherEdit Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnContentEditClick"/>
+			<FeatherTrash2 Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnDeleteClick"/>
 		}
+		<button id="dropdownButton" @onclick="() => this.IsOnStatusUpdateMode = true">Mark as :</button>
+		<DxDropDown @bind-IsOpen="@(this.IsOnStatusUpdateMode)"
+		            Width="200"
+		            PositionTarget="#dropdownButton"
+		            PositionMode="DropDownPositionMode.Bottom">
+			<BodyTemplate>
+				@foreach (var status in AvailableStatus)
+				{
+					<div id="@status.ToString()" @onclick="() => this.ViewModel.UpdateStatus(status)">
+						@if (this.ViewModel.Comment.Status == status)
+						{
+							<FeatherCheck Size="20" Color="currentColor"/>
+						}
+						@status
+					</div>
+				}
+			</BodyTemplate>
+		</DxDropDown>
 	</div>
 
 	<div class="app-comment__body">
@@ -47,4 +45,14 @@
 		</span>
 		<span class="app-comment__description">@((MarkupString)this.ViewModel.Comment.Content)</span>
 	</div>
+
+	@if (this.ViewModel.Comment.Replies.Any())
+	{
+		<AppAccordion Label="Replies">
+			@foreach (var reply in this.ViewModel.Comment.Replies.OrderBy(x => x.CreatedOn))
+			{
+				<ReplyCard ViewModel="@(this.CreateReplyCardViewModel(reply))"/>
+			}
+		</AppAccordion>
+	}
 </div>

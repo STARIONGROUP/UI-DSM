@@ -16,7 +16,9 @@ namespace UI_DSM.Client.Components.App.CommentCard
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Client.ViewModels.App.CommentCard;
+    using UI_DSM.Client.ViewModels.App.ReplyCard;
     using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     UI Card for a <see cref="Shared.Models.Comment" />
@@ -39,16 +41,6 @@ namespace UI_DSM.Client.Components.App.CommentCard
         /// </summary>
         [Parameter]
         public ICommentCardViewModel ViewModel { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Parameter]
-        public EventCallback<CommentCard> OnClick { get; set; }
-
-        /// <summary>
-        ///     A value indicating if the <see cref="CommentCard" /> is selected
-        /// </summary>
-        public bool IsSelected { get; set; }
 
         /// <summary>
         ///     Value indicating if the component is on update mode
@@ -74,12 +66,22 @@ namespace UI_DSM.Client.Components.App.CommentCard
         }
 
         /// <summary>
-        ///     Handle the onClick event
+        ///     Creates a new <see cref="IReplyCardViewModel" /> based on a <see cref="Reply" />
+        /// </summary>
+        /// <param name="reply">The <see cref="Reply" /></param>
+        /// <returns>The initialized <see cref="IReplyCardViewModel" /></returns>
+        private IReplyCardViewModel CreateReplyCardViewModel(Reply reply)
+        {
+            return new ReplyCardViewModel(reply, this.ViewModel.OnContentEditReplyCallback, this.ViewModel.OnDeleteReplyCallback, this.ViewModel.CurrentParticipant);
+        }
+
+        /// <summary>
+        ///     Handle the click event of the content reply button
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>
-        private Task OnClickEvent()
+        private Task OnReplyCallback()
         {
-            return this.OnClick.InvokeAsync(this);
+            return this.ViewModel.OnReplyCallback.InvokeAsync(this.ViewModel.Comment);
         }
     }
 }

@@ -185,14 +185,12 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
             var request = this.httpMessageHandler.When(HttpMethod.Delete, $"/Project/{projectId}/Annotation/{annotation.Id}/Reply/{reply.Id}");
             request.Respond(_ => httpResponse);
 
-            Assert.That(async () => await this.service.DeleteReply(projectId, reply), Throws.Exception);
-
             annotation.Replies.Add(reply);
-            var result = await this.service.DeleteReply(projectId, reply);
+            var result = await this.service.DeleteReply(projectId, annotation.Id, reply);
             Assert.That(result.IsRequestSuccessful, Is.True);
 
             httpResponse.Content = new StringContent(string.Empty);
-            Assert.That(async () => await this.service.DeleteReply(projectId, reply), Throws.Exception);
+            Assert.That(async () => await this.service.DeleteReply(projectId, annotation.Id, reply), Throws.Exception);
         }
 
         [Test]
@@ -218,10 +216,9 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
             var request = this.httpMessageHandler.When(HttpMethod.Put, $"/Project/{projectId}/Annotation/{comment.Id}/Reply/{reply.Id}");
             request.Respond(_ => httpResponse);
 
-            Assert.That(async () => await this.service.UpdateReply(projectId, reply), Throws.Exception);
             comment.Replies.Add(reply);
 
-            var requestResult = await this.service.UpdateReply(projectId, reply);
+            var requestResult = await this.service.UpdateReply(projectId, comment.Id, reply);
             Assert.That(requestResult.IsRequestSuccessful, Is.False);
 
             requestResponse.IsRequestSuccessful = true;
@@ -230,10 +227,10 @@ namespace UI_DSM.Client.Tests.Services.ReplyService
 
             httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
 
-            requestResult = await this.service.UpdateReply(projectId, reply);
+            requestResult = await this.service.UpdateReply(projectId, comment.Id, reply);
             Assert.That(requestResult.IsRequestSuccessful, Is.True);
             httpResponse.Content = new StringContent(string.Empty);
-            Assert.That(async () => await this.service.UpdateReply(projectId, reply), Throws.Exception);
+            Assert.That(async () => await this.service.UpdateReply(projectId, comment.Id, reply), Throws.Exception);
         }
     }
 }

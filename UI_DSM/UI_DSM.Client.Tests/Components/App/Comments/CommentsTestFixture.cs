@@ -30,8 +30,10 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
 
     using UI_DSM.Client.Components.App.CommentCard;
     using UI_DSM.Client.Components.App.Comments;
+    using UI_DSM.Client.Components.App.ReplyCard;
     using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.AnnotationService;
+    using UI_DSM.Client.Services.ReplyService;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.Comments;
@@ -51,6 +53,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
         private Mock<IReviewItemService> reviewItemService;
         private Mock<IAnnotationService> annotationService;
         private Mock<IParticipantService> participantService;
+        private Mock<IReplyService> replyService;
 
         [SetUp]
         public void Setup()
@@ -60,6 +63,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
             this.reviewItemService = new Mock<IReviewItemService>();
             this.annotationService = new Mock<IAnnotationService>();
             this.participantService = new Mock<IParticipantService>();
+            this.replyService = new Mock<IReplyService>();
 
             this.participant = new Participant(Guid.NewGuid())
             {
@@ -72,7 +76,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
             this.participantService.Setup(x => x.GetCurrentParticipant(It.IsAny<Guid>()))
                 .ReturnsAsync(this.participant);
 
-            this.viewModel = new CommentsViewModel(this.reviewItemService.Object, this.annotationService.Object, this.participantService.Object);
+            this.viewModel = new CommentsViewModel(this.reviewItemService.Object, this.annotationService.Object, this.participantService.Object, this.replyService.Object);
             this.viewModel.InitializesProperties(Guid.NewGuid(), Guid.NewGuid(), View.RequirementBreakdownStructureView);
             this.context.Services.AddSingleton(this.viewModel);
         }
@@ -99,7 +103,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
 
                 var button = renderer.FindComponent<AppButton>();
                 await renderer.InvokeAsync(button.Instance.Click.InvokeAsync);
-                Assert.That(this.viewModel.IsOnCreationMode, Is.True);
+                Assert.That(this.viewModel.IsOnCommentCreationMode, Is.True);
 
                 this.viewModel.CommentCreationViewModel.Comment.Content = "new content";
 
@@ -141,7 +145,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
                 Assert.Multiple(() =>
                 {
                     Assert.That(commentsCard, Has.Count.EqualTo(1));
-                    Assert.That(this.viewModel.IsOnCreationMode, Is.False);
+                    Assert.That(this.viewModel.IsOnCommentCreationMode, Is.False);
                 });
 
                 this.viewModel.SelectedItem = null;
@@ -154,18 +158,11 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
                 Assert.That(this.viewModel.Comments, Has.Count.EqualTo(1));
 
                 var commentCard = renderer.FindComponent<CommentCard>();
-                Assert.That(commentCard.Instance.IsSelected, Is.False);
 
-                await renderer.InvokeAsync(() => commentCard.Instance.OnClick.InvokeAsync(commentCard.Instance));
-
-                Assert.Multiple(() =>
-                {
-                    Assert.That(commentCard.Instance.ViewModel.IsAllowedToEdit, Is.True);
-                    Assert.That(commentCard.Instance.IsSelected, Is.True);
-                });
+                Assert.That(commentCard.Instance.ViewModel.IsAllowedToEdit, Is.True);
 
                 await renderer.InvokeAsync(() => commentCard.Instance.ViewModel.OnContentEditCallback.InvokeAsync(commentCard.Instance.ViewModel.Comment));
-                Assert.That(this.viewModel.IsOnUpdateMode, Is.True);
+                Assert.That(this.viewModel.IsOnCommentUpdateMode, Is.True);
 
                 this.annotationService.Setup(x => x.UpdateAnnotation(It.IsAny<Guid>(), It.IsAny<Annotation>()))
                     .ReturnsAsync(EntityRequestResponse<Annotation>.Fail(new List<string> { "Error" }));
@@ -187,10 +184,70 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
                 this.annotationService.Verify(x => x.UpdateAnnotation(It.IsAny<Guid>(), It.IsAny<Annotation>()), Times.Exactly(3));
 
                 await renderer.InvokeAsync(() => commentCard.Instance.ViewModel.OnDeleteCallback.InvokeAsync(commentCard.Instance.ViewModel.Comment));
-                Assert.That(this.viewModel.ConfirmCancelPopupViewModel.IsVisible, Is.True);
+                Assert.That(this.viewModel.CommentConfirmCancelPopupViewModel.IsVisible, Is.True);
 
-                await renderer.InvokeAsync(this.viewModel.ConfirmCancelPopupViewModel.OnConfirm.InvokeAsync);
+                await renderer.InvokeAsync(this.viewModel.CommentConfirmCancelPopupViewModel.OnConfirm.InvokeAsync);
                 Assert.That(this.viewModel.Comments, Is.Empty);
+            }
+            catch
+            {
+                // On GitHub, exception is thrown even if the JSRuntime has been configured
+            }
+        }
+
+        [Test]
+        public async Task VerifyReplySystem()
+        {
+            try
+            {
+                var renderer = this.context.RenderComponent<Comments>();
+                
+                this.viewModel.Comments.Add(new Comment(Guid.NewGuid())
+                {
+                    Author = this.participant,
+                    Content = "Content",
+                    CreatedOn = DateTime.Now
+                });
+
+                var commentCard = renderer.FindComponent<CommentCard>();
+                await renderer.InvokeAsync(() => commentCard.Instance.ViewModel.OnReplyCallback.InvokeAsync(commentCard.Instance.ViewModel.Comment));
+                Assert.That(this.viewModel.IsOnReplyCreationMode, Is.True);
+
+                this.replyService.Setup(x => x.CreateReply(this.viewModel.ProjectId, commentCard.Instance.ViewModel.Comment.Id, It.IsAny<Reply>()))
+                    .ReturnsAsync(EntityRequestResponse<Reply>.Fail(new List<string>{"An error"}));
+
+                await renderer.InvokeAsync(this.viewModel.ReplyCreationViewModel.OnValidSubmit.InvokeAsync);
+                Assert.That(this.viewModel.IsOnReplyCreationMode, Is.True);
+
+                this.replyService.Setup(x => x.CreateReply(this.viewModel.ProjectId, commentCard.Instance.ViewModel.Comment.Id, It.IsAny<Reply>()))
+                    .ReturnsAsync(EntityRequestResponse<Reply>.Success(new Reply(Guid.NewGuid()){Author = this.participant, CreatedOn = DateTime.Now, Content = "Content"}));
+
+                await renderer.InvokeAsync(this.viewModel.ReplyCreationViewModel.OnValidSubmit.InvokeAsync);
+                Assert.That(this.viewModel.IsOnReplyCreationMode, Is.False);
+
+                var replyCard = renderer.FindComponent<ReplyCard>();
+                Assert.That(replyCard, Is.Not.Null);
+
+                await renderer.InvokeAsync(() => replyCard.Instance.ViewModel.OnContentEditCallback.InvokeAsync(replyCard.Instance.ViewModel.Reply));
+                Assert.That(this.viewModel.IsOnReplyUpdateMode, Is.True);
+
+                this.replyService.Setup(x => x.UpdateReply(this.viewModel.ProjectId, commentCard.Instance.ViewModel.Comment.Id, replyCard.Instance.ViewModel.Reply))
+                    .ReturnsAsync(EntityRequestResponse<Reply>.Fail(new List<string> { "An error" }));
+
+                await renderer.InvokeAsync(this.viewModel.ReplyCreationViewModel.OnValidSubmit.InvokeAsync);
+                Assert.That(this.viewModel.IsOnReplyUpdateMode, Is.True);
+
+                this.replyService.Setup(x => x.UpdateReply(this.viewModel.ProjectId, commentCard.Instance.ViewModel.Comment.Id, replyCard.Instance.ViewModel.Reply))
+                    .ReturnsAsync(EntityRequestResponse<Reply>.Success(replyCard.Instance.ViewModel.Reply));
+
+                await renderer.InvokeAsync(this.viewModel.ReplyCreationViewModel.OnValidSubmit.InvokeAsync);
+                Assert.That(this.viewModel.IsOnReplyUpdateMode, Is.False);
+
+                await renderer.InvokeAsync(() => replyCard.Instance.ViewModel.OnDeleteCallback.InvokeAsync(replyCard.Instance.ViewModel.Reply));
+                Assert.That(this.viewModel.ReplyConfirmCancelPopupViewModel.IsVisible, Is.True);
+
+                await renderer.InvokeAsync(this.viewModel.ReplyConfirmCancelPopupViewModel.OnConfirm.InvokeAsync);
+                Assert.That(renderer.FindComponents<ReplyCard>(), Is.Empty);
             }
             catch
             {
