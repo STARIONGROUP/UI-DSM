@@ -56,12 +56,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     Format the name string for display which will include the shortname if available.
         /// </summary>
-        /// <param name="thing">
-        ///     The thing.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="string" />.
-        /// </returns>
+        /// <param name="thing">The thing.</param>
+        /// <returns>The <see cref="string" /></returns>
         private static string FormatName(Thing thing)
         {
             var thingName = GetThingName(thing);
@@ -82,9 +78,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         {
             return thing is INamedThing namedThing
                 ? namedThing.Name
-                : thing.GetType().GetProperty(nameof(CDP4Common.CommonData.Thing.UserFriendlyName))?.DeclaringType == typeof(Thing)
-                    ? thing.ClassKind.ToString()
-                    : thing.UserFriendlyName;
+                : thing.UserFriendlyShortName;
         }
     }
 }

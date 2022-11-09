@@ -56,15 +56,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Apply a filtering on columns
-        /// </summary>
-        /// <param name="selectedFilters">The selected filters</param>
-        public override void FilterColumns(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
-        {
-            FilterRequirementRows(selectedFilters, this.TraceabilityTableViewModel.Columns.OfType<RequirementRowViewModel>());
-        }
-
-        /// <summary>
         ///     Initialize this view model properties
         /// </summary>
         /// <param name="things">A collection of <see cref="BaseViewViewModel.Things" /></param>
@@ -108,6 +99,15 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             InitializesFilterForElementDefinitionRows(this.AvailableRowFilters, rows.OfType<FunctionRowViewModel>());
             InitializesFilterForRequirementRows(this.AvailableColumnFilters, columns.OfType<RequirementRowViewModel>());
             this.TraceabilityTableViewModel.InitializeProperties(rows, columns);
+        }
+
+        /// <summary>
+        ///     Apply a filtering on columns
+        /// </summary>
+        /// <param name="selectedFilters">The selected filters</param>
+        public override void FilterColumns(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
+        {
+            FilterRequirementRows(selectedFilters, this.TraceabilityTableViewModel.Columns.OfType<RequirementRowViewModel>());
         }
     }
 }

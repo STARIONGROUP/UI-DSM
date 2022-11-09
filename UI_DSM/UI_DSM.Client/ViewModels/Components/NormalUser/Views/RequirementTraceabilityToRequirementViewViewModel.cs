@@ -47,24 +47,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         protected override string TraceCategoryName => "trace";
 
         /// <summary>
-        ///     Apply a filtering on rows
-        /// </summary>
-        /// <param name="selectedFilters">The selected filters</param>
-        public override void FilterRows(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
-        {
-            FilterRequirementRows(selectedFilters, this.TraceabilityTableViewModel.Rows.OfType<RequirementRowViewModel>());
-        }
-
-        /// <summary>
-        ///     Apply a filtering on columns
-        /// </summary>
-        /// <param name="selectedFilters">The selected filters</param>
-        public override void FilterColumns(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
-        {
-            FilterRequirementRows(selectedFilters, this.TraceabilityTableViewModel.Columns.OfType<RequirementRowViewModel>());
-        }
-
-        /// <summary>
         ///     Initialize this view model properties
         /// </summary>
         /// <param name="things">A collection of <see cref="Thing" /></param>
@@ -102,6 +84,24 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             InitializesFilterForRequirementRows(this.AvailableRowFilters, rows.OfType<RequirementRowViewModel>());
             InitializesFilterForRequirementRows(this.AvailableColumnFilters, columns.OfType<RequirementRowViewModel>());
             this.TraceabilityTableViewModel.InitializeProperties(rows, columns);
+        }
+
+        /// <summary>
+        ///     Apply a filtering on rows
+        /// </summary>
+        /// <param name="selectedFilters">The selected filters</param>
+        public override void FilterRows(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
+        {
+            FilterRequirementRows(selectedFilters, this.TraceabilityTableViewModel.Rows.OfType<RequirementRowViewModel>());
+        }
+
+        /// <summary>
+        ///     Apply a filtering on columns
+        /// </summary>
+        /// <param name="selectedFilters">The selected filters</param>
+        public override void FilterColumns(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
+        {
+            FilterRequirementRows(selectedFilters, this.TraceabilityTableViewModel.Columns.OfType<RequirementRowViewModel>());
         }
     }
 }
