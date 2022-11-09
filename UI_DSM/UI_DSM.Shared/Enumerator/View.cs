@@ -86,11 +86,6 @@ namespace UI_DSM.Shared.Enumerator
         /// <summary>
         ///     View associated to represent a TRL
         /// </summary>
-        TrlView = 13,
-
-        /// <summary>
-        ///     View associated to represent a Function Allocation to Technology
-        /// </summary>
-        FunctionAllocationToTechnologyView = 14
+        TrlView = 13
     }
 }

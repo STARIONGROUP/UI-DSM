@@ -79,7 +79,7 @@
 	@if (this.ViewModel.Comment.Replies.Any())
 	{
 		<div class="app-comment__replies">
-		<AppAccordion Label="Replies" Variant="AppAccordion.VariantValue.Reply">
+		<AppAccordion Label="Replies" Variant="AppAccordion.VariantValue.Reply" PanelOpen="false">
 			@foreach (var reply in this.ViewModel.Comment.Replies.OrderBy(x => x.CreatedOn))
 			{
 				<ReplyCard ViewModel="@(this.CreateReplyCardViewModel(reply))"/>

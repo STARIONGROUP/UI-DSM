@@ -28,6 +28,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     /// <summary>
     ///     Component for view that have a <see cref="TraceabilityTable" /> component
     /// </summary>
+    /// <typeparam name="TViewModel">A <see cref="IHaveTraceabilityTableViewModel"/></typeparam>
     public abstract partial class HaveTraceabilityTableView<TViewModel> : GenericBaseView<TViewModel>, IDisposable
         where TViewModel : IHaveTraceabilityTableViewModel
     {
@@ -62,6 +63,16 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public void Dispose()
         {
             this.Disposables.ForEach(x => x.Dispose());
+        }
+
+        /// <summary>
+        ///     Handle the fact that something has changed and needs to update the view
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        public override async Task HasChanged()
+        {
+            await base.HasChanged();
+            await this.Table.Update();
         }
 
         /// <summary>

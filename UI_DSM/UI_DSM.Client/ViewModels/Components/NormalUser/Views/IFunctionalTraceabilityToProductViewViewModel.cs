@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IRequirementTraceabilityToProductViewViewModel.cs" company="RHEA System S.A.">
+// <copyright file="IFunctionalTraceabilityToProductViewViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -14,9 +14,9 @@
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
     /// <summary>
-    ///     Interface definition for <see cref="RequirementTraceabilityToProductViewViewModel" />
+    ///     Interface definition for <see cref="FunctionalTraceabilityToProductViewViewModel" />
     /// </summary>
-    public interface IRequirementTraceabilityToProductViewViewModel : IHaveTechnologyViewViewModel
+    public interface IFunctionalTraceabilityToProductViewViewModel : IHaveTechnologyViewViewModel
     {
     }
 }

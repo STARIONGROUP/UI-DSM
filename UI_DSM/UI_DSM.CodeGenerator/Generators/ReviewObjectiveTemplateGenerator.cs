@@ -129,7 +129,7 @@ namespace UI_DSM.CodeGenerator.Generators
                 View.FunctionalBreakdownStructureView, View.RequirementTraceabilityToProductView, View.RequirementTraceabilityToFunctionView);
 
             prr6.ReviewTasks.Add(InitializeReviewTask("Check TRL “budget/report”.", 1, View.ProductBreakdownStructureView, View.BudgetView, View.TrlView, true));
-            prr6.ReviewTasks.Add(InitializeReviewTask("Check critical technologies.", 2, View.FunctionalTraceabilityToProductView, additionalView: View.FunctionAllocationToTechnologyView));
+            prr6.ReviewTasks.Add(InitializeReviewTask("Check critical technologies.", 2, View.FunctionalTraceabilityToProductView));
             prr6.ReviewTasks.Add(InitializeReviewTask("Check the risk management plan, that all technical and programmatic risks have been identified and that adequate mitigation actions are in place.", 3, View.DocumentBased));
             prr6.ReviewTasks.Add(InitializeReviewTask("Check documentation on initiated pre-development activities.", 4, View.DocumentBased));
             prr6.ReviewTasks.Add(InitializeReviewTask("Confirm validity and maturity of the spacecraft and payload design concept.", 5, View.TrlView));
@@ -149,7 +149,7 @@ namespace UI_DSM.CodeGenerator.Generators
             var srr1 = InitializeReviewObjective(ReviewObjectiveKind.Srr, 1, "Verify the proper translation and allocation of the ESA mission requirements into a set of system and subsystem technical specifications, including analysis and justification documents in terms of completeness, adequacy and consistency.",
                 View.ProductBreakdownStructureView);
 
-            srr1.ReviewTasks.Add(InitializeReviewTask("Check budgets.", 1, View.BudgetView, hasPrimaryView: true));
+            srr1.ReviewTasks.Add(InitializeReviewTask("Read requirements.", 1, View.RequirementBreakdownStructureView, hasPrimaryView: true));
             srr1.ReviewTasks.Add(InitializeReviewTask("Do completeness check.", 2, View.RequirementTraceabilityToRequirementView));
             srr1.ReviewTasks.Add(InitializeReviewTask("Check relationships between requirements and requirements flow down.", 3, View.RequirementTraceabilityToRequirementView));
             srr1.ReviewTasks.Add(InitializeReviewTask("Check requirements traceability to products.", 4, View.RequirementTraceabilityToProductView));
@@ -197,7 +197,7 @@ namespace UI_DSM.CodeGenerator.Generators
                 View.FunctionalBreakdownStructureView, View.RequirementTraceabilityToProductView, View.RequirementTraceabilityToFunctionView);
 
             srr8.ReviewTasks.Add(InitializeReviewTask("Check TRL “budget/report”.", 1, View.ProductBreakdownStructureView, View.BudgetView, View.TrlView, true));
-            srr8.ReviewTasks.Add(InitializeReviewTask("Check critical technologies", 2, View.FunctionalTraceabilityToProductView, additionalView: View.FunctionAllocationToTechnologyView));
+            srr8.ReviewTasks.Add(InitializeReviewTask("Check critical technologies", 2, View.FunctionalTraceabilityToProductView));
             srr8.ReviewTasks.Add(InitializeReviewTask("Check the risk management plan, that all technical and programmatic risks have been identified and that adequate mitigation actions are in place.", 3, View.DocumentBased));
             srr8.ReviewTasks.Add(InitializeReviewTask("Check documentation on initiated pre-development activities.", 4, View.DocumentBased));
             srr8.ReviewTasks.Add(InitializeReviewTask("Confirm validity and maturity of the spacecraft and payload design concept.", 5, View.TrlView));

@@ -21,10 +21,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
     /// <summary>
     ///     Row view model to display content for a <see cref="ElementDefinition" /> that are Product
     /// </summary>
-    public class ProductRowViewModel : HaveThingRowViewModel<ElementDefinition>
+    public class ProductRowViewModel : ElementDefinitionRowViewModel
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="HaveThingRowViewModel{TThing}" /> class.
+        ///     Initializes a new instance of the <see cref="ProductRowViewModel" /> class.
         /// </summary>
         /// <param name="thing">The <see cref="ElementDefinition" /></param>
         /// <param name="reviewItem">The associated <see cref="HaveThingRowViewModel{TThing}.ReviewItem" /></param>
@@ -42,21 +42,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         ///     The computed Id
         /// </summary>
         public string ComputedId { get; private set; }
-
-        /// <summary>
-        ///     Gets the name of the <see cref="ElementDefinition" />
-        /// </summary>
-        public string Name => this.Thing.Name;
-
-        /// <summary>
-        ///     Gets the shortname of the <see cref="ElementDefinition" />
-        /// </summary>
-        public string ShortName => this.Thing.ShortName;
-
-        /// <summary>
-        ///     Gets the owner of the <see cref="ElementDefinition" />
-        /// </summary>
-        public string Owner => this.Thing.GetOwnerShortName();
 
         /// <summary>
         ///     The value of the technology parameter

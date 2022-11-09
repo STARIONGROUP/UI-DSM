@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
     using CDP4Common.CommonData;
+    using CDP4Common.EngineeringModelData;
 
     using ReactiveUI;
 
@@ -22,12 +23,18 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     View model for any View that have a <see cref="TraceabilityTable" /> component
     /// </summary>
     public abstract class HaveTraceabilityTableViewModel : BaseViewViewModel, IHaveTraceabilityTableViewModel
     {
+        /// <summary>
+        ///     A <see cref="Dictionary{TKey,TValue}" /> of available <see cref="RelationshipRowViewModel" />
+        /// </summary>
+        private readonly Dictionary<Guid, Dictionary<Guid, RelationshipRowViewModel>> AvailableRelationships = new();
+
         /// <summary>
         ///     A collection of <see cref="IDisposable" />
         /// </summary>
@@ -88,31 +95,206 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     Populates the <see cref="AvailableRelationships" />
+        /// </summary>
+        /// <param name="rows">All possible <see cref="IHaveThingRowViewModel" /> rows</param>
+        /// <param name="columns">All possible <see cref="IHaveThingRowViewModel" /> columns</param>
+        /// <param name="relationshipReviewItems">
+        ///     A collection of <see cref="ReviewItem" /> for <see cref="BinaryRelationship" />
+        /// </param>
+        protected void PopulateRelationships(List<IHaveThingRowViewModel> rows, List<IHaveThingRowViewModel> columns, List<ReviewItem> relationshipReviewItems)
+        {
+            this.AvailableRelationships.Clear();
+
+            var sources = new Dictionary<Guid, IEnumerable<Thing>>();
+            var targets = new Dictionary<Guid, IEnumerable<Thing>>();
+
+            foreach (var row in rows)
+            {
+                sources[row.ThingId] = GetLinkeableThings(row);
+            }
+
+            foreach (var column in columns)
+            {
+                targets[column.ThingId] = GetLinkeableThings(column);
+            }
+
+            foreach (var source in sources)
+            {
+                foreach (var sourceThing in source.Value)
+                {
+                    this.TryAddRelationships(source.Key, sourceThing, targets, relationshipReviewItems);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Filters a collection of <see cref="RequirementRowViewModel" />
+        /// </summary>
+        /// <param name="selectedFilters">The selected filters</param>
+        /// <param name="collectionToFilter">The collection</param>
+        protected static void FilterRequirementRows(IReadOnlyDictionary<ClassKind, List<FilterRow>> selectedFilters, IEnumerable<RequirementRowViewModel> collectionToFilter)
+        {
+            var selectedOwners = selectedFilters[ClassKind.DomainOfExpertise];
+            var selectedSpecification = selectedFilters[ClassKind.RequirementsSpecification];
+
+            foreach (var requirementRowViewModel in collectionToFilter)
+            {
+                requirementRowViewModel.IsVisible = selectedOwners.Any(x => x.DefinedThing.Iid == requirementRowViewModel.Thing.Owner.Iid)
+                                                    && selectedSpecification.Any(x => x.DefinedThing.Iid == requirementRowViewModel.Thing.Container?.Iid);
+            }
+        }
+
+        /// <summary>
+        ///     Filters a collection of <see cref="ElementDefinitionRowViewModel" />
+        /// </summary>
+        /// <param name="selectedFilters">The selected filters</param>
+        /// <param name="collectionToFilter">The collection</param>
+        protected static void FilterElementDefinitionRows(IReadOnlyDictionary<ClassKind, List<FilterRow>> selectedFilters, IEnumerable<ElementDefinitionRowViewModel> collectionToFilter)
+        {
+            var selectedOwners = selectedFilters[ClassKind.DomainOfExpertise];
+
+            foreach (var productRowViewModel in collectionToFilter)
+            {
+                productRowViewModel.IsVisible = selectedOwners.Any(x => x.DefinedThing.Iid == productRowViewModel.Thing.Owner.Iid);
+            }
+        }
+
+        /// <summary>
         ///     Verifies that a <see cref="IHaveThingRowViewModel" /> is valid
         /// </summary>
         /// <param name="row">A <see cref="IHaveThingRowViewModel" /></param>
         /// <returns>The result of the verification</returns>
-        protected abstract bool IsValidRow(IHaveThingRowViewModel row);
+        protected virtual bool IsValidRow(IHaveThingRowViewModel row)
+        {
+            return true;
+        }
 
         /// <summary>
-        ///     Verifies if the current <see cref="row" /> traces the <see cref="column" />
+        ///     Initializes the <paramref name="filterModels" /> for <see cref="RequirementRowViewModel" /> rows
+        /// </summary>
+        /// <param name="filterModels">A collection of <see cref="FilterModel" /></param>
+        /// <param name="rows">The collection of <see cref="RequirementRowViewModel" /></param>
+        protected static void InitializesFilterForRequirementRows(List<FilterModel> filterModels, IEnumerable<RequirementRowViewModel> rows)
+        {
+            filterModels.Clear();
+            rows = rows.ToList();
+
+            var availableOwners = new List<DefinedThing>(rows
+                .Select(x => x.Thing.Owner).DistinctBy(x => x.Iid));
+
+            filterModels.Add(new FilterModel
+            {
+                ClassKind = ClassKind.DomainOfExpertise,
+                DisplayName = "Owner",
+                Values = availableOwners
+            });
+
+            var availableRequirementsSpecification = new List<DefinedThing>(rows
+                .Select(x => x.Thing.Container as RequirementsSpecification)
+                .Where(x => x != null)
+                .DistinctBy(x => x.Iid));
+
+            filterModels.Add(new FilterModel
+            {
+                ClassKind = ClassKind.RequirementsSpecification,
+                DisplayName = "Specification",
+                Values = availableRequirementsSpecification
+            });
+        }
+
+        /// <summary>
+        ///     Initializes the <paramref name="filterModels" /> for <see cref="ElementDefinitionRowViewModel" /> rows
+        /// </summary>
+        /// <param name="filterModels">A collection of <see cref="FilterModel" /></param>
+        /// <param name="rows">The collection of <see cref="ElementDefinitionRowViewModel" /></param>
+        protected static void InitializesFilterForElementDefinitionRows(List<FilterModel> filterModels, IEnumerable<ElementDefinitionRowViewModel> rows)
+        {
+            filterModels.Clear();
+
+            var availableOwners = new List<DefinedThing>(rows
+                .Select(x => x.Thing.Owner).DistinctBy(x => x.Iid));
+
+            filterModels.Add(new FilterModel
+            {
+                ClassKind = ClassKind.DomainOfExpertise,
+                DisplayName = "Owner",
+                Values = availableOwners
+            });
+        }
+
+        /// <summary>
+        ///     Tries to add all <see cref="RelationshipRowViewModel" /> for the provide <see cref="sourceThing" />
+        /// </summary>
+        /// <param name="sourceKey">The <see cref="Guid" /> of the <see cref="IHaveThingRowViewModel" /></param>
+        /// <param name="sourceThing">The <see cref="Thing" /></param>
+        /// <param name="targets">All possible linkeable items</param>
+        /// <param name="relationshipReviewItems">
+        ///     A collection of <see cref="ReviewItem" /> for <see cref="BinaryRelationship" />
+        /// </param>
+        private void TryAddRelationships(Guid sourceKey, Thing sourceThing, Dictionary<Guid, IEnumerable<Thing>> targets, IReadOnlyCollection<ReviewItem> relationshipReviewItems)
+        {
+            foreach (var target in targets)
+            {
+                foreach (var targetThing in target.Value)
+                {
+                    this.TryAddRelationship(sourceThing.GetLinkTo(targetThing.Iid, this.TraceCategoryName), sourceKey, target.Key, relationshipReviewItems);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Adds the <see cref="BinaryRelationship" /> inside the <see cref="AvailableRelationships" /> if exists
+        /// </summary>
+        /// <param name="relationship">A possible <see cref="BinaryRelationship" /></param>
+        /// <param name="rowId">The <see cref="Guid" /> of the <see cref="IHaveThingRowViewModel" /> row</param>
+        /// <param name="columnId">The <see cref="Guid" /> of the <see cref="IHaveThingRowViewModel" /> column</param>
+        /// <param name="relationshipReviewItems">
+        ///     A collection of <see cref="ReviewItem" /> for <see cref="BinaryRelationship" />
+        /// </param>
+        private void TryAddRelationship(BinaryRelationship relationship, Guid rowId, Guid columnId, IEnumerable<ReviewItem> relationshipReviewItems)
+        {
+            if (relationship != null)
+            {
+                if (!this.AvailableRelationships.ContainsKey(rowId))
+                {
+                    this.AvailableRelationships[rowId] = new Dictionary<Guid, RelationshipRowViewModel>();
+                }
+
+                this.AvailableRelationships[rowId][columnId] =
+                    new RelationshipRowViewModel(relationship, relationshipReviewItems.FirstOrDefault(x => x.ThingId == relationship.Iid));
+            }
+        }
+
+        /// <summary>
+        ///     Gets <see cref="Thing" />s that are linkeable inside a <see cref="IHaveThingRowViewModel" />
+        /// </summary>
+        /// <param name="row">The <see cref="IHaveThingRowViewModel" /></param>
+        /// <returns>A collection of <see cref="Thing" /></returns>
+        private static IEnumerable<Thing> GetLinkeableThings(IHaveThingRowViewModel row)
+        {
+            return row switch
+            {
+                ElementDefinitionRowViewModel elementDefinitionRow => elementDefinitionRow.Thing.ContainedElement,
+                RequirementRowViewModel requirementRow => new List<Thing> { requirementRow.Thing },
+                _ => Enumerable.Empty<Thing>()
+            };
+        }
+
+        /// <summary>
+        ///     Get the <see cref="RelationshipRowViewModel" /> that can exists between two <see cref="IHaveThingRowViewModel" />
         /// </summary>
         /// <param name="row">The row <see cref="IHaveThingRowViewModel" /></param>
         /// <param name="column">The column <see cref="IHaveThingRowViewModel" /></param>
-        /// <returns>A value indicating the traceability</returns>
-        private bool DoesRowTracesColumn(IHaveThingRowViewModel row, IHaveThingRowViewModel column)
+        /// <returns>The <see cref="RelationshipRowViewModel" /> if exists</returns>
+        private RelationshipRowViewModel GetRelationship(IHaveThingRowViewModel row, IHaveThingRowViewModel column)
         {
-            if (row is RequirementRowViewModel requirementRow)
+            if (this.AvailableRelationships.TryGetValue(row.ThingId, out var possibleRelationships))
             {
-                return requirementRow.Thing.IsLinkedTo(column.ThingId, this.TraceCategoryName);
+                return possibleRelationships.TryGetValue(column.ThingId, out var relationshipRow) ? relationshipRow : null;
             }
 
-            if (row is ProductRowViewModel productRow)
-            {
-                return productRow.Thing.IsLinkedTo(column.ThingId, this.TraceCategoryName);
-            }
-
-            return false;
+            return null;
         }
 
         /// <summary>
@@ -120,7 +302,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         private void InitializeTable()
         {
-            this.TraceabilityTableViewModel = new TraceabilityTableViewModel(this.HeaderName, this.DoesRowTracesColumn, this.IsValidRow);
+            this.TraceabilityTableViewModel = new TraceabilityTableViewModel(this.HeaderName, this.GetRelationship, this.IsValidRow);
 
             this.disposables.Add(this.WhenAnyValue(x => x.TraceabilityTableViewModel.SelectedElement)
                 .Subscribe(this.UpdateSelectedElement));

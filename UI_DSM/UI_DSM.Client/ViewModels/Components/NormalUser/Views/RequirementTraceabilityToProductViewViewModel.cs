@@ -28,13 +28,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     ///     ViewModel for the <see cref="Client.Components.NormalUser.Views.RequirementTraceabilityToProductView" />
     ///     component
     /// </summary>
-    public class RequirementTraceabilityToProductViewViewModel : HaveTraceabilityTableViewModel, IRequirementTraceabilityToProductViewViewModel
+    public class RequirementTraceabilityToProductViewViewModel : HaveTechnologyViewViewModel, IRequirementTraceabilityToProductViewViewModel
     {
-        /// <summary>
-        ///     Backing field for <see cref="IsOnTechnologyView" />
-        /// </summary>
-        private bool isOnTechnologyView;
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="RequirementTraceabilityToProductViewViewModel" /> class.
         /// </summary>
@@ -59,12 +54,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="selectedFilters">The selected filters</param>
         public override void FilterRows(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
         {
-            var selectedOwners = selectedFilters[ClassKind.DomainOfExpertise];
-
-            foreach (var productRowViewModel in this.TraceabilityTableViewModel.Rows.OfType<ProductRowViewModel>())
-            {
-                productRowViewModel.IsVisible = selectedOwners.Any(x => x.DefinedThing.Iid == productRowViewModel.Thing.Owner.Iid);
-            }
+            FilterElementDefinitionRows(selectedFilters, this.TraceabilityTableViewModel.Rows.OfType<ProductRowViewModel>());
         }
 
         /// <summary>
@@ -73,14 +63,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="selectedFilters">The selected filters</param>
         public override void FilterColumns(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
         {
-            var selectedOwners = selectedFilters[ClassKind.DomainOfExpertise];
-            var selectedSpecification = selectedFilters[ClassKind.RequirementsSpecification];
-
-            foreach (var requirementRowViewModel in this.TraceabilityTableViewModel.Columns.OfType<RequirementRowViewModel>())
-            {
-                requirementRowViewModel.IsVisible = selectedOwners.Any(x => x.DefinedThing.Iid == requirementRowViewModel.Thing.Owner.Iid)
-                                                    && selectedSpecification.Any(x => x.DefinedThing.Iid == requirementRowViewModel.Thing.Container?.Iid);
-            }
+            FilterRequirementRows(selectedFilters, this.TraceabilityTableViewModel.Columns.OfType<RequirementRowViewModel>());
         }
 
         /// <summary>
@@ -104,8 +87,13 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 .OrderBy(x => x.Name)
                 .ToList();
 
+            var relationships = this.Things.OfType<BinaryRelationship>()
+                .Where(x => x.IsCategorizedBy(this.TraceCategoryName))
+                .ToList();
+
             var filteredThings = new List<Thing>(requirements);
             filteredThings.AddRange(products);
+            filteredThings.AddRange(relationships);
 
             var reviewItems = await this.ReviewItemService.GetReviewItemsForThings(this.ProjectId, this.ReviewId,
                 filteredThings.Select(x => x.Iid));
@@ -116,89 +104,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             var columns = new List<IHaveThingRowViewModel>(requirements
                 .Select(x => new RequirementRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));
 
-            this.InitializeRowFilters(rows);
-            this.InitializeColumnFilters(columns);
+            var reviewItemsForRelationships = reviewItems.Where(x => relationships.Any(rel => x.ThingId == rel.Iid)).ToList();
+
+            this.PopulateRelationships(rows, columns, reviewItemsForRelationships);
+            InitializesFilterForElementDefinitionRows(this.AvailableRowFilters, rows.OfType<ProductRowViewModel>());
+            InitializesFilterForRequirementRows(this.AvailableColumnFilters, columns.OfType<RequirementRowViewModel>());
             this.TraceabilityTableViewModel.InitializeProperties(rows, columns);
-        }
-
-        /// <summary>
-        ///     Value indicating that the current view should display Technology
-        /// </summary>
-        public bool IsOnTechnologyView
-        {
-            get => this.isOnTechnologyView;
-            set => this.RaiseAndSetIfChanged(ref this.isOnTechnologyView, value);
-        }
-
-        /// <summary>
-        ///     Perfoms the switch between view
-        /// </summary>
-        public void OnTechnologyViewChange()
-        {
-            foreach (var row in this.TraceabilityTableViewModel.Rows.OfType<ProductRowViewModel>())
-            {
-                row.ComputeId(this.IsOnTechnologyView);
-            }
-        }
-
-        /// <summary>
-        ///     Verifies that a <see cref="IHaveThingRowViewModel" /> is valid
-        /// </summary>
-        /// <param name="row">A <see cref="IHaveThingRowViewModel" /></param>
-        /// <returns>The result of the verification</returns>
-        protected override bool IsValidRow(IHaveThingRowViewModel row)
-        {
-            return !this.IsOnTechnologyView || ((ProductRowViewModel)row).HasValidTechnology;
-        }
-
-        /// <summary>
-        ///     Initializes the <see cref="FilterModel" />s for rows
-        /// </summary>
-        /// <param name="rows">A collection of <see cref="IHaveThingRowViewModel" /></param>
-        private void InitializeRowFilters(IEnumerable<IHaveThingRowViewModel> rows)
-        {
-            this.AvailableRowFilters.Clear();
-
-            var availableOwners = new List<DefinedThing>(rows.OfType<ProductRowViewModel>()
-                .Select(x => x.Thing.Owner).DistinctBy(x => x.Iid));
-
-            this.AvailableRowFilters.Add(new FilterModel
-            {
-                ClassKind = ClassKind.DomainOfExpertise,
-                DisplayName = "Owner",
-                Values = availableOwners
-            });
-        }
-
-        /// <summary>
-        ///     Initializes the <see cref="FilterModel" />s for columns
-        /// </summary>
-        /// <param name="columns">A collection of <see cref="IHaveThingRowViewModel" /></param>
-        private void InitializeColumnFilters(List<IHaveThingRowViewModel> columns)
-        {
-            this.AvailableColumnFilters.Clear();
-
-            var availableOwners = new List<DefinedThing>(columns.OfType<RequirementRowViewModel>()
-                .Select(x => x.Thing.Owner).DistinctBy(x => x.Iid));
-
-            this.AvailableColumnFilters.Add(new FilterModel
-            {
-                ClassKind = ClassKind.DomainOfExpertise,
-                DisplayName = "Owner",
-                Values = availableOwners
-            });
-
-            var availableRequirementsSpecification = new List<DefinedThing>(columns.OfType<RequirementRowViewModel>()
-                .Select(x => x.Thing.Container as RequirementsSpecification)
-                .Where(x => x != null)
-                .DistinctBy(x => x.Iid));
-
-            this.AvailableColumnFilters.Add(new FilterModel
-            {
-                ClassKind = ClassKind.RequirementsSpecification,
-                DisplayName = "Specification",
-                Values = availableRequirementsSpecification
-            });
         }
     }
 }

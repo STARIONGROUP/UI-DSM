@@ -10,10 +10,8 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 <AppAccordion Label="Comments">
-
-
 	<div class="comments__header">
-		<button class="comments__add-button" onclick="@(this.ViewModel.OpenCommentCreationPopup)">
+		<button class="comments__add-button" @onclick="@this.ViewModel.OpenCommentCreationPopup">
 			<FeatherMessageCircle Size="24" Color="currentColor" StrokeWidth="1.5f" /> Leave a comment
 		</button>
 	</div>

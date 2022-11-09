@@ -163,25 +163,23 @@ namespace UI_DSM.Client.Extensions
         }
 
         /// <summary>
-        ///     Verifies if a <see cref="Thing" /> has a <see cref="BinaryRelationship" /> with another <see cref="Thing" />
-        ///     defined by the
-        ///     <paramref name="otherThingId" />
+        ///     Gets the <see cref="BinaryRelationship" /> that linked two <see cref="Thing" />
         /// </summary>
         /// <param name="thing">The <see cref="Thing" /></param>
         /// <param name="otherThingId">The <see cref="Guid" /> of the other <see cref="Thing" /></param>
         /// <param name="relationshipCategory">
         ///     The name of the <see cref="Category" /> of the <see cref="BinaryRelationship" />
         /// </param>
-        /// <returns>The value asserting is the <see cref="Thing" /> is linked to the other <see cref="Thing" /></returns>
-        public static bool IsLinkedTo(this Thing thing, Guid otherThingId, string relationshipCategory)
+        /// <returns>The <see cref="BinaryRelationship" /> that link the two <see cref="Thing" /></returns>
+        public static BinaryRelationship GetLinkTo(this Thing thing, Guid otherThingId, string relationshipCategory)
         {
             if (thing.Iid == otherThingId)
             {
-                return false;
+                return null;
             }
 
             var binaryRelationships = thing.QueryRelationships(relationshipCategory);
-            return binaryRelationships.Any(x => x.Source.Iid == thing.Iid && x.Target.Iid == otherThingId);
+            return binaryRelationships.FirstOrDefault(x => x.Source.Iid == thing.Iid && x.Target.Iid == otherThingId);
         }
 
         /// <summary>

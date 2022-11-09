@@ -37,10 +37,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         string HeaderName { get; }
 
         /// <summary>
-        ///     Verifies if the current <see cref="IHaveThingRowViewModel" /> row traces the <see cref="IHaveThingRowViewModel" />
-        ///     column
+        ///     Gets the <see cref="RelationshipRowViewModel" /> that links two <see cref="IHaveThingRowViewModel" />
         /// </summary>
-        Func<IHaveThingRowViewModel, IHaveThingRowViewModel, bool> DoesRowTracesColumn { get; }
+        Func<IHaveThingRowViewModel, IHaveThingRowViewModel, RelationshipRowViewModel> GetRelationship { get; }
 
         /// <summary>
         ///     The selected <see cref="IHaveThingRowViewModel" />

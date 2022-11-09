@@ -41,6 +41,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
     using BinaryRelationship = CDP4Common.DTO.BinaryRelationship;
     using ElementDefinition = CDP4Common.DTO.ElementDefinition;
+    using ElementUsage = CDP4Common.DTO.ElementUsage;
     using Parameter = CDP4Common.DTO.Parameter;
     using ParameterValueSet = CDP4Common.DTO.ParameterValueSet;
     using Requirement = CDP4Common.DTO.Requirement;
@@ -118,6 +119,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 ShortName = "2"
             };
 
+            var elementUsageId = Guid.NewGuid();
+
             var product = new ElementDefinition()
             {
                 Iid = Guid.NewGuid(),
@@ -127,7 +130,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 Category = new List<Guid>
                 {
                     productsCategory
-                }
+                },
+                ContainedElement = new List<Guid>{elementUsageId}
             };
 
             var parameterType = new TextParameterType()
@@ -164,6 +168,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 },
                 Owner = owner.Iid,
                 Parameter = new List<Guid>{invalidParameter.Iid}
+            };
+
+            var elementUsage = new ElementUsage()
+            {
+                Iid = elementUsageId,
+                ElementDefinition = productWithInvalidTechnology.Iid
             };
 
             var productWithoutTechnology = new ElementDefinition()
@@ -224,7 +234,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             var relationShip = new BinaryRelationship()
             {
                 Iid = Guid.NewGuid(),
-                Source = product.Iid,
+                Source = elementUsageId,
                 Target = secondRequirement.Iid,
                 Category = new List<Guid>{satisfiesCategoryId}
             };
@@ -246,7 +256,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 productValidTechnology,
                 productWithInvalidTechnology,
                 productWithoutTechnology,
-                owner
+                owner,
+                elementUsage
             };
 
             await assembler.Synchronize(things);

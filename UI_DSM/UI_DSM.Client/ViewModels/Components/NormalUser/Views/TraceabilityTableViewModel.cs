@@ -38,13 +38,13 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Initializes a new instance of the <see cref="TraceabilityTableViewModel" /> class.
         /// </summary>
         /// <param name="headerName">The name of the header</param>
-        /// <param name="doesRowTracesColumn"><see cref="Func{T1,T2,TResult}" /> for defining how the trace is computed</param>
+        /// <param name="getRelationship"><see cref="Func{T1,T2,TResult}" /> for defining how the trace is computed</param>
         /// <param name="isValidRow"><see cref="Func{T1,TResult}" /> to check if the <see cref="IHaveThingRowViewModel" /> row is valid</param>
-        public TraceabilityTableViewModel(string headerName, Func<IHaveThingRowViewModel, IHaveThingRowViewModel, bool> doesRowTracesColumn,
+        public TraceabilityTableViewModel(string headerName, Func<IHaveThingRowViewModel, IHaveThingRowViewModel, RelationshipRowViewModel> getRelationship,
             Func<IHaveThingRowViewModel, bool> isValidRow)
         {
             this.HeaderName = headerName;
-            this.DoesRowTracesColumn = doesRowTracesColumn;
+            this.GetRelationship = getRelationship;
             this.IsValidRow = isValidRow;
         }
 
@@ -82,10 +82,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Verifies if the current <see cref="IHaveThingRowViewModel" /> row traces the <see cref="IHaveThingRowViewModel" />
-        ///     column
+        ///     Gets the <see cref="RelationshipRowViewModel" /> between two <see cref="IHaveThingRowViewModel" />
         /// </summary>
-        public Func<IHaveThingRowViewModel, IHaveThingRowViewModel, bool> DoesRowTracesColumn { get; }
+        public Func<IHaveThingRowViewModel, IHaveThingRowViewModel, RelationshipRowViewModel> GetRelationship { get; }
 
         /// <summary>
         ///     A collection of rows for the table
@@ -140,7 +139,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <returns>The result of the verification</returns>
         public bool DoesRowTraceAnyColumns(IHaveThingRowViewModel row)
         {
-            return this.VisibleColumns.Any(column => this.DoesRowTracesColumn(row, column));
+            return this.VisibleColumns.Any(column => this.GetRelationship(row, column) != null);
         }
     }
 }

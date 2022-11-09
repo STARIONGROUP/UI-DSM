@@ -9,6 +9,7 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
 @if (this.ViewModel != null)
 {
 	<div class="app-traceability-table">
@@ -43,9 +44,9 @@
 							@foreach (var currentColumn in this.ViewModel.VisibleColumns)
 						{
 							<td class="@GetTdClass(currentRow, currentColumn)">
-								@if (this.ViewModel.DoesRowTracesColumn(currentRow, currentColumn))
+								@if (this.ViewModel.GetRelationship(currentRow, currentColumn) is { } relationship)
 								{
-									<FeatherCheck Size="24" Color="currentColor" StrokeWidth="2"/>
+									<TraceabilityCell RelationshipRow="relationship" OnClick="(row) => this.ViewModel.SelectElement(row)"/>
 								}
 							</td>
 						}

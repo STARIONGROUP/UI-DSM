@@ -1,5 +1,5 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
-// RequirementTraceabilityToProductView.razor
+// RequirementTraceabilityToFunctionView.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -9,18 +9,18 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-@inherits HaveTechnologyView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IRequirementTraceabilityToProductViewViewModel>
+@inherits HaveTraceabilityTableView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IRequirementTraceabilityToFunctionViewViewModel>
 
 <div>
-	<DxCheckBox CheckType="CheckType.Switch" @bind-Checked="@this.ViewModel.IsOnTechnologyView">Show Technology</DxCheckBox>
 	<Filter @ref="this.RowFiltering" Id="row">
 		<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
 	</Filter>
 
 	<Filter @ref="this.ColumnFiltering" Id="column">
-		<FeatherColumns Size="20" Color="currentColor" StrokeWidth="2"/> <span>Column</span>
+		<FeatherColumns Size="20" Color="currentColor" StrokeWidth="2" /> <span>Column</span>
 	</Filter>
 	
-	<TraceabilityVisibilitySelector @ref="this.TraceabilityVisibilitySelector" />
+	<TraceabilityVisibilitySelector @ref="this.TraceabilityVisibilitySelector"/>
 </div>
-<TraceabilityTable @ref="this.Table" />
+
+<TraceabilityTable @ref="this.Table"/>

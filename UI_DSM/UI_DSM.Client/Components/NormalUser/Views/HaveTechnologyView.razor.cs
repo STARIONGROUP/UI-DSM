@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="RequirementTraceabilityToProductView.razor.cs" company="RHEA System S.A.">
+// <copyright file="HaveTechnologyView.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -17,13 +17,14 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
     using ReactiveUI;
 
-    using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     Component for the <see cref="View.RequirementTraceabilityToProductView" />
+    ///     Component for view that have a Technology View inside the <see cref="TraceabilityTableViewModel"/>
     /// </summary>
-    public partial class RequirementTraceabilityToProductView
+    /// <typeparam name="TViewModel">A <see cref="IHaveTechnologyViewViewModel"/></typeparam>
+    public abstract partial class HaveTechnologyView<TViewModel> : HaveTraceabilityTableView<TViewModel> where TViewModel: IHaveTechnologyViewViewModel
     {
         /// <summary>
         ///     Initialize the correspondant ViewModel for this component
