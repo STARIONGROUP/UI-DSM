@@ -28,7 +28,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     public class RequirementTraceabilityToRequirementViewViewModel : HaveTraceabilityTableViewModel, IRequirementTraceabilityToRequirementViewViewModel
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
+        ///     Initializes a new instance of the <see cref="RequirementTraceabilityToRequirementViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
         public RequirementTraceabilityToRequirementViewViewModel(IReviewItemService reviewItemService) : base(reviewItemService)
@@ -51,14 +51,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="selectedFilters">The selected filters</param>
         public override void FilterRows(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
         {
-            var selectedOwners = selectedFilters[ClassKind.DomainOfExpertise];
-            var selectedSpecification = selectedFilters[ClassKind.RequirementsSpecification];
-
-            foreach (var requirementRowViewModel in this.TraceabilityTableViewModel.Rows.OfType<RequirementRowViewModel>())
-            {
-                requirementRowViewModel.IsVisible = selectedOwners.Any(x => x.DefinedThing.Iid == requirementRowViewModel.Thing.Owner.Iid)
-                                                    && selectedSpecification.Any(x => x.DefinedThing.Iid == requirementRowViewModel.Thing.Container?.Iid);
-            }
+            FilterRequirements(selectedFilters, this.TraceabilityTableViewModel.Rows);
         }
 
         /// <summary>
@@ -67,24 +60,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="selectedFilters">The selected filters</param>
         public override void FilterColumns(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
         {
-            var selectedOwners = selectedFilters[ClassKind.DomainOfExpertise];
-            var selectedSpecification = selectedFilters[ClassKind.RequirementsSpecification];
-
-            foreach (var requirementRowViewModel in this.TraceabilityTableViewModel.Columns.OfType<RequirementRowViewModel>())
-            {
-                requirementRowViewModel.IsVisible = selectedOwners.Any(x => x.DefinedThing.Iid == requirementRowViewModel.Thing.Owner.Iid)
-                                                    && selectedSpecification.Any(x => x.DefinedThing.Iid == requirementRowViewModel.Thing.Container?.Iid);
-            }
-        }
-
-        /// <summary>
-        ///     Verifies that a <see cref="IHaveThingRowViewModel" /> is valid
-        /// </summary>
-        /// <param name="row">A <see cref="IHaveThingRowViewModel" /></param>
-        /// <returns>The result of the verification</returns>
-        protected override bool IsValidRow(IHaveThingRowViewModel row)
-        {
-            return true;
+            FilterRequirements(selectedFilters, this.TraceabilityTableViewModel.Columns);
         }
 
         /// <summary>
@@ -114,6 +90,33 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
             this.InitializeFilters(rows);
             this.TraceabilityTableViewModel.InitializeProperties(rows, columns);
+        }
+
+        /// <summary>
+        ///     Verifies that a <see cref="IHaveThingRowViewModel" /> is valid
+        /// </summary>
+        /// <param name="row">A <see cref="IHaveThingRowViewModel" /></param>
+        /// <returns>The result of the verification</returns>
+        protected override bool IsValidRow(IHaveThingRowViewModel row)
+        {
+            return true;
+        }
+
+        /// <summary>
+        ///     Filters a collection of <see cref="IHaveThingRowViewModel" /> for <see cref="Requirement" />
+        /// </summary>
+        /// <param name="selectedFilters">The selected filters</param>
+        /// <param name="collectionToFilter">The collection</param>
+        private static void FilterRequirements(IReadOnlyDictionary<ClassKind, List<FilterRow>> selectedFilters, IEnumerable<IHaveThingRowViewModel> collectionToFilter)
+        {
+            var selectedOwners = selectedFilters[ClassKind.DomainOfExpertise];
+            var selectedSpecification = selectedFilters[ClassKind.RequirementsSpecification];
+
+            foreach (var requirementRowViewModel in collectionToFilter.OfType<RequirementRowViewModel>())
+            {
+                requirementRowViewModel.IsVisible = selectedOwners.Any(x => x.DefinedThing.Iid == requirementRowViewModel.Thing.Owner.Iid)
+                                                    && selectedSpecification.Any(x => x.DefinedThing.Iid == requirementRowViewModel.Thing.Container?.Iid);
+            }
         }
 
         /// <summary>

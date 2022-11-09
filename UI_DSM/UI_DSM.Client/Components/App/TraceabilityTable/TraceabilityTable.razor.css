@@ -41,13 +41,6 @@ table thead th {
     background: var(--colors-gray-50);
 }
 
-
-table tbody th {
-    text-align: left;
-    position: relative;
-    background: var(--colors-white);
-}
-
 table thead th:first-child {
     position: sticky;
     left: 0;
@@ -55,8 +48,10 @@ table thead th:first-child {
 }
 
 table tbody th {
+    text-align: left;
     position: sticky;
     left: 0;
+    background: var(--colors-white);
     z-index: 1;
 }
 
