@@ -41,7 +41,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     Handle the fact that something has changed and needs to update the view
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>
-        public async Task HasChanged()
+        public virtual async Task HasChanged()
         {
             await this.InvokeAsync(this.StateHasChanged);
         }
