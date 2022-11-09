@@ -12,7 +12,7 @@
 
 <div class="project-page">
   <div class="page-header">
-        <h1 class="h3">Review objectives for @this.ViewModel.Review.Title</h1>
+    <h1 class="h3">Review objectives for @this.ViewModel.Review.Title</h1>
   </div>
 
   <div class="objective-overview">
@@ -20,7 +20,7 @@
 		{
 
 			<div div @onclick="@(() => this.ViewModel.GoToReviewObjectivePage(reviewObjective))">
-				<AppObjectiveItem Title="@reviewObjective.Title" Link=@(this.ViewModel.NavigationManager.Uri+"/ReviewObjective/"+reviewObjective.Id) />
+				<AppObjectiveItem Title="@reviewObjective.Description" Link=@(this.ViewModel.NavigationManager.Uri+"/ReviewObjective/"+reviewObjective.Id) />
 			</div>
 		}
   </div>

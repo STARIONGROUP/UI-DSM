@@ -10,6 +10,7 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @page "/Administration/Role/{RoleId}"
+@layout DefaultLayout
 @attribute [Authorize(Roles = "Administrator")]
 
 @if (this.ViewModel.RoleDetailsViewModel.Role == null)

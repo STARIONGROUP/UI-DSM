@@ -11,13 +11,13 @@
 -------------------------------------------------------------------------------------------------------->
 
 <div class="app-reply">
-	<div class="app-reply__header">
+	@* <div class="app-reply__header">
 		@if (this.ViewModel.IsAllowedToEdit)
 		{
 			<FeatherEdit Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnContentEditClick"/>
 			<FeatherTrash2 Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnDeleteClick"/>
 		}
-	</div>
+	</div> *@
 
 	<div class="app-reply__body">
 		<span class="app-reply__title">
@@ -25,5 +25,20 @@
 			<span class="app-reply__date">@(this.ViewModel.Reply.CreatedOn)</span>
 		</span>
 		<span class="app-reply__description">@((MarkupString)this.ViewModel.Reply.Content)</span>
+	</div>
+
+	<div class="app-reply__actions">
+		@if (this.ViewModel.IsAllowedToEdit)
+		{
+		<button class="app-reply__button" @onclick="this.OnContentEditClick">
+			<FeatherEdit Size="20" Color="currentColor" StrokeWidth="2" />
+			Edit
+		</button>
+
+		<button class="app-reply__button" @onclick="this.OnDeleteClick">
+			<FeatherTrash2 Size="20" Color="currentColor" StrokeWidth="2" />
+			Delete
+		</button>
+		}
 	</div>
 </div>

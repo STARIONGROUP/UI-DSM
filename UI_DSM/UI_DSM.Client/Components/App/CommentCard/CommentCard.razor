@@ -12,47 +12,79 @@
 
 <div class="app-comment">
 	<div class="app-comment__header">
-		<FeatherMessageCircle Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnReplyCallback"/>
-		@if (this.ViewModel.IsAllowedToEdit)
-		{
-			<FeatherEdit Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnContentEditClick"/>
-			<FeatherTrash2 Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnDeleteClick"/>
-		}
-		<button id="dropdownButton" @onclick="() => this.IsOnStatusUpdateMode = true">Mark as :</button>
-		<DxDropDown @bind-IsOpen="@(this.IsOnStatusUpdateMode)"
-		            Width="200"
-		            PositionTarget="#dropdownButton"
-		            PositionMode="DropDownPositionMode.Bottom">
-			<BodyTemplate>
-				@foreach (var status in AvailableStatus)
-				{
-					<div id="@status.ToString()" @onclick="() => this.ViewModel.UpdateStatus(status)">
-						@if (this.ViewModel.Comment.Status == status)
-						{
-							<FeatherCheck Size="20" Color="currentColor"/>
-						}
-						@status
-					</div>
-				}
-			</BodyTemplate>
-		</DxDropDown>
+			<DxDropDown 
+				@bind-IsOpen="@this.IsOnStatusUpdateMode"
+				Width="200"
+				PositionTarget="@this.PositionTarget"
+				PositionMode="DropDownPositionMode.Bottom"
+			>
+
+				<BodyTemplate>
+					@foreach (var status in AvailableStatus)
+					{
+						<div id="@status.ToString()" class="status-item" @onclick="() => this.ViewModel.UpdateStatus(status)">
+							@if (this.ViewModel.Comment.Status == status)
+							{
+								<FeatherCheckSquare Size="20" Color="currentColor" />
+							}
+							else
+							{
+								<FeatherSquare Size="20" Color="currentColor" />
+							}
+							@status
+						</div>
+					}
+				</BodyTemplate>
+			</DxDropDown>
 	</div>
 
 	<div class="app-comment__body">
 		<span class="app-comment__title">
-			<span class="app-comment__name">@(this.ViewModel.Comment.Author.User.UserName)</span>
-			<span class="app-comment__date">@(this.ViewModel.Comment.CreatedOn)</span>
+			<span>
+				<span class="app-comment__name">@(this.ViewModel.Comment.Author.User.UserName)</span>
+				<span class="app-comment__date">@(this.ViewModel.Comment.CreatedOn)</span>
+			</span>
+
+
+			@if (this.ViewModel.IsAllowedToEdit)
+			{
+				<button id="@this.CardUniqueId" class="app-comment__status" @onclick="() => this.IsOnStatusUpdateMode = true">
+					@this.ViewModel.Comment.Status
+					<FeatherChevronDown Size="20" Color="currentColor" StrokeWidth="2" />
+				</button>
+			}
 		</span>
 		<span class="app-comment__description">@((MarkupString)this.ViewModel.Comment.Content)</span>
 	</div>
 
+	<div class="app-comment__actions">
+				<button class="app-comment__button" @onclick="this.OnReplyCallback">
+					<FeatherMessageCircle Size="20" Color="currentColor" StrokeWidth="2" />
+					Reply
+				</button>
+			@if (this.ViewModel.IsAllowedToEdit)
+			{
+			<button class="app-comment__button" @onclick="this.OnContentEditClick">
+				<FeatherEdit Size="20" Color="currentColor" StrokeWidth="2" />
+				Edit
+			</button>
+
+			<button class="app-comment__button" @onclick="this.OnDeleteClick">
+				<FeatherTrash2 Size="20" Color="currentColor" StrokeWidth="2" />
+				Delete
+			</button>
+			}
+	</div>
+
 	@if (this.ViewModel.Comment.Replies.Any())
 	{
-		<AppAccordion Label="Replies">
+		<div class="app-comment__replies">
+		<AppAccordion Label="Replies" Variant="AppAccordion.VariantValue.Reply">
 			@foreach (var reply in this.ViewModel.Comment.Replies.OrderBy(x => x.CreatedOn))
 			{
 				<ReplyCard ViewModel="@(this.CreateReplyCardViewModel(reply))"/>
 			}
 		</AppAccordion>
+		</div>
 	}
 </div>

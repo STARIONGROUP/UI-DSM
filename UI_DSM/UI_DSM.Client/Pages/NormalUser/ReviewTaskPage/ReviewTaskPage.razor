@@ -46,6 +46,12 @@
 		}
 		<aside class="task-page__sidebar task-page__sidebar__right">
 			<SelectedItemCard @ref="this.SelectedItemCard"/>
+			@* <AppAccordion Label="Related views">
+				@foreach (var view in this.ViewModel.ReviewObjective.RelatedViews)
+				{
+					<button>@view</button>
+				}
+			</AppAccordion> *@
 			<Comments @ref="this.Comments"/>
 		</aside>
 	}

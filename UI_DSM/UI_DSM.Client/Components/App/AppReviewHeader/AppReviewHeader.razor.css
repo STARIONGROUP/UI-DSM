@@ -9,4 +9,11 @@
 .app-review-header p {
   margin-bottom: 0;
   opacity: 0.8;
+  font-size: var(--text-xl);
+  font-weight: 500;
+}
+
+.app-review-header h1 {
+  font-size: var(--text-2xl);
+  opacity: 0.9;
 }
