@@ -54,13 +54,13 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Checks if the current <see cref="RequirementBreakdownStructureViewRowViewModel" /> has a <see cref="Comment" />
+        ///     Checks if the current <see cref="RequirementRowViewModel" /> has a <see cref="Comment" />
         /// </summary>
         /// <param name="context">The <see cref="GridColumnCellDisplayTemplateContext" /></param>
         /// <returns>The result of the check</returns>
         private static bool HasComment(GridColumnCellDisplayTemplateContext context)
         {
-            return context.DataItem is RequirementBreakdownStructureViewRowViewModel { ReviewItem: { } } row &&
+            return context.DataItem is RequirementRowViewModel { ReviewItem: { } } row &&
                    row.ReviewItem.Annotations.OfType<Comment>().Any();
         }
     }

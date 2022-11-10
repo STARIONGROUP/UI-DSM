@@ -21,8 +21,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     public interface IRequirementBreakdownStructureViewViewModel: IBaseViewViewModel
     {
         /// <summary>
-        ///     A collection of <see cref="RequirementBreakdownStructureViewRowViewModel" />
+        ///     A collection of <see cref="RequirementRowViewModel" />
         /// </summary>
-        IEnumerable<RequirementBreakdownStructureViewRowViewModel> Rows { get; }
+        IEnumerable<RequirementRowViewModel> Rows { get; }
     }
 }

@@ -290,7 +290,7 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ModelManagement
                 return;
             }
 
-            this.AvailableIterationsSetup = this.SelectedEngineeringModelSetup.Iterations;
+            this.AvailableIterationsSetup = this.SelectedEngineeringModelSetup.Iterations.OrderBy(x => x.IterationName);
 
             this.SelectedIterationSetup = this.AvailableIterationsSetup.FirstOrDefault();
         }

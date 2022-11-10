@@ -32,7 +32,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="reviewItemService">The <see cref="IReviewItemService"/></param>
         public RequirementBreakdownStructureViewViewModel(IReviewItemService reviewItemService) : base(reviewItemService)
         {
-            this.Rows = new List<RequirementBreakdownStructureViewRowViewModel>();
+            this.Rows = new List<RequirementRowViewModel>();
         }
 
         /// <summary>
@@ -54,13 +54,13 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             var reviewItems = await this.ReviewItemService.GetReviewItemsForThings(this.ProjectId, this.ReviewId,
                 filteredThings.Select(x => x.Iid));
 
-            this.Rows = new List<RequirementBreakdownStructureViewRowViewModel>(filteredThings
-                .Select(x => new RequirementBreakdownStructureViewRowViewModel(x, reviewItems.FirstOrDefault(ri=> ri.ThingId == x.Iid))));
+            this.Rows = new List<RequirementRowViewModel>(filteredThings
+                .Select(x => new RequirementRowViewModel(x, reviewItems.FirstOrDefault(ri=> ri.ThingId == x.Iid))));
         }
 
         /// <summary>
         ///     A collection of <see cref="Requirement" /> that has been filtered
         /// </summary>
-        public IEnumerable<RequirementBreakdownStructureViewRowViewModel> Rows { get; private set; }
+        public IEnumerable<RequirementRowViewModel> Rows { get; private set; }
     }
 }

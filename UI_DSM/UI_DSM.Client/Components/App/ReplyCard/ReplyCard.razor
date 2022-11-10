@@ -11,14 +11,6 @@
 -------------------------------------------------------------------------------------------------------->
 
 <div class="app-reply">
-	@* <div class="app-reply__header">
-		@if (this.ViewModel.IsAllowedToEdit)
-		{
-			<FeatherEdit Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnContentEditClick"/>
-			<FeatherTrash2 Size="24" Color="currentColor" StrokeWidth="1.5f" @onclick="this.OnDeleteClick"/>
-		}
-	</div> *@
-
 	<div class="app-reply__body">
 		<span class="app-reply__title">
 			<span class="app-reply__name">@(this.ViewModel.Reply.Author.User.UserName)</span>

@@ -18,10 +18,22 @@ namespace UI_DSM.Client.Extensions
     using CDP4Common.SiteDirectoryData;
 
     /// <summary>
-    ///     Extension class for <see cref="CDP4Common.CommonData.Thing" />
+    ///     Extension class for <see cref="Thing" />
     /// </summary>
     public static class ThingExtension
     {
+        /// <summary>
+        ///     Collection of <see cref="Category" /> name for <see cref="ElementDefinition" /> that should have a technology parameter
+        /// </summary>
+        private static readonly List<string> MandatoryCategoriesForTechnology = new()
+        {
+            "consumables",
+            "equipment",
+            "instruments",
+            "subequipment",
+            "thermal equipment"
+        };
+
         /// <summary>
         ///     Gets the value of a certain parameter
         /// </summary>
@@ -86,8 +98,27 @@ namespace UI_DSM.Client.Extensions
         /// <param name="thing">The <see cref="Thing" /></param>
         /// <param name="categoryName">The name of the <see cref="Category" /></param>
         /// <param name="classKind">The <see cref="ClassKind" /> of the related <see cref="Thing" /></param>
+        /// <returns>A collection of name of related <see cref="Thing" />s</returns>
+        public static IEnumerable<string> GetRelatedThings(this Thing thing, string categoryName, ClassKind classKind)
+        {
+            var binaryRelationship = thing.QueryRelationships(categoryName).Where(x => (x.Source.Iid == thing.Iid && x.Target.ClassKind == classKind)
+                                                                                       || (x.Target.Iid == thing.Iid && x.Source.ClassKind == classKind));
+
+            return binaryRelationship.Select(x => RelatedThingShortName(x, x.Source.Iid == thing.Iid));
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Thing" />s where the current <see cref="Thing" /> has a <see cref="BinaryRelationship" />
+        ///     categorized by the given <see cref="categoryName" />
+        /// </summary>
+        /// <param name="thing">The <see cref="Thing" /></param>
+        /// <param name="categoryName">The name of the <see cref="Category" /></param>
+        /// <param name="classKind">The <see cref="ClassKind" /> of the related <see cref="Thing" /></param>
         /// <param name="isSource">If the <see cref="Thing" /> should be the source</param>
-        /// <param name="getShortname">Value indicating if the retrieved value should be the name or the shortname of the <see cref="Thing"/></param>
+        /// <param name="getShortname">
+        ///     Value indicating if the retrieved value should be the name or the shortname of the
+        ///     <see cref="Thing" />
+        /// </param>
         /// <returns>A collection of name of related <see cref="Thing" />s</returns>
         public static IEnumerable<string> GetRelatedThingsName(this Thing thing, string categoryName, ClassKind classKind, bool isSource = true, bool getShortname = true)
         {
@@ -95,11 +126,7 @@ namespace UI_DSM.Client.Extensions
                 ? x => x.Source.Iid == thing.Iid && x.Target.ClassKind == classKind
                 : x => x.Target.Iid == thing.Iid && x.Source.ClassKind == classKind;
 
-            var binaryRelationship = thing.QueryRelationships
-                .OfType<BinaryRelationship>()
-                .Where(x => x.Category.Any(cat => !cat.IsDeprecated
-                                                  && string.Equals(cat.Name, categoryName, StringComparison.InvariantCultureIgnoreCase)))
-                .Where(filter);
+            var binaryRelationship = thing.QueryRelationships(categoryName).Where(filter);
 
             return RelatedThingsName(binaryRelationship, !isSource, getShortname);
         }
@@ -113,7 +140,10 @@ namespace UI_DSM.Client.Extensions
         /// <param name="classKind">The <see cref="ClassKind" /> of the related <see cref="Thing" /></param>
         /// <param name="filterCategory">The name of the <see cref="Category" /> that the related <see cref="Thing" /> should belongs</param>
         /// <param name="isSource">If the <see cref="Thing" /> should be the source</param>
-        /// <param name="getShortname">Value indicating if the retrieved value should be the name or the shortname of the <see cref="Thing"/></param>
+        /// <param name="getShortname">
+        ///     Value indicating if the retrieved value should be the name or the shortname of the
+        ///     <see cref="Thing" />
+        /// </param>
         /// <returns>A collection of name of related <see cref="Thing" />s</returns>
         public static IEnumerable<string> GetRelatedThingsName(this Thing thing, string categoryName, ClassKind classKind, string filterCategory, bool isSource = true, bool getShortname = true)
         {
@@ -121,19 +151,140 @@ namespace UI_DSM.Client.Extensions
                 ? x => x.Source.Iid == thing.Iid
                        && x.Target.ClassKind == classKind
                        && x.Target is ICategorizableThing categorizable
-                       && categorizable.GetAllCategories().Any(cat => !cat.IsDeprecated && string.Equals(cat.Name, filterCategory, StringComparison.InvariantCultureIgnoreCase))
+                       && categorizable.IsCategorizedBy(filterCategory)
                 : x => x.Target.Iid == thing.Iid
                        && x.Source.ClassKind == classKind
                        && x.Source is ICategorizableThing categorizable
-                       && categorizable.GetAllCategories().Any(cat => !cat.IsDeprecated && string.Equals(cat.Name, filterCategory, StringComparison.InvariantCultureIgnoreCase));
+                       && categorizable.IsCategorizedBy(filterCategory);
 
-            var binaryRelationship = thing.QueryRelationships
-                .OfType<BinaryRelationship>()
-                .Where(x => x.Category.Any(cat => !cat.IsDeprecated
-                                                  && string.Equals(cat.Name, categoryName, StringComparison.InvariantCultureIgnoreCase))
-                ).Where(filter);
+            var binaryRelationship = thing.QueryRelationships(categoryName).Where(filter);
 
             return RelatedThingsName(binaryRelationship, !isSource, getShortname);
+        }
+
+        /// <summary>
+        ///     Gets the <see cref="BinaryRelationship" /> that linked two <see cref="Thing" />
+        /// </summary>
+        /// <param name="thing">The <see cref="Thing" /></param>
+        /// <param name="otherThingId">The <see cref="Guid" /> of the other <see cref="Thing" /></param>
+        /// <param name="relationshipCategory">
+        ///     The name of the <see cref="Category" /> of the <see cref="BinaryRelationship" />
+        /// </param>
+        /// <returns>The <see cref="BinaryRelationship" /> that link the two <see cref="Thing" /></returns>
+        public static BinaryRelationship GetLinkTo(this Thing thing, Guid otherThingId, string relationshipCategory)
+        {
+            if (thing.Iid == otherThingId)
+            {
+                return null;
+            }
+
+            var binaryRelationships = thing.QueryRelationships(relationshipCategory);
+            return binaryRelationships.FirstOrDefault(x => x.Source.Iid == thing.Iid && x.Target.Iid == otherThingId);
+        }
+
+        /// <summary>
+        ///     Gets the name of the <see cref="RequirementsSpecification" /> of a <see cref="Requirement" />
+        /// </summary>
+        /// <param name="requirement">The <see cref="Requirement" /></param>
+        /// <returns>The name of the <see cref="RequirementsSpecification" /></returns>
+        public static string GetSpecificationName(this Requirement requirement)
+        {
+            var specification = requirement.Container as RequirementsSpecification;
+            return specification?.ShortName;
+        }
+
+        /// <summary>
+        ///     Verifies that a <see cref="ElementDefinition" /> is a product
+        /// </summary>
+        /// <param name="elementDefinition">The <see cref="ElementDefinition" /></param>
+        /// <returns>The asserts</returns>
+        public static bool IsProduct(this ElementDefinition elementDefinition)
+        {
+            return elementDefinition.IsCategorizedBy("products");
+        }
+
+        /// <summary>
+        ///     Verifies that a <see cref="ElementDefinition" /> is a function
+        /// </summary>
+        /// <param name="elementDefinition">The <see cref="ElementDefinition" /></param>
+        /// <returns>The asserts</returns>
+        public static bool IsFunction(this ElementDefinition elementDefinition)
+        {
+            return elementDefinition.IsCategorizedBy("functions");
+        }
+
+        /// <summary>
+        ///     Asserts that a Product has to have a Technology parameter
+        /// </summary>
+        /// <param name="elementDefinition">The <see cref="ElementDefinition" /></param>
+        /// <returns>The assert</returns>
+        public static bool ShouldHaveTechnologyParameter(this ElementDefinition elementDefinition)
+        {
+            return elementDefinition.IsCategorizedBy(MandatoryCategoriesForTechnology);
+        }
+
+        /// <summary>
+        ///     Tries to get the value of a defined parameter
+        /// </summary>
+        /// <param name="elementDefinition">The <see cref="ElementDefinition" /></param>
+        /// <param name="parameterName">The name of the <see cref="ParameterType" /></param>
+        /// <param name="option">The <see cref="Option" /></param>
+        /// <param name="state">The <see cref="ActualFiniteState" /></param>
+        /// <param name="value">The value of the parameter</param>
+        /// <returns>True if has a the parameter</returns>
+        public static bool TryGetParameterValue(this ElementDefinition elementDefinition, string parameterName, Option option, ActualFiniteState state, out string value)
+        {
+            value = string.Empty;
+
+            var parameter = elementDefinition.Parameter
+                .Where(x => string.Equals(x.ParameterType.Name, parameterName, StringComparison.InvariantCultureIgnoreCase))
+                .ToList();
+
+            if (!parameter.Any())
+            {
+                return false;
+            }
+
+            value = parameter.Single().QueryParameterBaseValueSet(option, state).ActualValue.First();
+            return true;
+        }
+
+        /// <summary>
+        ///     Verifies that a <see cref="ICategorizableThing" /> is categorized by a <see cref="Category" /> where the name is
+        ///     <param name="categoryName"></param>
+        /// </summary>
+        /// <param name="thing">The <see cref="ICategorizableThing" /></param>
+        /// <param name="categoryName">The name of the <see cref="Category" /></param>
+        /// <returns>The asserts</returns>
+        public static bool IsCategorizedBy(this ICategorizableThing thing, string categoryName)
+        {
+            return thing.GetAllCategories().Any(x => !x.IsDeprecated && string.Equals(x.Name, categoryName, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        /// <summary>
+        ///     Verifies that a <see cref="ICategorizableThing" /> is categorized by a one of the <see cref="Category" /> where the name is
+        ///     <param name="categories"></param>
+        /// </summary>
+        /// <param name="thing">The <see cref="ICategorizableThing" /></param>
+        /// <param name="categories">The collection of name of the <see cref="Category" /></param>
+        /// <returns>The asserts</returns>
+        private static bool IsCategorizedBy(this ICategorizableThing thing, IReadOnlyCollection<string> categories)
+        {
+            return thing.GetAllCategories().Any(x => !x.IsDeprecated &&
+                                                     categories.Any(cat => string.Equals(x.Name, cat, StringComparison.InvariantCultureIgnoreCase)));
+        }
+
+        /// <summary>
+        ///     Query all <see cref="BinaryRelationship" /> that has a <see cref="Category" /> of name
+        ///     <paramref name="categoryName" />
+        /// </summary>
+        /// <param name="thing">The <see cref="Thing" /></param>
+        /// <param name="categoryName">The name of the <see cref="Category" /></param>
+        /// <returns>A collection of <see cref="BinaryRelationship" /></returns>
+        private static IEnumerable<BinaryRelationship> QueryRelationships(this Thing thing, string categoryName)
+        {
+            return thing.QueryRelationships.OfType<BinaryRelationship>().Where(x => x.Category.Any(cat => !cat.IsDeprecated
+                                                                                                          && string.Equals(cat.Name, categoryName, StringComparison.InvariantCultureIgnoreCase)));
         }
 
         /// <summary>
@@ -144,12 +295,15 @@ namespace UI_DSM.Client.Extensions
         ///     If the <see cref="Thing" /> to retrieve is the source of the target of the
         ///     <see cref="BinaryRelationship" />
         /// </param>
-        /// <param name="getShortname">Value indicating if the retrieved value should be the name or the shortname of the <see cref="Thing"/></param>
+        /// <param name="getShortname">
+        ///     Value indicating if the retrieved value should be the name or the shortname of the
+        ///     <see cref="Thing" />
+        /// </param>
         /// <returns>The name of the <see cref="Thing" /></returns>
         private static IEnumerable<string> RelatedThingsName(IEnumerable<BinaryRelationship> relationships, bool sourceThing, bool getShortname)
         {
             return relationships.Select(binaryRelationship => getShortname
-                ? RelatedThingShortName(binaryRelationship, sourceThing) 
+                ? RelatedThingShortName(binaryRelationship, sourceThing)
                 : RelatedThingName(binaryRelationship, sourceThing)).ToList();
         }
 

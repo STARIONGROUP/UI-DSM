@@ -14,6 +14,7 @@
 namespace UI_DSM.CodeGenerator.Tests.Generators
 {
     using NUnit.Framework;
+
     using UI_DSM.CodeGenerator.Generators;
 
     [TestFixture]

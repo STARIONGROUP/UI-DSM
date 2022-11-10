@@ -98,7 +98,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
                 Assert.That(commentsCard, Has.Count.EqualTo(0));
                 var requirementId = Guid.NewGuid();
 
-                var row = new RequirementBreakdownStructureViewRowViewModel(new Requirement(requirementId, null, null), null);
+                var row = new RequirementRowViewModel(new Requirement(requirementId, null, null), null);
                 this.viewModel.SelectedItem = row;
 
                 var button = renderer.FindComponent<AppButton>();

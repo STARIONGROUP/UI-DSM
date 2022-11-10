@@ -30,8 +30,11 @@ namespace UI_DSM.Client.ViewModels.App.SelectedItemCard
         /// </summary>
         private static readonly Dictionary<Type, Tuple<Type, string>> Correspondances = new()
         {
-            [typeof(RequirementBreakdownStructureViewRowViewModel)] = new Tuple<Type, string>(typeof(RequirementBreakdownStructureViewSelectedItem), "Requirement Description"),
-            [typeof(ReviewTask)] = new Tuple<Type, string>(typeof(ReviewTaskSelectedItem), "Task Description")
+            [typeof(RequirementRowViewModel)] = new Tuple<Type, string>(typeof(RequirementSelectedItem), "Requirement Description"),
+            [typeof(ProductRowViewModel)] = new Tuple<Type, string>(typeof(ProductSelectedItem), "Product Description"),
+            [typeof(FunctionRowViewModel)] = new Tuple<Type, string>(typeof(FunctionSelectedItem), "Function Description"),
+            [typeof(RelationshipRowViewModel)] = new Tuple<Type, string>(typeof(RelationshipSelectedItem), "Relationship Description"),
+            [typeof(ReviewTask)] = new Tuple<Type, string>(typeof(ReviewTaskSelectedItem), "Task Description"),
         };
 
         /// <summary>

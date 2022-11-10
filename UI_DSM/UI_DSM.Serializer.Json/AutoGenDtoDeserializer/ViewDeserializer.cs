@@ -47,7 +47,6 @@ namespace UI_DSM.Serializer.Json
                 "INTERFACEVIEW" => View.InterfaceView,
                 "PHYSICALFLOWVIEW" => View.PhysicalFlowView,
                 "TRLVIEW" => View.TrlView,
-                "FUNCTIONALLOCATIONTOTECHNOLOGYVIEW" => View.FunctionAllocationToTechnologyView,
                 _ => throw new ArgumentException($"{value} is not a valid View", nameof(value))
             };
         }

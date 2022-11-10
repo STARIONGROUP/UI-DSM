@@ -34,9 +34,25 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         Guid ThingId { get; }
 
         /// <summary>
+        ///     Gets the Id of the current <see cref="IHaveThingRowViewModel" />
+        /// </summary>
+        string Id { get; }
+
+        /// <summary>
+        ///     A value indicating if the row is visible or not
+        /// </summary>
+        bool IsVisible { get; set; }
+
+        /// <summary>
         ///     Updates the current <see cref="ReviewItem" />
         /// </summary>
         /// <param name="item">The new <see cref="ReviewItem" /></param>
         void UpdateReviewItem(ReviewItem item);
+
+        /// <summary>
+        ///     Indicates if the current associated <see cref="Shared.Models.ReviewItem" /> has some <see cref="Comment" />
+        /// </summary>
+        /// <returns>The assert</returns>
+        bool HasComment();
     }
 }
