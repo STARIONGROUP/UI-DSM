@@ -109,7 +109,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 Assert.That(renderer.FindComponents<HyperLinkCard>(), Has.Count.EqualTo(2));
             });
 
-            var hyperlink = renderer.FindComponents<HyperLinkCard>().First();
+            var hyperlink = renderer.FindComponents<HyperLinkCard>()[0];
             await renderer.InvokeAsync(() => hyperlink.Instance.OnClick.InvokeAsync(hyperlink.Instance.Row));
             Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
         }

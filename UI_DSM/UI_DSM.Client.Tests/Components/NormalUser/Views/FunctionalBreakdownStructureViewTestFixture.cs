@@ -64,6 +64,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             var productCategory = Guid.NewGuid();
             var equipmentCategory = Guid.NewGuid();
             var functionCategory = Guid.NewGuid();
+            var implementsCategroy = Guid.NewGuid();
 
             var categories = new List<Category>
             {
@@ -85,6 +86,11 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 {
                     Iid = functionCategory,
                     Name="functions"
+                },
+                new()
+                {
+                    Iid = implementsCategroy,
+                    Name="implements"
                 }
             };
 
@@ -150,6 +156,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
             envision.ContainedElement = usages.Select(x => x.Iid).ToList();
 
+            var relationShip = new BinaryRelationship()
+            {
+                Iid = Guid.NewGuid(),
+                Category = new List<Guid>{implementsCategroy},
+                Source = usages[0].Iid,
+                Target = usages[2].Iid
+            };
+
             var iteration = new Iteration()
             {
                 Iid = Guid.NewGuid(),
@@ -165,7 +179,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 function,
                 groundSegment,
                 envision,
-                launchSegment
+                launchSegment,
+                relationShip
             };
 
             things.AddRange(usages);
