@@ -30,7 +30,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
-    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Shared.Models;
 
@@ -209,6 +208,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
             await renderer.InvokeAsync(() => renderer.Instance.Grid.RowSelect.InvokeAsync(renderer.Instance.ViewModel.TopElement.First()));
             Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+
+            var trlRenderer = this.context.RenderComponent<TrlView>();
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(trlRenderer.Instance.ViewModel.TopElement, Has.Count.EqualTo(1));
+                Assert.That(trlRenderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
+            });
         }
     }
 }
