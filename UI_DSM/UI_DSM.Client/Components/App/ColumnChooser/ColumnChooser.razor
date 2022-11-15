@@ -9,6 +9,8 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@typeparam TItem
+
 <div id="column-chooser-button">
 	<AppButton Label="Select visible columns" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="this.ViewModel.OpenColumnChooser">
 		<FeatherColumns Size="20" Color="currentColor" StrokeWidth="2" /> <span>Columns</span>
@@ -23,7 +25,7 @@
 		@foreach (var column in this.ViewModel.AvailableColumns)
 		{
 			<div @onclick="() => this.ViewModel.OnChangeValue(column)">
-				<input type="checkbox" checked="@column.IsVisible"/><p>@column.Id</p>
+				<input type="checkbox" checked="@column.Visible"/><p>@column.Title</p>
 			</div>
 		}
 	</BodyTemplate>

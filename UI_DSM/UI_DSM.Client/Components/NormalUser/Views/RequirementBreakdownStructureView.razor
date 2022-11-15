@@ -64,7 +64,7 @@
 				<ul class="grid-list">
 					@foreach (var category in (IEnumerable<string>)context.Value)
 					{
-						<li>@category</li>
+							<li class="element on">@category</li>
 					}
 				</ul>
 			</CellDisplayTemplate>
@@ -75,7 +75,7 @@
 				<ul class="grid-list">
 					@foreach (var derivesFrom in (IEnumerable<string>)context.Value)
 					{
-						<li>@derivesFrom</li>
+						<li class="element on">@derivesFrom</li>
 					}
 				</ul>
 			</CellDisplayTemplate>
@@ -85,7 +85,7 @@
 				<ul class="grid-list">
 					@foreach (var derivesTo in (IEnumerable<string>)context.Value)
 					{
-						<li>@derivesTo</li>
+						<li class="element on">@derivesTo</li>
 					}
 				</ul>
 			</CellDisplayTemplate>
@@ -95,7 +95,7 @@
 				<ul class="grid-list">
 					@foreach (var satisfyByFunction in (IEnumerable<string>)context.Value)
 					{
-						<li>@satisfyByFunction</li>
+						<li class="element on">@satisfyByFunction</li>
 					}
 				</ul>
 			</CellDisplayTemplate>
@@ -105,7 +105,7 @@
 				<ul class="grid-list">
 					@foreach (var satisfyByProduct in (IEnumerable<string>)context.Value)
 					{
-						<li>@satisfyByProduct</li>
+							<li class="element on">@satisfyByProduct</li>
 					}
 				</ul>
 			</CellDisplayTemplate>

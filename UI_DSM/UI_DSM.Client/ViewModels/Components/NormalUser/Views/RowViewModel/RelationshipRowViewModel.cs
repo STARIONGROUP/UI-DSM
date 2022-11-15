@@ -16,6 +16,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
 
+    using UI_DSM.Client.Extensions;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -30,55 +31,41 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <param name="reviewItem">The associated <see cref="HaveThingRowViewModel{TThing}.ReviewItem" /></param>
         public RelationshipRowViewModel(BinaryRelationship thing, ReviewItem reviewItem) : base(thing, reviewItem)
         {
-            this.InitializesProperties();
         }
 
         /// <summary>
         ///     Gets the Id of the current <see cref="RelationshipRowViewModel" />
         /// </summary>
-        public override string Id => this.ComputedName;
+        public override string Id => this.ThingId.ToString();
 
         /// <summary>
-        ///     The computed name of the <see cref="RelationshipRowViewModel" />
+        ///     The <see cref="Guid" /> of the Source <see cref="Thing" />
         /// </summary>
-        public string ComputedName { get; set; }
+        public Guid SourceId => this.Thing.Source.Iid;
 
         /// <summary>
-        ///     Initiliazes this row properties
+        ///     The <see cref="Guid" /> of the Target <see cref="Thing" />
         /// </summary>
-        private void InitializesProperties()
-        {
-            var source = FormatName(this.Thing.Source);
-            var target = FormatName(this.Thing.Target);
-            this.ComputedName = $"{source} → {target}";
-        }
+        public Guid TargetId => this.Thing.Target.Iid;
 
         /// <summary>
-        ///     Format the name string for display which will include the shortname if available.
+        ///     The name of the source <see cref="Thing" />
         /// </summary>
-        /// <param name="thing">The thing.</param>
-        /// <returns>The <see cref="string" /></returns>
-        private static string FormatName(Thing thing)
-        {
-            var thingName = GetThingName(thing);
-
-            var thingShortName = thing is IShortNamedThing shortNamedThing
-                ? $" ({shortNamedThing.ShortName})"
-                : string.Empty;
-
-            return $"{thingName}{thingShortName}";
-        }
+        public string SourceName => this.Thing.Source.GetName();
 
         /// <summary>
-        ///     Get the visual Name of the <see cref="Thing" />
+        ///     The name of the Target <see cref="Thing" />
         /// </summary>
-        /// <param name="thing">The <see cref="Thing" /></param>
-        /// <returns>Name of the <see cref="Thing" /></returns>
-        private static string GetThingName(Thing thing)
-        {
-            return thing is INamedThing namedThing
-                ? namedThing.Name
-                : thing.UserFriendlyShortName;
-        }
+        public string TargetName => this.Thing.Target.GetName();
+
+        /// <summary>
+        ///     The name of the Source owner
+        /// </summary>
+        public string SourceOwner => this.Thing.Source.GetOwnerShortName();
+
+        /// <summary>
+        ///     The name of the Target owner
+        /// </summary>
+        public string TargetOwner => this.Thing.Target.GetOwnerShortName();
     }
 }

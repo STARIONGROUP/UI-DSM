@@ -13,8 +13,6 @@
 
 namespace UI_DSM.Client.Components.NormalUser.Views
 {
-    using CDP4Common.CommonData;
-
     using DevExpress.Blazor;
 
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
@@ -31,19 +29,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     The <see cref="DxGrid" />
         /// </summary>
         private DxGrid DxGrid { get; set; }
-
-        /// <summary>
-        ///     Initialize the correspondant ViewModel for this component
-        /// </summary>
-        /// <param name="things">The collection of <see cref="Thing" /></param>
-        /// <param name="projectId">The <see cref="Project" /> id</param>
-        /// <param name="reviewId">The <see cref="Review" /> id</param>
-        /// <returns>A <see cref="Task" /></returns>
-        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
-        {
-            await this.ViewModel.InitializeProperties(things, projectId, reviewId);
-            await this.InvokeAsync(this.StateHasChanged);
-        }
 
         /// <summary>
         ///     Handle the selection of the column chooser

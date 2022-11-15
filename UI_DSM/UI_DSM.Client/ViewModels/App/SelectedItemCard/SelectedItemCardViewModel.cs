@@ -33,7 +33,9 @@ namespace UI_DSM.Client.ViewModels.App.SelectedItemCard
             [typeof(RequirementRowViewModel)] = new Tuple<Type, string>(typeof(RequirementSelectedItem), "Requirement Description"),
             [typeof(ProductRowViewModel)] = new Tuple<Type, string>(typeof(ProductSelectedItem), "Product Description"),
             [typeof(FunctionRowViewModel)] = new Tuple<Type, string>(typeof(FunctionSelectedItem), "Function Description"),
+            [typeof(HyperLinkRowViewModel)] = new Tuple<Type, string>(typeof(HyperLinkSelectedItem), "HyperLink Description"),
             [typeof(RelationshipRowViewModel)] = new Tuple<Type, string>(typeof(RelationshipSelectedItem), "Relationship Description"),
+            [typeof(ElementBaseRowViewModel)] = new Tuple<Type, string>(typeof(ElementBaseSelectedItem), "Element Description"),
             [typeof(ReviewTask)] = new Tuple<Type, string>(typeof(ReviewTaskSelectedItem), "Task Description"),
         };
 

@@ -52,7 +52,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="selectedFilters">The selected filters</param>
         public override void FilterRows(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
         {
-            FilterElementDefinitionRows(selectedFilters, this.TraceabilityTableViewModel.Rows.OfType<FunctionRowViewModel>());
+            FilterElementBaseRows(selectedFilters, this.TraceabilityTableViewModel.Rows.OfType<FunctionRowViewModel>());
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 .OrderBy(x => x.ShortName)
                 .ToList();
 
-            var functions = this.Things.OfType<ElementDefinition>()
+            var functions = this.Things.OfType<ElementUsage>()
                 .Where(x => x.IsFunction())
                 .OrderBy(x => x.Name)
                 .ToList();
@@ -88,7 +88,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 filteredThings.Select(x => x.Iid));
 
             var rows = new List<IHaveThingRowViewModel>(functions
-                .Select(x => new FunctionRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));
+                .Select(x => new FunctionRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid)))
+                .OrderBy(x => x.Container).ThenBy(x => x.Name));
 
             var columns = new List<IHaveThingRowViewModel>(requirements
                 .Select(x => new RequirementRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));
@@ -96,7 +97,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             var reviewItemsForRelationships = reviewItems.Where(x => relationships.Any(rel => x.ThingId == rel.Iid)).ToList();
 
             this.PopulateRelationships(rows, columns, reviewItemsForRelationships);
-            InitializesFilterForElementDefinitionRows(this.AvailableRowFilters, rows.OfType<FunctionRowViewModel>());
+            InitializesFilterForElementBaseRows(this.AvailableRowFilters, rows.OfType<FunctionRowViewModel>());
             InitializesFilterForRequirementRows(this.AvailableColumnFilters, columns.OfType<RequirementRowViewModel>());
             this.TraceabilityTableViewModel.InitializeProperties(rows, columns);
         }

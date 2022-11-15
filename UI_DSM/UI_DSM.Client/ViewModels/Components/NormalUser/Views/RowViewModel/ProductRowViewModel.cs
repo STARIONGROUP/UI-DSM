@@ -19,16 +19,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     Row view model to display content for a <see cref="ElementDefinition" /> that are Product
+    ///     Row view model to display content for a <see cref="ElementBase" /> that are Product
     /// </summary>
-    public class ProductRowViewModel : ElementDefinitionRowViewModel
+    public class ProductRowViewModel : ElementBaseRowViewModel
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ProductRowViewModel" /> class.
         /// </summary>
-        /// <param name="thing">The <see cref="ElementDefinition" /></param>
+        /// <param name="thing">The <see cref="ElementBase" /></param>
         /// <param name="reviewItem">The associated <see cref="HaveThingRowViewModel{TThing}.ReviewItem" /></param>
-        public ProductRowViewModel(ElementDefinition thing, ReviewItem reviewItem) : base(thing, reviewItem)
+        public ProductRowViewModel(ElementBase thing, ReviewItem reviewItem) : base(thing, reviewItem)
         {
             this.InitializesProperties();
         }
@@ -46,7 +46,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     The value of the technology parameter
         /// </summary>
-        public string TechnologyValue { get; private set; }
+        public string TechnologyValue { get; private set; } = string.Empty;
+
+        /// <summary>
+        ///     The value of the TRL parameter
+        /// </summary>
+        public int? TrlValue { get; private set; }
+
+        /// <summary>
+        ///     If the <see cref="ProductRowViewModel" /> has a valid TRL parameter
+        /// </summary>
+        public bool HasValidTrl { get; private set; }
 
         /// <summary>
         ///     If the <see cref="ProductRowViewModel" /> has a valid technology parameter
@@ -83,6 +93,25 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
                 this.HasValidTechnology = this.Thing.TryGetParameterValue("technology", null, null, out var retrievedValue);
                 this.TechnologyValue = retrievedValue;
                 this.HasValidTechnology &= this.TechnologyValue != "-";
+            }
+
+            if (!this.Thing.ShouldHaveTrlParameter())
+            {
+                this.HasValidTrl = true;
+            }
+            else
+            {
+                this.HasValidTrl = this.Thing.TryGetParameterValue("trl", null, null, out var retrievedValue);
+
+                if (this.HasValidTrl && int.TryParse(retrievedValue, out var trl))
+                {
+                    this.TrlValue = trl;
+                }
+                else
+                {
+                    this.TrlValue = null;
+                    this.HasValidTrl = false;
+                }
             }
 
             this.ComputeId(false);

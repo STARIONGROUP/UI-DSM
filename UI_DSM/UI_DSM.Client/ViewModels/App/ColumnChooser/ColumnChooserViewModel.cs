@@ -13,14 +13,16 @@
 
 namespace UI_DSM.Client.ViewModels.App.ColumnChooser
 {
+    using Radzen.Blazor;
+
     using ReactiveUI;
 
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>
-    ///     View model for the <see cref="Client.Components.App.ColumnChooser.ColumnChooser" /> component
+    ///     View model for the <see cref="Client.Components.App.ColumnChooser.ColumnChooser{TItem}" /> component
     /// </summary>
-    public class ColumnChooserViewModel : ReactiveObject, IColumnChooserViewModel
+    public class ColumnChooserViewModel<TItem>: ReactiveObject, IColumnChooserViewModel<TItem>
     {
         /// <summary>
         ///     Backing field for <see cref="ColumnChooserVisible" />
@@ -30,7 +32,7 @@ namespace UI_DSM.Client.ViewModels.App.ColumnChooser
         /// <summary>
         ///     A collection of available <see cref="IHaveThingRowViewModel" />
         /// </summary>
-        public List<IHaveThingRowViewModel> AvailableColumns { get; private set; } = new();
+        public List<RadzenDataGridColumn<TItem>> AvailableColumns { get; private set; } = new();
 
         /// <summary>
         ///     Value indicating if the column chooser is visible or not
@@ -45,9 +47,9 @@ namespace UI_DSM.Client.ViewModels.App.ColumnChooser
         ///     Initializes the properties
         /// </summary>
         /// <param name="columns">All available rows</param>
-        public void InitializeProperties(IEnumerable<IHaveThingRowViewModel> columns)
+        public void InitializeProperties(IEnumerable<RadzenDataGridColumn<TItem>> columns)
         {
-            this.AvailableColumns = new List<IHaveThingRowViewModel>(columns);
+            this.AvailableColumns = new List<RadzenDataGridColumn<TItem>>(columns.Where(x => x.Pickable));
         }
 
         /// <summary>
@@ -62,9 +64,9 @@ namespace UI_DSM.Client.ViewModels.App.ColumnChooser
         ///     Modifies the current visibility value for <see cref="IHaveThingRowViewModel" />
         /// </summary>
         /// <param name="column">The <see cref="IHaveThingRowViewModel" /></param>
-        public void OnChangeValue(IHaveThingRowViewModel column)
+        public void OnChangeValue(RadzenDataGridColumn<TItem> column)
         {
-            column.IsVisible = !column.IsVisible;
+            column.Visible = !column.Visible;
         }
     }
 }

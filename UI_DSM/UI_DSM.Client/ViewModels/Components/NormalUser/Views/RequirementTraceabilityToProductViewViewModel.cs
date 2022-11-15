@@ -16,8 +16,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
 
-    using ReactiveUI;
-
     using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
@@ -54,7 +52,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="selectedFilters">The selected filters</param>
         public override void FilterRows(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
         {
-            FilterElementDefinitionRows(selectedFilters, this.TraceabilityTableViewModel.Rows.OfType<ProductRowViewModel>());
+            FilterElementBaseRows(selectedFilters, this.TraceabilityTableViewModel.Rows.OfType<ProductRowViewModel>());
         }
 
         /// <summary>
@@ -82,7 +80,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 .OrderBy(x => x.ShortName)
                 .ToList();
 
-            var products = this.Things.OfType<ElementDefinition>()
+            var products = this.Things.OfType<ElementUsage>()
                 .Where(x => x.IsProduct())
                 .OrderBy(x => x.Name)
                 .ToList();
@@ -99,7 +97,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 filteredThings.Select(x => x.Iid));
 
             var rows = new List<IHaveThingRowViewModel>(products
-                .Select(x => new ProductRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));
+                .Select(x => new ProductRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid)))
+                .OrderBy(x => x.Container).ThenBy(x => x.Name));
 
             var columns = new List<IHaveThingRowViewModel>(requirements
                 .Select(x => new RequirementRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));
@@ -107,7 +106,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             var reviewItemsForRelationships = reviewItems.Where(x => relationships.Any(rel => x.ThingId == rel.Iid)).ToList();
 
             this.PopulateRelationships(rows, columns, reviewItemsForRelationships);
-            InitializesFilterForElementDefinitionRows(this.AvailableRowFilters, rows.OfType<ProductRowViewModel>());
+            InitializesFilterForElementBaseRows(this.AvailableRowFilters, rows.OfType<ProductRowViewModel>());
             InitializesFilterForRequirementRows(this.AvailableColumnFilters, columns.OfType<RequirementRowViewModel>());
             this.TraceabilityTableViewModel.InitializeProperties(rows, columns);
         }

@@ -293,7 +293,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
             this.viewModel.TraceabilityTableViewModel.VisibilityState = TraceabilityToVisibilityState.WithTrace;
             var invisibleRow = renderer.FindAll(".invisible-row");
-            Assert.That(invisibleRow, Has.Count.EqualTo(3));
+            Assert.That(invisibleRow, Has.Count.EqualTo(0));
 
             this.viewModel.TraceabilityTableViewModel.VisibilityState = TraceabilityToVisibilityState.WithoutTrace;
             invisibleRow.Refresh();
@@ -321,7 +321,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
             this.viewModel.IsOnTechnologyView = true;
             invalidRows.Refresh();
-            Assert.That(invalidRows, Has.Count.EqualTo(2));
+            Assert.That(invalidRows, Has.Count.EqualTo(1));
         }
     }
 }

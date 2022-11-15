@@ -10,4 +10,7 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @inherits SelectedItemBase<UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel.RelationshipRowViewModel>
-<AppKeyValue Key="Name" Value="@(this.RowViewModel.Id)" />
+<AppKeyValue Key="Source" Value="@(this.RowViewModel.SourceName)" />
+<AppKeyValue Key="Source Owner" Value="@(this.RowViewModel.SourceOwner)" />
+<AppKeyValue Key="Target" Value="@(this.RowViewModel.TargetName)" />
+<AppKeyValue Key="Target Owner" Value="@(this.RowViewModel.TargetOwner)" />

@@ -13,17 +13,17 @@
 
 namespace UI_DSM.Client.ViewModels.App.ColumnChooser
 {
-    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
+    using Radzen.Blazor;
 
     /// <summary>
-    ///     Interface definition for <see cref="ColumnChooserViewModel" />
+    ///     Interface definition for <see cref="ColumnChooserViewModel{TItem}" />
     /// </summary>
-    public interface IColumnChooserViewModel
+    public interface IColumnChooserViewModel<TItem>
     {
         /// <summary>
-        ///     A collection of available <see cref="IHaveThingRowViewModel" />
+        ///     A collection of available <see cref="RadzenDataGridColumn{TItem}" />
         /// </summary>
-        List<IHaveThingRowViewModel> AvailableColumns { get; }
+        List<RadzenDataGridColumn<TItem>> AvailableColumns { get; }
 
         /// <summary>
         ///     Value indicating if the column chooser is visible or not
@@ -33,8 +33,8 @@ namespace UI_DSM.Client.ViewModels.App.ColumnChooser
         /// <summary>
         ///     Initializes the properties
         /// </summary>
-        /// <param name="columns">All available rows</param>
-        void InitializeProperties(IEnumerable<IHaveThingRowViewModel> columns);
+        /// <param name="columns">All available columns</param>
+        void InitializeProperties(IEnumerable<RadzenDataGridColumn<TItem>> columns);
 
         /// <summary>
         ///     Opens the column chooser
@@ -42,9 +42,9 @@ namespace UI_DSM.Client.ViewModels.App.ColumnChooser
         void OpenColumnChooser();
 
         /// <summary>
-        ///     Modifies the current visibility value for <see cref="IHaveThingRowViewModel" />
+        ///     Modifies the current visibility value for <see cref="RadzenDataGridColumn{TItem}" />
         /// </summary>
-        /// <param name="column">The <see cref="IHaveThingRowViewModel" /></param>
-        void OnChangeValue(IHaveThingRowViewModel column);
+        /// <param name="column">The <see cref="RadzenDataGridColumn{TItem}" /></param>
+        void OnChangeValue(RadzenDataGridColumn<TItem> column);
     }
 }
