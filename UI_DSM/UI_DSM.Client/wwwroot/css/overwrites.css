@@ -66,3 +66,20 @@
 .rz-html-editor {
   height: 320px;
 }
+
+.dxbs-checkbox-label-right {
+  padding-left: 0;
+}
+
+.dxbs-checkbox-label {
+  font-weight: 700;
+}
+
+.dxbl-dropdown > .dxbs-dropdown-dialog {
+  max-height: 200px;
+  overflow: auto;
+}
+
+.filter-actions .rz-chkbox-box .rzi {
+  vertical-align: initial;
+}

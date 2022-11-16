@@ -11,16 +11,26 @@
 -------------------------------------------------------------------------------------------------------->
 @inherits HaveTechnologyView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IFunctionalTraceabilityToProductViewViewModel>
 
-<div>
-	<DxCheckBox CheckType="CheckType.Switch" @bind-Checked="@this.ViewModel.IsOnTechnologyView">Show Technology</DxCheckBox>
-	<Filter @ref="this.RowFiltering" Id="row">
-		<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
-	</Filter>
 
-	<Filter @ref="this.ColumnFiltering" Id="column">
-		<FeatherColumns Size="20" Color="currentColor" StrokeWidth="2"/> <span>Column</span>
-	</Filter>
+<div class="view-actions">
+	<div class="left-actions">
+		<TraceabilityVisibilitySelector @ref="this.TraceabilityVisibilitySelector" />
+		<DxCheckBox CheckType="CheckType.Switch" @bind-Checked="@this.ViewModel.IsOnTechnologyView">Show Technology</DxCheckBox>
+	</div>
 
-	<TraceabilityVisibilitySelector @ref="this.TraceabilityVisibilitySelector" />
+	<div class="right-actions">
+		<Filter @ref="this.RowFiltering" Id="row">
+			<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
+		</Filter>
+
+		<Filter @ref="this.ColumnFiltering" Id="column">
+			<FeatherColumns Size="20" Color="currentColor" StrokeWidth="2"/> <span>Column</span>
+		</Filter>
+		
+		<AppButton Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success">
+			<FeatherCheckCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Done</span>
+		</AppButton>
+	</div>
+
 </div>
 <TraceabilityTable @ref="this.Table" />

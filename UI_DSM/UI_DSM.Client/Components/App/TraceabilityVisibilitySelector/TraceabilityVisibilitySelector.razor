@@ -16,9 +16,9 @@
 	<div>
 		<RadzenRadioButtonList @bind-Value="this.ViewModel.VisibilityState">
 			<Items>
-				<RadzenRadioButtonListItem Text="Show all filtered rows" Value="@TraceabilityToVisibilityState.All"/>
-				<RadzenRadioButtonListItem Text="Show only filtered rows that contains trace" Value="@TraceabilityToVisibilityState.WithTrace" />
-				<RadzenRadioButtonListItem Text="Show only filtered rows without any trace" Value="@TraceabilityToVisibilityState.WithoutTrace"/>
+				<RadzenRadioButtonListItem Text="Show all" Value="@TraceabilityToVisibilityState.All"/>
+				<RadzenRadioButtonListItem Text="Show with trace" Value="@TraceabilityToVisibilityState.WithTrace" />
+				<RadzenRadioButtonListItem Text="Show without trace" Value="@TraceabilityToVisibilityState.WithoutTrace"/>
 			</Items>
 		</RadzenRadioButtonList>
 	</div>

@@ -1,6 +1,6 @@
 ﻿.app-traceability-table {
     overflow: scroll;
-    max-height: calc(100vh - 200px);
+    max-height: calc(100vh - 340px);
     border-radius: var(--radius-1);
     font-size: var(--text-sm);
     width: 100%;
