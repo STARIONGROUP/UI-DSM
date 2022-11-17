@@ -23,27 +23,46 @@
             PositionTarget="@this.TargetPosition"
             PositionMode="DropDownPositionMode.Bottom">
 	<BodyTemplate>
-		<button @onclick="() => this.SelectDeselectAll(true)">Select All</button>
-		<button @onclick="() => this.SelectDeselectAll(false)">Deselect All</button>
-		<div>Filter on : </div>
-		<DxComboBox Data="@this.ViewModel.AvailableFilters"
-		            @bind-Value="@this.ViewModel.SelectedFilterModel"
-		            TextFieldName="@nameof(FilterModel.DisplayName)"/>
+		<div class="filter-dropdown">
 
-		@foreach (var filter in this.ViewModel.SelectedFilters[this.ViewModel.SelectedFilterModel.ClassKind])
-		{
-			<div @onclick="() => this.ViewModel.OnChangeValue(filter)">
-				<input type="checkbox" checked="@filter.IsSelected"/>
 
-				@if (this.ViewModel.SelectedFilterModel.UseShortName)
+			<div class="filter-header">
+				<div class="filter-search">
+					<span class="filter-search__label">Filter type</span>
+					<DxComboBox 
+						Data="@this.ViewModel.AvailableFilters"
+						@bind-Value="@this.ViewModel.SelectedFilterModel"
+						TextFieldName="@nameof(FilterModel.DisplayName)"
+						Enabled="@(this.ViewModel.AvailableFilters.Count > 1)"
+					/>
+				</div>
+				<div class="filter-actions">
+					<label>
+						<RadzenCheckBox Value="@this.ViewModel.AreAllSelected()" TriState="true" TValue="bool?" Change=@(this.OnChange)/>
+						<span>@this.GetStateText()</span>
+					</label>
+				</div>
+			</div>
+
+
+			<div class="filter-items">
+				@foreach (var filter in this.ViewModel.SelectedFilters[this.ViewModel.SelectedFilterModel.ClassKind])
 				{
-					<p>@filter.DefinedThing.ShortName</p>
-				}
-				else
-				{
-					<p>@filter.DefinedThing.Name</p>
+					<div @onclick="() => this.ViewModel.OnChangeValue(filter)" class="filter-item">
+						<input type="checkbox" checked="@filter.IsSelected"/>
+						<span class="label">
+							@if (this.ViewModel.SelectedFilterModel.UseShortName)
+							{
+								<span>@filter.DefinedThing.ShortName</span>
+							}
+							else
+							{
+								<span>@filter.DefinedThing.Name</span>
+							}
+						</span>
+					</div>
 				}
 			</div>
-		}
+		</div>
 	</BodyTemplate>
 </DxDropDown>

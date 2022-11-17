@@ -42,11 +42,6 @@
 			<main class="task-page__body">
 				<div class="task-page__header">
 					<h2>@this.ViewModel.ReviewTask.Description</h2>
-					<div class="task-page__actions">
-						<AppButton Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success">
-							<FeatherCheckCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Done</span>
-						</AppButton>
-					</div>
 				</div>
 				<div class="task-page__body-inner">
 					<DynamicComponent Type="@(this.ViewModel.CurrentBaseView)" @ref="this.BaseView"/>

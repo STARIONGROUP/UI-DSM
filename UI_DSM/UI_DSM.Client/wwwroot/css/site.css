@@ -189,12 +189,6 @@ button:focus {
   padding-bottom: var(--spacing-8);
 }
 
-.view-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-2);
-}
-
 .grid-list {
   display: flex;
   flex-wrap: wrap;
@@ -205,4 +199,50 @@ button:focus {
 .element.on ~ .element.on::before {
     content: ", ";
     margin-right: 0.25rem;
+}
+
+
+.view-actions {
+  display: flex;
+  align-items: center;
+  padding-top: var(--spacing-4);
+  justify-content: space-between;
+}
+
+.left-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.right-actions {
+  align-items: center;
+  display: flex;
+  gap: var(--spacing-1);
+}
+
+.rz-radio-button-list-horizontal {
+  display: flex;
+  gap: var(--spacing-1);
+}
+
+.rz-radio-button-list-horizontal .rz-radio-btn {
+  padding: var(--spacing-2);
+  border: 2px solid var(--colors-black);
+
+  --rz-radio-label-margin: 0 var(--spacing-2);
+  border-radius: var(--radius-1);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.rz-radio-button-list-horizontal .rz-radio-btn:hover {
+  background: var(--colors-black);
+  color: var(--colors-white);
+}
+
+.header-text {
+  width: 240px;
+  display: block;
+  white-space: initial;
 }

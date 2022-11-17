@@ -123,5 +123,23 @@ namespace UI_DSM.Client.ViewModels.App.Filter
 
             return selectedValues;
         }
+        
+        /// <summary>
+        ///     Verifies that all filters are selected or not
+        /// </summary>
+        /// <returns>True if all are selected, false if all deselected, null otherwise</returns>
+        public bool? AreAllSelected()
+        {
+            var rows = this.SelectedFilters[this.SelectedFilterModel.ClassKind];
+            if (rows.All(x => x.IsSelected))
+            {
+                return true;
+            }
+            else if (rows.All(x => !x.IsSelected))
+            {
+                return false;
+            }
+            return null;
+        }
     }
 }

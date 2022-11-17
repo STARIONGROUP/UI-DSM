@@ -1,6 +1,6 @@
 .app-traceability-table {
   overflow: scroll;
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 340px);
   border-radius: var(--radius-1);
   font-size: var(--text-sm);
   width: 100%;
@@ -42,12 +42,6 @@ table thead th {
 }
 
 
-table tbody th {
-  text-align: left;
-  position: relative;
-  background: var(--colors-white);
-}
-
 table thead th:first-child {
   position: sticky;
   left: 0;
@@ -55,9 +49,12 @@ table thead th:first-child {
 }
 
 table tbody th {
+  text-align: left;
+  background: var(--colors-white);
   position: sticky;
   left: 0;
   z-index: 1;
+  border-right: 1px solid var(--colors-gray-100);
 }
 
 

@@ -63,5 +63,11 @@ namespace UI_DSM.Client.ViewModels.App.Filter
         ///    Gets the <see cref="Dictionary{TKey,TValue}"/> of selected filters
         /// </summary>
         Dictionary<ClassKind, List<FilterRow>> GetSelectedFilters();
+
+        /// <summary>
+        ///     Verifies that all filters are selected or not
+        /// </summary>
+        /// <returns>True if all are selected, false if all deselected, null otherwise</returns>
+        bool? AreAllSelected();
     }
 }

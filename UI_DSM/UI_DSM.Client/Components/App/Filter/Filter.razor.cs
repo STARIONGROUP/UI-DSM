@@ -96,5 +96,35 @@ namespace UI_DSM.Client.Components.App.Filter
             this.ViewModel.SelectDeselectAll(isSelected);
             await this.InvokeAsync(this.StateHasChanged);
         }
+
+        /// <summary>
+        ///     Handle the checkbox change state event
+        /// </summary>
+        /// <param name="newState">The new state</param>
+        private void OnChange(bool? newState)
+        {
+            if (!newState.HasValue || newState.Value)
+            {
+                this.ViewModel.SelectDeselectAll(true);
+            }
+            else
+            {
+                this.ViewModel.SelectDeselectAll(false);
+            }
+        }
+
+        /// <summary>
+        ///     Gets the text to display based on the current selection state
+        /// </summary>
+        /// <returns>The text</returns>
+        private string GetStateText()
+        {
+            var state = this.ViewModel.AreAllSelected();
+            if (!state.HasValue || !state.Value)
+            {
+                return "Select all";
+            }
+            return "Deselect all";
+        }
     }
 }

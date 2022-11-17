@@ -25,7 +25,7 @@
 							{
 								<FeatherMessageCircle Size="20" Color="green"/>
 							}
-							@column.Id
+							<span class="header-text">@column.Id</span>
 						</th>
 					}
 				</tr>
@@ -39,7 +39,7 @@
 							{
 								<FeatherMessageCircle Size="20" Color="green"/>
 							}
-							@currentRow.Id
+							<span class="header-text">@currentRow.Id</span>
 						</th>
 							@foreach (var currentColumn in this.ViewModel.VisibleColumns)
 						{

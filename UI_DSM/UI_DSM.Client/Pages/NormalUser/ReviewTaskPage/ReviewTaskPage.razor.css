@@ -19,6 +19,11 @@
   overflow: auto;
 }
 
+.task-page__header {
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid var(--colors-gray-100);
+}
+
 .task-page__body {
   grid-area: b;
   padding: var(--spacing-8);
