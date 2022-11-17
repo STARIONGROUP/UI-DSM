@@ -36,15 +36,20 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
         /// </summary>
         public ReviewObjectiveCreationDto ReviewObjectiveCreationDto { get; set; }
 
-        List<ReviewObjectiveCreationDto> AvailableReviewObjectiveCreationDtoPrr { get; set; }
+        /// <summary>
+        ///     A collection of <see cref="ReviewObjectiveCreationDto" /> of kind PRR available for a review
+        /// </summary>
+        List<ReviewObjectiveCreationDto> AvailableReviewObjectiveCreationDtoPrr { get; set; } = new List<ReviewObjectiveCreationDto>();
 
-        List<ReviewObjectiveCreationDto> AvailableReviewObjectiveCreationDtoSrr { get; set; }
+        /// <summary>
+        ///     A collection of <see cref="ReviewObjectiveCreationDto" /> of kind SRR available for a review
+        /// </summary>
+        List<ReviewObjectiveCreationDto> AvailableReviewObjectiveCreationDtoSrr { get; set; } = new List<ReviewObjectiveCreationDto>();
 
         /// <summary>
         ///     The text to display inside the creation button
         /// </summary>
         public string CreationText { get; set; }
-
 
         /// <summary>
         ///     The <see cref="IReviewObjectiveCreationViewModel" /> for the component
@@ -71,8 +76,8 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
         protected override async Task OnInitializedAsync()
         {
             await this.ViewModel.OnInitializedAsync();
-            AvailableReviewObjectiveCreationDtoPrr = this.ViewModel.AvailableReviewObjectiveCreationDto.Where(x => x.Kind == ReviewObjectiveKind.Prr).ToList();
-            AvailableReviewObjectiveCreationDtoSrr = this.ViewModel.AvailableReviewObjectiveCreationDto.Where(x => x.Kind == ReviewObjectiveKind.Srr).ToList();
+            this.AvailableReviewObjectiveCreationDtoPrr = this.ViewModel.AvailableReviewObjectiveCreationDto.Where(x => x.Kind == ReviewObjectiveKind.Prr).ToList();
+            this.AvailableReviewObjectiveCreationDtoSrr = this.ViewModel.AvailableReviewObjectiveCreationDto.Where(x => x.Kind == ReviewObjectiveKind.Srr).ToList();
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ReviewObjectivesCreationStatus)
                 .Subscribe(_ => this.OnCreationStatusChanged()));

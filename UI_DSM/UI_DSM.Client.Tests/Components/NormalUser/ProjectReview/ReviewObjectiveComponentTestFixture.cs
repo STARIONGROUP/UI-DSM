@@ -133,8 +133,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
                         "A review with the same name already exists"
                     }));
 
-
-
                 await this.viewModel.ReviewObjectiveCreationViewModel.OnValidSubmit.InvokeAsync();
 
                 Assert.Multiple(() =>

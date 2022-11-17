@@ -53,7 +53,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
             this.errorMessageViewModel = new ErrorMessageViewModel();
             this.reviewObjectiveService = new Mock<IReviewObjectiveService>();
 
-            this.reviewObjectiveCreationViewModel = new ReviewObjectiveCreationViewModel(this.reviewObjectiveService.Object);
+            this.reviewObjectiveCreationViewModel = new ReviewObjectiveCreationViewModel(this.reviewObjectiveService.Object)
+            {
+                ReviewObjective = new ReviewObjective(),
+                OnValidSubmit = new EventCallbackFactory().Create(this, () => this.reviewObjectiveCreationViewModel.ReviewObjective = new ReviewObjective()),
+            };
+
         }
 
         [TearDown]
@@ -67,16 +72,22 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
         {
             try
             {
+                this.reviewObjectiveService.Setup(x => x.GetAvailableTemplates(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(new List<ReviewObjectiveCreationDto> { new ReviewObjectiveCreationDto() });
                 var renderer = this.context.RenderComponent<ReviewObjectiveCreation>(parameters =>
                 {
                     parameters.AddCascadingValue(this.errorMessageViewModel);
                     parameters.Add(p => p.ViewModel, this.reviewObjectiveCreationViewModel);
                 });
 
-                var listBox = renderer.FindComponent<DxListBox<ReviewObjective, ReviewObjective>>();
+                var listBox = renderer.FindComponents<DxListBox<ReviewObjectiveCreationDto, ReviewObjectiveCreationDto>>();
 
-                Assert.That(listBox.Instance.Values, Is.Empty);
-  
+                Assert.Multiple(() =>
+                {
+                    Assert.That(listBox.ToList(), Has.Count.EqualTo(2));
+                    Assert.That(renderer.Instance.CreationText, Is.EqualTo("Create"));
+                });
+
+
                 var reviewCreationDtoPrr = new ReviewObjectiveCreationDto()
                 {
                     Kind = ReviewObjectiveKind.Prr,
@@ -94,12 +105,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
 
                 renderer.Render();
 
-                Assert.That(listBox.Instance.Values.ToList(), Has.Count.EqualTo(2));
+                Assert.That(listBox, Has.Count.EqualTo(2));
 
                 var dxButton = renderer.FindComponent<EditForm>();
-                await renderer.InvokeAsync(dxButton.Instance.OnValidSubmit.InvokeAsync);
-
-                Assert.That(this.reviewObjectiveCreationViewModel.SelectedReviewObjectives.ToList(), Has.Count.Empty);
+                Assert.That(this.reviewObjectiveCreationViewModel.AvailableReviewObjectiveCreationDto[1].ToString(), Is.EqualTo(reviewCreationDtoPrr.ToString()));
             }
             catch
             {

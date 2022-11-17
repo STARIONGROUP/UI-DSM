@@ -213,7 +213,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
             Assert.Multiple(() =>
             {
                 Assert.That(requestResponse.IsRequestSuccessful, Is.True);
-                Assert.IsNotEmpty(requestResponse.Entities);
+                Assert.That(requestResponse.Entities, Is.Not.Empty);
             });
 
             httpResponse.Content = new StringContent(string.Empty);
@@ -290,6 +290,27 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
             Assert.That(requestResult.IsRequestSuccessful, Is.True);
             httpResponse.Content = new StringContent(string.Empty);
             Assert.That(async () => await this.service.UpdateReviewObjective(projectId, reviewObjective), Throws.Exception);
+        }
+
+        [Test]
+        public async Task VerifyGetAvailableTemplates()
+        {
+            var projectId = Guid.NewGuid();
+            var reviewId = Guid.NewGuid();
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.NotFound;
+
+            var request = this.httpMessageHandler.When($"/Project/{projectId}/Review/{reviewId}/ReviewObjective/GetAvailableTemplates");
+            request.Respond(_ => httpResponse);
+
+            Assert.That(async () => await this.service.GetAvailableTemplates(projectId, reviewId), Throws.Exception);
+            httpResponse.StatusCode = HttpStatusCode.OK;
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(this.entitiesDto));
+            var reviewObjectives = await this.service.GetAvailableTemplates(projectId, reviewId);
+            Assert.That(reviewObjectives, Has.Count.EqualTo(4));
+            httpResponse.Content = new StringContent(string.Empty);
+            Assert.That(async () => await this.service.GetAvailableTemplates(projectId, reviewId), Throws.Exception);
         }
     }
 }
