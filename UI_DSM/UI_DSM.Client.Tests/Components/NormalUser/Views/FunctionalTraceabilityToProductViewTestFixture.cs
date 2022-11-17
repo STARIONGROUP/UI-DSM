@@ -14,7 +14,9 @@
 namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 {
     using Bunit;
+   
     using CDP4Common.DTO;
+    
     using CDP4Dal;
 
     using Feather.Blazor.Icons;
@@ -25,6 +27,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
   
     using NUnit.Framework;
 
+    using UI_DSM.Client.Components.App.TraceabilityTable;
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
@@ -104,14 +107,16 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 Iid = Guid.NewGuid(),
                 Owner = owner.Iid,
                 Name = "Element Definition For Function Usage",
-                ShortName = "elementDefinitionForFunction"
+                ShortName = "elementDefinitionForFunction",
+                Category = new List<Guid> { functionsCategory }
             };
 
             var productUsage = new ElementUsage()
             {
                 Iid = Guid.NewGuid(),
                 Owner = owner.Iid,
-                ElementDefinition = elementDefinitionForProduct.Iid
+                ElementDefinition = elementDefinitionForProduct.Iid,
+                Category = new List<Guid> { productCategory }
             };
 
             var functionUsage = new ElementUsage()
@@ -184,7 +189,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 {
                     new (Guid.NewGuid())
                     {
-                        ThingId = function.Iid,
+                        ThingId = functionUsage.Iid,
                         Annotations = { new Comment(Guid.NewGuid()) }
                     }
                 });
@@ -203,6 +208,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 Assert.That(renderer.FindComponents<FeatherCheck>(), Has.Count.EqualTo(1));
                 Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
             });
+
+            var cell = renderer.FindComponent<TraceabilityCell>();
+            await renderer.InvokeAsync(() => cell.Instance.OnClick.InvokeAsync(cell.Instance.RelationshipRow));
+            Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
         }
     }
 }

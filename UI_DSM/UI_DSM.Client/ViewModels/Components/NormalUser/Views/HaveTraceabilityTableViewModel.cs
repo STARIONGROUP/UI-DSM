@@ -146,17 +146,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Filters a collection of <see cref="ElementDefinitionRowViewModel" />
+        ///     Filters a collection of <see cref="ElementBaseRowViewModel" />
         /// </summary>
         /// <param name="selectedFilters">The selected filters</param>
         /// <param name="collectionToFilter">The collection</param>
-        protected static void FilterElementDefinitionRows(IReadOnlyDictionary<ClassKind, List<FilterRow>> selectedFilters, IEnumerable<ElementDefinitionRowViewModel> collectionToFilter)
+        protected static void FilterElementBaseRows(IReadOnlyDictionary<ClassKind, List<FilterRow>> selectedFilters, IEnumerable<ElementBaseRowViewModel> collectionToFilter)
         {
             var selectedOwners = selectedFilters[ClassKind.DomainOfExpertise];
+            var selectedContainers = selectedFilters[ClassKind.ElementDefinition];
 
-            foreach (var productRowViewModel in collectionToFilter)
+            foreach (var elementBaseRowViewModel in collectionToFilter)
             {
-                productRowViewModel.IsVisible = selectedOwners.Any(x => x.DefinedThing.Iid == productRowViewModel.Thing.Owner.Iid);
+                elementBaseRowViewModel.IsVisible = selectedOwners.Any(x => x.DefinedThing.Iid == elementBaseRowViewModel.Thing.Owner.Iid)
+                    && selectedContainers.Any(x => x.DefinedThing.Iid == elementBaseRowViewModel.ContainerId);
             }
         }
 
@@ -204,13 +206,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Initializes the <paramref name="filterModels" /> for <see cref="ElementDefinitionRowViewModel" /> rows
+        ///     Initializes the <paramref name="filterModels" /> for <see cref="ElementBaseRowViewModel" /> rows
         /// </summary>
         /// <param name="filterModels">A collection of <see cref="FilterModel" /></param>
-        /// <param name="rows">The collection of <see cref="ElementDefinitionRowViewModel" /></param>
-        protected static void InitializesFilterForElementDefinitionRows(List<FilterModel> filterModels, IEnumerable<ElementDefinitionRowViewModel> rows)
+        /// <param name="rows">The collection of <see cref="ElementBaseRowViewModel" /></param>
+        protected static void InitializesFilterForElementBaseRows(List<FilterModel> filterModels, IEnumerable<ElementBaseRowViewModel> rows)
         {
             filterModels.Clear();
+            rows = rows.ToList();
 
             var availableOwners = new List<DefinedThing>(rows
                 .Select(x => x.Thing.Owner).DistinctBy(x => x.Iid));
@@ -220,6 +223,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 ClassKind = ClassKind.DomainOfExpertise,
                 DisplayName = "Owner",
                 Values = availableOwners
+            });
+
+            var availableContainers = new List<DefinedThing>(rows.Where(x => x.Thing.Container is ElementDefinition)
+                .Select(x => x.Thing.Container as DefinedThing).DistinctBy(x => x!.Iid));
+
+            filterModels.Add(new FilterModel
+            {
+                ClassKind = ClassKind.ElementDefinition,
+                DisplayName = "Container",
+                Values = availableContainers
             });
         }
 
@@ -275,7 +288,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         {
             return row switch
             {
-                ElementDefinitionRowViewModel elementDefinitionRow => elementDefinitionRow.Thing.ContainedElement,
+                ElementBaseRowViewModel elementBaseRow => new List<Thing> { elementBaseRow.Thing },
                 RequirementRowViewModel requirementRow => new List<Thing> { requirementRow.Thing },
                 _ => Enumerable.Empty<Thing>()
             };

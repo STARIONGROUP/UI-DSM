@@ -83,5 +83,16 @@ namespace UI_DSM.Shared.Extensions
         {
             return things.DistinctBy(x => x.Iid).ToList();
         }
+
+        /// <summary>
+        ///     Converts a <see cref="IEnumerable{T}"/> to a comma seperated string
+        /// </summary>
+        /// <param name="elements">The <see cref="IEnumerable{T}"/></param>
+        /// <returns>A string</returns>
+        public static string AsCommaSeparated(this IEnumerable<string> elements)
+        {
+            elements = elements.ToList();
+            return elements.Any() ? string.Join(", ", elements) : string.Empty;
+        }
     }
 }

@@ -67,11 +67,13 @@ namespace UI_DSM.Client.Tests.Extension
             {
                 new ()
                 {
+                    Iid = Guid.NewGuid(),
                     IsDeprecated = true,
                     Name = "DeprecatedCategory"
                 },
                 new ()
                 {
+                    Iid = Guid.NewGuid(),
                     Name = "UndeprecatedCategory"
                 }
             };

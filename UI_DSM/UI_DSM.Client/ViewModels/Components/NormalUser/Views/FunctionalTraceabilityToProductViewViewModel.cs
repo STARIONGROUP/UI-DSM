@@ -52,7 +52,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="selectedFilters">The selected filters</param>
         public override void FilterRows(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
         {
-            FilterElementDefinitionRows(selectedFilters, this.TraceabilityTableViewModel.Rows.OfType<ProductRowViewModel>());
+            FilterElementBaseRows(selectedFilters, this.TraceabilityTableViewModel.Rows.OfType<ProductRowViewModel>());
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="selectedFilters">The selected filters</param>
         public override void FilterColumns(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
         {
-            FilterElementDefinitionRows(selectedFilters, this.TraceabilityTableViewModel.Columns.OfType<FunctionRowViewModel>());
+            FilterElementBaseRows(selectedFilters, this.TraceabilityTableViewModel.Columns.OfType<FunctionRowViewModel>());
         }
 
         /// <summary>
@@ -75,14 +75,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         {
             await base.InitializeProperties(things, projectId, reviewId);
 
-            var functions = this.Things.OfType<ElementDefinition>()
+            var functions = this.Things.OfType<ElementUsage>()
                 .Where(x => x.IsFunction())
-                .OrderBy(x => x.Name)
                 .ToList();
 
-            var products = this.Things.OfType<ElementDefinition>()
+            var products = this.Things.OfType<ElementUsage>()
                 .Where(x => x.IsProduct())
-                .OrderBy(x => x.Name)
                 .ToList();
 
             var relationships = this.Things.OfType<BinaryRelationship>()
@@ -97,16 +95,18 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 filteredThings.Select(x => x.Iid));
 
             var rows = new List<IHaveThingRowViewModel>(products
-                .Select(x => new ProductRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));
+                .Select(x =>  new ProductRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid)))
+                .OrderBy(x => x.Container).ThenBy(x => x.Name));
 
             var columns = new List<IHaveThingRowViewModel>(functions
-                .Select(x => new FunctionRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));
+                .Select(x => new FunctionRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid)))
+                .OrderBy(x => x.Container).ThenBy(x => x.Name));
             
             var reviewItemsForRelationships = reviewItems.Where(x => relationships.Any(rel => x.ThingId == rel.Iid)).ToList();
 
             this.PopulateRelationships(rows, columns, reviewItemsForRelationships);
-            InitializesFilterForElementDefinitionRows(this.AvailableRowFilters, rows.OfType<ProductRowViewModel>());
-            InitializesFilterForElementDefinitionRows(this.AvailableColumnFilters, columns.OfType<FunctionRowViewModel>());
+            InitializesFilterForElementBaseRows(this.AvailableRowFilters, rows.OfType<ProductRowViewModel>());
+            InitializesFilterForElementBaseRows(this.AvailableColumnFilters, columns.OfType<FunctionRowViewModel>());
             this.TraceabilityTableViewModel.InitializeProperties(rows, columns);
         }
     }

@@ -202,7 +202,7 @@ button:focus {
   list-style: none;
 }
 
-.grid-list li::after {
-  content: ", ";
-  margin-right: 0.25rem;
+.element.on ~ .element.on::before {
+    content: ", ";
+    margin-right: 0.25rem;
 }

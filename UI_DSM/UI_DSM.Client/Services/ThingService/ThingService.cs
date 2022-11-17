@@ -109,11 +109,13 @@ namespace UI_DSM.Client.Services.ThingService
                     things.AddRange(await this.GetThings(projectId, modelsId, ClassKind.RequirementsSpecification));
                     break;
                 case View.FunctionalTraceabilityToProductView:
-                case View.ProductBreakdownStructureView:
+                case View.DocumentBased:
                     things.AddRange(await this.GetThings(projectId, modelsId, ClassKind.ElementDefinition));
                     break;
                 case View.RequirementTraceabilityToProductView:
                 case View.RequirementTraceabilityToFunctionView:
+                case View.ProductBreakdownStructureView:
+                case View.FunctionalBreakdownStructureView:
                     things.AddRange(await this.GetThings(projectId, modelsId));
                     break;
             }

@@ -1,5 +1,5 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
-// FunctionSelectedItem.razor
+// HyperLinkSelectedItem.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -9,8 +9,6 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-@inherits SelectedItemBase<UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel.FunctionRowViewModel>
-<AppKeyValue Key="Name" Value="@(this.RowViewModel.Name)" />
-<AppKeyValue Key="ShortName" Value="@(this.RowViewModel.ShortName)" />
-<AppKeyValue Key="Owner" Value="@(this.RowViewModel.Owner)" />
-<AppKeyValue Key="Container" Value="@(this.RowViewModel.Container)" />
+@inherits SelectedItemBase<UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel.HyperLinkRowViewModel>
+<AppKeyValue Key="Content" Value="@(this.RowViewModel.Id)" />
+<AppKeyValue Key="Uri" Value="@(this.RowViewModel.Url)" />

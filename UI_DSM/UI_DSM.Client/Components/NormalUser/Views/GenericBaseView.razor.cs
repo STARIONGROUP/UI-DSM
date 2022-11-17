@@ -20,6 +20,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using ReactiveUI;
 
     using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     Base component to display a <see cref="View" /> to view <see cref="Thing" /> for reviewing the model
@@ -40,6 +41,19 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             this.SelectedItemObservable = this.WhenAnyValue(x => x.ViewModel.SelectedElement);
             base.OnInitialized();
+        }
+
+        /// <summary>
+        ///     Initialize the correspondant ViewModel for this component
+        /// </summary>
+        /// <param name="things">The collection of <see cref="Thing" /></param>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
+        {
+            await this.ViewModel.InitializeProperties(things, projectId, reviewId);
+            await this.HasChanged();
         }
     }
 }

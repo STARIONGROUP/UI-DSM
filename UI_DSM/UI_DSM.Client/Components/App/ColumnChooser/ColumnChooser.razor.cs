@@ -22,7 +22,7 @@ namespace UI_DSM.Client.Components.App.ColumnChooser
     /// <summary>
     ///     Component that allow to choose columns to show/hide
     /// </summary>
-    public partial class ColumnChooser : IDisposable
+    public partial class ColumnChooser<TItem> : IDisposable
     {
         /// <summary>
         ///     A collection of <see cref="IDisposable" />
@@ -30,10 +30,10 @@ namespace UI_DSM.Client.Components.App.ColumnChooser
         private readonly List<IDisposable> disposables = new();
 
         /// <summary>
-        ///     The <see cref="IColumnChooserViewModel" />
+        ///     The <see cref="IColumnChooserViewModel{TItem}" />
         /// </summary>
-        [Inject]
-        public IColumnChooserViewModel ViewModel { get; set; }
+        [Parameter]
+        public IColumnChooserViewModel<TItem> ViewModel { get; set; }
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

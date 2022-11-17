@@ -17,6 +17,8 @@ namespace UI_DSM.Client.Extensions
     using CDP4Common.EngineeringModelData;
     using CDP4Common.SiteDirectoryData;
 
+    using DynamicData;
+
     /// <summary>
     ///     Extension class for <see cref="Thing" />
     /// </summary>
@@ -32,6 +34,14 @@ namespace UI_DSM.Client.Extensions
             "instruments",
             "subequipment",
             "thermal equipment"
+        };
+
+        /// <summary>
+        ///     Collection of <see cref="Category" /> name for <see cref="ElementDefinition" /> that should have a TRL parameter
+        /// </summary>
+        private static readonly List<string> MandatoryCategoriesForTrl = new()
+        {
+            "equipment"
         };
 
         /// <summary>
@@ -54,8 +64,14 @@ namespace UI_DSM.Client.Extensions
         /// <returns>A collection of name </returns>
         public static IEnumerable<string> GetCategories(this ICategorizableThing thing, bool includeDeprecated = false)
         {
-            var categories = includeDeprecated ? thing.Category : thing.Category.Where(x => !x.IsDeprecated);
-            return categories.Select(x => x.Name);
+            var categories = (includeDeprecated ? thing.Category : thing.Category.Where(x => !x.IsDeprecated)).ToList();
+
+            if (thing is ElementUsage usage)
+            {
+                categories.AddRange(includeDeprecated ? usage.ElementDefinition.Category : usage.ElementDefinition.Category.Where(x => !x.IsDeprecated));
+            }
+
+            return categories.DistinctBy(x => x.Iid).Select(x => x.Name);
         }
 
         /// <summary>
@@ -69,13 +85,13 @@ namespace UI_DSM.Client.Extensions
         }
 
         /// <summary>
-        ///     Gets the shortname of the <see cref="IOwnedThing.Owner" />
+        ///     Gets the shortname of the Owner of a <see cref="Thing" />
         /// </summary>
-        /// <param name="thing">The <see cref="IOwnedThing" /></param>
+        /// <param name="thing">The <see cref="Thing" /></param>
         /// <returns>The shortname</returns>
-        public static string GetOwnerShortName(this IOwnedThing thing)
+        public static string GetOwnerShortName(this Thing thing)
         {
-            return thing.Owner.ShortName;
+            return thing is IOwnedThing ownedThing ? ownedThing.GetOwnerShortName() : string.Empty;
         }
 
         /// <summary>
@@ -194,21 +210,21 @@ namespace UI_DSM.Client.Extensions
         }
 
         /// <summary>
-        ///     Verifies that a <see cref="ElementDefinition" /> is a product
+        ///     Verifies that a <see cref="ElementBase" /> is a product
         /// </summary>
-        /// <param name="elementDefinition">The <see cref="ElementDefinition" /></param>
+        /// <param name="elementBase">The <see cref="ElementBase" /></param>
         /// <returns>The asserts</returns>
-        public static bool IsProduct(this ElementDefinition elementDefinition)
+        public static bool IsProduct(this ElementBase elementBase)
         {
-            return elementDefinition.IsCategorizedBy("products");
+            return elementBase.IsCategorizedBy("products");
         }
 
         /// <summary>
-        ///     Verifies that a <see cref="ElementDefinition" /> is a function
+        ///     Verifies that a <see cref="ElementBase" /> is a function
         /// </summary>
-        /// <param name="elementDefinition">The <see cref="ElementDefinition" /></param>
+        /// <param name="elementDefinition">The <see cref="ElementBase" /></param>
         /// <returns>The asserts</returns>
-        public static bool IsFunction(this ElementDefinition elementDefinition)
+        public static bool IsFunction(this ElementBase elementDefinition)
         {
             return elementDefinition.IsCategorizedBy("functions");
         }
@@ -216,37 +232,104 @@ namespace UI_DSM.Client.Extensions
         /// <summary>
         ///     Asserts that a Product has to have a Technology parameter
         /// </summary>
-        /// <param name="elementDefinition">The <see cref="ElementDefinition" /></param>
+        /// <param name="elementBase">The <see cref="ElementBase" /></param>
         /// <returns>The assert</returns>
-        public static bool ShouldHaveTechnologyParameter(this ElementDefinition elementDefinition)
+        public static bool ShouldHaveTechnologyParameter(this ElementBase elementBase)
         {
-            return elementDefinition.IsCategorizedBy(MandatoryCategoriesForTechnology);
+            return elementBase.IsCategorizedBy(MandatoryCategoriesForTechnology);
+        }
+
+        /// <summary>
+        ///     Asserts that a Product has to have a TRL parameter
+        /// </summary>
+        /// <param name="elementBase">The <see cref="ElementBase" /></param>
+        /// <returns>The assert</returns>
+        public static bool ShouldHaveTrlParameter(this ElementBase elementBase)
+        {
+            return elementBase.IsCategorizedBy(MandatoryCategoriesForTrl);
+        }
+
+        /// <summary>
+        ///     Gets a collection of all <see cref="Parameter" />s name with the associated value of an
+        ///     <see cref="ElementBase" />
+        /// </summary>
+        /// <param name="elementBase">The <see cref="ElementBase" /></param>
+        /// <param name="option">The <see cref="Option" /></param>
+        /// <param name="state">The <see cref="ActualFiniteState" /></param>
+        /// <returns>The collection of pair</returns>
+        public static List<(string, string)> GetAllParameterValues(this ElementBase elementBase, Option option, ActualFiniteState state)
+        {
+            var parameterOrOverride = new List<ParameterOrOverrideBase>();
+
+            switch (elementBase)
+            {
+                case ElementDefinition elementDefinition:
+                    parameterOrOverride.AddRange(elementDefinition.Parameter);
+                    break;
+                case ElementUsage elementUsage:
+                    parameterOrOverride.Add(elementUsage.ParameterOverride);
+
+                    parameterOrOverride.Add(elementUsage.ElementDefinition.Parameter.Where(x =>
+                        elementUsage.ParameterOverride.All(po => po.Parameter.Iid != x.Iid)));
+
+                    break;
+            }
+
+            return parameterOrOverride.Select(parameter => (parameter.ParameterType.Name, parameter.GetParameterValue(option, state))).ToList();
+        }
+
+        /// <summary>
+        ///     Gets the name of the <see cref="Thing.Container" /> if the current <see cref="ElementBase" /> is an
+        ///     <see cref="ElementUsage" />
+        /// </summary>
+        /// <param name="element">The <see cref="ElementBase" /></param>
+        /// <returns>A name</returns>
+        public static string GetElementContainer(this ElementBase element)
+        {
+            return element.GetContainerOfType<ElementDefinition>()?.Name ?? "-";
         }
 
         /// <summary>
         ///     Tries to get the value of a defined parameter
         /// </summary>
-        /// <param name="elementDefinition">The <see cref="ElementDefinition" /></param>
+        /// <param name="elementBase">The <see cref="ElementBase" /></param>
         /// <param name="parameterName">The name of the <see cref="ParameterType" /></param>
         /// <param name="option">The <see cref="Option" /></param>
         /// <param name="state">The <see cref="ActualFiniteState" /></param>
         /// <param name="value">The value of the parameter</param>
         /// <returns>True if has a the parameter</returns>
-        public static bool TryGetParameterValue(this ElementDefinition elementDefinition, string parameterName, Option option, ActualFiniteState state, out string value)
+        public static bool TryGetParameterValue(this ElementBase elementBase, string parameterName, Option option, ActualFiniteState state, out string value)
         {
             value = string.Empty;
 
-            var parameter = elementDefinition.Parameter
-                .Where(x => string.Equals(x.ParameterType.Name, parameterName, StringComparison.InvariantCultureIgnoreCase))
-                .ToList();
-
-            if (!parameter.Any())
+            return elementBase switch
             {
-                return false;
+                ElementDefinition elementDefinition => elementDefinition.TryGetParameterValue(parameterName, option, state, out value),
+                ElementUsage usage => usage.TryGetParameterValue(parameterName, option, state, out value),
+                _ => false
+            };
+        }
+
+        /// <summary>
+        ///     Gets the value of a <see cref="ParameterOrOverrideBase" />
+        /// </summary>
+        /// <param name="parameter">The <see cref="ParameterOrOverrideBase" /></param>
+        /// <param name="option">The <see cref="Option" /></param>
+        /// <param name="state">The <see cref="ActualFiniteState" /></param>
+        /// <returns>The parameter value</returns>
+        public static string GetParameterValue(this ParameterOrOverrideBase parameter, Option option, ActualFiniteState state)
+        {
+            var optionToQuery = parameter.IsOptionDependent ? option : null;
+            ActualFiniteState stateToQuery = null;
+
+            if (parameter.StateDependence != null)
+            {
+                stateToQuery = parameter.StateDependence.ActualState.Any(x => x.Iid == state?.Iid)
+                    ? state
+                    : parameter.StateDependence.ActualState.FirstOrDefault();
             }
 
-            value = parameter.Single().QueryParameterBaseValueSet(option, state).ActualValue.First();
-            return true;
+            return parameter.QueryParameterBaseValueSet(optionToQuery, stateToQuery).ActualValue.First();
         }
 
         /// <summary>
@@ -259,6 +342,104 @@ namespace UI_DSM.Client.Extensions
         public static bool IsCategorizedBy(this ICategorizableThing thing, string categoryName)
         {
             return thing.GetAllCategories().Any(x => !x.IsDeprecated && string.Equals(x.Name, categoryName, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        /// <summary>
+        ///     Gets the proper name of a <see cref="Thing" />
+        /// </summary>
+        /// <param name="thing">The <see cref="Thing" /></param>
+        /// <returns>The name</returns>
+        public static string GetName(this Thing thing)
+        {
+            return thing is INamedThing namedThing ? namedThing.Name : thing.UserFriendlyName;
+        }
+
+        /// <summary>
+        ///     Gets the proper shortname of a <see cref="Thing" />
+        /// </summary>
+        /// <param name="thing">The <see cref="Thing" /></param>
+        /// <returns>The name</returns>
+        public static string GetShortName(this Thing thing)
+        {
+            return thing is IShortNamedThing namedThing ? namedThing.ShortName : thing.UserFriendlyShortName;
+        }
+
+        /// <summary>
+        ///     Gets a collection of <see cref="ElementBase" /> that are product linked to the current <see cref="ElementBase" />
+        /// </summary>
+        /// <param name="function">The <see cref="ElementBase" /></param>
+        /// <returns>A collection of products</returns>
+        public static List<ElementBase> GetLinkedProducts(this ElementBase function)
+        {
+            if (!function.IsFunction())
+            {
+                return new List<ElementBase>();
+            }
+
+            var relationShips = function.QueryRelationships("implements");
+
+            return relationShips.Where(x => x.Source is ElementBase elementBase && elementBase.IsProduct())
+                .Select(x => x.Source as ElementBase).ToList();
+        }
+
+        /// <summary>
+        ///     Gets the shortname of the <see cref="IOwnedThing.Owner" />
+        /// </summary>
+        /// <param name="thing">The <see cref="IOwnedThing" /></param>
+        /// <returns>The shortname</returns>
+        private static string GetOwnerShortName(this IOwnedThing thing)
+        {
+            return thing.Owner.ShortName;
+        }
+
+        /// <summary>
+        ///     Tries to get the value of a defined parameter
+        /// </summary>
+        /// <param name="elementDefinition">The <see cref="ElementDefinition" /></param>
+        /// <param name="parameterName">The name of the <see cref="ParameterType" /></param>
+        /// <param name="option">The <see cref="Option" /></param>
+        /// <param name="state">The <see cref="ActualFiniteState" /></param>
+        /// <param name="value">The value of the parameter</param>
+        /// <returns>True if has a the parameter</returns>
+        private static bool TryGetParameterValue(this ElementDefinition elementDefinition, string parameterName, Option option, ActualFiniteState state, out string value)
+        {
+            value = string.Empty;
+
+            var parameter = elementDefinition.Parameter
+                .FirstOrDefault(x => string.Equals(x.ParameterType.Name, parameterName, StringComparison.InvariantCultureIgnoreCase));
+
+            if (parameter == null)
+            {
+                return false;
+            }
+
+            value = parameter.GetParameterValue(option, state);
+            return true;
+        }
+
+        /// <summary>
+        ///     Tries to get the value of a defined parameter
+        /// </summary>
+        /// <param name="elementUsage">The <see cref="ElementUsage" /></param>
+        /// <param name="parameterName">The name of the <see cref="ParameterType" /></param>
+        /// <param name="option">The <see cref="Option" /></param>
+        /// <param name="state">The <see cref="ActualFiniteState" /></param>
+        /// <param name="value">The value of the parameter</param>
+        /// <returns>True if has a the parameter</returns>
+        private static bool TryGetParameterValue(this ElementUsage elementUsage, string parameterName, Option option, ActualFiniteState state, out string value)
+        {
+            value = string.Empty;
+
+            var parameter = elementUsage.ParameterOverride
+                .FirstOrDefault(x => string.Equals(x.ParameterType.Name, parameterName, StringComparison.InvariantCultureIgnoreCase));
+
+            if (parameter == null)
+            {
+                return elementUsage.ElementDefinition.TryGetParameterValue(parameterName, option, state, out value);
+            }
+
+            value = parameter.GetParameterValue(option, state);
+            return true;
         }
 
         /// <summary>
