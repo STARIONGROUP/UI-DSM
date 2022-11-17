@@ -180,7 +180,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="context">The <see cref="HttpContext"/></param>
         /// <returns>A <see cref="Task"/></returns>
         [Authorize]
-        public async Task GetOpenTasksAndComments(IReviewManager reviewManager,Guid projectId, HttpContext context)
+        public async Task GetOpenTasksAndComments(IReviewManager reviewManager, Guid projectId, HttpContext context)
         {
             var reviewsId = (await reviewManager.GetContainedEntities(projectId)).Select(x => x.Id);
             

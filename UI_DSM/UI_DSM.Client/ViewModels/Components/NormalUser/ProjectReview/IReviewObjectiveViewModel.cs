@@ -13,6 +13,7 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 {
+    using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using Microsoft.AspNetCore.Components;
     using UI_DSM.Shared.Models;
 
@@ -26,7 +27,31 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         /// </summary>
         Review Review { get; set; }
 
-        
+        /// <summary>
+        ///     The <see cref="Project" />
+        /// </summary>
+        Project Project { get; set; }
+
+        /// <summary>
+        ///     Value indicating the user is currently creating a new <see cref="ReviewObjective" />(s)
+        /// </summary>
+        bool IsOnCreationMode { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IErrorMessageViewModel" />
+        /// </summary>
+        IErrorMessageViewModel ErrorMessageViewModel { get; }
+
+        /// <summary>
+        ///     The <see cref="IReviewObjectiveCreationViewModel" />
+        /// </summary>
+        IReviewObjectiveCreationViewModel ReviewObjectiveCreationViewModel { get; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="NavigationManager" />
+        /// </summary>
+        NavigationManager NavigationManager { get; set; }
+
         /// <summary>
         ///     Navigate to the page dedicated to the given <see cref="ReviewObjective" />
         /// </summary>
@@ -34,8 +59,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         void GoToReviewObjectivePage(ReviewObjective reviewObjective);
 
         /// <summary>
-        ///     Gets or sets the <see cref="NavigationManager" />
+        ///     Opens the <see cref="ReviewObjectiveCreation" /> as a popup
         /// </summary>
-        NavigationManager NavigationManager { get; set; }
+        void OpenCreatePopup();
     }
 }

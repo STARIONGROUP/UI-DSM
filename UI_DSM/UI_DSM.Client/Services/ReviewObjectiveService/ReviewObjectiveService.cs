@@ -105,6 +105,31 @@ namespace UI_DSM.Client.Services.ReviewObjectiveService
         }
 
         /// <summary>
+        ///     Creates a new <see cref="ReviewObjective" /> inside a <see cref="Review" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
+        /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
+        /// <param name="reviewObjectives">The <see cref="IEnumerable{ReviewObjectiveCreationDto}" />to create</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{ReviewObjective}" /></returns>
+        public async Task<EntitiesRequestResponses<ReviewObjective>> CreateReviewObjectives(Guid projectId, Guid reviewId, IEnumerable<ReviewObjectiveCreationDto> reviewObjectives)
+        {
+            try
+            {
+                this.ComputeMainRoute(projectId, reviewId);
+
+                var content = this.jsonService.Serialize(reviewObjectives);
+                var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
+                var response = await this.HttpClient.PostAsync(this.CreateUri(Path.Combine(this.MainRoute, "CreateTemplates"), 1), bodyContent);
+                var entityRequest = this.jsonService.Deserialize<EntityRequestResponseDto>(await response.Content.ReadAsStreamAsync());
+                return HandleEntitiesRequestResponse(entityRequest);
+            }
+            catch (Exception exception)
+            {
+                throw new HttpRequestException(exception.Message);
+            }
+        }
+
+        /// <summary>
         ///     Updates a <see cref="ReviewObjective" />
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
@@ -144,6 +169,26 @@ namespace UI_DSM.Client.Services.ReviewObjectiveService
             {
                 throw new HttpRequestException(exception.Message);
             }
+        }
+
+        /// <summary>
+        ///     Gets, all <see cref="ReviewObjectiveCreationDto" />s from the json file
+        ///     and filters them based on the given <see cref="ReviewObjectiveKind" />
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /> of the <see cref="Review" /></param>
+        /// <param name="reviewId">The <see cref="Entity.Id" /> of the <see cref="Review" /></param>
+        /// </summary>
+        /// <returns>A <see cref="Task" /> with the <see cref="List{ReviewObjectiveCreationDto}" /></returns>
+        public async Task<List<ReviewObjectiveCreationDto>> GetAvailableTemplates(Guid projectId, Guid reviewId)
+        {
+            this.ComputeMainRoute(projectId, reviewId);
+            var response = await this.HttpClient.GetAsync($"{this.MainRoute}/GetAvailableTemplates");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(response.ReasonPhrase);
+            }
+            var content = this.jsonService.Deserialize<List<ReviewObjectiveCreationDto>>(await response.Content.ReadAsStreamAsync());
+            return content;
         }
     }
 }

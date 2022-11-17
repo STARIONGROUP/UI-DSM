@@ -46,11 +46,37 @@ namespace UI_DSM.Server.Types
         }
 
         /// <summary>
+        ///     Initializes a new <see cref="EntityOperationResult{TEntity}" />
+        /// </summary>
+        /// <param name="entityEntries">The <see cref="List{EntityEntry{TEntity}}" /> for the operation</param>
+        /// <param name="expectedState">A collection of <see cref="EntityState" /></param>
+        public EntityOperationResult(List<EntityEntry<TEntity>> entityEntries, params EntityState[] expectedState)
+        {
+            if (entityEntries == null)
+            {
+                this.Succeeded = false;
+                return;
+            }
+
+            this.Succeeded = entityEntries.All(x => expectedState.Any(y => x.State == y));
+
+            if (this.Succeeded)
+            {
+                this.Entities = entityEntries.Select(x => x.Entity).ToList();
+            }
+        }
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="EntityOperationResult{TEntity}" /> class.
         /// </summary>
         protected EntityOperationResult()
         {
         }
+
+        /// <summary>
+        ///     The <see cref="Entities" /> for the operation
+        /// </summary>
+        public List<TEntity> Entities { get; set; }
 
         /// <summary>
         ///     Value asserting the result of the operation
@@ -91,6 +117,19 @@ namespace UI_DSM.Server.Types
             {
                 Succeeded = true,
                 Entity = entity
+            };
+        }
+
+        /// <summary>
+        ///     Creates a new <see cref="EntityOperationResult{TEntity}" /> with a success status and sets the
+        ///     <see cref="Entities" />
+        /// </summary>
+        public static EntityOperationResult<TEntity> AllSuccess(List<TEntity> entities)
+        {
+            return new EntityOperationResult<TEntity>
+            {
+                Succeeded = true,
+                Entities = entities
             };
         }
 

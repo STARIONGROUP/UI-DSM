@@ -40,6 +40,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Server.Managers.ReviewTaskManager;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Common;
+    using Microsoft.EntityFrameworkCore;
 
     [TestFixture]
     public class ReviewObjectiveModuleTestFixture
@@ -265,6 +266,91 @@ namespace UI_DSM.Server.Tests.Modules
                 this.reviewTaskManager.Object, this.context.Object, reviewCreationDto);
 
             this.response.VerifySet(x => x.StatusCode=201, Times.Once);
+        }
+
+        [Test]
+        public async Task VerifyCreateEntitiesWithTemplate()
+        {
+            var reviewCreationDto = new ReviewObjectiveCreationDto()
+            {
+                Kind = ReviewObjectiveKind.Prr,
+                KindNumber = 15
+            };
+
+            var reviewCreationDto1 = new ReviewObjectiveCreationDto()
+            {
+                Kind = ReviewObjectiveKind.Prr,
+                KindNumber = 3
+            };
+
+            List<ReviewObjectiveCreationDto> reviewCreationDtos = new List<ReviewObjectiveCreationDto>
+            {
+                reviewCreationDto
+            };
+
+            await this.module.CreateEntityTemplates(this.reviewManager.As<IReviewManager>().Object, this.reviewObjectiveManager.As<IReviewObjectiveManager>().Object,
+                this.reviewTaskManager.Object, this.context.Object, reviewCreationDtos);
+
+            this.response.VerifySet(x => x.StatusCode = 400, Times.Once);
+
+            reviewCreationDto.KindNumber = 2;
+            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
+
+            reviewCreationDtos.Add(reviewCreationDto1);
+
+            await this.module.CreateEntityTemplates(this.reviewManager.As<IReviewManager>().Object, this.reviewObjectiveManager.As<IReviewObjectiveManager>().Object,
+                this.reviewTaskManager.Object, this.context.Object, reviewCreationDtos);
+
+            this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
+
+            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(new Participant(Guid.NewGuid())
+            {
+                Role = new Role(Guid.NewGuid()),
+                User = new UserEntity(Guid.NewGuid())
+            });
+
+            await this.module.CreateEntityTemplates(this.reviewManager.As<IReviewManager>().Object, this.reviewObjectiveManager.As<IReviewObjectiveManager>().Object,
+                this.reviewTaskManager.Object, this.context.Object, reviewCreationDtos);
+
+            this.response.VerifySet(x => x.StatusCode = 400, Times.Exactly(2));
+
+            this.reviewManager.As<IContainedEntityManager<Review>>()
+                .Setup(x => x.EntityIsContainedBy(this.reviewId, this.projectId)).ReturnsAsync(true);
+
+            this.reviewManager.Setup(x => x.GetEntity(this.reviewId, 0)).ReturnsAsync(Enumerable.Empty<Entity>());
+
+            await this.module.CreateEntityTemplates(this.reviewManager.As<IReviewManager>().Object, this.reviewObjectiveManager.As<IReviewObjectiveManager>().Object,
+                this.reviewTaskManager.Object, this.context.Object, reviewCreationDtos);
+
+            this.response.VerifySet(x => x.StatusCode = 400, Times.Exactly(3));
+
+            this.reviewManager.Setup(x => x.GetEntity(this.reviewId, 0)).ReturnsAsync(new List<Entity>
+            {
+                new Review()
+            });
+
+            IEnumerable<ReviewObjective> reviewObjectives = new List<ReviewObjective>
+            {
+                new ReviewObjective()
+                {
+                    Id = Guid.NewGuid(),
+                    ReviewObjectiveKindNumber = 2
+                },
+
+                new ReviewObjective()
+                {
+                    Id = Guid.NewGuid(),
+                    ReviewObjectiveKindNumber = 3
+                }
+            };
+
+            /*this.reviewObjectiveManager.As<IReviewObjectiveManager>().Setup(x => x.CreateEntityBasedOnTemplates(reviewObjectives
+                , It.IsAny<Review>(), It.IsAny<Participant>())).ReturnsAsync(EntityOperationResult<ReviewObjective>.Success(new ReviewObjective(new ReviewObjective())));
+
+            await this.module.CreateEntityTemplates(this.reviewManager.As<IReviewManager>().Object, this.reviewObjectiveManager.As<IReviewObjectiveManager>().Object,
+                this.reviewTaskManager.Object, this.context.Object, reviewCreationDtos);
+
+            this.response.VerifySet(x => x.StatusCode = 201, Times.Once);*/
         }
 
         [Test]

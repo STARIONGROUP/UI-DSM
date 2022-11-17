@@ -251,5 +251,53 @@ namespace UI_DSM.Server.Tests.Managers
                 Assert.That(reviewObjective.Annotations, Has.Count.EqualTo(3));
             });
         }
+
+        [Test]
+        public async Task GetReviewObjectiveCreationForReview()
+        {
+            var reviewObjectivePrr1 = new ReviewObjective()
+            {
+                Id = Guid.NewGuid(),
+                ReviewObjectiveKind = ReviewObjectiveKind.Prr,
+                ReviewObjectiveKindNumber = 1
+            };
+
+            var reviewObjectivePrr2 = new ReviewObjective()
+            {
+                Id = Guid.NewGuid(),
+                ReviewObjectiveKind = ReviewObjectiveKind.Prr,
+                ReviewObjectiveKindNumber = 2
+            };
+
+            var reviewObjectiveSrr2 = new ReviewObjective()
+            {
+                Id = Guid.NewGuid(),
+                ReviewObjectiveKind = ReviewObjectiveKind.Srr,
+                ReviewObjectiveKindNumber = 2
+            };
+
+            List<Review> reviews = new List<Review>()
+            {
+                new(Guid.NewGuid())
+                {
+                    ReviewObjectives =
+                    {
+                        reviewObjectivePrr1,
+                        reviewObjectiveSrr2,
+                        reviewObjectivePrr2
+                    }
+                }
+            };
+
+            this.reviewDbSet.UpdateDbSetCollection(reviews);
+            this.reviewObjectiveDbSet.UpdateDbSetCollection(reviews.First().ReviewObjectives);
+
+            var reviewObjectivesFirstReview = await this.manager.GetReviewObjectiveCreationForReview(reviews.First().Id);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(reviewObjectivesFirstReview.ToList(), Has.Count.EqualTo(3));
+            });
+        }
     }
 }
