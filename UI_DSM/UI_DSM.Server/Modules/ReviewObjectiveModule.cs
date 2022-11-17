@@ -220,12 +220,11 @@ namespace UI_DSM.Server.Modules
         /// <param name="deepLevel">The optional deepLevel</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public async Task CreateEntityTemplates(IReviewManager reviewManager, IReviewObjectiveManager manager, IReviewTaskManager reviewTaskManager, HttpContext context,
+        public async Task CreateEntityTemplates(IReviewManager reviewManager, IReviewObjectiveManager manager, HttpContext context,
             List<ReviewObjectiveCreationDto> dtos, int deepLevel = 0)
         {
             var templates = this.reviewObjectivesTemplates.Where(x => dtos.Any(y => y.Kind == x.ReviewObjectiveKind
                                                                                   && y.KindNumber == x.ReviewObjectiveKindNumber));
-
             if (templates == null || !templates.Any())
             {
                 context.Response.StatusCode = 400;

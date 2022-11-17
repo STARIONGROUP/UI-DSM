@@ -16,6 +16,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
     using Microsoft.AspNetCore.Components;
     using ReactiveUI;
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
+    using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Services.ReviewObjectiveService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Shared.DTO.Common;
@@ -61,6 +62,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         }
 
         /// <summary>
+        ///     Backing field for <see cref="ReviewObjectivesCreationStatus" />
+        /// </summary>
+        private CreationStatus reviewObjectivesCreationStatus;
+
+        /// <summary>
         ///     The <see cref="IReviewService" />
         /// </summary>
         private readonly IReviewObjectiveService reviewObjectiveService;
@@ -100,6 +106,15 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         public List<ReviewObjectiveCreationDto> AvailableReviewObjectiveCreationDto { get; set; } = new();
 
         /// <summary>
+        ///     Value indicating the current status of the <see cref="List{ReviewObjectives}" /> creation
+        /// </summary>
+        public CreationStatus ReviewObjectivesCreationStatus
+        {
+            get => this.reviewObjectivesCreationStatus;
+            set => this.RaiseAndSetIfChanged(ref this.reviewObjectivesCreationStatus, value);
+        }
+
+        /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
         ///     Override this method if you will perform an asynchronous operation and
@@ -109,6 +124,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         public async Task OnInitializedAsync()
         {
             this.AvailableReviewObjectiveCreationDto = await this.reviewObjectiveService.GetAvailableTemplates(this.projectId, this.reviewId);
+            this.ReviewObjectivesCreationStatus = CreationStatus.None;
         }
     }
 }

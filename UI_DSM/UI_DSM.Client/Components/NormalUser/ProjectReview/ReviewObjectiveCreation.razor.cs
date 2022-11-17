@@ -14,7 +14,8 @@
 namespace UI_DSM.Client.Components.NormalUser.ProjectReview
 {
     using Microsoft.AspNetCore.Components;
-
+    using ReactiveUI;
+    using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Enumerator;
@@ -23,8 +24,13 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
     /// <summary>
     ///     This component is used to create new <see cref="ReviewObjective" />(s)
     /// </summary>
-    public partial class ReviewObjectiveCreation
+    public partial class ReviewObjectiveCreation : IDisposable
     {
+        /// <summary>
+        ///     A collection of <see cref="IDisposable" />
+        /// </summary>
+        private readonly List<IDisposable> disposables = new();
+
         /// <summary>
         ///     The <see cref="ReviewObjectiveCreationDto" />
         /// </summary>
@@ -34,12 +40,26 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
 
         List<ReviewObjectiveCreationDto> AvailableReviewObjectiveCreationDtoSrr { get; set; }
 
+        /// <summary>
+        ///     The text to display inside the creation button
+        /// </summary>
+        public string CreationText { get; set; }
+
 
         /// <summary>
         ///     The <see cref="IReviewObjectiveCreationViewModel" /> for the component
         /// </summary>
         [Parameter]
         public IReviewObjectiveCreationViewModel ViewModel { get; set; }
+
+        /// <summary>
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.disposables.ForEach(x => x.Dispose());
+            this.disposables.Clear();
+        }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its
@@ -53,6 +73,34 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
             await this.ViewModel.OnInitializedAsync();
             AvailableReviewObjectiveCreationDtoPrr = this.ViewModel.AvailableReviewObjectiveCreationDto.Where(x => x.Kind == ReviewObjectiveKind.Prr).ToList();
             AvailableReviewObjectiveCreationDtoSrr = this.ViewModel.AvailableReviewObjectiveCreationDto.Where(x => x.Kind == ReviewObjectiveKind.Srr).ToList();
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ReviewObjectivesCreationStatus)
+                .Subscribe(_ => this.OnCreationStatusChanged()));
+        }
+
+        /// <summary>
+        ///     Sets properties when the <see cref="ReviewObjectivesCreationStatus" /> has changed
+        /// </summary>
+        private void OnCreationStatusChanged()
+        {
+            switch (this.ViewModel.ReviewObjectivesCreationStatus)
+            {
+                case CreationStatus.None:
+                    this.CreationText = "Create";
+                    break;
+                case CreationStatus.Creating:
+                    this.CreationText = "Creating";
+                    break;
+                case CreationStatus.Fail:
+                    this.CreationText = "Retry...";
+                    break;
+                case CreationStatus.Done:
+                    break;
+                default:
+                    throw new InvalidDataException("Unsupported value");
+            }
+
+            this.InvokeAsync(this.StateHasChanged);
         }
     }
 }

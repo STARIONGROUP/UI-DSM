@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 {
     using Microsoft.AspNetCore.Components;
+    using UI_DSM.Client.Enumerator;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
 
@@ -41,6 +42,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         ///     The <see cref="EventCallback" /> to call for data submit
         /// </summary>
         EventCallback OnValidSubmit { get; set; }
+
+        /// <summary>
+        ///     Value indicating the current status of the <see cref="List{ReviewObjective}" /> creation
+        /// </summary>
+        CreationStatus ReviewObjectivesCreationStatus { get; set; }
 
         /// <summary>
         ///     A collection of <see cref="ReviewObjectiveCreationDto" /> of kind Prr that has been selected

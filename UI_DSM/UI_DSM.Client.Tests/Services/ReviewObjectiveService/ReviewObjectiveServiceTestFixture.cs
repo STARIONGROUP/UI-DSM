@@ -172,6 +172,55 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
             Assert.That(async () => await this.service.CreateReviewObjective(projectId, reviewId, reviewObjective), Throws.Exception);
         }
 
+
+        [Test]
+        public async Task VerifyCreateReviewObjectives()
+        {
+            var reviewObjectives = new List<ReviewObjectiveCreationDto>()
+            {
+                new ReviewObjectiveCreationDto()
+                {
+                    Kind = ReviewObjectiveKind.Prr,
+                    KindNumber = 0
+                }
+            };
+
+            var projectId = Guid.NewGuid();
+            var reviewId = Guid.NewGuid();
+
+            var httpResponse = new HttpResponseMessage();
+
+            var entityRequestResponse = new EntityRequestResponseDto()
+            {
+                IsRequestSuccessful = false
+            };
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
+            var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Project/{projectId}/Review/{reviewId}/ReviewObjective/CreateTemplates");
+            request.Respond(_ => httpResponse);
+
+            var requestResponse = await this.service.CreateReviewObjectives(projectId, reviewId, reviewObjectives);
+            Assert.That(requestResponse.IsRequestSuccessful, Is.False);
+
+            entityRequestResponse.IsRequestSuccessful = true;
+
+            entityRequestResponse.Entities = new ReviewObjective().GetAssociatedEntities().ToDtos();
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
+
+            requestResponse = await this.service.CreateReviewObjectives(projectId, reviewId, reviewObjectives);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(requestResponse.IsRequestSuccessful, Is.True);
+                Assert.IsNotEmpty(requestResponse.Entities);
+            });
+
+            httpResponse.Content = new StringContent(string.Empty);
+
+            Assert.That(async () => await this.service.CreateReviewObjectives(projectId, reviewId, reviewObjectives), Throws.Exception);
+        }
+
         [Test]
         public async Task VerifyDeleteReviewObjective()
         {

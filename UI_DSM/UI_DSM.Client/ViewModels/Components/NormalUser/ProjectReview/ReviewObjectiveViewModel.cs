@@ -17,6 +17,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
     using Microsoft.AspNetCore.Components;
     using ReactiveUI;
     using System.Linq;
+    using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Services.ReviewObjectiveService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Shared.DTO.Common;
@@ -125,6 +126,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
             this.ReviewObjectiveCreationViewModel.ReviewId = this.Review.Id;
             this.ReviewObjectiveCreationViewModel.ReviewObjective = new ReviewObjective();
             this.ReviewObjectiveCreationViewModel.SelectedReviewObjectives = new List<ReviewObjectiveCreationDto>();
+            this.ReviewObjectiveCreationViewModel.SelectedReviewObjectivesPrr = new List<ReviewObjectiveCreationDto>();
+            this.ReviewObjectiveCreationViewModel.SelectedReviewObjectivesSrr = new List<ReviewObjectiveCreationDto>();
             this.ErrorMessageViewModel.Errors.Clear();
             this.IsOnCreationMode = true;
         }
@@ -135,9 +138,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         /// <returns>A <see cref="Task" /></returns>
         private async Task CreateReviewObjective()
         {
-
             try
             {
+                this.ReviewObjectiveCreationViewModel.ReviewObjectivesCreationStatus = CreationStatus.Creating;
                 var selectedReviewObjectives = this.ReviewObjectiveCreationViewModel.SelectedReviewObjectivesPrr.ToList().Union(this.ReviewObjectiveCreationViewModel.SelectedReviewObjectivesSrr.ToList()).ToList();
                 var creationResult = await this.reviewObjectiveService.CreateReviewObjectives(this.Project.Id, this.Review.Id, selectedReviewObjectives);
                 this.ErrorMessageViewModel.Errors.Clear();
@@ -150,6 +153,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
                 if (creationResult.IsRequestSuccessful)
                 {
                     this.Review.ReviewObjectives.Add(creationResult.Entities);
+                    this.ReviewObjectiveCreationViewModel.ReviewObjectivesCreationStatus = CreationStatus.Done;
                 }
 
                 this.IsOnCreationMode = !creationResult.IsRequestSuccessful;

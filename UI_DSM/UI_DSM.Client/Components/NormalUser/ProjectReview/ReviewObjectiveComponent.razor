@@ -25,7 +25,7 @@
 		</Content>
 	</DxPopup>
   <div class="objective-overview">
-		@foreach (var reviewObjective in this.ViewModel.Review.ReviewObjectives.OrderBy(x => x.ReviewObjectiveKindNumber))
+		@foreach (var reviewObjective in this.ViewModel.Review.ReviewObjectives.OrderBy(x => x.ReviewObjectiveKind).ThenBy(x => x.ReviewObjectiveKindNumber))
 		{
 			<div div @onclick="@(() => this.ViewModel.GoToReviewObjectivePage(reviewObjective))">
 				<AppObjectiveItem Title="@reviewObjective.Title" Link=@(this.ViewModel.NavigationManager.Uri+"/ReviewObjective/"+reviewObjective.Id) />
