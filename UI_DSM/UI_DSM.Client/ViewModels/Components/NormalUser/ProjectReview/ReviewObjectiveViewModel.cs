@@ -141,7 +141,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
             try
             {
                 this.ReviewObjectiveCreationViewModel.ReviewObjectivesCreationStatus = CreationStatus.Creating;
-                var selectedReviewObjectives = this.ReviewObjectiveCreationViewModel.SelectedReviewObjectivesPrr.ToList().Union(this.ReviewObjectiveCreationViewModel.SelectedReviewObjectivesSrr.ToList()).ToList();
+                var selectedReviewObjectives = this.ReviewObjectiveCreationViewModel.SelectedReviewObjectivesPrr.Union(this.ReviewObjectiveCreationViewModel.SelectedReviewObjectivesSrr.ToList()).ToList();
                 var creationResult = await this.reviewObjectiveService.CreateReviewObjectives(this.Project.Id, this.Review.Id, selectedReviewObjectives);
                 this.ErrorMessageViewModel.Errors.Clear();
 

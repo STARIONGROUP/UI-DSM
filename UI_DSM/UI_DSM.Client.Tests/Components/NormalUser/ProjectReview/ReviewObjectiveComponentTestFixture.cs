@@ -120,7 +120,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
                 this.viewModel.ReviewObjectiveCreationViewModel.SelectedReviewObjectivesPrr = new List<ReviewObjectiveCreationDto>();
                 this.viewModel.ReviewObjectiveCreationViewModel.SelectedReviewObjectives = new List<ReviewObjectiveCreationDto>();
 
-                this.viewModel.ReviewObjectiveCreationViewModel.SelectedReviewObjectives.Append(new ReviewObjectiveCreationDto()
+                this.viewModel.ReviewObjectiveCreationViewModel.SelectedReviewObjectives.ToList().Add(new ReviewObjectiveCreationDto()
                 {
                     Kind = ReviewObjectiveKind.Prr,
                     KindNumber = 1,
