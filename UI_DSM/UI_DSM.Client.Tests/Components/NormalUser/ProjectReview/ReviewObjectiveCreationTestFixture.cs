@@ -68,7 +68,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
         }
 
         [Test]
-        public async Task VerifyComponent()
+        public void VerifyComponent()
         {
             try
             {

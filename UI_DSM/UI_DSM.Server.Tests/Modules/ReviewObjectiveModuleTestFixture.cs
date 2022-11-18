@@ -41,6 +41,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Common;
     using Microsoft.EntityFrameworkCore;
+    using UI_DSM.Server.Managers.ProjectManager;
 
     [TestFixture]
     public class ReviewObjectiveModuleTestFixture
@@ -424,6 +425,18 @@ namespace UI_DSM.Server.Tests.Modules
 
             await this.module.UpdateEntity(this.reviewObjectiveManager.Object, reviewObjective.Id, dto, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 200, Times.Once);
+        }
+
+        [Test]
+        public async Task VerifyGetAvailableTemplates()
+        {
+            var reviewObjective = new ReviewObjective(Guid.NewGuid());
+            Review review = new Review(this.reviewId);
+
+            this.reviewObjectiveManager.As<IReviewObjectiveManager>().Setup(x => x.GetReviewObjectiveCreationForReview(review.Id)).ReturnsAsync(new List<ReviewObjectiveCreationDto>());
+
+            await this.module.GetAvailableTemplates(this.reviewObjectiveManager.As<IReviewObjectiveManager>().Object, this.context.Object);
+            this.reviewObjectiveManager.As<IReviewObjectiveManager>().Verify(x => x.GetReviewObjectiveCreationForReview(review.Id), Times.Once);
         }
     }
 }

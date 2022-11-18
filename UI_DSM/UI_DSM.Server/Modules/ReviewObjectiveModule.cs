@@ -76,7 +76,7 @@ namespace UI_DSM.Server.Modules
                 .WithName($"{this.EntityName}/CreateTemplate");
 
             app.MapGet($"{this.MainRoute}/GetAvailableTemplates", this.GetAvailableTemplates)
-                .Produces<Dictionary<string, List<ReviewObjective>>>()
+                .Produces<List<ReviewObjectiveCreationDto>>()
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/GetAvailableTemplates");
 
