@@ -362,9 +362,9 @@ namespace UI_DSM.Server.Modules
         public async Task GetAvailableTemplates(IReviewObjectiveManager reviewObjectiveManager, HttpContext context)
         {
             var reviewId = this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey);
-            var existingReviewObjectives = await reviewObjectiveManager.GetReviewObjectiveCreationForReview(reviewId);
+            var existingReviewObjectives = reviewObjectiveManager.GetReviewObjectiveCreationForReview(reviewId);
             var reviewObjectiveCreationTemplates = this.reviewObjectivesTemplates.Select(x => new ReviewObjectiveCreationDto() { Kind = x.ReviewObjectiveKind, KindNumber = x.ReviewObjectiveKindNumber }).ToList();
-            reviewObjectiveCreationTemplates.RemoveAll(x => existingReviewObjectives.ToList().Any(y => y.Kind == x.Kind && y.KindNumber == x.KindNumber));
+            reviewObjectiveCreationTemplates.RemoveAll(x => existingReviewObjectives.Any(y => y.Kind == x.Kind && y.KindNumber == x.KindNumber));
             await context.Response.Negotiate(reviewObjectiveCreationTemplates);
         }
     }

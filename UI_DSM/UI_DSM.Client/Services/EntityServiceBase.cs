@@ -145,16 +145,6 @@ namespace UI_DSM.Client.Services
         ///     Handles the result of the <see cref="EntityRequestResponseDto" />
         /// </summary>
         /// <param name="entityRequest">The <see cref="EntityRequestResponseDto" /></param>
-        /// <returns>The <see cref="EntityRequestResponse{TEntity}" /></returns>
-        protected static EntitiesRequestResponses<TEntity> HandleEntitiesRequestResponse(EntityRequestResponseDto entityRequests)
-        {
-            return HandleEntitiesRequestResponse<TEntity>(entityRequests);
-        }
-
-        /// <summary>
-        ///     Handles the result of the <see cref="EntityRequestResponseDto" />
-        /// </summary>
-        /// <param name="entityRequest">The <see cref="EntityRequestResponseDto" /></param>
         /// <typeparam name="TTEntity">An <see cref="Entity" /></typeparam>
         /// <returns>The <see cref="EntityRequestResponse{TEntity}" /></returns>
         protected static EntityRequestResponse<TTEntity> HandleEntityRequestResponse<TTEntity>(EntityRequestResponseDto entityRequest) where TTEntity : Entity
@@ -169,6 +159,16 @@ namespace UI_DSM.Client.Services
             return poco == null
                 ? EntityRequestResponse<TTEntity>.Fail(new List<string> { "Error during the creation of the entity" })
                 : EntityRequestResponse<TTEntity>.Success(poco);
+        }
+
+        /// <summary>
+        ///     Handles the result of the <see cref="EntityRequestResponseDto" />
+        /// </summary>
+        /// <param name="entityRequest">The <see cref="EntityRequestResponseDto" /></param>
+        /// <returns>The <see cref="EntityRequestResponse{TEntity}" /></returns>
+        protected static EntitiesRequestResponses<TEntity> HandleEntitiesRequestResponse(EntityRequestResponseDto entityRequests)
+        {
+            return HandleEntitiesRequestResponse<TEntity>(entityRequests);
         }
 
         /// <summary>

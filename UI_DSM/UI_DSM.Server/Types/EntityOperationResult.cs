@@ -58,11 +58,15 @@ namespace UI_DSM.Server.Types
                 return;
             }
 
-            this.Succeeded = entityEntries.All(x => expectedState.Any(y => x.State == y));
+            this.Succeeded = entityEntries.All(x => expectedState.Any(y => x?.State == y));
 
             if (this.Succeeded)
             {
-                this.Entities = entityEntries.Select(x => x.Entity).ToList();
+                this.Entities = entityEntries.Select(x => x?.Entity).ToList();
+            }
+            else
+            {
+                this.Entities = new List<TEntity>();
             }
         }
 

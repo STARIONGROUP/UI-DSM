@@ -231,7 +231,7 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// </summary>
         /// <param name="reviewId">The id of the <see cref="Review" /></param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="ReviewObjective" /></returns>
-        public async Task<IEnumerable<ReviewObjectiveCreationDto>> GetReviewObjectiveCreationForReview(Guid reviewId)
+        public IEnumerable<ReviewObjectiveCreationDto> GetReviewObjectiveCreationForReview(Guid reviewId)
         {
             var reviewObjectives = this.EntityDbSet.Where(x => x.EntityContainer.Id == reviewId).Select(x => new ReviewObjectiveCreationDto() { Kind = x.ReviewObjectiveKind, KindNumber = x.ReviewObjectiveKindNumber });
             return reviewObjectives;

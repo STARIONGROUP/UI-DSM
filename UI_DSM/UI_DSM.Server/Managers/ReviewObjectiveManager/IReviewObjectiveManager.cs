@@ -46,6 +46,6 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// </summary>
         /// <param name="reviewId">The id of the <see cref="Review" /></param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="ReviewObjective" /></returns>
-        Task<IEnumerable<ReviewObjectiveCreationDto>> GetReviewObjectiveCreationForReview(Guid reviewId);
+        IEnumerable<ReviewObjectiveCreationDto> GetReviewObjectiveCreationForReview(Guid reviewId);
     }
 }

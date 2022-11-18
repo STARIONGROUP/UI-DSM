@@ -430,10 +430,9 @@ namespace UI_DSM.Server.Tests.Modules
         [Test]
         public async Task VerifyGetAvailableTemplates()
         {
-            var reviewObjective = new ReviewObjective(Guid.NewGuid());
             Review review = new Review(this.reviewId);
 
-            this.reviewObjectiveManager.As<IReviewObjectiveManager>().Setup(x => x.GetReviewObjectiveCreationForReview(review.Id)).ReturnsAsync(new List<ReviewObjectiveCreationDto>());
+            this.reviewObjectiveManager.As<IReviewObjectiveManager>().Setup(x => x.GetReviewObjectiveCreationForReview(review.Id)).Returns(new List<ReviewObjectiveCreationDto>());
 
             await this.module.GetAvailableTemplates(this.reviewObjectiveManager.As<IReviewObjectiveManager>().Object, this.context.Object);
             this.reviewObjectiveManager.As<IReviewObjectiveManager>().Verify(x => x.GetReviewObjectiveCreationForReview(review.Id), Times.Once);
