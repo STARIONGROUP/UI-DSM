@@ -13,7 +13,7 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
-    using UI_DSM.Client.Enumerator;
+    using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>
@@ -62,9 +62,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         Func<IHaveThingRowViewModel, bool> IsValidRow { get; }
 
         /// <summary>
-        ///     The <see cref="TraceabilityToVisibilityState" />
+        ///     The <see cref="IConnectionVisibilitySelectorViewModel" />
         /// </summary>
-        TraceabilityToVisibilityState VisibilityState { get; set; }
+        IConnectionVisibilitySelectorViewModel VisibilityState { get; set; }
 
         /// <summary>
         ///     Selects the current <see cref="IHaveThingRowViewModel" />

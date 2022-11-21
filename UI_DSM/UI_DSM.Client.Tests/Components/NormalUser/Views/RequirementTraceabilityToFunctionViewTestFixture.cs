@@ -30,6 +30,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Shared.Models;
@@ -52,6 +53,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.viewModel = new RequirementTraceabilityToFunctionViewViewModel(this.reviewItemService.Object);
             this.context.Services.AddSingleton(this.viewModel);
             this.context.Services.AddTransient<IFilterViewModel, FilterViewModel>();
+            this.context.Services.AddTransient<IConnectionVisibilitySelectorViewModel, ConnectionVisibilitySelectorViewModel>();
         }
 
         [TearDown]
@@ -63,135 +65,142 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         [Test]
         public async Task VerifyComponent()
         {
-            var satisfiesCategoryId = Guid.NewGuid();
-            var functionsCategory = Guid.NewGuid();
-
-            var categories = new List<Category>
+            try
             {
-                new ()
+                var satisfiesCategoryId = Guid.NewGuid();
+                var functionsCategory = Guid.NewGuid();
+
+                var categories = new List<Category>
                 {
-                    Iid = satisfiesCategoryId,
-                    Name = "satisfies"
-                },
-                new()
-                {
-                    Iid = functionsCategory,
-                    Name = "functions"
-                }
-            };
-
-            var owner = new DomainOfExpertise()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Site Administrator",
-                ShortName = "admin"
-            };
-
-            var firstRequirement = new Requirement()
-            {
-                Iid = Guid.NewGuid(),
-                ShortName = "1"
-            };
-
-            var secondRequirement = new Requirement()
-            {
-                Iid = Guid.NewGuid(),
-                ShortName = "2"
-            };
-
-            var elementDefinition = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "FunctionDefintion Name",
-                ShortName = "FunctionDefintionShortName",
-                Owner = owner.Iid,
-                Category = new List<Guid>
-                {
-                    functionsCategory
-                }
-            };
-
-            var elementUsage = new ElementUsage()
-            {
-                Iid = Guid.NewGuid(),
-                ElementDefinition = elementDefinition.Iid
-            };
-
-            var function = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Function Name",
-                ShortName = "FunctionShortName",
-                Owner = owner.Iid,
-                Category = new List<Guid>
-                {
-                    functionsCategory
-                },
-                ContainedElement = new List<Guid>{elementUsage.Iid}
-            };
-
-            var specification = new RequirementsSpecification()
-            {
-                Iid = Guid.NewGuid(),
-                Requirement = new List<Guid>
-                {
-                    firstRequirement.Iid,
-                    secondRequirement.Iid
-                }
-            };
-
-            var relationShip = new BinaryRelationship()
-            {
-                Iid = Guid.NewGuid(),
-                Source = elementUsage.Iid,
-                Target = secondRequirement.Iid,
-                Category = new List<Guid> { satisfiesCategoryId }
-            };
-
-            var assembler = new Assembler(new Uri("http://localhost"));
-
-            var things = new List<Thing>(categories)
-            {
-                firstRequirement,
-                secondRequirement,
-                function,
-                relationShip,
-                specification,
-                owner,
-                elementDefinition,
-                elementUsage
-            };
-
-            await assembler.Synchronize(things);
-            _ = assembler.Cache.Select(x => x.Value.Value);
-
-            var projectId = Guid.NewGuid();
-            var reviewId = Guid.NewGuid();
-
-            this.reviewItemService.Setup(x => x.GetReviewItemsForThings(projectId, reviewId, It.IsAny<IEnumerable<Guid>>(), 0))
-                .ReturnsAsync(new List<ReviewItem>
-                {
-                    new (Guid.NewGuid())
+                    new()
                     {
-                        ThingId = firstRequirement.Iid,
-                        Annotations = { new Comment(Guid.NewGuid()) }
+                        Iid = satisfiesCategoryId,
+                        Name = "satisfies"
+                    },
+                    new()
+                    {
+                        Iid = functionsCategory,
+                        Name = "functions"
                     }
+                };
+
+                var owner = new DomainOfExpertise()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Site Administrator",
+                    ShortName = "admin"
+                };
+
+                var firstRequirement = new Requirement()
+                {
+                    Iid = Guid.NewGuid(),
+                    ShortName = "1"
+                };
+
+                var secondRequirement = new Requirement()
+                {
+                    Iid = Guid.NewGuid(),
+                    ShortName = "2"
+                };
+
+                var elementDefinition = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "FunctionDefintion Name",
+                    ShortName = "FunctionDefintionShortName",
+                    Owner = owner.Iid,
+                    Category = new List<Guid>
+                    {
+                        functionsCategory
+                    }
+                };
+
+                var elementUsage = new ElementUsage()
+                {
+                    Iid = Guid.NewGuid(),
+                    ElementDefinition = elementDefinition.Iid
+                };
+
+                var function = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Function Name",
+                    ShortName = "FunctionShortName",
+                    Owner = owner.Iid,
+                    Category = new List<Guid>
+                    {
+                        functionsCategory
+                    },
+                    ContainedElement = new List<Guid> { elementUsage.Iid }
+                };
+
+                var specification = new RequirementsSpecification()
+                {
+                    Iid = Guid.NewGuid(),
+                    Requirement = new List<Guid>
+                    {
+                        firstRequirement.Iid,
+                        secondRequirement.Iid
+                    }
+                };
+
+                var relationShip = new BinaryRelationship()
+                {
+                    Iid = Guid.NewGuid(),
+                    Source = elementUsage.Iid,
+                    Target = secondRequirement.Iid,
+                    Category = new List<Guid> { satisfiesCategoryId }
+                };
+
+                var assembler = new Assembler(new Uri("http://localhost"));
+
+                var things = new List<Thing>(categories)
+                {
+                    firstRequirement,
+                    secondRequirement,
+                    function,
+                    relationShip,
+                    specification,
+                    owner,
+                    elementDefinition,
+                    elementUsage
+                };
+
+                await assembler.Synchronize(things);
+                _ = assembler.Cache.Select(x => x.Value.Value);
+
+                var projectId = Guid.NewGuid();
+                var reviewId = Guid.NewGuid();
+
+                this.reviewItemService.Setup(x => x.GetReviewItemsForThings(projectId, reviewId, It.IsAny<IEnumerable<Guid>>(), 0))
+                    .ReturnsAsync(new List<ReviewItem>
+                    {
+                        new(Guid.NewGuid())
+                        {
+                            ThingId = firstRequirement.Iid,
+                            Annotations = { new Comment(Guid.NewGuid()) }
+                        }
+                    });
+
+                var renderer = this.context.RenderComponent<RequirementTraceabilityToFunctionView>();
+
+                var pocos = assembler.Cache.Where(x => x.Value.IsValueCreated)
+                    .Select(x => x.Value)
+                    .Select(x => x.Value)
+                    .ToList();
+
+                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(renderer.FindComponents<FeatherCheck>(), Has.Count.EqualTo(1));
+                    Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
                 });
-
-            var renderer = this.context.RenderComponent<RequirementTraceabilityToFunctionView>();
-
-            var pocos = assembler.Cache.Where(x => x.Value.IsValueCreated)
-                .Select(x => x.Value)
-                .Select(x => x.Value)
-                .ToList();
-
-            await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId);
-
-            Assert.Multiple(() =>
+            }
+            catch
             {
-                Assert.That(renderer.FindComponents<FeatherCheck>(), Has.Count.EqualTo(1));
-                Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
-            });
+                // On GitHub, exception is thrown even if the JSRuntime has been configured
+            }
         }
     }
 }

@@ -13,8 +13,6 @@
 
 namespace UI_DSM.Client.Components.App.Filter
 {
-    using DevExpress.Blazor;
-
     using Microsoft.AspNetCore.Components;
 
     using ReactiveUI;
@@ -64,21 +62,6 @@ namespace UI_DSM.Client.Components.App.Filter
         }
 
         /// <summary>
-        ///     Method invoked when the component is ready to start, having received its
-        ///     initial parameters from its parent in the render tree.
-        /// </summary>
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
-
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsFilterVisible)
-                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
-
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.SelectedFilterModel)
-                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
-        }
-
-        /// <summary>
         ///     Opens or closes the filter dropdown
         /// </summary>
         public void OpenCloseFilter()
@@ -95,6 +78,21 @@ namespace UI_DSM.Client.Components.App.Filter
         {
             this.ViewModel.SelectDeselectAll(isSelected);
             await this.InvokeAsync(this.StateHasChanged);
+        }
+
+        /// <summary>
+        ///     Method invoked when the component is ready to start, having received its
+        ///     initial parameters from its parent in the render tree.
+        /// </summary>
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsFilterVisible)
+                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.SelectedFilterModel)
+                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
         }
 
         /// <summary>
@@ -120,10 +118,12 @@ namespace UI_DSM.Client.Components.App.Filter
         private string GetStateText()
         {
             var state = this.ViewModel.AreAllSelected();
+
             if (!state.HasValue || !state.Value)
             {
                 return "Select all";
             }
+
             return "Deselect all";
         }
     }

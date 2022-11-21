@@ -1,5 +1,5 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
-// TraceabilityVisibilitySelector.razor
+// PortSelectedItem.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -9,17 +9,7 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-@using UI_DSM.Client.Enumerator
-
-@if (this.ViewModel != null)
-{
-	<div>
-		<RadzenRadioButtonList @bind-Value="this.ViewModel.VisibilityState">
-			<Items>
-				<RadzenRadioButtonListItem Text="Show all" Value="@TraceabilityToVisibilityState.All"/>
-				<RadzenRadioButtonListItem Text="Show with trace" Value="@TraceabilityToVisibilityState.WithTrace" />
-				<RadzenRadioButtonListItem Text="Show without trace" Value="@TraceabilityToVisibilityState.WithoutTrace"/>
-			</Items>
-		</RadzenRadioButtonList>
-	</div>
-}
+@inherits SelectedItemBase<UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel.PortRowViewModel>
+<AppKeyValue Key="Name" Value="@(this.RowViewModel.Id)" />
+<AppKeyValue Key="Owner" Value="@(this.RowViewModel.Owner)" />
+<AppKeyValue Key="Interface End" Value="@(this.RowViewModel.InterfaceEnd)" />

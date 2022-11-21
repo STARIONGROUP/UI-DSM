@@ -1,0 +1,59 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// InterfaceView.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+@using DataGridSelectionMode = Radzen.DataGridSelectionMode
+@inherits GenericBaseView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IInterfaceViewViewModel>
+
+<div class="view-actions">
+	<div class="left-actions">
+		<RadzenCheckBox Value="@this.ViewModel.ShouldShowProducts" TValue="bool" Change="@this.OnProductVisibilityChanged" />
+		<p>Products visible</p>
+		<div class="@this.GetSelectorsClass()">
+			<ConnectionVisibilitySelector @ref="@this.ConnectionVisibilitySelectorPort" ConnectedStateText="Show connected ports"
+			                              NotConnectedStateText="Show not connected ports"/>
+		
+			<ConnectionVisibilitySelector @ref="@this.ConnectionVisibilitySelectorProduct" ConnectedStateText="Show products with port(s)"
+			                              NotConnectedStateText="Show products without port"/>
+		</div>
+	</div>	
+	<div class="right-actions">
+		<Filter @ref="this.RowFiltering" Id="row">
+			<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
+		</Filter>
+		<ColumnChooser TItem="IBelongsToInterfaceView" ViewModel="@this.columnChooser"/>
+	</div>
+</div>
+<RadzenDataGrid @ref="@this.Grid" TItem="IBelongsToInterfaceView" Data="@(this.ViewModel.Data)" ExpandMode="DataGridExpandMode.Single"
+                RowRender="@this.RowRender" LoadChildData="@this.LoadChildren" SelectionMode="DataGridSelectionMode.Single"
+				RowSelect="@this.SelectRow" AllowFiltering="true" FilterMode="FilterMode.SimpleWithMenu" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                LogicalFilterOperator="LogicalFilterOperator.Or" AllowPaging="true" PageSize="10">
+	<Columns>
+		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.Id)" Pickable="false" Title="Name">
+			<Template Context="data">
+				<div>
+					@if (HasComment(data))
+					{
+						<FeatherMessageCircle Size="20" Color="green"/>
+					}
+					@data.Id
+				</div>
+			</Template>
+		</RadzenDataGridColumn>
+		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.Owner)" Title="Owner"/>
+		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.Nature)" Title="Interface Nature"/>
+		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.SourceEnd)" Title="Source End" />
+		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.TargetEnd)" Title="Target End" />
+		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.SourceOwner)" Title="Source Owner" />
+		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.TargetOwner)" Title="Target Owner" />
+	</Columns>
+</RadzenDataGrid>
+

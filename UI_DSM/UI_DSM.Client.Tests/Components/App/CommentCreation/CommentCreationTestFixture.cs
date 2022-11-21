@@ -18,7 +18,6 @@ namespace UI_DSM.Client.Tests.Components.App.CommentCreation
     using DevExpress.Blazor;
 
     using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.Components.Forms;
 
     using NUnit.Framework;
 
@@ -59,7 +58,7 @@ namespace UI_DSM.Client.Tests.Components.App.CommentCreation
         [TearDown]
         public void Teardown()
         {
-            this.context.Dispose();
+            this.context.CleanContext();
         }
 
         [Test]

@@ -747,7 +747,7 @@
     "title": null,
     "description": "Check requirements verification.",
     "taskNumber": 4,
-    "mainView": "FUNCTIONALTRACEABILITYTOPRODUCTVIEW",
+    "mainView": "REQUIREMENTVERIFICATIONCONTROLVIEW",
     "optionalView": "NONE",
     "additionalView": "NONE",
     "hasPrimaryView": false,

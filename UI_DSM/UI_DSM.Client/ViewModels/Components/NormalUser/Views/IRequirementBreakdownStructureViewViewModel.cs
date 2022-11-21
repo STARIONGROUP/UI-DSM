@@ -13,6 +13,9 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
+    using CDP4Common.CommonData;
+
+    using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>
@@ -24,5 +27,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     A collection of <see cref="RequirementRowViewModel" />
         /// </summary>
         IEnumerable<RequirementRowViewModel> Rows { get; }
+
+        /// <summary>
+        ///     A collection of available <see cref="FilterModel" /> for rows
+        /// </summary>
+        List<FilterModel> AvailableRowFilters { get; }
+
+        /// <summary>
+        ///     Filters current rows
+        /// </summary>
+        /// <param name="selectedFilters">The selected filters</param>
+        void FilterRequirementRows(IReadOnlyDictionary<ClassKind, List<FilterRow>> selectedFilters);
     }
 }

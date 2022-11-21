@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="TraceabilityToVisibilityState.cs" company="RHEA System S.A.">
+// <copyright file="IConnectionVisibilitySelectorViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,26 +11,18 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Enumerator
+namespace UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector
 {
+    using UI_DSM.Client.Enumerator;
+
     /// <summary>
-    ///     Represents visibility state based on traceability
+    ///     Interface definition for <see cref="ConnectionVisibilitySelectorViewModel" />
     /// </summary>
-    public enum TraceabilityToVisibilityState
+    public interface IConnectionVisibilitySelectorViewModel
     {
         /// <summary>
-        ///     Visible even without any trace
+        ///     The current <see cref="ConnectionToVisibilityState" />
         /// </summary>
-        All,
-
-        /// <summary>
-        ///     Visible only if has trace
-        /// </summary>
-        WithTrace,
-
-        /// <summary>
-        ///     Visible only if does not have trace
-        /// </summary>
-        WithoutTrace
+        ConnectionToVisibilityState CurrentState { get; set; }
     }
 }

@@ -95,10 +95,6 @@ th.invisible-column {
     display: none
 }
 
-tr.invisible-row {
-    display: none
-}
-
 tr.invalid {
     background-color: var(--colors-red-300);
 }

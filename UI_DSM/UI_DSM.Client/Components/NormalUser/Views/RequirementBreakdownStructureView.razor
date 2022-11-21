@@ -12,30 +12,32 @@
 @using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
 @inherits GenericBaseView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IRequirementBreakdownStructureViewViewModel>
 
-<header>
-	<div class="view-header">
-		<div class="view-actions">
-			<div class="column-chooser">
-				<AppButton Label="Select visible columns" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="this.OnClick">
-					<FeatherColumns Size="20" Color="currentColor" StrokeWidth="2" /> <span>Columns</span>
-				</AppButton>
-			</div>
-		</div>
+<div class="view-actions">
+	<div class="left-actions">
+
 	</div>
-</header>
+	<div class="right-actions">
+		<Filter @ref="this.RowFiltering" Id="row">
+			<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
+		</Filter>
+		<AppButton Id="column-chooser" Label="Select visible columns" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="this.OnClick">
+			<FeatherColumns Size="20" Color="currentColor" StrokeWidth="2"/> <span>Columns</span>
+		</AppButton>
+	</div>
+</div>
 
 <div class="breakdown-view">
-<DxGrid
-	PageSize="8"
-	CssClass="default-grid"
-	@ref="@this.DxGrid"
-	Data="@(this.ViewModel.Rows)"
-	@bind-SelectedDataItem="@this.ViewModel.SelectedElement"
-	SelectionMode="GridSelectionMode.Single"
-	AllowSelectRowByClick="true"
-	ShowFilterRow="true"
-	HorizontalScrollBarMode="ScrollBarMode.Visible"
->
+	<DxGrid
+		PageSize="8"
+		CssClass="default-grid"
+		@ref="@this.DxGrid"
+		Data="@(this.ViewModel.Rows)"
+		@bind-SelectedDataItem="@this.ViewModel.SelectedElement"
+		SelectionMode="GridSelectionMode.Single"
+		AllowSelectRowByClick="true"
+		ShowFilterRow="true"
+		HorizontalScrollBarMode="ScrollBarMode.Visible"
+		ShowGroupPanel="true">
 	<Columns>
 
 		<DxGridDataColumn  ShowInColumnChooser="false">
@@ -47,17 +49,10 @@
 				}
 			</CellDisplayTemplate>
 		</DxGridDataColumn>
-
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Id)" Caption="ID" Width="150">
-			<CellDisplayTemplate>
-				<p>
-					@context.Value
-				</p>
-			</CellDisplayTemplate>
-		</DxGridDataColumn>
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Specification)" GroupIndex="0" GroupInterval="GridColumnGroupInterval.Value" Width="200" />
+		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Group)" GroupIndex="1" GroupInterval="GridColumnGroupInterval.Value" Width="200"  />
+		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Id)" Caption="ID" Width="150" />
 		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Name)"  Width="200" />
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Specification)"  Width="200" />
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Group)"  Width="200" />
 		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Definition)"  Width="400" />
 		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Categories)"   Width="300" AllowSort="false">
 			<CellDisplayTemplate>
@@ -69,7 +64,8 @@
 				</ul>
 			</CellDisplayTemplate>
 		</DxGridDataColumn>
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Justification)"  Width="250" />
+		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Justification)"  Width="250" Visible="false"/>
+		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.RequirementType)"  Width="250"/>
 		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.DerivesFrom)" AllowSort="false"  Width="250">
 			<CellDisplayTemplate>
 				<ul class="grid-list">
@@ -90,7 +86,7 @@
 				</ul>
 			</CellDisplayTemplate>
 		</DxGridDataColumn>
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.SatisfyByFunction)" AllowSort="false" Width="250">
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.SatisfyByFunction)" AllowSort="false" Width="250" Visible="false">
 			<CellDisplayTemplate>
 				<ul class="grid-list">
 					@foreach (var satisfyByFunction in (IEnumerable<string>)context.Value)
@@ -100,16 +96,18 @@
 				</ul>
 			</CellDisplayTemplate>
 		</DxGridDataColumn>
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.SatisfyByProduct)" AllowSort="false" Width="250">
+		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.SatisfyByProduct)" AllowSort="false" Width="250" Visible="false">
 			<CellDisplayTemplate>
 				<ul class="grid-list">
 					@foreach (var satisfyByProduct in (IEnumerable<string>)context.Value)
 					{
-							<li class="element on">@satisfyByProduct</li>
+						<li class="element on">@satisfyByProduct</li>
 					}
 				</ul>
 			</CellDisplayTemplate>
 		</DxGridDataColumn>
+		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationMethod)"  Width="250" Visible="false"/>
+		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationStage)" Width="250" Visible="false" />
 	</Columns>
 </DxGrid>
 </div>

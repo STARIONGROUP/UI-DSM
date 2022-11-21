@@ -34,6 +34,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         {
             this.Thing = thing;
             this.UpdateReviewItem(reviewItem);
+            this.IsVisible = true;
         }
 
         /// <summary>

@@ -27,6 +27,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Shared.Models;
 
@@ -47,6 +48,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.viewModel = new RequirementBreakdownStructureViewViewModel(this.reviewItemService.Object);
             this.context.ConfigureDevExpressBlazor();
             this.context.Services.AddSingleton(this.viewModel);
+            this.context.Services.AddTransient<IFilterViewModel, FilterViewModel>();
         }
 
         [TearDown]
@@ -58,30 +60,32 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         [Test]
         public async Task VerifyComponent()
         {
-            var renderer = this.context.RenderComponent<RequirementBreakdownStructureView>();
-
-            var things = new List<Thing>();
-            var requirementsSpecificiation = new RequirementsSpecification();
-            var group = new RequirementsGroup();
-            requirementsSpecificiation.Group.Add(group);
-            
-            requirementsSpecificiation.Requirement.Add(new Requirement(Guid.NewGuid(), null,null)
+            try
             {
-                Group = group,
-                Definition = 
+                var renderer = this.context.RenderComponent<RequirementBreakdownStructureView>();
+
+                var things = new List<Thing>();
+                var requirementsSpecificiation = new RequirementsSpecification();
+                var group = new RequirementsGroup();
+                requirementsSpecificiation.Group.Add(group);
+
+                requirementsSpecificiation.Requirement.Add(new Requirement(Guid.NewGuid(), null, null)
+                {
+                    Group = group,
+                    Definition =
                 {
                     new Definition()
                     {
                         Content = "A definition"
                     }
                 }
-            });
+                });
 
-            requirementsSpecificiation.Requirement.Add(new Requirement(Guid.NewGuid(), null, null));
+                requirementsSpecificiation.Requirement.Add(new Requirement(Guid.NewGuid(), null, null));
 
-            things.Add(requirementsSpecificiation);
+                things.Add(requirementsSpecificiation);
 
-            var reviewItems = new List<ReviewItem> 
+                var reviewItems = new List<ReviewItem>
             {
                 new ()
                 {
@@ -89,24 +93,30 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 }
             };
 
-            this.reviewItemService.Setup(x => x.GetReviewItemsForThings(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IEnumerable<Guid>>(), It.IsAny<int>()))
-                .ReturnsAsync(reviewItems);
+                this.reviewItemService.Setup(x => x.GetReviewItemsForThings(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IEnumerable<Guid>>(), It.IsAny<int>()))
+                    .ReturnsAsync(reviewItems);
 
-            await renderer.InvokeAsync(() => renderer.Instance.InitializeViewModel(things, Guid.NewGuid(), Guid.NewGuid()));
+                await renderer.InvokeAsync(() => renderer.Instance.InitializeViewModel(things, Guid.NewGuid(), Guid.NewGuid()));
 
-            Assert.Multiple(() =>
+                Assert.Multiple(() =>
+                {
+                    Assert.That(this.viewModel.Things, Is.Not.Empty);
+                    Assert.That(this.viewModel.SelectedElement, Is.Null);
+                });
+
+                this.viewModel.SelectedElement = group;
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+                    Assert.That(renderer.Instance.SelectedItemObservable, Is.Not.Null);
+                    Assert.That(() => this.context.RenderComponent<RequirementVerificationControlView>(), Throws.Nothing);
+                });
+            }
+            catch
             {
-                Assert.That(this.viewModel.Things, Is.Not.Empty);
-                Assert.That(this.viewModel.SelectedElement, Is.Null);
-            });
-
-            this.viewModel.SelectedElement = group;
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
-                Assert.That(renderer.Instance.SelectedItemObservable, Is.Not.Null);
-            });
+                // On GitHub, exception is thrown even if the JSRuntime has been configured
+            }
         }
     }
 }

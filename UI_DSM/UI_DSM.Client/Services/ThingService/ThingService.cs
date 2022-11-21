@@ -105,16 +105,19 @@ namespace UI_DSM.Client.Services.ThingService
             switch (currentView)
             {
                 case View.RequirementBreakdownStructureView:
+                case View.RequirementVerificationControlView:
                 case View.RequirementTraceabilityToRequirementView:
                     things.AddRange(await this.GetThings(projectId, modelsId, ClassKind.RequirementsSpecification));
                     break;
                 case View.FunctionalTraceabilityToProductView:
                 case View.DocumentBased:
+                case View.InterfaceView:
                     things.AddRange(await this.GetThings(projectId, modelsId, ClassKind.ElementDefinition));
                     break;
                 case View.RequirementTraceabilityToProductView:
                 case View.RequirementTraceabilityToFunctionView:
                 case View.ProductBreakdownStructureView:
+                case View.TrlView:
                 case View.FunctionalBreakdownStructureView:
                     things.AddRange(await this.GetThings(projectId, modelsId));
                     break;

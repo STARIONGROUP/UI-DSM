@@ -64,6 +64,17 @@ namespace UI_DSM.Client.Extensions
         /// <returns>A collection of name </returns>
         public static IEnumerable<string> GetCategories(this ICategorizableThing thing, bool includeDeprecated = false)
         {
+            return thing.GetAppliedCategories(includeDeprecated).Select(x => x.Name);
+        }
+
+        /// <summary>
+        ///     Gets all applied <see cref="Category" />
+        /// </summary>
+        /// <param name="thing">The <see cref="ICategorizableThing" /></param>
+        /// <param name="includeDeprecated">If deprecated <see cref="Category" /> should be included</param>
+        /// <returns>A collection of <see cref="Category" /> </returns>
+        public static IEnumerable<Category> GetAppliedCategories(this ICategorizableThing thing, bool includeDeprecated = false)
+        {
             var categories = (includeDeprecated ? thing.Category : thing.Category.Where(x => !x.IsDeprecated)).ToList();
 
             if (thing is ElementUsage usage)
@@ -71,7 +82,7 @@ namespace UI_DSM.Client.Extensions
                 categories.AddRange(includeDeprecated ? usage.ElementDefinition.Category : usage.ElementDefinition.Category.Where(x => !x.IsDeprecated));
             }
 
-            return categories.DistinctBy(x => x.Iid).Select(x => x.Name);
+            return categories.DistinctBy(x => x.Iid);
         }
 
         /// <summary>
@@ -206,7 +217,7 @@ namespace UI_DSM.Client.Extensions
         public static string GetSpecificationName(this Requirement requirement)
         {
             var specification = requirement.Container as RequirementsSpecification;
-            return specification?.ShortName;
+            return specification?.Name;
         }
 
         /// <summary>
@@ -217,6 +228,17 @@ namespace UI_DSM.Client.Extensions
         public static bool IsProduct(this ElementBase elementBase)
         {
             return elementBase.IsCategorizedBy("products");
+        }
+
+        /// <summary>
+        ///     Verifies that a <see cref="ElementBase" /> is a port
+        /// </summary>
+        /// <param name="elementBase">The <see cref="ElementBase" /></param>
+        /// <returns>The asserts</returns>
+        public static bool IsPort(this ElementBase elementBase)
+        {
+            //   return elementBase is ElementUsage && elementBase.IsCategorizedBy("ports");
+            return elementBase is ElementUsage && elementBase.Name.Contains("Port_");
         }
 
         /// <summary>
@@ -311,6 +333,20 @@ namespace UI_DSM.Client.Extensions
         }
 
         /// <summary>
+        ///     Verifies that a <see cref="BinaryRelationship" /> is an Interface
+        /// </summary>
+        /// <param name="relationShip">The <see cref="BinaryRelationship" /></param>
+        /// <returns>True if the <see cref="BinaryRelationship" /> is an Interface</returns>
+        public static bool IsInterface(this BinaryRelationship relationShip)
+        {
+            return relationShip.IsCategorizedBy("interfaces")
+                   && relationShip.Target is ElementUsage targetUsage
+                   && targetUsage.IsPort()
+                   && relationShip.Source is ElementUsage sourceUsage
+                   && sourceUsage.IsPort();
+        }
+
+        /// <summary>
         ///     Gets the value of a <see cref="ParameterOrOverrideBase" />
         /// </summary>
         /// <param name="parameter">The <see cref="ParameterOrOverrideBase" /></param>
@@ -380,6 +416,35 @@ namespace UI_DSM.Client.Extensions
 
             return relationShips.Where(x => x.Source is ElementBase elementBase && elementBase.IsProduct())
                 .Select(x => x.Source as ElementBase).ToList();
+        }
+
+        /// <summary>
+        ///     Gets all interface <see cref="BinaryRelationship" /> linked to the current port
+        /// </summary>
+        /// <param name="port">The port</param>
+        /// <returns>A collection of <see cref="BinaryRelationship" /></returns>
+        public static List<BinaryRelationship> GetInterfacesOfPort(this ElementUsage port)
+        {
+            return port.QueryRelationships("interfaces").Where(x => x.IsInterface())
+                .ToList();
+        }
+
+        /// <summary>
+        ///     Verifies that a port is linked to another port or not
+        /// </summary>
+        /// <param name="port">The <see cref="ElementUsage" /></param>
+        /// <returns>True if the current port is linked</returns>
+        public static bool IsLinkedPort(this ElementUsage port)
+        {
+            if (!port.IsPort())
+            {
+                return false;
+            }
+
+            var relationShips = port.QueryRelationships("interfaces");
+
+            return relationShips.Any(x => x.Source is ElementUsage sourceBase && sourceBase.IsPort()
+                                                                              && x.Target is ElementUsage targetBase && targetBase.IsPort());
         }
 
         /// <summary>

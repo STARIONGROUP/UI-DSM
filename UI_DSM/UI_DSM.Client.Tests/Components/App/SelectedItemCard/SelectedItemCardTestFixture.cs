@@ -24,7 +24,6 @@ namespace UI_DSM.Client.Tests.Components.App.SelectedItemCard
 
     using UI_DSM.Client.Components.App.SelectedItemCard;
     using UI_DSM.Client.Components.App.SelectedItemCard.SelectedItemCardContent;
-    using UI_DSM.Client.ViewModels.App;
     using UI_DSM.Client.ViewModels.App.SelectedItemCard;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;

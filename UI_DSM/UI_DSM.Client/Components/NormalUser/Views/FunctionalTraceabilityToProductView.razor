@@ -14,7 +14,7 @@
 
 <div class="view-actions">
 	<div class="left-actions">
-		<TraceabilityVisibilitySelector @ref="this.TraceabilityVisibilitySelector" />
+		<ConnectionVisibilitySelector @ref="this.ConnectionVisibilitySelector" />
 		<DxCheckBox CheckType="CheckType.Switch" @bind-Checked="@this.ViewModel.IsOnTechnologyView">Show Technology</DxCheckBox>
 	</div>
 
@@ -26,10 +26,6 @@
 		<Filter @ref="this.ColumnFiltering" Id="column">
 			<FeatherColumns Size="20" Color="currentColor" StrokeWidth="2"/> <span>Column</span>
 		</Filter>
-		
-		<AppButton Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success">
-			<FeatherCheckCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Done</span>
-		</AppButton>
 	</div>
 
 </div>

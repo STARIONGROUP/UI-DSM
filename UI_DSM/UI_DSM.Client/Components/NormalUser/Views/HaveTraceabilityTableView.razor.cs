@@ -19,9 +19,9 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
     using ReactiveUI;
 
+    using UI_DSM.Client.Components.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.Components.App.Filter;
     using UI_DSM.Client.Components.App.TraceabilityTable;
-    using UI_DSM.Client.Components.App.TraceabilityVisibilitySelector;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Shared.Models;
 
@@ -53,9 +53,9 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public Filter ColumnFiltering { get; set; }
 
         /// <summary>
-        ///     The <see cref="TraceabilityVisibilitySelector" /> reference
+        ///     The <see cref="Components.App.ConnectionVisibilitySelector.ConnectionVisibilitySelector" /> reference
         /// </summary>
-        public TraceabilityVisibilitySelector TraceabilityVisibilitySelector { get; set; }
+        public ConnectionVisibilitySelector ConnectionVisibilitySelector { get; set; }
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -88,9 +88,9 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.Disposables.Add(this.Table);
 
             await this.ViewModel.InitializeProperties(things, projectId, reviewId);
+            this.ViewModel.TraceabilityTableViewModel.VisibilityState = this.ConnectionVisibilitySelector.ViewModel;
             await this.Table.InitiliazeProperties(this.ViewModel.TraceabilityTableViewModel);
 
-            await this.TraceabilityVisibilitySelector.UpdateViewModel(this.ViewModel.TraceabilityTableViewModel);
             this.ColumnFiltering.ViewModel.InitializeProperties(this.ViewModel.AvailableColumnFilters);
             this.RowFiltering.ViewModel.InitializeProperties(this.ViewModel.AvailableRowFilters);
 
