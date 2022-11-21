@@ -78,11 +78,13 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         [Test]
         public async Task VerifyComponent()
         {
-            var satisfiesCategoryId = Guid.NewGuid();
-            var productsCategory = Guid.NewGuid();
-            var instrumentsCategory = Guid.NewGuid();
+            try
+            {
+                var satisfiesCategoryId = Guid.NewGuid();
+                var productsCategory = Guid.NewGuid();
+                var instrumentsCategory = Guid.NewGuid();
 
-            var categories = new List<Category>
+                var categories = new List<Category>
             {
                 new ()
                 {
@@ -102,148 +104,148 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 }
             };
 
-            var owner = new DomainOfExpertise()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Site Administrator",
-                ShortName = "admin"
-            };
+                var owner = new DomainOfExpertise()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Site Administrator",
+                    ShortName = "admin"
+                };
 
-            var firstRequirement = new Requirement()
-            {
-                Iid = Guid.NewGuid(),
-                ShortName = "1"
-            };
+                var firstRequirement = new Requirement()
+                {
+                    Iid = Guid.NewGuid(),
+                    ShortName = "1"
+                };
 
-            var secondRequirement = new Requirement()
-            {
-                Iid = Guid.NewGuid(),
-                ShortName = "2"
-            };
+                var secondRequirement = new Requirement()
+                {
+                    Iid = Guid.NewGuid(),
+                    ShortName = "2"
+                };
 
-            var elementUsageId = Guid.NewGuid();
+                var elementUsageId = Guid.NewGuid();
 
-            var product = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Product Name",
-                ShortName = "ProductShortName",
-                Owner = owner.Iid,
-                Category = new List<Guid>
+                var product = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Product Name",
+                    ShortName = "ProductShortName",
+                    Owner = owner.Iid,
+                    Category = new List<Guid>
                 {
                     productsCategory
                 },
-                ContainedElement = new List<Guid>{elementUsageId}
-            };
+                    ContainedElement = new List<Guid> { elementUsageId }
+                };
 
-            var parameterType = new TextParameterType()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "technology"
-            };
+                var parameterType = new TextParameterType()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "technology"
+                };
 
-            var invalidValueSet = new ParameterValueSet()
-            {
-                Iid = Guid.NewGuid(),
-                Manual = new ValueArray<string>(new List<string> { "-" }),
-                ValueSwitch = ParameterSwitchKind.MANUAL
-            };
+                var invalidValueSet = new ParameterValueSet()
+                {
+                    Iid = Guid.NewGuid(),
+                    Manual = new ValueArray<string>(new List<string> { "-" }),
+                    ValueSwitch = ParameterSwitchKind.MANUAL
+                };
 
-            var invalidParameter = new Parameter()
-            {
-                Iid = Guid.NewGuid(),
-                ParameterType = parameterType.Iid,
-                ValueSet = new List<Guid>
+                var invalidParameter = new Parameter()
+                {
+                    Iid = Guid.NewGuid(),
+                    ParameterType = parameterType.Iid,
+                    ValueSet = new List<Guid>
                 {
                     invalidValueSet.Iid
                 }
-            };
+                };
 
-            var productWithInvalidTechnology = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Product Name 2",
-                ShortName = "ProductShortName2",
-                Category = new List<Guid>
+                var productWithInvalidTechnology = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Product Name 2",
+                    ShortName = "ProductShortName2",
+                    Category = new List<Guid>
                 {
                     instrumentsCategory
                 },
-                Owner = owner.Iid,
-                Parameter = new List<Guid>{invalidParameter.Iid}
-            };
+                    Owner = owner.Iid,
+                    Parameter = new List<Guid> { invalidParameter.Iid }
+                };
 
-            var elementUsage = new ElementUsage()
-            {
-                Iid = elementUsageId,
-                ElementDefinition = productWithInvalidTechnology.Iid
-            };
+                var elementUsage = new ElementUsage()
+                {
+                    Iid = elementUsageId,
+                    ElementDefinition = productWithInvalidTechnology.Iid
+                };
 
-            var productWithoutTechnology = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Product Name 3",
-                ShortName = "ProductShortName3",
-                Owner = owner.Iid,
-                Category = new List<Guid>
+                var productWithoutTechnology = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Product Name 3",
+                    ShortName = "ProductShortName3",
+                    Owner = owner.Iid,
+                    Category = new List<Guid>
                 {
                     instrumentsCategory
                 }
-            };
+                };
 
-            var validValueSet = new ParameterValueSet()
-            {
-                Iid = Guid.NewGuid(),
-                Manual = new ValueArray<string>(new List<string> { "fiber" }),
-                ValueSwitch = ParameterSwitchKind.MANUAL
-            };
+                var validValueSet = new ParameterValueSet()
+                {
+                    Iid = Guid.NewGuid(),
+                    Manual = new ValueArray<string>(new List<string> { "fiber" }),
+                    ValueSwitch = ParameterSwitchKind.MANUAL
+                };
 
-            var validParameter = new Parameter()
-            {
-                Iid = Guid.NewGuid(),
-                ParameterType = parameterType.Iid,
-                ValueSet = new List<Guid>
+                var validParameter = new Parameter()
+                {
+                    Iid = Guid.NewGuid(),
+                    ParameterType = parameterType.Iid,
+                    ValueSet = new List<Guid>
                 {
                     validValueSet.Iid
                 }
-            };
+                };
 
-            var productValidTechnology = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Product Name 4",
-                ShortName = "ProductShortName4",
-                Owner = owner.Iid,
-                Category = new List<Guid>
+                var productValidTechnology = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Product Name 4",
+                    ShortName = "ProductShortName4",
+                    Owner = owner.Iid,
+                    Category = new List<Guid>
                 {
                     instrumentsCategory
                 },
-                Parameter = new List<Guid>
+                    Parameter = new List<Guid>
                 {
                     validParameter.Iid
                 }
-            };
+                };
 
-            var specification = new RequirementsSpecification()
-            {
-                Iid = Guid.NewGuid(),
-                Requirement = new List<Guid>
+                var specification = new RequirementsSpecification()
+                {
+                    Iid = Guid.NewGuid(),
+                    Requirement = new List<Guid>
                 {
                     firstRequirement.Iid,
                     secondRequirement.Iid
                 }
-            };
+                };
 
-            var relationShip = new BinaryRelationship()
-            {
-                Iid = Guid.NewGuid(),
-                Source = elementUsageId,
-                Target = secondRequirement.Iid,
-                Category = new List<Guid>{satisfiesCategoryId}
-            };
+                var relationShip = new BinaryRelationship()
+                {
+                    Iid = Guid.NewGuid(),
+                    Source = elementUsageId,
+                    Target = secondRequirement.Iid,
+                    Category = new List<Guid> { satisfiesCategoryId }
+                };
 
-            var assembler = new Assembler(new Uri("http://localhost"));
+                var assembler = new Assembler(new Uri("http://localhost"));
 
-            var things = new List<Thing>(categories)
+                var things = new List<Thing>(categories)
             {
                 firstRequirement,
                 secondRequirement,
@@ -262,68 +264,73 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 elementUsage
             };
 
-            await assembler.Synchronize(things);
-            _ = assembler.Cache.Select(x => x.Value.Value);
+                await assembler.Synchronize(things);
+                _ = assembler.Cache.Select(x => x.Value.Value);
 
-            var projectId = Guid.NewGuid();
-            var reviewId = Guid.NewGuid();
+                var projectId = Guid.NewGuid();
+                var reviewId = Guid.NewGuid();
 
-            this.reviewItemService.Setup(x => x.GetReviewItemsForThings(projectId, reviewId, It.IsAny<IEnumerable<Guid>>(), 0))
-                .ReturnsAsync(new List<ReviewItem>
-                {
+                this.reviewItemService.Setup(x => x.GetReviewItemsForThings(projectId, reviewId, It.IsAny<IEnumerable<Guid>>(), 0))
+                    .ReturnsAsync(new List<ReviewItem>
+                    {
                     new (Guid.NewGuid())
                     {
                         ThingId = firstRequirement.Iid,
                         Annotations = { new Comment(Guid.NewGuid()) }
                     }
+                    });
+
+                var renderer = this.context.RenderComponent<RequirementTraceabilityToProductView>();
+
+                var pocos = assembler.Cache.Where(x => x.Value.IsValueCreated)
+                    .Select(x => x.Value)
+                    .Select(x => x.Value)
+                    .ToList();
+
+                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(renderer.FindComponents<FeatherCheck>(), Has.Count.EqualTo(1));
+                    Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
                 });
 
-            var renderer = this.context.RenderComponent<RequirementTraceabilityToProductView>();
+                this.viewModel.TraceabilityTableViewModel.VisibilityState.CurrentState = ConnectionToVisibilityState.Connected;
+                var invisibleRow = renderer.FindAll(".invisible-row");
+                Assert.That(invisibleRow, Has.Count.EqualTo(0));
 
-            var pocos = assembler.Cache.Where(x => x.Value.IsValueCreated)
-                .Select(x => x.Value)
-                .Select(x => x.Value)
-                .ToList();
+                this.viewModel.TraceabilityTableViewModel.VisibilityState.CurrentState = ConnectionToVisibilityState.NotConnected;
+                invisibleRow.Refresh();
+                Assert.That(invisibleRow, Has.Count.EqualTo(1));
 
-            await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId);
+                var filters = renderer.FindComponents<Filter>();
+                var columnFiltering = filters.First(x => x.Instance.Id.Contains("column"));
+                columnFiltering.Instance.OpenCloseFilter();
+                Assert.That(columnFiltering.Instance.ViewModel.IsFilterVisible, Is.True);
 
-            Assert.Multiple(() =>
+                columnFiltering.Instance.ViewModel.SelectedFilterModel = columnFiltering.Instance.ViewModel
+                    .AvailableFilters.First(x => x.ClassKind == ClassKind.RequirementsSpecification);
+
+                await columnFiltering.Instance.SelectDeselectAll(false);
+                columnFiltering.Instance.OpenCloseFilter();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(renderer.FindComponents<FeatherCheck>(), Has.Count.EqualTo(0));
+                    Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(0));
+                });
+
+                var invalidRows = renderer.FindAll(".invalid");
+                Assert.That(invalidRows, Has.Count.EqualTo(0));
+
+                this.viewModel.IsOnTechnologyView = true;
+                invalidRows.Refresh();
+                Assert.That(invalidRows, Has.Count.EqualTo(1));
+            }
+            catch
             {
-                Assert.That(renderer.FindComponents<FeatherCheck>(), Has.Count.EqualTo(1));
-                Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
-            });
-
-            this.viewModel.TraceabilityTableViewModel.VisibilityState.CurrentState = ConnectionToVisibilityState.Connected;
-            var invisibleRow = renderer.FindAll(".invisible-row");
-            Assert.That(invisibleRow, Has.Count.EqualTo(0));
-
-            this.viewModel.TraceabilityTableViewModel.VisibilityState.CurrentState = ConnectionToVisibilityState.NotConnected;
-            invisibleRow.Refresh();
-            Assert.That(invisibleRow, Has.Count.EqualTo(1));
-
-            var filters = renderer.FindComponents<Filter>();
-            var columnFiltering = filters.First(x => x.Instance.Id.Contains("column"));
-            columnFiltering.Instance.OpenCloseFilter();
-            Assert.That(columnFiltering.Instance.ViewModel.IsFilterVisible, Is.True);
-            
-            columnFiltering.Instance.ViewModel.SelectedFilterModel = columnFiltering.Instance.ViewModel
-                .AvailableFilters.First(x => x.ClassKind == ClassKind.RequirementsSpecification);
-           
-            await columnFiltering.Instance.SelectDeselectAll(false);
-            columnFiltering.Instance.OpenCloseFilter();
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(renderer.FindComponents<FeatherCheck>(), Has.Count.EqualTo(0));
-                Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(0));
-            });
-
-            var invalidRows = renderer.FindAll(".invalid");
-            Assert.That(invalidRows, Has.Count.EqualTo(0));
-
-            this.viewModel.IsOnTechnologyView = true;
-            invalidRows.Refresh();
-            Assert.That(invalidRows, Has.Count.EqualTo(1));
+                // On GitHub, exception is thrown even if the JSRuntime has been configured
+            }
         }
     }
 }

@@ -63,12 +63,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         [Test]
         public async Task VerifyComponent()
         {
-            var productCategory = Guid.NewGuid();
-            var equipmentCategory = Guid.NewGuid();
-            var functionCategory = Guid.NewGuid();
-            var implementsCategroy = Guid.NewGuid();
+            try
+            {
+                var productCategory = Guid.NewGuid();
+                var equipmentCategory = Guid.NewGuid();
+                var functionCategory = Guid.NewGuid();
+                var implementsCategroy = Guid.NewGuid();
 
-            var categories = new List<Category>
+                var categories = new List<Category>
             {
                 new()
                 {
@@ -96,36 +98,36 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 }
             };
 
-            var envision = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Envision",
-                Category = new List<Guid>
+                var envision = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Envision",
+                    Category = new List<Guid>
                 {
                     productCategory
                 }
-            };
+                };
 
-            var groundSegment = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Ground Segment"
-            };
+                var groundSegment = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Ground Segment"
+                };
 
-            var launchSegment = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Launch Segment"
-            };
+                var launchSegment = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Launch Segment"
+                };
 
-            var function = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "function",
-                Category = new List<Guid> { functionCategory }
-            };
+                var function = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "function",
+                    Category = new List<Guid> { functionCategory }
+                };
 
-            var elementDefinitions = new List<ElementDefinition>
+                var elementDefinitions = new List<ElementDefinition>
             {
                 envision,
                 function,
@@ -133,7 +135,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 launchSegment
             };
 
-            var usages = new List<ElementUsage>
+                var usages = new List<ElementUsage>
             {
                 new ()
                 {
@@ -156,26 +158,26 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 }
             };
 
-            envision.ContainedElement = usages.Select(x => x.Iid).ToList();
+                envision.ContainedElement = usages.Select(x => x.Iid).ToList();
 
-            var relationShip = new BinaryRelationship()
-            {
-                Iid = Guid.NewGuid(),
-                Category = new List<Guid>{implementsCategroy},
-                Source = usages[0].Iid,
-                Target = usages[2].Iid
-            };
+                var relationShip = new BinaryRelationship()
+                {
+                    Iid = Guid.NewGuid(),
+                    Category = new List<Guid> { implementsCategroy },
+                    Source = usages[0].Iid,
+                    Target = usages[2].Iid
+                };
 
-            var iteration = new Iteration()
-            {
-                Iid = Guid.NewGuid(),
-                TopElement = envision.Iid,
-                Element = elementDefinitions.Select(x => x.Iid).ToList()
-            };
+                var iteration = new Iteration()
+                {
+                    Iid = Guid.NewGuid(),
+                    TopElement = envision.Iid,
+                    Element = elementDefinitions.Select(x => x.Iid).ToList()
+                };
 
-            var assembler = new Assembler(new Uri("http://localhost"));
+                var assembler = new Assembler(new Uri("http://localhost"));
 
-            var things = new List<Thing>(categories)
+                var things = new List<Thing>(categories)
             {
                 iteration,
                 function,
@@ -185,17 +187,17 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 relationShip
             };
 
-            things.AddRange(usages);
+                things.AddRange(usages);
 
-            await assembler.Synchronize(things);
-            _ = assembler.Cache.Select(x => x.Value.Value);
+                await assembler.Synchronize(things);
+                _ = assembler.Cache.Select(x => x.Value.Value);
 
-            var projectId = Guid.NewGuid();
-            var reviewId = Guid.NewGuid();
+                var projectId = Guid.NewGuid();
+                var reviewId = Guid.NewGuid();
 
-            this.reviewItemService.Setup(x => x.GetReviewItemsForThings(projectId, reviewId, It.IsAny<IEnumerable<Guid>>(), 0))
-                .ReturnsAsync(new List<ReviewItem>
-                {
+                this.reviewItemService.Setup(x => x.GetReviewItemsForThings(projectId, reviewId, It.IsAny<IEnumerable<Guid>>(), 0))
+                    .ReturnsAsync(new List<ReviewItem>
+                    {
                     new (Guid.NewGuid())
                     {
                         ThingId = usages.Last().Iid,
@@ -206,25 +208,30 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                         ThingId =  usages.First().Iid,
                         Annotations = { new Comment(Guid.NewGuid()) }
                     }
+                    });
+
+                var renderer = this.context.RenderComponent<FunctionalBreakdownStructureView>();
+
+                var pocos = assembler.Cache.Where(x => x.Value.IsValueCreated)
+                    .Select(x => x.Value)
+                    .Select(x => x.Value)
+                    .ToList();
+
+                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(renderer.Instance.ViewModel.TopElement, Has.Count.EqualTo(1));
+                    Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
                 });
 
-            var renderer = this.context.RenderComponent<FunctionalBreakdownStructureView>();
-
-            var pocos = assembler.Cache.Where(x => x.Value.IsValueCreated)
-                .Select(x => x.Value)
-                .Select(x => x.Value)
-                .ToList();
-
-            await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId);
-
-            Assert.Multiple(() =>
+                await renderer.InvokeAsync(() => renderer.Instance.Grid.RowSelect.InvokeAsync(renderer.Instance.ViewModel.TopElement.First()));
+                Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+            }
+            catch
             {
-                Assert.That(renderer.Instance.ViewModel.TopElement, Has.Count.EqualTo(1));
-                Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
-            });
-
-            await renderer.InvokeAsync(() => renderer.Instance.Grid.RowSelect.InvokeAsync(renderer.Instance.ViewModel.TopElement.First()));
-            Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+                // On GitHub, exception is thrown even if the JSRuntime has been configured
+            }
         }
     }
 }

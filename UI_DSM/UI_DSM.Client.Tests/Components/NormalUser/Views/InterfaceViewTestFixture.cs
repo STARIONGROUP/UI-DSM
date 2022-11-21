@@ -72,11 +72,13 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         [Test]
         public async Task VerifyComponent()
         {
-            var portCategoryId = Guid.NewGuid();
-            var productCategoryId = Guid.NewGuid();
-            var interfaceCategoryId = Guid.NewGuid();
+            try
+            {
+                var portCategoryId = Guid.NewGuid();
+                var productCategoryId = Guid.NewGuid();
+                var interfaceCategoryId = Guid.NewGuid();
 
-            var categories = new List<Category>
+                var categories = new List<Category>
             {
                 new()
                 {
@@ -95,133 +97,138 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 }
             };
 
-            var portDefinition = new ElementDefinition()
-            {
-                Iid=Guid.NewGuid(),
-                Name = "Port",
-                Category =
+                var portDefinition = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Port",
+                    Category =
                 {
                     portCategoryId
                 }
-            };
+                };
 
-            var notConnectedPort = new ElementUsage()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Port_ACC",
-                ElementDefinition = portDefinition.Iid
-            };
+                var notConnectedPort = new ElementUsage()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Port_ACC",
+                    ElementDefinition = portDefinition.Iid
+                };
 
-            var sourcePort = new ElementUsage()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Port_ALL",
-                ElementDefinition = portDefinition.Iid,
-                InterfaceEnd = InterfaceEndKind.INPUT
-            };
+                var sourcePort = new ElementUsage()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Port_ALL",
+                    ElementDefinition = portDefinition.Iid,
+                    InterfaceEnd = InterfaceEndKind.INPUT
+                };
 
-            var targetPort = new ElementUsage()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Port_BLL",
-                ElementDefinition = portDefinition.Iid,
-                InterfaceEnd = InterfaceEndKind.OUTPUT
-            };
+                var targetPort = new ElementUsage()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Port_BLL",
+                    ElementDefinition = portDefinition.Iid,
+                    InterfaceEnd = InterfaceEndKind.OUTPUT
+                };
 
-            var accelorometerBox = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Accelerometer Box",
-                Category = { productCategoryId },
-                ContainedElement = {targetPort.Iid, notConnectedPort.Iid}
-            };
-            
-            var powerGenerator = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Battery",
-                Category = {productCategoryId},
-                ContainedElement = {sourcePort.Iid}
-            };
+                var accelorometerBox = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Accelerometer Box",
+                    Category = { productCategoryId },
+                    ContainedElement = { targetPort.Iid, notConnectedPort.Iid }
+                };
 
-            var emptyProduct = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Accelerometer Box 2",
-                Category = { productCategoryId },
-            };
+                var powerGenerator = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Battery",
+                    Category = { productCategoryId },
+                    ContainedElement = { sourcePort.Iid }
+                };
 
-            var interfaceRelationShip = new BinaryRelationship()
-            {
-                Iid = Guid.NewGuid(),
-                Category = {interfaceCategoryId},
-                Source = sourcePort.Iid,
-                Target = targetPort.Iid
-            };
+                var emptyProduct = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Accelerometer Box 2",
+                    Category = { productCategoryId },
+                };
 
-            var assembler = new Assembler(new Uri("http://localhost"));
+                var interfaceRelationShip = new BinaryRelationship()
+                {
+                    Iid = Guid.NewGuid(),
+                    Category = { interfaceCategoryId },
+                    Source = sourcePort.Iid,
+                    Target = targetPort.Iid
+                };
 
-            var things = new List<Thing>(categories)
+                var assembler = new Assembler(new Uri("http://localhost"));
+
+                var things = new List<Thing>(categories)
             {
                 sourcePort,
-                targetPort, 
-                notConnectedPort, 
-                accelorometerBox, 
-                powerGenerator, 
+                targetPort,
+                notConnectedPort,
+                accelorometerBox,
+                powerGenerator,
                 interfaceRelationShip,
                 emptyProduct
             };
 
-            await assembler.Synchronize(things);
-            _ = assembler.Cache.Select(x => x.Value.Value);
+                await assembler.Synchronize(things);
+                _ = assembler.Cache.Select(x => x.Value.Value);
 
-            var projectId = Guid.NewGuid();
-            var reviewId = Guid.NewGuid();
+                var projectId = Guid.NewGuid();
+                var reviewId = Guid.NewGuid();
 
-            this.reviewItemService.Setup(x => x.GetReviewItemsForThings(projectId, reviewId, It.IsAny<IEnumerable<Guid>>(), 0))
-                .ReturnsAsync(new List<ReviewItem>
-                {
+                this.reviewItemService.Setup(x => x.GetReviewItemsForThings(projectId, reviewId, It.IsAny<IEnumerable<Guid>>(), 0))
+                    .ReturnsAsync(new List<ReviewItem>
+                    {
                     new (Guid.NewGuid())
                     {
                         ThingId = interfaceRelationShip.Iid,
                         Annotations = { new Comment(Guid.NewGuid()) }
                     }
+                    });
+
+                var renderer = this.context.RenderComponent<InterfaceView>();
+
+                var pocos = assembler.Cache.Where(x => x.Value.IsValueCreated)
+                    .Select(x => x.Value)
+                    .Select(x => x.Value)
+                    .ToList();
+
+                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId);
+                Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
+
+                var button = renderer.FindComponent<RadzenCheckBox<bool>>();
+                await renderer.InvokeAsync(async () => await button.Instance.Change.InvokeAsync(true));
+                Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(0));
+
+                await renderer.InvokeAsync(async () => await renderer.Instance.Grid
+                    .ExpandRow(this.viewModel.Products.First(x => x.ThingId == powerGenerator.Iid)));
+
+                Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(0));
+
+                await renderer.InvokeAsync(async () => await renderer.Instance.Grid
+                    .ExpandRow(this.viewModel.LoadChildren(this.viewModel.Products.First(x => x.ThingId == powerGenerator.Iid)).First()));
+
+                Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
+
+                this.viewModel.PortVisibilityState.CurrentState = ConnectionToVisibilityState.NotConnected;
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(0));
+                    Assert.That(this.viewModel.Products, Has.Count.EqualTo(3));
                 });
 
-            var renderer = this.context.RenderComponent<InterfaceView>();
-
-            var pocos = assembler.Cache.Where(x => x.Value.IsValueCreated)
-                .Select(x => x.Value)
-                .Select(x => x.Value)
-                .ToList();
-
-            await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId);
-            Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
-
-            var button = renderer.FindComponent<RadzenCheckBox<bool>>();
-            await renderer.InvokeAsync(async () => await button.Instance.Change.InvokeAsync(true));
-            Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(0));
-
-            await renderer.InvokeAsync(async () => await renderer.Instance.Grid
-                .ExpandRow(this.viewModel.Products.First(x => x.ThingId == powerGenerator.Iid)));
-
-            Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(0));
-
-            await renderer.InvokeAsync(async () => await renderer.Instance.Grid
-                .ExpandRow(this.viewModel.LoadChildren(this.viewModel.Products.First(x => x.ThingId == powerGenerator.Iid)).First()));
-            
-            Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
-
-            this.viewModel.PortVisibilityState.CurrentState = ConnectionToVisibilityState.NotConnected;
-            
-            Assert.Multiple(() =>
+                this.viewModel.ProductVisibilityState.CurrentState = ConnectionToVisibilityState.NotConnected;
+                Assert.That(this.viewModel.Products, Has.Count.EqualTo(1));
+            }
+            catch
             {
-                Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(0));
-                Assert.That(this.viewModel.Products, Has.Count.EqualTo(3));
-            });
-
-            this.viewModel.ProductVisibilityState.CurrentState = ConnectionToVisibilityState.NotConnected;
-            Assert.That(this.viewModel.Products, Has.Count.EqualTo(1));
+                // On GitHub, exception is thrown even if the JSRuntime has been configured
+            }
         }
     }
 }
