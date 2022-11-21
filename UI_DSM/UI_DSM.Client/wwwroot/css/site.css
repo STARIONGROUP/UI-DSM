@@ -246,3 +246,11 @@ button:focus {
   display: block;
   white-space: initial;
 }
+
+tr.invisible-row {
+    display: none
+}
+
+div.invisible {
+    display: none
+}

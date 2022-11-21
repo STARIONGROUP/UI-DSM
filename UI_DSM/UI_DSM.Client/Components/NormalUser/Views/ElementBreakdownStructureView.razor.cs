@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Components.NormalUser.Views
 {
+    using System.Reactive.Linq;
+
     using CDP4Common.EngineeringModelData;
 
     using Radzen;
@@ -21,6 +23,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using ReactiveUI;
 
     using UI_DSM.Client.Components.App.ColumnChooser;
+    using UI_DSM.Client.Components.App.Filter;
     using UI_DSM.Client.ViewModels.App.ColumnChooser;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
@@ -50,6 +53,11 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     Reference to the <see cref="RadzenDataGrid{TItem}" />
         /// </summary>
         public RadzenDataGrid<ElementBaseRowViewModel> Grid { get; set; }
+
+        /// <summary>
+        ///     Reference to the <see cref="Filter" /> for rows
+        /// </summary>
+        public Filter RowFiltering { get; set; }
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -91,7 +99,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                     await this.Grid.ExpandRow(child);
                 }
 
-                await this.InvokeAsync(this.StateHasChanged);
+                await this.InvokeAsync(this.StateHasChanged); 
                 this.hasAlreadyExpandOnce = true;
 
                 this.ColumnChooser.InitializeProperties(this.Grid.ColumnsCollection);
@@ -100,6 +108,12 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                     .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
                 this.HideColumnsAtStart();
+
+                this.RowFiltering.ViewModel.InitializeProperties(this.ViewModel.AvailableRowFilters);
+
+                this.disposables.Add(this.WhenAnyValue(x => x.RowFiltering.ViewModel.IsFilterVisible)
+                    .Where(x => !x)
+                    .Subscribe(_ => this.InvokeAsync(this.OnRowFilteringClose)));
             }
         }
 
@@ -110,6 +124,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         protected void RowRender(RowRenderEventArgs<ElementBaseRowViewModel> row)
         {
             row.Expandable = this.ViewModel.HasChildren(row.Data);
+            row.Attributes["class"] = row.Data.IsVisible ? string.Empty: "invisible-row";
         }
 
         /// <summary>
@@ -134,5 +149,15 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     Hides columns on start
         /// </summary>
         protected abstract void HideColumnsAtStart();
+
+        /// <summary>
+        ///     Apply the filtering on rows-
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private Task OnRowFilteringClose()
+        {
+            this.ViewModel.FilterRows(this.RowFiltering.ViewModel.GetSelectedFilters());
+            return this.HasChanged();
+        }
     }
 }

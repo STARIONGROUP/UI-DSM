@@ -60,7 +60,7 @@ namespace UI_DSM.Client.ViewModels.App.Filter
         void OnChangeValue(FilterRow row);
 
         /// <summary>
-        ///    Gets the <see cref="Dictionary{TKey,TValue}"/> of selected filters
+        ///     Gets the <see cref="Dictionary{TKey,TValue}" /> of selected filters
         /// </summary>
         Dictionary<ClassKind, List<FilterRow>> GetSelectedFilters();
 

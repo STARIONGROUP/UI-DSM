@@ -112,7 +112,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     The name of the <see cref="RequirementsGroup" />
         /// </summary>
-        public string Group => this.Thing.Group?.ShortName;
+        public string Group => this.Thing.Group?.Name;
 
         /// <summary>
         ///     A collection of name for <see cref="Requirement" />s that trace this <see cref="Requirement" />

@@ -43,7 +43,7 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
             this.ViewModel = viewModel;
             await this.InvokeAsync(this.StateHasChanged);
             
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.VisibilityState)
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.VisibilityState.CurrentState)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
         }
 
@@ -75,10 +75,10 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
         /// <returns>The css class</returns>
         private string GetTrClass(IHaveThingRowViewModel currentRow)
         {
-            var cssClass = this.ViewModel.VisibilityState switch
+            var cssClass = this.ViewModel.VisibilityState?.CurrentState switch
             {
-                TraceabilityToVisibilityState.WithTrace => this.ViewModel.DoesRowTraceAnyColumns(currentRow) ? string.Empty : "invisible-row",
-                TraceabilityToVisibilityState.WithoutTrace => !this.ViewModel.DoesRowTraceAnyColumns(currentRow) ? string.Empty : "invisible-row",
+                ConnectionToVisibilityState.Connected => this.ViewModel.DoesRowTraceAnyColumns(currentRow) ? string.Empty : "invisible-row",
+                ConnectionToVisibilityState.NotConnected => !this.ViewModel.DoesRowTraceAnyColumns(currentRow) ? string.Empty : "invisible-row",
                 _ => string.Empty
             };
 

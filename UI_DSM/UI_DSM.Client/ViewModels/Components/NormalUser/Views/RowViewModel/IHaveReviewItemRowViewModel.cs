@@ -36,7 +36,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     Gets the Id of the current <see cref="IHaveThingRowViewModel" />
         /// </summary>
-        string Id { get; }
+        public string Id { get; }
 
         /// <summary>
         ///     A value indicating if the row is visible or not

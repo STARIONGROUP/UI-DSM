@@ -16,7 +16,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using ReactiveUI;
 
     using UI_DSM.Client.Components.App.TraceabilityTable;
-    using UI_DSM.Client.Enumerator;
+    using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>
@@ -28,11 +28,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Backing field for <see cref="SelectedElement" />
         /// </summary>
         private IHaveThingRowViewModel selectedElement;
-
-        /// <summary>
-        ///     Backing field for <see cref="VisibilityState" />
-        /// </summary>
-        private TraceabilityToVisibilityState visibilityState;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TraceabilityTableViewModel" /> class.
@@ -54,13 +49,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public Func<IHaveThingRowViewModel, bool> IsValidRow { get; }
 
         /// <summary>
-        ///     The <see cref="TraceabilityToVisibilityState" />
+        ///     The <see cref="IConnectionVisibilitySelectorViewModel" />
         /// </summary>
-        public TraceabilityToVisibilityState VisibilityState
-        {
-            get => this.visibilityState;
-            set => this.RaiseAndSetIfChanged(ref this.visibilityState, value);
-        }
+        public IConnectionVisibilitySelectorViewModel VisibilityState { get; set; }
 
         /// <summary>
         ///     A collection of visible rows

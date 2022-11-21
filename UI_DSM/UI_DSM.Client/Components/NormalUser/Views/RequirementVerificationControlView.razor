@@ -1,0 +1,112 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// RequirementVerificationControlView.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+@inherits RequirementBreakdownStructureView
+
+<div class="view-actions">
+	<div class="left-actions">
+
+	</div>
+	<div class="right-actions">
+		<Filter @ref="this.RowFiltering" Id="row">
+			<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
+		</Filter>
+		<AppButton Id="column-chooser" Label="Select visible columns" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="this.OnClick">
+			<FeatherColumns Size="20" Color="currentColor" StrokeWidth="2"/> <span>Columns</span>
+		</AppButton>
+	</div>
+</div>
+
+<div class="breakdown-view">
+	<DxGrid PageSize="8"
+			CssClass="default-grid"
+			@ref="@this.DxGrid"
+			Data="@(this.ViewModel.Rows)"
+			@bind-SelectedDataItem="@this.ViewModel.SelectedElement"
+			SelectionMode="GridSelectionMode.Single"
+			AllowSelectRowByClick="true"
+			ShowFilterRow="true"
+			HorizontalScrollBarMode="ScrollBarMode.Visible">
+		<Columns>
+
+			<DxGridDataColumn ShowInColumnChooser="false">
+				<FilterRowCellTemplate />
+				<CellDisplayTemplate>
+					@if (HasComment(context))
+					{
+						<FeatherMessageCircle Size="20" Color="green" />
+					}
+				</CellDisplayTemplate>
+			</DxGridDataColumn>
+
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Id)" Caption="ID" Width="150" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Name)" Width="200" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Specification)" Width="200" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Group)" Width="200" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Definition)" Width="400" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Categories)" Width="300" AllowSort="false">
+				<CellDisplayTemplate>
+					<ul class="grid-list">
+						@foreach (var category in (IEnumerable<string>)context.Value)
+						{
+							<li class="element on">@category</li>
+						}
+					</ul>
+				</CellDisplayTemplate>
+			</DxGridDataColumn>
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Justification)" Width="250" Visible="false" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.RequirementType)" Width="250" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.DerivesFrom)" AllowSort="false" Width="250" Visible="false">
+				<CellDisplayTemplate>
+					<ul class="grid-list">
+						@foreach (var derivesFrom in (IEnumerable<string>)context.Value)
+						{
+							<li class="element on">@derivesFrom</li>
+						}
+					</ul>
+				</CellDisplayTemplate>
+			</DxGridDataColumn>
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.DerivesTo)" AllowSort="false" Width="250" Visible="false">
+				<CellDisplayTemplate>
+					<ul class="grid-list">
+						@foreach (var derivesTo in (IEnumerable<string>)context.Value)
+						{
+							<li class="element on">@derivesTo</li>
+						}
+					</ul>
+				</CellDisplayTemplate>
+			</DxGridDataColumn>
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.SatisfyByFunction)" AllowSort="false" Width="250" Visible="false">
+				<CellDisplayTemplate>
+					<ul class="grid-list">
+						@foreach (var satisfyByFunction in (IEnumerable<string>)context.Value)
+						{
+							<li class="element on">@satisfyByFunction</li>
+						}
+					</ul>
+				</CellDisplayTemplate>
+			</DxGridDataColumn>
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.SatisfyByProduct)" AllowSort="false" Width="250" Visible="false">
+				<CellDisplayTemplate>
+					<ul class="grid-list">
+						@foreach (var satisfyByProduct in (IEnumerable<string>)context.Value)
+						{
+							<li class="element on">@satisfyByProduct</li>
+						}
+					</ul>
+				</CellDisplayTemplate>
+			</DxGridDataColumn>
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationMethod)" Width="250"/>
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationStage)" Width="250"/>
+		</Columns>
+	</DxGrid>
+</div>

@@ -17,6 +17,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using CDP4Common.EngineeringModelData;
 
     using UI_DSM.Client.Extensions;
+    using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
@@ -55,10 +56,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             }
 
             this.TopElement.Clear();
-            this.AllAvailableRows.Clear();
+            this.AllRows.Clear();
 
             var elementUsages = this.Things.OfType<ElementUsage>()
-                .Where(x => !x.IsProduct())
+                .Where(x => !x.IsProduct() && !x.IsPort())
                 .ToList();
 
             var filteredThings = new List<ElementBase> { topElement };
@@ -71,11 +72,31 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 ? new FunctionRowViewModel(topElement, reviewItems.FirstOrDefault(x => x.ThingId == topElement.Iid))
                 : new ElementBaseRowViewModel(topElement, reviewItems.FirstOrDefault(x => x.ThingId == topElement.Iid)));
 
-            this.AllAvailableRows.AddRange(elementUsages.Where(x => x.IsFunction())
+            this.AllRows.AddRange(elementUsages.Where(x => x.IsFunction())
                 .Select(x => new FunctionRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));
 
-            this.AllAvailableRows.AddRange(elementUsages.Where(x => !x.IsFunction())
+            this.AllRows.AddRange(elementUsages.Where(x => !x.IsFunction())
                 .Select(x => new ElementBaseRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));
+
+            this.InitializesFilter<FunctionRowViewModel>("functions");
+        }
+
+        /// <summary>
+        ///     Filters current rows
+        /// </summary>
+        /// <param name="selectedFilters">The selected filters</param>
+        public override void FilterRows(IReadOnlyDictionary<ClassKind, List<FilterRow>> selectedFilters)
+        {
+            var selectedOwner = selectedFilters[ClassKind.DomainOfExpertise];
+            var selectedCategories = selectedFilters[ClassKind.Category];
+
+            foreach (var row in this.AllRows)
+            {
+                row.IsVisible = !row.Thing.IsFunction() ||
+                                (selectedOwner.Any(owner => owner.DefinedThing.Iid == row.Thing.Owner.Iid)
+                                 && selectedCategories.Any(cat =>
+                                     row.Thing.GetAppliedCategories().Any(thingCat => thingCat.Iid == cat.DefinedThing.Iid)));
+            }
         }
     }
 }

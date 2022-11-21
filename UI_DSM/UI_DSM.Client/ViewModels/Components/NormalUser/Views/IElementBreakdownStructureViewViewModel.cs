@@ -13,6 +13,9 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
+    using CDP4Common.CommonData;
+
+    using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>
@@ -38,5 +41,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="rowData">The <see cref="ElementBaseRowViewModel" /></param>
         /// <returns>The assert</returns>
         bool HasChildren(ElementBaseRowViewModel rowData);
+
+        /// <summary>
+        ///     A collection of available <see cref="FilterModel" /> for rows
+        /// </summary>
+        List<FilterModel> AvailableRowFilters { get; }
+
+        /// <summary>
+        ///     Filters current rows
+        /// </summary>
+        /// <param name="selectedFilters">The selected filters</param>
+        void FilterRows(IReadOnlyDictionary<ClassKind, List<FilterRow>> selectedFilters);
     }
 }

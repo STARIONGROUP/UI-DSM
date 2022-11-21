@@ -27,9 +27,10 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     Handle the OnClick event on a <see cref="HyperLinkCard" />
         /// </summary>
         /// <param name="row">The new selected <see cref="HyperLinkRowViewModel" /></param>
-        private void HandleOnClick(HyperLinkRowViewModel row)
+        private Task HandleOnClick(HyperLinkRowViewModel row)
         {
             this.ViewModel.SelectedElement = row;
+            return this.HasChanged();
         }
     }
 }

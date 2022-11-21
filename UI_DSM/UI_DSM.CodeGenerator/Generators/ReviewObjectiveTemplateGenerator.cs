@@ -166,7 +166,7 @@ namespace UI_DSM.CodeGenerator.Generators
                 View.RequirementTraceabilityToFunctionView, View.RequirementTraceabilityToProductView));
 
             srr2.ReviewTasks.Add(InitializeReviewTask("Check function allocation to products.", 3, View.FunctionalTraceabilityToProductView));
-            srr2.ReviewTasks.Add(InitializeReviewTask("Check requirements verification.", 4, View.FunctionalTraceabilityToProductView));
+            srr2.ReviewTasks.Add(InitializeReviewTask("Check requirements verification.", 4, View.RequirementVerificationControlView));
             srr2.ReviewTasks.Add(InitializeReviewTask("Do completeness check.", 5, View.RequirementTraceabilityToRequirementView));
 
             var srr3 = InitializeReviewObjective(ReviewObjectiveKind.Srr, 3, "Verify the technical feasibility of the preliminary system design and operations concepts.",

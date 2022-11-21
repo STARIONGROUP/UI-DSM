@@ -20,7 +20,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     Row view model to display content for a <see cref="ElementDefinition" />
+    ///     Row view model to display content for a <see cref="BinaryRelationship" />
     /// </summary>
     public class RelationshipRowViewModel : HaveThingRowViewModel<BinaryRelationship>
     {

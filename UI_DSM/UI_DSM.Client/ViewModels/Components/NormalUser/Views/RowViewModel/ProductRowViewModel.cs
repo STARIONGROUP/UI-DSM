@@ -21,7 +21,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
     /// <summary>
     ///     Row view model to display content for a <see cref="ElementBase" /> that are Product
     /// </summary>
-    public class ProductRowViewModel : ElementBaseRowViewModel
+    public class ProductRowViewModel : ElementBaseRowViewModel, IBelongsToInterfaceView
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ProductRowViewModel" /> class.
@@ -37,6 +37,41 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         ///     Gets the Id of the current <see cref="IHaveThingRowViewModel" />
         /// </summary>
         public override string Id => this.ComputedId;
+
+        /// <summary>
+        ///     The name of the source
+        /// </summary>
+        public string SourceName => null;
+
+        /// <summary>
+        ///     The name of the target
+        /// </summary>
+        public string TargetName => null;
+
+        /// <summary>
+        ///     The owner of the source
+        /// </summary>
+        public string SourceOwner => null;
+
+        /// <summary>
+        ///     The owner of the target
+        /// </summary>
+        public string TargetOwner => null;
+
+        /// <summary>
+        ///     The interface end of the Target
+        /// </summary>
+        public string TargetEnd => null;
+
+        /// <summary>
+        ///     The interface end of the Source
+        /// </summary>
+        public string SourceEnd => null;
+
+        /// <summary>
+        ///     A interface nature
+        /// </summary>
+        public string Nature => null;
 
         /// <summary>
         ///     The computed Id

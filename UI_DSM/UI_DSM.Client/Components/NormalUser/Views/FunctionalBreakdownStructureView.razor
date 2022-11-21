@@ -19,7 +19,16 @@
 }
 else
 {
-	<ColumnChooser TItem="ElementBaseRowViewModel" ViewModel="@this.ColumnChooser"/>
+	<div class="view-actions">
+		<div class="left-actions"></div>
+		<div class="right-actions">
+			<Filter @ref="this.RowFiltering" Id="row">
+				<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
+			</Filter>
+			<ColumnChooser TItem="ElementBaseRowViewModel" ViewModel="@this.ColumnChooser"/>
+		</div>
+	</div>
+	
 	<RadzenDataGrid @ref="@this.Grid" Data="@(this.ViewModel.TopElement)" TItem="ElementBaseRowViewModel" ExpandMode="DataGridExpandMode.Single"
 	                RowRender="@this.RowRender" LoadChildData="@this.LoadChildren" SelectionMode="DataGridSelectionMode.Single" RowSelect="@this.SelectRow"
 	                AllowFiltering="true" FilterMode="FilterMode.SimpleWithMenu" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"

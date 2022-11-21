@@ -35,6 +35,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Shared.Models;
@@ -65,6 +66,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.viewModel = new RequirementTraceabilityToProductViewViewModel(this.reviewItemService.Object);
             this.context.Services.AddSingleton(this.viewModel);
             this.context.Services.AddTransient<IFilterViewModel, FilterViewModel>();
+            this.context.Services.AddTransient<IConnectionVisibilitySelectorViewModel, ConnectionVisibilitySelectorViewModel>();
         }
 
         [TearDown]
@@ -291,11 +293,11 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
             });
 
-            this.viewModel.TraceabilityTableViewModel.VisibilityState = TraceabilityToVisibilityState.WithTrace;
+            this.viewModel.TraceabilityTableViewModel.VisibilityState.CurrentState = ConnectionToVisibilityState.Connected;
             var invisibleRow = renderer.FindAll(".invisible-row");
             Assert.That(invisibleRow, Has.Count.EqualTo(0));
 
-            this.viewModel.TraceabilityTableViewModel.VisibilityState = TraceabilityToVisibilityState.WithoutTrace;
+            this.viewModel.TraceabilityTableViewModel.VisibilityState.CurrentState = ConnectionToVisibilityState.NotConnected;
             invisibleRow.Refresh();
             Assert.That(invisibleRow, Has.Count.EqualTo(1));
 
