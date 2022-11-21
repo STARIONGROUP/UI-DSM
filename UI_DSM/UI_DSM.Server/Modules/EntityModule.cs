@@ -280,7 +280,14 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            requestReponse.Entities = identityResult.Entity.GetAssociatedEntities(deepLevel).ToDtos();
+            if (identityResult.Entity != null)
+            {
+                requestReponse.Entities = identityResult.Entity.GetAssociatedEntities(deepLevel).ToDtos();
+            }
+            else
+            {
+                requestReponse.Entities = identityResult.Entities.SelectMany(x => x.GetAssociatedEntities(deepLevel)).ToDtos();
+            }
 
             httpResponse.StatusCode = successStatusCode;
         }

@@ -13,9 +13,15 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 {
+    using DynamicData;
     using Microsoft.AspNetCore.Components;
     using ReactiveUI;
-
+    using System.Linq;
+    using UI_DSM.Client.Enumerator;
+    using UI_DSM.Client.Services.ReviewObjectiveService;
+    using UI_DSM.Client.Services.ReviewService;
+    using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -38,13 +44,63 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         }
 
         /// <summary>
+        ///     Backing field for <see cref="Project" />
+        /// </summary>
+        private Project project;
+
+        /// <summary>
+        ///     The <see cref="Project" />
+        /// </summary>
+        public Project Project
+        {
+            get => this.project;
+            set => this.RaiseAndSetIfChanged(ref this.project, value);
+        }
+
+        /// <summary>
+        ///     The <see cref="IReviewService" />
+        /// </summary>
+        private readonly IReviewObjectiveService reviewObjectiveService;
+
+        /// <summary>
+        ///     Backing field for <see cref="IsOnCreationMode" />
+        /// </summary>
+        private bool isOnCreationMode;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectReviewViewModel" /> class.
         /// </summary>
+        /// <param name="reviewObjectiveService">The <see cref="IReviewObjectiveService" /></param>
         /// <param name="navigationManager">The <see cref="NavigationManager" /></param>
-        public ReviewObjectiveViewModel(NavigationManager navigationManager)
+        public ReviewObjectiveViewModel(IReviewObjectiveService reviewObjectiveService, NavigationManager navigationManager)
         {
             this.NavigationManager = navigationManager;
+            this.reviewObjectiveService = reviewObjectiveService;
+
+            this.ReviewObjectiveCreationViewModel = new ReviewObjectiveCreationViewModel(reviewObjectiveService)
+            {
+                OnValidSubmit = new EventCallbackFactory().Create(this, this.CreateReviewObjective)
+            };
         }
+
+        /// <summary>
+        ///     Value indicating the user is currently creating a new <see cref="Review" />
+        /// </summary>
+        public bool IsOnCreationMode
+        {
+            get => this.isOnCreationMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnCreationMode, value);
+        }
+
+        /// <summary>
+        ///     The <see cref="IErrorMessageViewModel" />
+        /// </summary>
+        public IErrorMessageViewModel ErrorMessageViewModel { get; } = new ErrorMessageViewModel();
+
+        /// <summary>
+        ///     The <see cref="IReviewCreationViewModel" />
+        /// </summary>
+        public IReviewObjectiveCreationViewModel ReviewObjectiveCreationViewModel { get; private set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="NavigationManager" />
@@ -58,6 +114,55 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         public void GoToReviewObjectivePage(ReviewObjective reviewObjective)
         {
             this.NavigationManager.NavigateTo($"{this.NavigationManager.Uri}/ReviewObjective/{reviewObjective.Id}");
+        }
+
+
+        /// <summary>
+        ///     Opens the <see cref="ReviewObjectiveCreation" /> as a popup
+        /// </summary>
+        public void OpenCreatePopup()
+        {
+            this.ReviewObjectiveCreationViewModel.ProjectId = this.Project.Id;
+            this.ReviewObjectiveCreationViewModel.ReviewId = this.Review.Id;
+            this.ReviewObjectiveCreationViewModel.ReviewObjective = new ReviewObjective();
+            this.ReviewObjectiveCreationViewModel.SelectedReviewObjectives = new List<ReviewObjectiveCreationDto>();
+            this.ReviewObjectiveCreationViewModel.SelectedReviewObjectivesPrr = new List<ReviewObjectiveCreationDto>();
+            this.ReviewObjectiveCreationViewModel.SelectedReviewObjectivesSrr = new List<ReviewObjectiveCreationDto>();
+            this.ErrorMessageViewModel.Errors.Clear();
+            this.IsOnCreationMode = true;
+        }
+
+        /// <summary>
+        ///     Tries to create a new <see cref="ReviewObjective" />
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task CreateReviewObjective()
+        {
+            try
+            {
+                this.ReviewObjectiveCreationViewModel.ReviewObjectivesCreationStatus = CreationStatus.Creating;
+                var selectedReviewObjectives = this.ReviewObjectiveCreationViewModel.SelectedReviewObjectivesPrr.Union(this.ReviewObjectiveCreationViewModel.SelectedReviewObjectivesSrr.ToList()).ToList();
+                var creationResult = await this.reviewObjectiveService.CreateReviewObjectives(this.Project.Id, this.Review.Id, selectedReviewObjectives);
+                this.ErrorMessageViewModel.Errors.Clear();
+
+                if (creationResult.Errors.Any())
+                {
+                    this.ErrorMessageViewModel.Errors.AddRange(creationResult.Errors);
+                }
+
+                if (creationResult.IsRequestSuccessful)
+                {
+                    this.Review.ReviewObjectives.Add(creationResult.Entities);
+                    this.ReviewObjectiveCreationViewModel.ReviewObjectivesCreationStatus = CreationStatus.Done;
+                }
+
+                this.IsOnCreationMode = !creationResult.IsRequestSuccessful;
+            }
+            catch (Exception exception)
+            {
+                this.ErrorMessageViewModel.Errors.Clear();
+                this.ErrorMessageViewModel.Errors.Add(exception.Message);
+            }
         }
     }
 }

@@ -12,15 +12,23 @@
 
 <div class="project-page">
   <div class="page-header">
-    <h1 class="h3">Review objectives for @this.ViewModel.Review.Title</h1>
+        <h1 class="h3">Review objectives for @this.ViewModel.Review.Title</h1>
+		<AppButton Click="@this.ViewModel.OpenCreatePopup" Type="button">
+            <FeatherPlusCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Create review objective(s)</span>
+        </AppButton>
   </div>
-
+   <DxPopup CloseOnOutsideClick="false" HeaderText="Create Review Objective(s)" @bind-Visible="@this.ViewModel.IsOnCreationMode">
+		<Content>
+			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+                <ReviewObjectiveCreation  ViewModel="@this.ViewModel.ReviewObjectiveCreationViewModel" />
+			</CascadingValue>
+		</Content>
+	</DxPopup>
   <div class="objective-overview">
-		@foreach (var reviewObjective in this.ViewModel.Review.ReviewObjectives.OrderBy(x => x.ReviewObjectiveNumber))
+		@foreach (var reviewObjective in this.ViewModel.Review.ReviewObjectives.OrderBy(x => x.ReviewObjectiveKind).ThenBy(x => x.ReviewObjectiveKindNumber))
 		{
-
 			<div div @onclick="@(() => this.ViewModel.GoToReviewObjectivePage(reviewObjective))">
-				<AppObjectiveItem Title="@reviewObjective.Description" Link=@(this.ViewModel.NavigationManager.Uri+"/ReviewObjective/"+reviewObjective.Id) />
+				<AppObjectiveItem Title="@reviewObjective.Title" Link=@(this.ViewModel.NavigationManager.Uri+"/ReviewObjective/"+reviewObjective.Id) />
 			</div>
 		}
   </div>

@@ -13,6 +13,7 @@
 
 namespace UI_DSM.Shared.DTO.Common
 {
+    using System.Xml.Linq;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
@@ -31,5 +32,10 @@ namespace UI_DSM.Shared.DTO.Common
         ///     The <see cref="ReviewObjective.ReviewObjectiveKindNumber" />
         /// </summary>
         public int KindNumber { get; set; }
+
+        public override string ToString()
+        {
+            return Kind.ToString().ToUpper() + " - " + KindNumber;
+        }
     }
 }

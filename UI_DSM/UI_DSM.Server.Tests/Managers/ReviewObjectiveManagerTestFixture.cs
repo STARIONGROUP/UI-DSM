@@ -251,5 +251,114 @@ namespace UI_DSM.Server.Tests.Managers
                 Assert.That(reviewObjective.Annotations, Has.Count.EqualTo(3));
             });
         }
+
+        [Test]
+        public async Task VerifyCreateEntityBasedOnTemplate()
+        {
+            Project project = new(Guid.NewGuid());
+            var reviews = new List<Review>()
+            {
+                new(Guid.NewGuid())
+                {
+                    Title = "Review Title",
+                    Author = new Participant(Guid.NewGuid()),
+                    EntityContainer = project,
+                }
+            };
+
+            this.reviewDbSet.UpdateDbSetCollection(reviews);
+
+            ReviewObjective template = new ReviewObjective()
+            {
+                Id = Guid.NewGuid(),
+                ReviewObjectiveKind = ReviewObjectiveKind.Prr,
+                ReviewObjectiveKindNumber = 1,
+                Description = "Review Objective Description",
+                Author = reviews[0].Author
+            };
+
+            var operationResult = await this.manager.CreateEntityBasedOnTemplate(template, reviews[0], reviews[0].Author);
+            Assert.That(operationResult.Succeeded, Is.False);
+        }
+
+        [Test]
+        public async Task VerifyCreateEntityBasedOnTemplates()
+        {
+            Project project = new(Guid.NewGuid());
+            var reviews = new List<Review>()
+            {
+                new(Guid.NewGuid())
+                {
+                    Title = "Review Title",
+                    Author = new Participant(Guid.NewGuid()),
+                    EntityContainer = project,
+                }
+            };
+
+            this.reviewDbSet.UpdateDbSetCollection(reviews);
+
+            IEnumerable<ReviewObjective> templates = new List<ReviewObjective>()
+            {
+                new ReviewObjective()
+                {
+                    Id = Guid.NewGuid(),
+                    ReviewObjectiveKind = ReviewObjectiveKind.Prr,
+                    ReviewObjectiveKindNumber = 1,
+                    Description = "Review Objective Description",
+                    Author = reviews[0].Author
+                }
+            };
+
+            var operationResult = await this.manager.CreateEntityBasedOnTemplates(templates, reviews[0], reviews[0].Author);
+            Assert.That(operationResult.Succeeded, Is.False);
+        }
+
+        [Test]
+        public void GetReviewObjectiveCreationForReview()
+        {
+            var reviewObjectivePrr1 = new ReviewObjective()
+            {
+                Id = Guid.NewGuid(),
+                ReviewObjectiveKind = ReviewObjectiveKind.Prr,
+                ReviewObjectiveKindNumber = 1
+            };
+
+            var reviewObjectivePrr2 = new ReviewObjective()
+            {
+                Id = Guid.NewGuid(),
+                ReviewObjectiveKind = ReviewObjectiveKind.Prr,
+                ReviewObjectiveKindNumber = 2
+            };
+
+            var reviewObjectiveSrr2 = new ReviewObjective()
+            {
+                Id = Guid.NewGuid(),
+                ReviewObjectiveKind = ReviewObjectiveKind.Srr,
+                ReviewObjectiveKindNumber = 2
+            };
+
+            List<Review> reviews = new List<Review>()
+            {
+                new(Guid.NewGuid())
+                {
+                    ReviewObjectives =
+                    {
+                        reviewObjectivePrr1,
+                        reviewObjectiveSrr2,
+                        reviewObjectivePrr2
+                    }
+                }
+            };
+
+            this.reviewDbSet.UpdateDbSetCollection(reviews);
+            this.reviewObjectiveDbSet.UpdateDbSetCollection(reviews.First().ReviewObjectives);
+
+            var reviewObjectivesFirstReview = this.manager.GetReviewObjectiveCreationForReview(reviews.First().Id);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(reviewObjectivesFirstReview.ToList(), Has.Count.EqualTo(3));
+            });
+        }
     }
 }

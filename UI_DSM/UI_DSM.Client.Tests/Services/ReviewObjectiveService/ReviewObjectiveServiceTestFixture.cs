@@ -172,6 +172,55 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
             Assert.That(async () => await this.service.CreateReviewObjective(projectId, reviewId, reviewObjective), Throws.Exception);
         }
 
+
+        [Test]
+        public async Task VerifyCreateReviewObjectives()
+        {
+            var reviewObjectives = new List<ReviewObjectiveCreationDto>()
+            {
+                new ReviewObjectiveCreationDto()
+                {
+                    Kind = ReviewObjectiveKind.Prr,
+                    KindNumber = 0
+                }
+            };
+
+            var projectId = Guid.NewGuid();
+            var reviewId = Guid.NewGuid();
+
+            var httpResponse = new HttpResponseMessage();
+
+            var entityRequestResponse = new EntityRequestResponseDto()
+            {
+                IsRequestSuccessful = false
+            };
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
+            var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Project/{projectId}/Review/{reviewId}/ReviewObjective/CreateTemplates");
+            request.Respond(_ => httpResponse);
+
+            var requestResponse = await this.service.CreateReviewObjectives(projectId, reviewId, reviewObjectives);
+            Assert.That(requestResponse.IsRequestSuccessful, Is.False);
+
+            entityRequestResponse.IsRequestSuccessful = true;
+
+            entityRequestResponse.Entities = new ReviewObjective().GetAssociatedEntities().ToDtos();
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
+
+            requestResponse = await this.service.CreateReviewObjectives(projectId, reviewId, reviewObjectives);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(requestResponse.IsRequestSuccessful, Is.True);
+                Assert.That(requestResponse.Entities, Is.Not.Empty);
+            });
+
+            httpResponse.Content = new StringContent(string.Empty);
+
+            Assert.That(async () => await this.service.CreateReviewObjectives(projectId, reviewId, reviewObjectives), Throws.Exception);
+        }
+
         [Test]
         public async Task VerifyDeleteReviewObjective()
         {
@@ -241,6 +290,27 @@ namespace UI_DSM.Client.Tests.Services.ReviewObjectiveService
             Assert.That(requestResult.IsRequestSuccessful, Is.True);
             httpResponse.Content = new StringContent(string.Empty);
             Assert.That(async () => await this.service.UpdateReviewObjective(projectId, reviewObjective), Throws.Exception);
+        }
+
+        [Test]
+        public async Task VerifyGetAvailableTemplates()
+        {
+            var projectId = Guid.NewGuid();
+            var reviewId = Guid.NewGuid();
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.NotFound;
+
+            var request = this.httpMessageHandler.When($"/Project/{projectId}/Review/{reviewId}/ReviewObjective/GetAvailableTemplates");
+            request.Respond(_ => httpResponse);
+
+            Assert.That(async () => await this.service.GetAvailableTemplates(projectId, reviewId), Throws.Exception);
+            httpResponse.StatusCode = HttpStatusCode.OK;
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(this.entitiesDto));
+            var reviewObjectives = await this.service.GetAvailableTemplates(projectId, reviewId);
+            Assert.That(reviewObjectives, Has.Count.EqualTo(4));
+            httpResponse.Content = new StringContent(string.Empty);
+            Assert.That(async () => await this.service.GetAvailableTemplates(projectId, reviewId), Throws.Exception);
         }
     }
 }

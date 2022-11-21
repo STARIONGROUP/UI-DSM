@@ -17,7 +17,8 @@ namespace UI_DSM.Server.Modules
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Components;
-
+    using Newtonsoft.Json;
+    using System.Linq;
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Managers.ReviewManager;
@@ -73,6 +74,19 @@ namespace UI_DSM.Server.Modules
                 .Produces<EntityRequestResponseDto>(500)
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/CreateTemplate");
+
+            app.MapGet($"{this.MainRoute}/GetAvailableTemplates", this.GetAvailableTemplates)
+                .Produces<List<ReviewObjectiveCreationDto>>()
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/GetAvailableTemplates");
+
+            app.MapPost($"{this.MainRoute}/CreateTemplates", this.CreateEntityTemplates)
+                .Accepts<List<ReviewObjectiveCreationDto>>("application/json")
+                .Produces<EntityRequestResponseDto>(201)
+                .Produces<EntityRequestResponseDto>(422)
+                .Produces<EntityRequestResponseDto>(500)
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/CreateTemplates");
         }
 
         /// <summary>
@@ -196,6 +210,69 @@ namespace UI_DSM.Server.Modules
         }
 
         /// <summary>
+        ///     Tries to create a new <see cref="ReviewObjective" /> based on the <see cref="ReviewObjectiveKind" />
+        /// </summary>
+        /// <param name="reviewManager">The <see cref="IReviewManager" /></param>
+        /// <param name="manager">The <see cref="IReviewObjectiveManager" /></param>
+        /// <param name="reviewTaskManager">The <see cref="IReviewTaskManager" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="dtos">The <see cref="List{ReviewObjectiveCreationDto}" /></param>
+        /// <param name="deepLevel">The optional deepLevel</param>
+        /// <returns>A <see cref="Task" /></returns>
+        [Authorize]
+        public async Task CreateEntityTemplates(IReviewManager reviewManager, IReviewObjectiveManager manager, HttpContext context,
+            List<ReviewObjectiveCreationDto> dtos, int deepLevel = 0)
+        {
+            var templates = this.reviewObjectivesTemplates.Where(x => dtos.Any(y => y.Kind == x.ReviewObjectiveKind
+                                                                                  && y.KindNumber == x.ReviewObjectiveKindNumber));
+            if (templates == null || !templates.Any())
+            {
+                context.Response.StatusCode = 400;
+                return;
+            }
+
+            var participant = await this.GetParticipantBasedOnRequest(context, ProjectKey);
+
+            if (participant == null)
+            {
+                return;
+            }
+
+            var requestResponse = new EntityRequestResponseDto();
+
+            if (!await this.AdditionalRouteValidation(context))
+            {
+                requestResponse.Errors = new List<string>
+                {
+                    "Route validation failure"
+                };
+
+                await context.Response.Negotiate(requestResponse);
+                return;
+            }
+
+            var container = (await reviewManager.GetEntity(this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey)))
+                .FirstOrDefault(x => x is Review);
+
+            if (container is not Review review)
+            {
+                context.Response.StatusCode = 400;
+
+                requestResponse.Errors = new List<string>
+                {
+                    "Unable to find the given container"
+                };
+
+                await context.Response.Negotiate(requestResponse);
+                return;
+            }
+
+            var identityResults = await manager.CreateEntityBasedOnTemplates(templates, review, participant);
+            this.HandleOperationResult(requestResponse, context.Response, identityResults, 201, deepLevel);
+            await context.Response.Negotiate(requestResponse);
+        }
+
+        /// <summary>
         ///     Tries to delete an <see cref="ReviewObjective" /> defined by the given <see cref="Guid" />
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
@@ -272,6 +349,23 @@ namespace UI_DSM.Server.Modules
             }
 
             return true;
+        }
+
+        /// <summary>
+        ///     Gets, all <see cref="ReviewObjectiveDto" />s from the json file
+        ///     and filters them based on the given <see cref="ReviewObjectiveKind" />
+        /// </summary>
+        /// <param name="reviewObjectiveManager">The <see cref="IReviewObjectiveManager"/></param>
+        /// <param name="context">The <see cref="HttpContext"/></param>
+        /// <returns>A <see cref="Task"/></returns>
+        [Authorize]
+        public async Task GetAvailableTemplates(IReviewObjectiveManager reviewObjectiveManager, HttpContext context)
+        {
+            var reviewId = this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey);
+            var existingReviewObjectives = reviewObjectiveManager.GetReviewObjectiveCreationForReview(reviewId);
+            var reviewObjectiveCreationTemplates = this.reviewObjectivesTemplates.Select(x => new ReviewObjectiveCreationDto() { Kind = x.ReviewObjectiveKind, KindNumber = x.ReviewObjectiveKindNumber }).ToList();
+            reviewObjectiveCreationTemplates.RemoveAll(x => existingReviewObjectives.Any(y => y.Kind == x.Kind && y.KindNumber == x.KindNumber));
+            await context.Response.Negotiate(reviewObjectiveCreationTemplates);
         }
     }
 }

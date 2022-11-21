@@ -36,16 +36,22 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewPage
         ///     Initializes a new instance of the <see cref="ReviewPageViewModel" /> class.
         /// </summary>
         /// <param name="reviewService">The <see cref="IReviewService" /></param>
-        public ReviewPageViewModel(IReviewService reviewService, IReviewObjectiveViewModel reviewObjectiveViewModel)
+        public ReviewPageViewModel(IReviewService reviewService, IReviewObjectiveViewModel reviewObjectiveViewModel, IReviewObjectiveCreationViewModel reviewObjectiveCreationViewMode)
         {
             this.reviewService = reviewService;
             this.ReviewObjectiveViewModel = reviewObjectiveViewModel;
+            this.ReviewObjectiveCreationViewModel = reviewObjectiveCreationViewMode;
         }
 
         /// <summary>
         ///     The <see cref="IReviewObjectiveViewModel" /> for the <see cref="ReviewObjective" /> component
         /// </summary>
         public IReviewObjectiveViewModel ReviewObjectiveViewModel { get; }
+
+        /// <summary>
+        ///     The <see cref="IReviewObjectiveCreationViewModel" /> for the <see cref="ReviewObjective" /> component
+        /// </summary>
+        public IReviewObjectiveCreationViewModel ReviewObjectiveCreationViewModel { get; }
 
         /// <summary>
         ///     Gets the <see cref="IErrorMessageViewModel" />
@@ -66,6 +72,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewPage
         {
             var reviewResponse = await this.reviewService.GetReviewOfProject(projectGuid, reviewGuid, 1);
             this.ReviewObjectiveViewModel.Review = reviewResponse;
+            this.ReviewObjectiveViewModel.Project = new Project { Id = projectGuid };
         }
     }
 }

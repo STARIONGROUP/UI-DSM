@@ -92,14 +92,16 @@ namespace UI_DSM.Server.Managers.ReviewManager
         ///     and <see cref="Comment" /> for each <see cref="Project" />
         /// </summary>
         /// <param name="reviewsId">A collection of <see cref="Guid" /> for <see cref="Review" />s</param>
+        /// <param name="projectId">A <see cref="Guid" /> of <see cref="Project" />s</param>
+        /// <param name="userName">The name of the current logged user</param>
         /// <returns> A <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
-        public Dictionary<Guid, ComputedProjectProperties> GetOpenTasksAndComments(IEnumerable<Guid> reviewsId)
+        public async Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewsId, Guid projectId,  string userName)
         {
             var dictionary = new Dictionary<Guid, ComputedProjectProperties>();
 
             foreach (var reviewId in reviewsId)
             {
-                var computedProperties = this.GetOpenTasksAndComments(reviewId);
+                var computedProperties = await this.GetOpenTasksAndComments(reviewId, projectId, userName);
 
                 if (computedProperties != null)
                 {
@@ -128,10 +130,19 @@ namespace UI_DSM.Server.Managers.ReviewManager
         ///     and <see cref="Comment" /> for a <see cref="Review" />
         /// </summary>
         /// <param name="reviewId">A <see cref="Guid" /> for <see cref="Review" /></param>
+        /// <param name="projectId">A <see cref="Guid" /> of <see cref="Project" />s</param>
+        /// <param name="userName">The name of the current logged user</param>
         /// <returns> A <see cref="ComputedProjectProperties" /></returns>
-        private ComputedProjectProperties GetOpenTasksAndComments(Guid reviewId)
+        private async Task<ComputedProjectProperties> GetOpenTasksAndComments(Guid reviewId, Guid projectId, string userName)
         {
             if (this.EntityDbSet.All(x => x.Id != reviewId))
+            {
+                return null;
+            }
+
+            var participant = await this.participantManager.GetParticipantForProject(projectId, userName);
+
+            if (participant == null)
             {
                 return null;
             }
@@ -140,11 +151,11 @@ namespace UI_DSM.Server.Managers.ReviewManager
                 .Where(x => x.Id == reviewId)
                 .SelectMany(x => x.ReviewObjectives)
                 .SelectMany(x => x.ReviewTasks)
-                .Count(x => x.Status == StatusKind.Open);
+                .Count(x => x.Status == StatusKind.Open && x.IsAssignedTo != null && x.IsAssignedTo.Id == participant.Id);
 
             var comments = this.EntityDbSet
                 .Where(x => x.Id == reviewId)
-                .SelectMany(x => x.ReviewObjectives)
+                .SelectMany(x => x.ReviewItems)
                 .SelectMany(x => x.Annotations)
                 .OfType<Comment>()
                 .Count();

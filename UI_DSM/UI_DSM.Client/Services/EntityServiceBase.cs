@@ -162,6 +162,36 @@ namespace UI_DSM.Client.Services
         }
 
         /// <summary>
+        ///     Handles the result of the <see cref="EntityRequestResponseDto" />
+        /// </summary>
+        /// <param name="entityRequest">The <see cref="EntityRequestResponseDto" /></param>
+        /// <returns>The <see cref="EntityRequestResponse{TEntity}" /></returns>
+        protected static EntitiesRequestResponses<TEntity> HandleEntitiesRequestResponse(EntityRequestResponseDto entityRequests)
+        {
+            return HandleEntitiesRequestResponse<TEntity>(entityRequests);
+        }
+
+        /// <summary>
+        ///     Handles the result of the <see cref="EntityRequestResponseDto" />
+        /// </summary>
+        /// <param name="entityRequest">The <see cref="EntityRequestResponseDto" /></param>
+        /// <typeparam name="TTEntity">An <see cref="Entity" /></typeparam>
+        /// <returns>The <see cref="EntityRequestResponse{TEntity}" /></returns>
+        protected static EntitiesRequestResponses<TTEntity> HandleEntitiesRequestResponse<TTEntity>(EntityRequestResponseDto entityRequest) where TTEntity : Entity
+        {
+            if (!entityRequest!.IsRequestSuccessful)
+            {
+                return EntitiesRequestResponses<TTEntity>.Fail(entityRequest.Errors);
+            }
+
+            var poco = Assembler.CreateEntities<TTEntity>(entityRequest.Entities).ToList();
+
+            return poco == null
+                ? EntitiesRequestResponses<TTEntity>.Fail(new List<string> { "Error during the creation of the entity" })
+                : EntitiesRequestResponses<TTEntity>.Success(poco);
+        }
+
+        /// <summary>
         ///     Updates a <see cref="TEntity" /> and gets the <see cref="EntityRequestResponseDto" /> response
         /// </summary>
         /// <param name="entity">The <see cref="TEntity" /> to update</param>

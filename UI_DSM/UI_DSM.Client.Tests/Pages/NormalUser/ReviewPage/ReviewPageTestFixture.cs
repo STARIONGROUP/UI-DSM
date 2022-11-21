@@ -38,14 +38,15 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewPage
         private IReviewPageViewModel viewModel;
         private IReviewObjectiveViewModel reviewObjectiveViewModel;
         private Mock<IReviewService> reviewService;
-
+        
         [SetUp]
         public void Setup()
         {
             this.context = new TestContext();
-            this.reviewObjectiveViewModel = new ReviewObjectiveViewModel(null);
+            this.context.ConfigureDevExpressBlazor();
+            this.reviewObjectiveViewModel = new ReviewObjectiveViewModel(null, null);
             this.reviewService = new Mock<IReviewService>();
-            this.viewModel = new ReviewPageViewModel(this.reviewService.Object, this.reviewObjectiveViewModel);
+            this.viewModel = new ReviewPageViewModel(this.reviewService.Object, this.reviewObjectiveViewModel, null);
             this.context.Services.AddSingleton(this.viewModel);
         }
 
