@@ -19,7 +19,7 @@ namespace UI_DSM.Client.Services.ThingService
 
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.WebUtilities;
-
+    using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Shared.Enumerator;
@@ -112,6 +112,7 @@ namespace UI_DSM.Client.Services.ThingService
                 case View.FunctionalTraceabilityToProductView:
                 case View.DocumentBased:
                 case View.InterfaceView:
+                case View.PhysicalFlowView:
                     things.AddRange(await this.GetThings(projectId, modelsId, ClassKind.ElementDefinition));
                     break;
                 case View.RequirementTraceabilityToProductView:

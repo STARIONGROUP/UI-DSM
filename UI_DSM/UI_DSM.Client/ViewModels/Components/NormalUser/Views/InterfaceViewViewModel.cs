@@ -103,6 +103,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         public List<FilterModel> AvailableRowFilters { get; } = new();
 
+
+        public event EventHandler FinishLoad;
+
         /// <summary>
         ///     Filters current rows
         /// </summary>
@@ -180,6 +183,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.Interfaces = new List<InterfaceRowViewModel>(this.allInterfaces.OrderBy(x => x.Id));
             this.ApplyVisibility();
             this.InitializesFilter();
+            this.FinishLoad?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

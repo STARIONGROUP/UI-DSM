@@ -103,5 +103,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         /// <param name="visibility">The new visibility</param>
         void SetProductsVisibility(bool visibility);
+
+        event EventHandler FinishLoad;
     }
 }
