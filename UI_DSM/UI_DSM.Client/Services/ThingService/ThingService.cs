@@ -112,6 +112,7 @@ namespace UI_DSM.Client.Services.ThingService
                 case View.FunctionalTraceabilityToProductView:
                 case View.DocumentBased:
                 case View.InterfaceView:
+                case View.PhysicalFlowView:
                     things.AddRange(await this.GetThings(projectId, modelsId, ClassKind.ElementDefinition));
                     break;
                 case View.RequirementTraceabilityToProductView:
