@@ -103,9 +103,13 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         public List<FilterModel> AvailableRowFilters { get; } = new();
 
+<<<<<<< HEAD
         /// <summary>
         /// Event fired when the viewmodel has load all the data. 
         /// </summary>
+=======
+
+>>>>>>> 0cf42d3be8c31db36e71a6e406a2731ad1d52848
         public event EventHandler OnFinishLoad;
 
         /// <summary>
