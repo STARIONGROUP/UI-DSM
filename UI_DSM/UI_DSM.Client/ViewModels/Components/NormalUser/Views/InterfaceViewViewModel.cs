@@ -104,7 +104,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public List<FilterModel> AvailableRowFilters { get; } = new();
 
 
-        public event EventHandler FinishLoad;
+        public event EventHandler OnFinishLoad;
 
         /// <summary>
         ///     Filters current rows
@@ -183,7 +183,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.Interfaces = new List<InterfaceRowViewModel>(this.allInterfaces.OrderBy(x => x.Id));
             this.ApplyVisibility();
             this.InitializesFilter();
-            this.FinishLoad?.Invoke(this, EventArgs.Empty);
+            this.OnFinishLoad?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -316,6 +316,63 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 DisplayName = "Product",
                 Values = availableProducts
             });
+        }
+
+        /// <summary>
+        /// Tries to get all the neighbours of a <see cref="ProductRowViewModel"/>
+        /// </summary>
+        /// <param name="productRow">the product to get the neighbours from</param>
+        /// <returns>A <see cref="IEnumerable{ProductRowViewModel}"/> with the neighbours, or null if the product don't have neighbours</returns>
+        /// <exception cref="Exception">if the source and target of a interface it's the same port</exception>
+        public IEnumerable<ProductRowViewModel> GetNeighbours(ProductRowViewModel productRow)
+        {
+            if (this.HasChildren(productRow))
+            {
+                var ports = this.LoadChildren(productRow);
+                var neighbours = new List<ProductRowViewModel>();
+
+                foreach (var port in ports)
+                {
+                    var sourceInterface = this.Interfaces.FirstOrDefault(i => i.SourceId.ToString() == port.Id, null);
+
+                    var targetInterface = this.Interfaces.FirstOrDefault(i => i.TargetId.ToString() == port.Id, null);
+
+                    if (sourceInterface != null && targetInterface != null)
+                    {
+                        throw new Exception("Source and Target of an interface shall be a different port");
+                    }
+                    else if (sourceInterface != null)
+                    {
+                        var targetPort = this.allPorts.FirstOrDefault(p => p.Id == sourceInterface.TargetId.ToString(), null);
+                        if (targetPort != null)
+                        {
+                            var targetPortContainer = this.Products.FirstOrDefault(pr => pr.Id == targetPort.ContainerId.ToString(), null);
+
+                            if (targetPortContainer != null)
+                            {
+                                neighbours.Add(targetPortContainer);
+                            }
+                        }
+                    }
+                    else if (targetInterface != null)
+                    {
+                        var sourcePort = this.allPorts.FirstOrDefault(p => p.Id == targetInterface.SourceId.ToString(), null);
+                        if (sourcePort != null)
+                        {
+                            var sourcePortContainer = this.Products.FirstOrDefault(pr => pr.Id == sourcePort.ContainerId.ToString(), null);
+
+                            if (sourcePortContainer != null)
+                            {
+                                neighbours.Add(sourcePortContainer);
+                            }
+                        }
+                    }
+                }
+
+                return neighbours.Distinct();
+            }
+
+            return null;
         }
     }
 }

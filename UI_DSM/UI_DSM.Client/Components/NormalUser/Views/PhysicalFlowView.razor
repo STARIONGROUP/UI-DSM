@@ -1,7 +1,4 @@
-﻿@using Blazor.Diagrams.Components;
-@using Blazor.Diagrams.Core
-@using Blazor.Diagrams.Core.Models
-<!--------------------------------------------------------------------------------------------------------
+﻿<!--------------------------------------------------------------------------------------------------------
 // PhysicalFlowView.razor
 // Copyright (c) 2022 RHEA System S.A.
 //
@@ -12,63 +9,14 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@using Blazor.Diagrams.Components;
+@using Blazor.Diagrams.Core
+@using Blazor.Diagrams.Core.Models
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
 @inherits GenericBaseView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IInterfaceViewViewModel>
 
 <CascadingValue Value="this.Diagram">
-    <DiagramCanvas Class="diagram-class"></DiagramCanvas>
+    <div id="diagram-parent">
+        <DiagramCanvas></DiagramCanvas>
+    </div>
 </CascadingValue>
-
-@code {
-
-
-    private Diagram Diagram { get; set; }
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        this.Diagram = new Diagram();
-
-        this.ViewModel.FinishLoad += (s, e) => { this.CreateNodes(); };
-    }
-
-    private void CreateNodes()
-    {
-        int x = 0;
-        int y = 0;
-
-        foreach(var product in this.ViewModel.Products)
-        {
-            var node = NewNode(x,y);
-            node.Title = product.Name;
-            x += 35;
-
-            if(x>150)
-            {
-                x = 0;
-                y += 35;
-            }
-
-            this.Diagram.Nodes.Add(node);
-        }
-
-        this.StateHasChanged();
-    }
-
-    private NodeModel NewNode(double x, double y)
-    {        
-        var node = new NodeModel(new Blazor.Diagrams.Core.Geometry.Point(x, y));
-        node.AddPort(PortAlignment.Bottom);
-        node.AddPort(PortAlignment.Top);
-        node.AddPort(PortAlignment.Left);
-        node.AddPort(PortAlignment.Right);
-        return node;
-    }
-}
-
-
-            <style>
-                .diagram-class{
-                    width: 100%;
-                    height: 100%;
-                }
-            </style>

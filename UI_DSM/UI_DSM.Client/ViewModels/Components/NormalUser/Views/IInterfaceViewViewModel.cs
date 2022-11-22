@@ -104,6 +104,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="visibility">The new visibility</param>
         void SetProductsVisibility(bool visibility);
 
-        event EventHandler FinishLoad;
+        /// <summary>
+        /// Tries to get all the neighbours of a <see cref="ProductRowViewModel"/>
+        /// </summary>
+        /// <param name="productRow">the product to get the neighbours from</param>
+        /// <returns>A <see cref="IEnumerable{ProductRowViewModel}"/> with the neighbours, or null if the product don't have neighbours</returns>
+        /// <exception cref="Exception">if the source and target of a interface it's the same port</exception>
+        IEnumerable<ProductRowViewModel> GetNeighbours(ProductRowViewModel productRow);
+
+        /// <summary>
+        /// Event fired when the viewmodel has load all the data. 
+        /// </summary>
+        event EventHandler OnFinishLoad;
     }
 }
