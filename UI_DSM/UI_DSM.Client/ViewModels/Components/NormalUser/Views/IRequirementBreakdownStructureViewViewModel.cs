@@ -16,6 +16,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using CDP4Common.CommonData;
 
     using UI_DSM.Client.Model;
+    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>
@@ -29,9 +30,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         IEnumerable<RequirementRowViewModel> Rows { get; }
 
         /// <summary>
-        ///     A collection of available <see cref="FilterModel" /> for rows
+        ///     The <see cref="IFilterViewModel" />
         /// </summary>
-        List<FilterModel> AvailableRowFilters { get; }
+        IFilterViewModel FilterViewModel { get; set; }
 
         /// <summary>
         ///     Filters current rows

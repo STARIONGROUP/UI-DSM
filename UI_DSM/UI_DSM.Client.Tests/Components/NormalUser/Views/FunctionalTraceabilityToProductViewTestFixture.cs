@@ -51,9 +51,11 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.context = new TestContext();
             this.context.ConfigureDevExpressBlazor();
             this.reviewItemService = new Mock<IReviewItemService>();
-            this.viewModel = new FunctionalTraceabilityToProductViewViewModel(this.reviewItemService.Object);
+
+            this.viewModel = new FunctionalTraceabilityToProductViewViewModel(this.reviewItemService.Object, 
+                new FilterViewModel(), new FilterViewModel());
+
             this.context.Services.AddSingleton(this.viewModel);
-            this.context.Services.AddTransient<IFilterViewModel, FilterViewModel>();
             this.context.Services.AddTransient<IConnectionVisibilitySelectorViewModel, ConnectionVisibilitySelectorViewModel>();
         }
 

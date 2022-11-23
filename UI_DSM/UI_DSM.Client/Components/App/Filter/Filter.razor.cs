@@ -33,7 +33,7 @@ namespace UI_DSM.Client.Components.App.Filter
         /// <summary>
         ///     The <see cref="IFilterViewModel" />
         /// </summary>
-        [Inject]
+        [Parameter]
         public IFilterViewModel ViewModel { get; set; }
 
         /// <summary>

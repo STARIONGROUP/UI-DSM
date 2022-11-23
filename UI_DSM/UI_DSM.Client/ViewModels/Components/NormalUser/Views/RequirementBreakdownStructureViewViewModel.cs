@@ -20,6 +20,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
@@ -37,15 +38,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Initializes a new instance of the <see cref="RequirementBreakdownStructureViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
-        public RequirementBreakdownStructureViewViewModel(IReviewItemService reviewItemService) : base(reviewItemService)
+        /// <param name="filterViewModel">The <see cref="IFilterViewModel" /></param>
+        public RequirementBreakdownStructureViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel) : base(reviewItemService)
         {
             this.Rows = new List<RequirementRowViewModel>();
+            this.FilterViewModel = filterViewModel;
         }
 
         /// <summary>
-        ///     A collection of available <see cref="FilterModel" /> for rows
+        ///     The <see cref="IFilterViewModel" />
         /// </summary>
-        public List<FilterModel> AvailableRowFilters { get; } = new();
+        public IFilterViewModel FilterViewModel { get; set; }
 
         /// <summary>
         ///     Initialize this view model properties
@@ -74,38 +77,15 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Initializes the <see cref="AvailableRowFilters"/> for <see cref="RequirementRowViewModel" /> rows
+        ///     Tries to set the <see cref="IBaseViewViewModel.SelectedElement" /> to the previous selected item
         /// </summary>
-        private void InitializesFilter()
+        /// <param name="selectedItem">The previously selectedItem</param>
+        public override void TrySetSelectedItem(object selectedItem)
         {
-            this.AvailableRowFilters.Clear();
-
-            var availableRequirementsSpecification = new List<DefinedThing>(this.allRows
-                .Select(x => x.Thing.Container as RequirementsSpecification)
-                .Where(x => x != null)
-                .DistinctBy(x => x.Iid));
-
-            this.AvailableRowFilters.Add(new FilterModel
+            if (selectedItem is RequirementRowViewModel requirement)
             {
-                ClassKind = ClassKind.RequirementsSpecification,
-                DisplayName = "Specification",
-                Values = availableRequirementsSpecification
-            });
-
-            var requirementTypes = this.allRows.Select(x => x.RequirementType)
-                .Distinct();
-
-            var availableRequirementTypes = new List<DefinedThing>(requirementTypes.Select(x => new TextParameterType()
-            {
-                Name = x
-            }));
-
-            this.AvailableRowFilters.Add(new FilterModel()
-            {
-                ClassKind = ClassKind.TextParameterType,
-                DisplayName = "Requirement Type",
-                Values = availableRequirementTypes
-            });
+                this.SelectedElement = this.Rows.FirstOrDefault(x => x.ThingId == requirement.ThingId);
+            }
         }
 
         /// <summary>
@@ -125,5 +105,42 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     A collection of <see cref="Requirement" /> that has been filtered
         /// </summary>
         public IEnumerable<RequirementRowViewModel> Rows { get; private set; }
+
+        /// <summary>
+        ///     Initializes the filter for <see cref="RequirementRowViewModel" /> rows
+        /// </summary>
+        private void InitializesFilter()
+        {
+            var availableRowFilters = new List<FilterModel>();
+
+            var availableRequirementsSpecification = new List<DefinedThing>(this.allRows
+                .Select(x => x.Thing.Container as RequirementsSpecification)
+                .Where(x => x != null)
+                .DistinctBy(x => x.Iid));
+
+            availableRowFilters.Add(new FilterModel
+            {
+                ClassKind = ClassKind.RequirementsSpecification,
+                DisplayName = "Specification",
+                Values = availableRequirementsSpecification
+            });
+
+            var requirementTypes = this.allRows.Select(x => x.RequirementType)
+                .Distinct();
+
+            var availableRequirementTypes = new List<DefinedThing>(requirementTypes.Select(x => new TextParameterType
+            {
+                Name = x
+            }));
+
+            availableRowFilters.Add(new FilterModel
+            {
+                ClassKind = ClassKind.TextParameterType,
+                DisplayName = "Requirement Type",
+                Values = availableRequirementTypes
+            });
+
+            this.FilterViewModel.InitializeProperties(availableRowFilters);
+        }
     }
 }

@@ -10,6 +10,8 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @page "/Project/{ProjectId}/Review/{ReviewId}/ReviewObjective/{ReviewObjectiveId}/ReviewTask/{ReviewTaskId}"
+@using UI_DSM.Shared.Wrappers
+@using UI_DSM.Shared.Enumerator
 
 <PageTitle>Task | UI-DSM</PageTitle>
 <div class="task-page">
@@ -31,7 +33,8 @@
 				<AppAccordion Label="Tasks">
 					@foreach (var task in this.ViewModel.ReviewObjective.ReviewTasks.OrderBy(x => x.TaskNumber))
 					{
-						<ReviewTaskCard ReviewTask="task"/>
+						<ReviewTaskCard UseNavLink="@(task.Id != this.ViewModel.ReviewTask.Id)" 
+						                ReviewTask="task" ProjectId="@this.ProjectId" ReviewId="@this.ReviewId" ReviewObjectiveId="@this.ReviewObjectiveId"/>
 					}
 				</AppAccordion>
 			</aside>
@@ -43,9 +46,28 @@
 				<div class="task-page__header">
 					<h2>@this.ViewModel.ReviewTask.Description</h2>
 					<div class="task-page__actions">
-						<AppButton Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success">
-							<FeatherCheckCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Done</span>
+						<AppButton Id="view-selector-button" Label="Select view" Type="button" Click="@this.OpenViewSelector">
+							<FeatherEye Size="20" Color="currentColor" StrokeWidth="2"/> <span>@this.ViewModel.CurrentView</span>
 						</AppButton>
+						<DxDropDown @bind-IsOpen="@this.ViewModel.ViewSelectorVisible"
+						            Width="200"
+						            MaxHeight="500"
+						            PositionTarget="#view-selector-button"
+						            PositionMode="DropDownPositionMode.Bottom"
+						            PreventCloseOnPositionTargetClick="true">
+							<BodyTemplate>
+								<DxListBox Data="@this.ViewModel.AvailableViews" TextFieldName="@nameof(ViewWrapper.ViewName)"
+								           @bind-Value="@this.ViewModel.SelectedView"/>
+							</BodyTemplate>
+						</DxDropDown>
+						
+						@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask))
+						{
+							<AppButton Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success">
+								<FeatherCheckCircle Size="20" Color="currentColor" StrokeWidth="2"/> <span>Done</span>
+							</AppButton>
+						}
+						
 					</div>
 				</div>
 				<div class="task-page__body-inner">
@@ -55,6 +77,8 @@
 		}
 		<aside class="task-page__sidebar task-page__sidebar__right">
 			<SelectedItemCard @ref="this.SelectedItemCard"/>
+			<RelatedViews MainRelatedView="@this.ViewModel.GetMainRelatedView()" OtherRelatedViews="@this.ViewModel.GetOtherRelatedViews()"
+			               OnViewSelect="@this.OnViewSelect"/>
 			<Comments @ref="this.Comments"/>
 		</aside>
 	}

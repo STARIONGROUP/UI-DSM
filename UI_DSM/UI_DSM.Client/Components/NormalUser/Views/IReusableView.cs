@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IFunctionalTraceabilityToProductViewViewModel.cs" company="RHEA System S.A.">
+// <copyright file="IReusableView.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,14 +11,18 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
+namespace UI_DSM.Client.Components.NormalUser.Views
 {
-    using UI_DSM.Client.ViewModels.App.Filter;
-
     /// <summary>
-    ///     Interface definition for <see cref="FunctionalTraceabilityToProductViewViewModel" />
+    ///     Interface that defines that a <see cref="BaseView" /> can reuse components from other view
     /// </summary>
-    public interface IFunctionalTraceabilityToProductViewViewModel : IHaveTechnologyViewViewModel
+    public interface IReusableView
     {
+        /// <summary>
+        ///     Tries to copy components from another <see cref="BaseView" />
+        /// </summary>
+        /// <param name="otherView">The other <see cref="BaseView" /></param>
+        /// <returns>Value indicating if it could copy components</returns>
+        Task<bool> CopyComponents(BaseView otherView);
     }
 }

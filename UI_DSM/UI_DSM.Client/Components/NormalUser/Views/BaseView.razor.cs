@@ -45,5 +45,11 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             await this.InvokeAsync(this.StateHasChanged);
         }
+
+        /// <summary>
+        ///     Tries to set the selected item to the ViewModel
+        /// </summary>
+        /// <param name="selectedItem">The previous selected <see cref="object" /></param>
+        public abstract void TrySetSelectedItem(object selectedItem);
     }
 }

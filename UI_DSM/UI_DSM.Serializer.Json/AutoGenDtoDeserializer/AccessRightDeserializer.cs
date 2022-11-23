@@ -33,11 +33,12 @@ namespace UI_DSM.Serializer.Json
         {
             return value switch
             {
-                "MANAGEPARTICIPANT" => AccessRight.ManageParticipant,
-                "CREATETASK" => AccessRight.CreateTask,
-                "DELETETASK" => AccessRight.DeleteTask,
-                "UPDATETASK" => AccessRight.UpdateTask,
                 "REVIEWTASK" => AccessRight.ReviewTask,
+                "CREATEREVIEW" => AccessRight.CreateReview,
+                "DELETEREVIEW" => AccessRight.DeleteReview,
+                "CREATEREVIEWOBJECTIVE" => AccessRight.CreateReviewObjective,
+                "DELETEREVIEWOBJECTIVE" => AccessRight.DeleteReviewObjective,
+                "ASSIGNTASK" => AccessRight.AssignTask,
                 _ => throw new ArgumentException($"{value} is not a valid AccessRight", nameof(value))
             };
         }

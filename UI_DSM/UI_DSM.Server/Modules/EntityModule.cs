@@ -25,6 +25,7 @@ namespace UI_DSM.Server.Modules
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
@@ -354,6 +355,30 @@ namespace UI_DSM.Server.Modules
                     "Invalid container ID"
                 };
 
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        ///     Verifies that a <see cref="Participant" /> is allowed to do an action
+        /// </summary>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="participant">The current <see cref="Participant" /></param>
+        /// <param name="requestedAccess">The requested <see cref="AccessRight" /></param>
+        /// <returns>A <see cref="Task" /> with the assert</returns>
+        protected static async Task<bool> IsAllowedTo(HttpContext context, Participant participant, AccessRight requestedAccess)
+        {
+            if (!participant.IsAllowedTo(requestedAccess))
+            {
+                var requestResponse = new EntityRequestResponseDto
+                {
+                    Errors = new List<string> { "You don't have requested access right" }
+                };
+
+                context.Response.StatusCode = 403;
+                await context.Response.Negotiate(requestResponse);
                 return false;
             }
 

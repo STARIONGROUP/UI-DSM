@@ -20,6 +20,7 @@ namespace UI_DSM.Server.Modules
     using UI_DSM.Server.Managers.AnnotatableItemManager;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -85,6 +86,11 @@ namespace UI_DSM.Server.Modules
             var participant = await this.GetParticipantBasedOnRequest(context, this.ContainerRouteKey);
 
             if (participant == null)
+            {
+                return;
+            }
+
+            if (!(await IsAllowedTo(context, participant, AccessRight.ReviewTask)))
             {
                 return;
             }

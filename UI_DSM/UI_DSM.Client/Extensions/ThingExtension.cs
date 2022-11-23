@@ -237,8 +237,7 @@ namespace UI_DSM.Client.Extensions
         /// <returns>The asserts</returns>
         public static bool IsPort(this ElementBase elementBase)
         {
-            //   return elementBase is ElementUsage && elementBase.IsCategorizedBy("ports");
-            return elementBase is ElementUsage && elementBase.Name.Contains("Port_");
+            return elementBase is ElementUsage && elementBase.IsCategorizedBy("ports");
         }
 
         /// <summary>
@@ -425,7 +424,7 @@ namespace UI_DSM.Client.Extensions
         /// <returns>A collection of <see cref="BinaryRelationship" /></returns>
         public static List<BinaryRelationship> GetInterfacesOfPort(this ElementUsage port)
         {
-            return port.QueryRelationships("interfaces").Where(x => x.IsInterface())
+            return port.QueryRelationships.OfType<BinaryRelationship>().Where(x => x.IsInterface())
                 .ToList();
         }
 
@@ -441,10 +440,7 @@ namespace UI_DSM.Client.Extensions
                 return false;
             }
 
-            var relationShips = port.QueryRelationships("interfaces");
-
-            return relationShips.Any(x => x.Source is ElementUsage sourceBase && sourceBase.IsPort()
-                                                                              && x.Target is ElementUsage targetBase && targetBase.IsPort());
+            return port.GetInterfacesOfPort().Any();
         }
 
         /// <summary>

@@ -31,6 +31,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
     using TestContext = Bunit.TestContext;
@@ -113,6 +114,16 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 var hyperlink = renderer.FindComponents<HyperLinkCard>()[0];
                 await renderer.InvokeAsync(() => hyperlink.Instance.OnClick.InvokeAsync(hyperlink.Instance.Row));
+                Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+
+                this.viewModel.TrySetSelectedItem(new RequirementRowViewModel(new Requirement()
+                {
+                    Iid = Guid.NewGuid()
+                }, null));
+
+                Assert.That(this.viewModel.SelectedElement, Is.Not.TypeOf<RequirementRowViewModel>());
+
+                this.viewModel.TrySetSelectedItem(hyperlink.Instance.Row);
                 Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
             }
             catch

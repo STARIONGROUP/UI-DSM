@@ -13,7 +13,6 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
 {
-    using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
     using CDP4Common.SiteDirectoryData;
 
@@ -34,6 +33,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         ///     The target of the <see cref="BinaryRelationship" />
         /// </summary>
         private ElementUsage target;
+
+        /// <summary>
+        /// The container of the source
+        /// </summary>
+        private ElementDefinition sourceContainer;
+
+        /// <summary>
+        /// The container of the target
+        /// </summary>
+        private ElementDefinition targetContainer;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="InterfaceRowViewModel" /> class.
@@ -103,12 +112,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     The interface end of the Target
         /// </summary>
-        public string TargetEnd => this.target?.InterfaceEnd.ToString();
+        public string TargetEnd => $"{this.targetContainer.Name}.{this.target?.Name} ({this.target?.InterfaceEnd})";
 
         /// <summary>
         ///     The interface end of the Source
         /// </summary>
-        public string SourceEnd => this.source?.InterfaceEnd.ToString();
+        public string SourceEnd => $"{this.sourceContainer.Name}.{this.source?.Name} ({this.source?.InterfaceEnd})";
 
         /// <summary>
         ///     A interface nature
@@ -122,27 +131,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         {
             this.source = this.Thing.Source as ElementUsage;
             this.target = this.Thing.Target as ElementUsage;
-
-            if (!string.IsNullOrEmpty(this.Thing.Name))
-            {
-                this.ComputedName = this.Thing.Name;
-            }
-            else
-            {
-                var sourceName = FormatName(this.source);
-                var targetName = FormatName(this.target);
-                this.ComputedName = $"{sourceName} → {targetName}";
-            }
-        }
-
-        /// <summary>
-        ///     Format the name string for display of a <see cref="DefinedThing" />
-        /// </summary>
-        /// <param name="thing">The <see cref="DefinedThing" /></param>
-        /// <returns>The <see cref="string" /></returns>
-        private static string FormatName(DefinedThing thing)
-        {
-            return $"{thing.Name}{thing.ShortName}";
+            this.sourceContainer = this.source?.Container as ElementDefinition;
+            this.targetContainer = this.target?.Container as ElementDefinition;
+            this.ComputedName = !string.IsNullOrEmpty(this.Thing.Name) ? this.Thing.Name : $"{this.SourceEnd} → {this.TargetEnd}";
         }
     }
 }

@@ -19,6 +19,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
@@ -32,7 +33,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Initializes a new instance of the <see cref="RequirementTraceabilityToRequirementViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
-        public RequirementTraceabilityToRequirementViewViewModel(IReviewItemService reviewItemService) : base(reviewItemService)
+        /// <param name="rowsFilter">The <see cref="IFilterViewModel" /> for rows</param>
+        /// <param name="columnsFilter">The <see cref="IFilterViewModel" /> for columns</param>
+        public RequirementTraceabilityToRequirementViewViewModel(IReviewItemService reviewItemService, IFilterViewModel rowsFilter, IFilterViewModel columnsFilter)
+            : base(reviewItemService, rowsFilter, columnsFilter)
         {
         }
 
@@ -56,7 +60,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
         {
             await base.InitializeProperties(things, projectId, reviewId);
-            
+
             var requirements = this.Things.OfType<RequirementsSpecification>()
                 .SelectMany(x => x.Requirement)
                 .OrderBy(x => x.ShortName)
@@ -81,8 +85,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             var reviewItemsForRelationships = reviewItems.Where(x => relationships.Any(rel => x.ThingId == rel.Iid)).ToList();
 
             this.PopulateRelationships(rows, columns, reviewItemsForRelationships);
-            InitializesFilterForRequirementRows(this.AvailableRowFilters, rows.OfType<RequirementRowViewModel>());
-            InitializesFilterForRequirementRows(this.AvailableColumnFilters, columns.OfType<RequirementRowViewModel>());
+            InitializesFilterForRequirementRows(this.RowsFilterViewModel, rows.OfType<RequirementRowViewModel>());
+            InitializesFilterForRequirementRows(this.ColumnsFilterViewModel, columns.OfType<RequirementRowViewModel>());
             this.TraceabilityTableViewModel.InitializeProperties(rows, columns);
         }
 

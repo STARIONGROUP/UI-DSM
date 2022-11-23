@@ -11,7 +11,7 @@
 -------------------------------------------------------------------------------------------------------->
 @using UI_DSM.Shared.Enumerator
 
-<div class="task-item">
+<div class="task-item" @onclick="() => this.Navigate()">
 	<div class="task-item__header">
 		<h2 class="h4">@(this.ReviewTask.Description)</h2>
 		@if (this.ReviewTask.Status == StatusKind.Done)

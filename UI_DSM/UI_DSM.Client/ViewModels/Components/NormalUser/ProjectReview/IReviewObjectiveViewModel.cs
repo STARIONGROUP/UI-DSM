@@ -13,8 +13,9 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 {
-    using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using Microsoft.AspNetCore.Components;
+
+    using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -51,6 +52,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         ///     Gets or sets the <see cref="NavigationManager" />
         /// </summary>
         NavigationManager NavigationManager { get; set; }
+
+        /// <summary>
+        ///     The current <see cref="Participant" />
+        /// </summary>
+        Participant Participant { get; set; }
 
         /// <summary>
         ///     Navigate to the page dedicated to the given <see cref="ReviewObjective" />

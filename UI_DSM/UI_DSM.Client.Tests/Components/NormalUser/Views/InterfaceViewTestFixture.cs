@@ -37,11 +37,13 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
     using BinaryRelationship = CDP4Common.DTO.BinaryRelationship;
     using ElementDefinition = CDP4Common.DTO.ElementDefinition;
     using ElementUsage = CDP4Common.DTO.ElementUsage;
+    using Requirement = CDP4Common.EngineeringModelData.Requirement;
     using TestContext = Bunit.TestContext;
 
     [TestFixture]
@@ -57,9 +59,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.context = new TestContext();
             this.context.ConfigureDevExpressBlazor();
             this.reviewItemService = new Mock<IReviewItemService>();
-            this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object);
+            this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel());
             this.context.Services.AddSingleton(this.viewModel);
-            this.context.Services.AddTransient<IFilterViewModel, FilterViewModel>();
             this.context.Services.AddTransient<IConnectionVisibilitySelectorViewModel, ConnectionVisibilitySelectorViewModel>();
         }
 
@@ -119,7 +120,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Iid = Guid.NewGuid(),
                     Name = "Port_ALL",
                     ElementDefinition = portDefinition.Iid,
-                    InterfaceEnd = InterfaceEndKind.INPUT
+                    InterfaceEnd = InterfaceEndKind.INPUT,
+                    Category = {portCategoryId}
                 };
 
                 var targetPort = new ElementUsage()
@@ -127,7 +129,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Iid = Guid.NewGuid(),
                     Name = "Port_BLL",
                     ElementDefinition = portDefinition.Iid,
-                    InterfaceEnd = InterfaceEndKind.OUTPUT
+                    InterfaceEnd = InterfaceEndKind.OUTPUT,
+                    Category = { portCategoryId }
                 };
 
                 var accelorometerBox = new ElementDefinition()
@@ -224,6 +227,25 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 this.viewModel.ProductVisibilityState.CurrentState = ConnectionToVisibilityState.NotConnected;
                 Assert.That(this.viewModel.Products, Has.Count.EqualTo(1));
+
+                this.viewModel.TrySetSelectedItem(this.viewModel.Interfaces.First());
+                Assert.That(this.viewModel.SelectedElement, Is.TypeOf<InterfaceRowViewModel>());
+
+                this.viewModel.TrySetSelectedItem(this.viewModel.Products.First());
+                Assert.That(this.viewModel.SelectedElement, Is.TypeOf<ProductRowViewModel>());
+
+                this.viewModel.TrySetSelectedItem(this.viewModel.LoadChildren(this.viewModel.Products.First()).First());
+                Assert.That(this.viewModel.SelectedElement, Is.TypeOf<PortRowViewModel>());
+
+                this.viewModel.TrySetSelectedItem(new RequirementRowViewModel(new Requirement()
+                {
+                    Iid = Guid.NewGuid()
+                }, null));
+
+                Assert.That(this.viewModel.SelectedElement, Is.Not.TypeOf<RequirementRowViewModel>());
+
+                this.viewModel.TrySetSelectedItem(null);
+                Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
             }
             catch
             {

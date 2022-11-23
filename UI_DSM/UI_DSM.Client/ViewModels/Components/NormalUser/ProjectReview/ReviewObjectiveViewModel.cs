@@ -14,14 +14,15 @@
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 {
     using DynamicData;
+
     using Microsoft.AspNetCore.Components;
+
     using ReactiveUI;
-    using System.Linq;
+
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Services.ReviewObjectiveService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Shared.DTO.Common;
-    using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -29,34 +30,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
     /// </summary>
     public class ReviewObjectiveViewModel : ReactiveObject, IReviewObjectiveViewModel
     {
-        /// <summary>
-        ///     Backing field for <see cref="Review" />
-        /// </summary>
-        private Review review;
-
-        /// <summary>
-        ///     The <see cref="Review" />
-        /// </summary>
-        public Review Review
-        {
-            get => this.review;
-            set => this.RaiseAndSetIfChanged(ref this.review, value);
-        }
-
-        /// <summary>
-        ///     Backing field for <see cref="Project" />
-        /// </summary>
-        private Project project;
-
-        /// <summary>
-        ///     The <see cref="Project" />
-        /// </summary>
-        public Project Project
-        {
-            get => this.project;
-            set => this.RaiseAndSetIfChanged(ref this.project, value);
-        }
-
         /// <summary>
         ///     The <see cref="IReviewService" />
         /// </summary>
@@ -66,6 +39,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         ///     Backing field for <see cref="IsOnCreationMode" />
         /// </summary>
         private bool isOnCreationMode;
+
+        /// <summary>
+        ///     Backing field for <see cref="Project" />
+        /// </summary>
+        private Project project;
+
+        /// <summary>
+        ///     Backing field for <see cref="Review" />
+        /// </summary>
+        private Review review;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectReviewViewModel" /> class.
@@ -81,6 +64,24 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
             {
                 OnValidSubmit = new EventCallbackFactory().Create(this, this.CreateReviewObjective)
             };
+        }
+
+        /// <summary>
+        ///     The <see cref="Review" />
+        /// </summary>
+        public Review Review
+        {
+            get => this.review;
+            set => this.RaiseAndSetIfChanged(ref this.review, value);
+        }
+
+        /// <summary>
+        ///     The <see cref="Project" />
+        /// </summary>
+        public Project Project
+        {
+            get => this.project;
+            set => this.RaiseAndSetIfChanged(ref this.project, value);
         }
 
         /// <summary>
@@ -108,6 +109,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         public NavigationManager NavigationManager { get; set; }
 
         /// <summary>
+        ///     The current <see cref="Participant" />
+        /// </summary>
+        public Participant Participant { get; set; }
+
+        /// <summary>
         ///     Navigate to the page dedicated to the given <see cref="ReviewObjective" />
         /// </summary>
         /// <param name="reviewObjective">The <see cref="ReviewObjective" /></param>
@@ -115,7 +121,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         {
             this.NavigationManager.NavigateTo($"{this.NavigationManager.Uri}/ReviewObjective/{reviewObjective.Id}");
         }
-
 
         /// <summary>
         ///     Opens the <see cref="ReviewObjectiveCreation" /> as a popup

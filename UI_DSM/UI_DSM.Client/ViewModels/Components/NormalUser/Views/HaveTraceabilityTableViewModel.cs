@@ -22,6 +22,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
@@ -44,9 +45,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
-        protected HaveTraceabilityTableViewModel(IReviewItemService reviewItemService) : base(reviewItemService)
+        /// <param name="rowsFilter">The <see cref="IFilterViewModel" /> for rows</param>
+        /// <param name="columnsFilter">The <see cref="IFilterViewModel" /> for columns</param>
+        protected HaveTraceabilityTableViewModel(IReviewItemService reviewItemService, IFilterViewModel rowsFilter, IFilterViewModel columnsFilter)
+            : base(reviewItemService)
         {
             this.InitializeTable();
+            this.RowsFilterViewModel = rowsFilter;
+            this.ColumnsFilterViewModel = columnsFilter;
         }
 
         /// <summary>
@@ -60,19 +66,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         protected abstract string TraceCategoryName { get; }
 
         /// <summary>
+        ///     The <see cref="IFilterViewModel" /> for rows
+        /// </summary>
+        public IFilterViewModel RowsFilterViewModel { get; }
+
+        /// <summary>
+        ///     The <see cref="IFilterViewModel" /> for columns
+        /// </summary>
+        public IFilterViewModel ColumnsFilterViewModel { get; }
+
+        /// <summary>
         ///     The <see cref="ITraceabilityTableViewModel" />
         /// </summary>
         public ITraceabilityTableViewModel TraceabilityTableViewModel { get; private set; }
-
-        /// <summary>
-        ///     A collection of available <see cref="FilterModel" /> for rows
-        /// </summary>
-        public List<FilterModel> AvailableRowFilters { get; } = new();
-
-        /// <summary>
-        ///     A collection of available <see cref="FilterModel" /> for columns
-        /// </summary>
-        public List<FilterModel> AvailableColumnFilters { get; } = new();
 
         /// <summary>
         ///     Apply a filtering on rows
@@ -92,6 +98,20 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public void Dispose()
         {
             this.disposables.ForEach(x => x.Dispose());
+        }
+
+        /// <summary>
+        ///     Tries to set the <see cref="IBaseViewViewModel.SelectedElement" /> to the previous selected item
+        /// </summary>
+        /// <param name="selectedItem">The previously selectedItem</param>
+        public override void TrySetSelectedItem(object selectedItem)
+        {
+            if (selectedItem is IHaveThingRowViewModel row)
+            {
+                var existingRow = this.TraceabilityTableViewModel.VisibleRows.FirstOrDefault(x => x.ThingId == row.ThingId);
+                existingRow ??= this.TraceabilityTableViewModel.VisibleColumns.FirstOrDefault(x => x.ThingId == row.ThingId);
+                this.TraceabilityTableViewModel.SelectedElement = existingRow;
+            }
         }
 
         /// <summary>
@@ -158,7 +178,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             foreach (var elementBaseRowViewModel in collectionToFilter)
             {
                 elementBaseRowViewModel.IsVisible = selectedOwners.Any(x => x.DefinedThing.Iid == elementBaseRowViewModel.Thing.Owner.Iid)
-                    && selectedContainers.Any(x => x.DefinedThing.Iid == elementBaseRowViewModel.ContainerId);
+                                                    && selectedContainers.Any(x => x.DefinedThing.Iid == elementBaseRowViewModel.ContainerId);
             }
         }
 
@@ -173,19 +193,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Initializes the <paramref name="filterModels" /> for <see cref="RequirementRowViewModel" /> rows
+        ///     Initializes the <paramref name="filterViewModel" /> for <see cref="RequirementRowViewModel" /> rows
         /// </summary>
-        /// <param name="filterModels">A collection of <see cref="FilterModel" /></param>
+        /// <param name="filterViewModel">The <see cref="IFilterViewModel" /></param>
         /// <param name="rows">The collection of <see cref="RequirementRowViewModel" /></param>
-        protected static void InitializesFilterForRequirementRows(List<FilterModel> filterModels, IEnumerable<RequirementRowViewModel> rows)
+        protected static void InitializesFilterForRequirementRows(IFilterViewModel filterViewModel, IEnumerable<RequirementRowViewModel> rows)
         {
-            filterModels.Clear();
+            var filters = new List<FilterModel>();
             rows = rows.ToList();
 
             var availableOwners = new List<DefinedThing>(rows
                 .Select(x => x.Thing.Owner).DistinctBy(x => x.Iid));
 
-            filterModels.Add(new FilterModel
+            filters.Add(new FilterModel
             {
                 ClassKind = ClassKind.DomainOfExpertise,
                 DisplayName = "Owner",
@@ -197,28 +217,30 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 .Where(x => x != null)
                 .DistinctBy(x => x.Iid));
 
-            filterModels.Add(new FilterModel
+            filters.Add(new FilterModel
             {
                 ClassKind = ClassKind.RequirementsSpecification,
                 DisplayName = "Specification",
                 Values = availableRequirementsSpecification
             });
+
+            filterViewModel.InitializeProperties(filters);
         }
 
         /// <summary>
-        ///     Initializes the <paramref name="filterModels" /> for <see cref="ElementBaseRowViewModel" /> rows
+        ///     Initializes the <paramref name="filterViewModel" /> for <see cref="ElementBaseRowViewModel" /> rows
         /// </summary>
-        /// <param name="filterModels">A collection of <see cref="FilterModel" /></param>
+        /// <param name="filterViewModel">The <see cref="IFilterViewModel" /></param>
         /// <param name="rows">The collection of <see cref="ElementBaseRowViewModel" /></param>
-        protected static void InitializesFilterForElementBaseRows(List<FilterModel> filterModels, IEnumerable<ElementBaseRowViewModel> rows)
+        protected static void InitializesFilterForElementBaseRows(IFilterViewModel filterViewModel, IEnumerable<ElementBaseRowViewModel> rows)
         {
-            filterModels.Clear();
+            var filters = new List<FilterModel>();
             rows = rows.ToList();
 
             var availableOwners = new List<DefinedThing>(rows
                 .Select(x => x.Thing.Owner).DistinctBy(x => x.Iid));
 
-            filterModels.Add(new FilterModel
+            filters.Add(new FilterModel
             {
                 ClassKind = ClassKind.DomainOfExpertise,
                 DisplayName = "Owner",
@@ -228,12 +250,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             var availableContainers = new List<DefinedThing>(rows.Where(x => x.Thing.Container is ElementDefinition)
                 .Select(x => x.Thing.Container as DefinedThing).DistinctBy(x => x!.Iid));
 
-            filterModels.Add(new FilterModel
+            filters.Add(new FilterModel
             {
                 ClassKind = ClassKind.ElementDefinition,
                 DisplayName = "Container",
                 Values = availableContainers
             });
+
+            filterViewModel.InitializeProperties(filters);
         }
 
         /// <summary>

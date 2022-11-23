@@ -41,7 +41,7 @@ namespace UI_DSM.Serializer.Json.Tests
             {
                 AccessRights = new List<AccessRight>
                 {
-                    AccessRight.CreateTask,
+                    AccessRight.CreateReview,
                     AccessRight.ReviewTask
                 },
                 RoleName = "A role"
@@ -181,7 +181,7 @@ namespace UI_DSM.Serializer.Json.Tests
             {
                 AccessRights = new List<AccessRight>
                 {
-                    AccessRight.CreateTask,
+                    AccessRight.CreateReview,
                     AccessRight.ReviewTask
                 },
                 RoleName = "A role"

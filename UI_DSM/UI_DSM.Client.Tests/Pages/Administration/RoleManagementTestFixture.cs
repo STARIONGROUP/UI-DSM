@@ -77,8 +77,8 @@ namespace UI_DSM.Client.Tests.Pages.Administration
                     RoleName = "Project manager",
                     AccessRights = new List<AccessRight>()
                     {
-                        AccessRight.ManageParticipant,
-                        AccessRight.CreateTask
+                        AccessRight.AssignTask,
+                        AccessRight.CreateReview
                     }
                 });
 
@@ -112,7 +112,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
                
                 this.viewModel.RoleCreationViewModel.SelectedAccessRights = new List<AccessRightWrapper>()
                 {
-                    new(AccessRight.ManageParticipant)
+                    new(AccessRight.AssignTask)
                 };
 
                 this.viewModel.RoleCreationViewModel.Role.RoleName = "Project manager";

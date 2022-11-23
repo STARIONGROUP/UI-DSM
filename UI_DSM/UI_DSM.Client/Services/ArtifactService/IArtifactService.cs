@@ -29,5 +29,13 @@ namespace UI_DSM.Client.Services.ArtifactService
         /// <param name="modelName">The name of the model</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{Model}" /> result</returns>
         Task<EntityRequestResponse<Model>> UploadModel(Guid projectId, string temporaryFileName, string modelName);
+
+        /// <summary>
+        ///     Gets all <see cref="Artifact" />s contained inside a <see cref="Project" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
+        /// <param name="deepLevel">The deep level to get associated entities from the server</param>
+        /// <returns>A <see cref="Task" /> with the collection of <see cref="Artifact" /></returns>
+        Task<List<Artifact>> GetArtifactsOfProject(Guid projectId, int deepLevel = 0);
     }
 }

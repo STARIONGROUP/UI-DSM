@@ -19,6 +19,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
@@ -32,7 +33,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
-        public FunctionalTraceabilityToProductViewViewModel(IReviewItemService reviewItemService) : base(reviewItemService)
+        /// <param name="rowsFilter">The <see cref="IFilterViewModel" /> for rows</param>
+        /// <param name="columnsFilter">The <see cref="IFilterViewModel" /> for columns</param>
+        public FunctionalTraceabilityToProductViewViewModel(IReviewItemService reviewItemService, IFilterViewModel rowsFilter, IFilterViewModel columnsFilter)
+            : base(reviewItemService, rowsFilter, columnsFilter)
         {
         }
 
@@ -105,8 +109,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             var reviewItemsForRelationships = reviewItems.Where(x => relationships.Any(rel => x.ThingId == rel.Iid)).ToList();
 
             this.PopulateRelationships(rows, columns, reviewItemsForRelationships);
-            InitializesFilterForElementBaseRows(this.AvailableRowFilters, rows.OfType<ProductRowViewModel>());
-            InitializesFilterForElementBaseRows(this.AvailableColumnFilters, columns.OfType<FunctionRowViewModel>());
+            InitializesFilterForElementBaseRows(this.RowsFilterViewModel, rows.OfType<ProductRowViewModel>());
+            InitializesFilterForElementBaseRows(this.ColumnsFilterViewModel, columns.OfType<FunctionRowViewModel>());
             this.TraceabilityTableViewModel.InitializeProperties(rows, columns);
         }
     }

@@ -19,13 +19,30 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     /// <summary>
     ///     Component for the <see cref="View.TrlView" />
     /// </summary>
-    public partial class TrlView: ElementBreakdownStructureView<IProductBreakdownStructureViewViewModel>
+    public partial class TrlView: ElementBreakdownStructureView<IProductBreakdownStructureViewViewModel>, IReusableView
     {
         /// <summary>
         ///     Hides columns on start
         /// </summary>
         protected override void HideColumnsAtStart()
         {
+        }
+
+        /// <summary>
+        ///     Tries to copy components from another <see cref="BaseView" />
+        /// </summary>
+        /// <param name="otherView">The other <see cref="BaseView" /></param>
+        /// <returns>A <see cref="Task"/> with the value indicating if it could copy components</returns>
+        public async Task<bool> CopyComponents(BaseView otherView)
+        {
+            if (otherView is not ProductBreakdownStructureView productBreakdown)
+            {
+                return false;
+            }
+
+            this.ViewModel = productBreakdown.ViewModel;
+            await this.HasChanged();
+            return true;
         }
     }
 }

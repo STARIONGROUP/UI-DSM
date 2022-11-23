@@ -9,7 +9,21 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Shared.Enumerator
+@using UI_DSM.Shared.Extensions
 
 <AppAccordion Label="Related views">
-	aa
+	@if (this.MainRelatedView != View.None)
+	{
+		<div @onclick="() => this.OnClick(this.MainRelatedView)">
+			<p class="bold">@this.MainRelatedView.GetEnumDisplayName()</p>
+		</div>
+	}
+	
+	@foreach(var view in this.OtherRelatedViews)
+	{
+		<div @onclick="() => this.OnClick(view)">
+			<p>@view.GetEnumDisplayName()</p>
+		</div>
+	}
 </AppAccordion>

@@ -18,5 +18,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     /// </summary>
     public interface IProductBreakdownStructureViewViewModel : IElementBreakdownStructureViewViewModel
     {
+        
     }
 }
