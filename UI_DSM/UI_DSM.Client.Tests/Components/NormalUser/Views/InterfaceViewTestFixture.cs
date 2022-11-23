@@ -228,7 +228,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 this.viewModel.ProductVisibilityState.CurrentState = ConnectionToVisibilityState.NotConnected;
                 Assert.That(this.viewModel.Products, Has.Count.EqualTo(1));
 
-                this.viewModel.TrySetSelectedItem(this.viewModel.Interfaces.First());
+                renderer.Instance.TrySetSelectedItem(this.viewModel.Interfaces.First());
                 Assert.That(this.viewModel.SelectedElement, Is.TypeOf<InterfaceRowViewModel>());
 
                 this.viewModel.TrySetSelectedItem(this.viewModel.Products.First());
