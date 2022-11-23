@@ -254,3 +254,20 @@ tr.invisible-row {
 div.invisible {
     display: none
 }
+
+.document-overview {
+  border: 1px solid var(--colors-gray-100);
+  border-radius: var(--radius-1);
+  overflow: hidden;
+}
+
+.hyper-link-card__title  {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.document-section {
+  padding-top: var(--spacing-8);
+  display: grid;
+  gap: var(--spacing-4);
+}

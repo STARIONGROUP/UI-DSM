@@ -9,13 +9,18 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-<div @onclick="() => this.OnClick.InvokeAsync(this.Row)">
-	@if (this.Row.HasComment())
-	{
-		<FeatherMessageCircle Size="20" Color="green"/>
-	}
-	<p>@(this.Row.Id)</p>
-	<a href="@(this.Row.Url)" target="_blank">
-		<FeatherExternalLink Size="20" Color="currentColor"/>
-	</a>
+<div class="hyper-link-card" @onclick="() => this.OnClick.InvokeAsync(this.Row)">
+	<span class="hyper-link-card__title h4">
+		@(this.Row.Id)
+		@if (this.Row.HasComment())
+		{
+			<FeatherMessageCircle Size="20" Color="green"/>
+		}
+	</span>
+	<div class="hyper-link-card__actions">		
+		<a class="hyper-link-card__link" href="@(this.Row.Url)" target="_blank">
+			<FeatherExternalLink Size="20" Color="currentColor"/>
+			Open document
+		</a>
+	</div>
 </div>
