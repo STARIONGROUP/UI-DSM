@@ -105,7 +105,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         ///     Override this method if you will perform an asynchronous operation and
         ///     want the component to refresh when that operation is completed.
         /// </summary>
-        protected override void OnInitialized()s
+        protected override void OnInitialized()
         {
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ReviewTask)
                 .Subscribe(async _ => await this.OnSelectedItemChanged(this.ViewModel.ReviewTask)));

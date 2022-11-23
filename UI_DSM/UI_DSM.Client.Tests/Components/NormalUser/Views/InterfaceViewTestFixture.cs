@@ -167,15 +167,15 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var assembler = new Assembler(new Uri("http://localhost"));
 
                 var things = new List<Thing>(categories)
-            {
-                sourcePort,
-                targetPort,
-                notConnectedPort,
-                accelorometerBox,
-                powerGenerator,
-                interfaceRelationShip,
-                emptyProduct
-            };
+                {
+                    sourcePort,
+                    targetPort,
+                    notConnectedPort,
+                    accelorometerBox,
+                    powerGenerator,
+                    interfaceRelationShip,
+                    emptyProduct
+                };
 
                 await assembler.Synchronize(things);
                 _ = assembler.Cache.Select(x => x.Value.Value);
@@ -246,6 +246,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 this.viewModel.TrySetSelectedItem(null);
                 Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+
+                var otherRenderer = this.context.RenderComponent<TrlView>();
+                
+                Assert.Multiple(() =>
+                {
+                    Assert.That(async () => await renderer.Instance.CopyComponents(otherRenderer.Instance), Is.False);
+                    Assert.That(async () => await renderer.Instance.CopyComponents(renderer.Instance), Is.True);
+                });
             }
             catch
             {
