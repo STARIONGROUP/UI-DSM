@@ -110,7 +110,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 {
                     Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
                     Assert.That(renderer.Instance.SelectedItemObservable, Is.Not.Null);
-                    Assert.That(() => this.context.RenderComponent<RequirementVerificationControlView>(), Throws.Nothing);
                 });
 
                 this.viewModel.TrySetSelectedItem(this.viewModel.Rows.First());
@@ -125,6 +124,16 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 this.viewModel.TrySetSelectedItem(null);
                 Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+
+                var verificationRenderer = this.context.RenderComponent<RequirementVerificationControlView>();
+                var otherRenderer = this.context.RenderComponent<TrlView>();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(async () => await verificationRenderer.Instance.CopyComponents(renderer.Instance), Is.True);
+                    Assert.That(async () => await verificationRenderer.Instance.CopyComponents(otherRenderer.Instance), Is.False);
+                    Assert.That(async () => await renderer.Instance.CopyComponents(verificationRenderer.Instance), Is.True);
+                });
             }
             catch
             {

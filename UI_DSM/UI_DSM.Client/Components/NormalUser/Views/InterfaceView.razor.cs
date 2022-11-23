@@ -32,7 +32,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     /// <summary>
     ///     Component for the <see cref="View.InterfaceView" />
     /// </summary>
-    public partial class InterfaceView : GenericBaseView<IInterfaceViewViewModel>, IDisposable
+    public partial class InterfaceView : GenericBaseView<IInterfaceViewViewModel>, IDisposable, IReusableView
     {
         /// <summary>
         ///     Reference to the <see cref="IColumnChooserViewModel{TItem}" />
@@ -221,6 +221,24 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         private string GetSelectorsClass()
         {
             return this.ViewModel.ShouldShowProducts ? string.Empty : "invisible";
+        }
+
+        /// <summary>
+        ///     Tries to copy components from another <see cref="BaseView" />
+        /// </summary>
+        /// <param name="otherView">The other <see cref="BaseView" /></param>
+        /// <returns>Value indicating if it could copy components</returns>
+        public async Task<bool> CopyComponents(BaseView otherView)
+        {
+            if (otherView is not GenericBaseView<IInterfaceViewViewModel> interfaceView)
+            {
+                return false;
+            }
+
+            this.ViewModel = interfaceView.ViewModel;
+            await this.HasChanged();
+
+            return true;
         }
     }
 }

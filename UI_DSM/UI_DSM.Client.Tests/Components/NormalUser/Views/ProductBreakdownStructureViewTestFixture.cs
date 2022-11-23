@@ -216,8 +216,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 Assert.Multiple(() =>
                 {
+                    Assert.That(async () => await trlRenderer.Instance.CopyComponents(renderer.Instance), Is.True);
                     Assert.That(trlRenderer.Instance.ViewModel.TopElement, Has.Count.EqualTo(1));
                     Assert.That(trlRenderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
+                    Assert.That(async () => await trlRenderer.Instance.CopyComponents(trlRenderer.Instance), Is.False);
+                    Assert.That(async () => await renderer.Instance.CopyComponents(trlRenderer.Instance), Is.True);
+                    Assert.That(async () => await renderer.Instance.CopyComponents(renderer.Instance), Is.False);
                 });
             }
             catch
