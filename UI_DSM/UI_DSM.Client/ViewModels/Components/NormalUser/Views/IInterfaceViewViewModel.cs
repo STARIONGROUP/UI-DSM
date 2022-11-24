@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
+    using Blazor.Diagrams.Core;
+    using Blazor.Diagrams.Core.Models;
     using CDP4Common.CommonData;
 
     using UI_DSM.Client.Model;
@@ -54,6 +56,26 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Value asserting if products has to been shown
         /// </summary>
         bool ShouldShowProducts { get; }
+
+        /// <summary>
+        /// A list of the nodes in the <see cref="Diagram"/>
+        /// </summary>
+        List<NodeModel> ProductNodes { get; } 
+
+        /// <summary>
+        /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>
+        /// </summary>
+        Dictionary<string, ProductRowViewModel> ProductsMap { get; }
+
+        /// <summary>
+        /// The map collection from <see cref="PortModel"/> ID to <see cref="PortRowViewModel"/>
+        /// </summary>
+        Dictionary<string, PortRowViewModel> PortsMap { get; }
+
+        /// <summary>
+        /// The map collection from <see cref="LinkModel"/> ID to <see cref="InterfaceRowViewModel"/>
+        /// </summary>
+        Dictionary<string, InterfaceRowViewModel> InterfacesMap { get; }
 
         /// <summary>
         ///     The <see cref="IFilterViewModel" />
@@ -104,5 +126,37 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         /// <param name="visibility">The new visibility</param>
         void SetProductsVisibility(bool visibility);
+
+        /// <summary>
+        /// Tries to get all the neighbours of a <see cref="ProductRowViewModel"/>
+        /// </summary>
+        /// <param name="productRow">the product to get the neighbours from</param>
+        /// <returns>A <see cref="IEnumerable{ProductRowViewModel}"/> with the neighbours, or null if the product don't have neighbours</returns>
+        /// <exception cref="Exception">if the source and target of a interface it's the same port</exception>
+        IEnumerable<ProductRowViewModel> GetNeighbours(ProductRowViewModel productRow);
+
+        /// <summary>
+        /// Creates a central node and his neighbours
+        /// </summary>
+        /// <param name="centerNode">the center node</param>
+        void CreateCentralNodeAndNeighbours(ProductRowViewModel centerNode);
+
+        /// <summary>
+        /// Creates a new node from a <see cref="ProductRowViewModel"/>. The product is added to the Diagram an the corresponding maps are filled.
+        /// </summary>
+        /// <param name="product">the product for which the node will be created</param>
+        /// <returns>the created <see cref="NodeModel"/></returns>
+        NodeModel CreateNewNodeFromProduct(ProductRowViewModel product);
+
+        /// <summary>
+        /// Sets the selected model for this <see cref="IInterfaceViewViewModel"/>
+        /// </summary>
+        /// <param name="model">the model to select</param>
+        void SetSelectedModel(Blazor.Diagrams.Core.Models.Base.Model model);
+
+        /// <summary>
+        /// Event fired when the state of the component needs to change.
+        /// </summary>
+        Action OnCentralNodeChanged { get; set; }
     }
 }

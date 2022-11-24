@@ -25,7 +25,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
-    using UI_DSM.Shared.Models;
+
+    using System.Linq;
+    using DynamicData;
+    using Blazor.Diagrams.Core.Models.Base;
+    using Blazor.Diagrams.Core.Models;
 
     /// <summary>
     ///     View model for the <see cref="Client.Components.NormalUser.Views.InterfaceView" /> component
@@ -107,6 +111,36 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public IConnectionVisibilitySelectorViewModel PortVisibilityState { get; set; }
 
         /// <summary>
+        ///     A collection of available <see cref="FilterModel" /> for rows
+        /// </summary>
+        public List<FilterModel> AvailableRowFilters { get; } = new();
+
+        /// <summary>
+        /// A list of the nodes in the <see cref="Diagram"/>
+        /// </summary>
+        public List<NodeModel> ProductNodes { get; } = new();
+
+        /// <summary>
+        /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>
+        /// </summary>
+        public Dictionary<string, ProductRowViewModel> ProductsMap { get; } = new();
+
+        /// <summary>
+        /// The map collection from <see cref="PortModel"/> ID to <see cref="PortRowViewModel"/>
+        /// </summary>
+        public Dictionary<string, PortRowViewModel> PortsMap { get; } = new();
+
+        /// <summary>
+        /// The map collection from <see cref="LinkModel"/> ID to <see cref="InterfaceRowViewModel"/>
+        /// </summary>
+        public Dictionary<string, InterfaceRowViewModel> InterfacesMap { get; } = new();
+
+        /// <summary>
+        /// Event fired when the state of the component needs to change.
+        /// </summary>
+        public Action OnCentralNodeChanged { get; set; }
+
+        /// <summary>
         ///     Filters current rows
         /// </summary>
         /// <param name="selectedFilters">The selected filters</param>
@@ -183,6 +217,22 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.Interfaces = new List<InterfaceRowViewModel>(this.allInterfaces.OrderBy(x => x.Id));
             this.ApplyVisibility();
             this.InitializesFilter();
+
+            //TODO: the selection of the product shall not be random. It will be the selected thing.
+            var firstNode = this.Products.FirstOrDefault(p =>
+            {
+                var neighbours = this.GetNeighbours(p);
+                if (neighbours is not null && neighbours.Count() > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }, this.Products.First());
+
+            this.CreateCentralNodeAndNeighbours(firstNode);
         }
 
         /// <summary>
@@ -332,6 +382,156 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             });
 
             this.FilterViewModel.InitializeProperties(availableRowFilters);
+        }
+
+        /// <summary>
+        /// Tries to get all the neighbours of a <see cref="ProductRowViewModel"/>
+        /// </summary>
+        /// <param name="productRow">the product to get the neighbours from</param>
+        /// <returns>A <see cref="IEnumerable{ProductRowViewModel}"/> with the neighbours, or null if the product don't have neighbours</returns>
+        /// <exception cref="Exception">if the source and target of a interface it's the same port</exception>
+        public IEnumerable<ProductRowViewModel> GetNeighbours(ProductRowViewModel productRow)
+        {
+            if (this.HasChildren(productRow))
+            {
+                var ports = this.LoadChildren(productRow);
+                var neighbours = new List<ProductRowViewModel>();
+
+                foreach (var port in ports)
+                {
+                    var sourceInterface = this.Interfaces.FirstOrDefault(i => i.SourceId.ToString() == port.Id, null);
+
+                    var targetInterface = this.Interfaces.FirstOrDefault(i => i.TargetId.ToString() == port.Id, null);
+
+                    if (sourceInterface != null && targetInterface != null)
+                    {
+                        throw new Exception("Source and Target of an interface shall be a different port");
+                    }
+                    else if (sourceInterface != null)
+                    {
+                        var targetPort = this.allPorts.FirstOrDefault(p => p.Id == sourceInterface.TargetId.ToString(), null);
+                        if (targetPort != null)
+                        {
+                            var targetPortContainer = this.Products.FirstOrDefault(pr => pr.Id == targetPort.ContainerId.ToString(), null);
+
+                            if (targetPortContainer != null)
+                            {
+                                neighbours.Add(targetPortContainer);
+                            }
+                        }
+                    }
+                    else if (targetInterface != null)
+                    {
+                        var sourcePort = this.allPorts.FirstOrDefault(p => p.Id == targetInterface.SourceId.ToString(), null);
+                        if (sourcePort != null)
+                        {
+                            var sourcePortContainer = this.Products.FirstOrDefault(pr => pr.Id == sourcePort.ContainerId.ToString(), null);
+
+                            if (sourcePortContainer != null)
+                            {
+                                neighbours.Add(sourcePortContainer);
+                            }
+                        }
+                    }
+                }
+
+                return neighbours.Distinct();
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Sets the selected model for this <see cref="IInterfaceViewViewModel"/>
+        /// </summary>
+        /// <param name="model">the model to select</param>
+        public void SetSelectedModel(Model model)
+        {
+            if (model is NodeModel node)
+            {
+                var asociatedProduct = this.ProductsMap[node.Id];
+                this.CreateCentralNodeAndNeighbours(asociatedProduct);
+                this.SelectedElement = asociatedProduct;
+            }
+            else if (model is PortModel port)
+            {
+                this.SelectedElement = this.PortsMap[port.Id];
+            }
+            else if (model is LinkModel link)
+            {
+                this.SelectedElement = this.InterfacesMap[link.Id];
+            }
+        }
+
+        /// <summary>
+        /// Creates a central node and his neighbours
+        /// </summary>
+        /// <param name="centerNode">the center node</param>
+        public void CreateCentralNodeAndNeighbours(ProductRowViewModel centerNode)
+        {
+            this.ProductNodes.Clear();
+            this.ProductsMap.Clear();
+            this.PortsMap.Clear();
+            this.InterfacesMap.Clear();
+
+            var neighbours = this.GetNeighbours(centerNode);
+
+            var cx = 800.0;
+            var cy = 500.0;
+            var r = 200.0;
+
+            var node = CreateNewNodeFromProduct(centerNode);
+            node.SetPosition(cx, cy);
+
+            if (neighbours != null)
+            {
+                var angle = 0.0;
+                var angleIncrement = neighbours.Count() > 0 ? (2.0 * Math.PI) / neighbours.Count() : 0;
+
+                foreach (var neighbour in neighbours)
+                {
+                    var x = cx + r * Math.Cos(angle);
+                    var y = cy + r * Math.Sin(angle);
+
+                    Console.WriteLine($"The node {neighbour.Name} is positioned in {x},{y}");
+
+                    var neighbourNode = CreateNewNodeFromProduct(neighbour);
+                    neighbourNode.SetPosition(x, y);
+
+                    angle += angleIncrement;
+                }
+            }
+
+            
+            Task.Run(() => this.OnCentralNodeChanged);
+        }
+
+        /// <summary>
+        /// Creates a new node from a <see cref="ProductRowViewModel"/>. The product is added to the Diagram an the corresponding maps are filled.
+        /// </summary>
+        /// <param name="product">the product for which the node will be created</param>
+        /// <returns>the created <see cref="NodeModel"/></returns>
+        public NodeModel CreateNewNodeFromProduct(ProductRowViewModel product)
+        {
+            var node = new NodeModel();
+            node.Title = product.Name;
+
+            this.ProductNodes.Add(node);
+            this.ProductsMap.Add(node.Id, product);
+
+            if (this.HasChildren(product))
+            {
+                var ports = this.LoadChildren(product);
+                foreach (var port in ports)
+                {
+                    var index = ports.IndexOf(port);
+                    var portNode = node.AddPort((PortAlignment)index);
+                    portNode.Locked = true;
+                    this.PortsMap.Add(portNode.Id, port);
+                }
+            }
+
+            return node;
         }
     }
 }
