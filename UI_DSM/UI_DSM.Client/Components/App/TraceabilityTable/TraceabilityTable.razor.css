@@ -8,7 +8,6 @@
 }
 
 table {
-    white-space: nowrap;
     margin: 0;
     border: none;
     border-collapse: separate;
@@ -39,6 +38,7 @@ table thead th {
     top: 0;
     z-index: 1;
     background: var(--colors-gray-50);
+    white-space: nowrap;
 }
 
 table thead th:first-child {
@@ -53,6 +53,7 @@ table tbody th {
     left: 0;
     background: var(--colors-white);
     z-index: 1;
+    white-space: nowrap;
 }
 
 

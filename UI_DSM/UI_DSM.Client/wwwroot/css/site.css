@@ -241,12 +241,6 @@ button:focus {
   color: var(--colors-white);
 }
 
-.header-text {
-  width: 240px;
-  display: block;
-  white-space: initial;
-}
-
 tr.invisible-row {
     display: none
 }
