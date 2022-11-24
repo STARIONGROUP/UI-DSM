@@ -117,13 +117,20 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 .Where(x => x != null)
                 .Subscribe(_ => this.OnSelectedViewChange()));
 
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.SelectedModel)
+                .Where(x => x != null)
+                .Subscribe(_ => this.OnSelectedModelChange()));
+
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ViewSelectorVisible)
                 .Subscribe(async _ => await this.OnViewSelectorChanged()));
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ModelSelectorVisible)
+                .Subscribe(async _ => await this.OnModelSelectorChanged()));
         }
 
         /// <summary>
-        /// Method invoked when the component has received parameters from its parent in
-        /// the render tree, and the incoming values have been assigned to properties.
+        ///     Method invoked when the component has received parameters from its parent in
+        ///     the render tree, and the incoming values have been assigned to properties.
         /// </summary>
         /// <returns>A <see cref="T:System.Threading.Tasks.Task" /> representing any asynchronous operation.</returns>
         protected override async Task OnParametersSetAsync()
@@ -176,6 +183,36 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
             }
 
             await base.OnAfterRenderAsync(firstRender);
+        }
+
+        /// <summary>
+        ///     Handle the change of the selected model
+        /// </summary>
+        private void OnSelectedModelChange()
+        {
+            this.ViewModel.ModelSelectorVisible = false;
+        }
+
+        /// <summary>
+        ///     Handles the change of the Model selector visibility
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task OnModelSelectorChanged()
+        {
+            if (this.ViewModel.SelectedModel != null && this.ViewModel.CurrentModel.Id != this.ViewModel.SelectedModel.Id)
+            {
+                var projectId = new Guid(this.ProjectId);
+                var reviewId = new Guid(this.ReviewId);
+                await this.ViewModel.UpdateModel(this.ViewModel.SelectedModel);
+
+                if (this.ViewModel.CurrentBaseViewInstance != null)
+                {
+                    await this.ViewModel.CurrentBaseViewInstance.InitializeViewModel(this.ViewModel.Things, projectId, reviewId);
+                    this.ViewModel.CurrentBaseViewInstance.TrySetSelectedItem(this.SelectedItem);
+                }
+            }
+
+            await this.InvokeAsync(this.StateHasChanged);
         }
 
         /// <summary>
@@ -246,6 +283,23 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         {
             this.ViewModel.UpdateView(newView, true);
             await this.InvokeAsync(this.StateHasChanged);
+        }
+
+        /// <summary>
+        ///     Opens the model selector
+        /// </summary>
+        private void OpenModelSelector()
+        {
+            this.ViewModel.ModelSelectorVisible = !this.ViewModel.ModelSelectorVisible;
+        }
+
+        /// <summary>
+        ///     Gets the <see cref="Model" /> name
+        /// </summary>
+        /// <returns>The model name</returns>
+        private string GetModelName()
+        {
+            return this.ViewModel.CurrentModel == null ? "No model available" : this.ViewModel.CurrentModel.ModelName;
         }
     }
 }

@@ -12,6 +12,8 @@
 @page "/Project/{ProjectId}/Review/{ReviewId}/ReviewObjective/{ReviewObjectiveId}/ReviewTask/{ReviewTaskId}"
 @using UI_DSM.Shared.Wrappers
 @using UI_DSM.Shared.Enumerator
+@using UI_DSM.Shared.Extensions
+@using UI_DSM.Shared.Models
 
 <PageTitle>Task | UI-DSM</PageTitle>
 <div class="task-page">
@@ -46,8 +48,23 @@
 				<div class="task-page__header">
 					<h2>@this.ViewModel.ReviewTask.Description</h2>
 					<div class="task-page__actions">
+						<AppButton Id="model-selector-button" Label="Select view" Type="button" Click="@this.OpenModelSelector">
+							<FeatherDatabase Size="20" Color="currentColor" StrokeWidth="2"/> <span>@this.GetModelName()</span>
+						</AppButton>
+						<DxDropDown @bind-IsOpen="@this.ViewModel.ModelSelectorVisible"
+						            Width="200"
+						            MaxHeight="500"
+						            PositionTarget="#model-selector-button"
+						            PositionMode="DropDownPositionMode.Bottom"
+						            PreventCloseOnPositionTargetClick="true">
+							<BodyTemplate>
+								<DxListBox Data="@this.ViewModel.AvailableModels" TextFieldName="@nameof(Model.ModelName)"
+								           @bind-Value="@this.ViewModel.SelectedModel"/>
+							</BodyTemplate>
+						</DxDropDown>
+
 						<AppButton Id="view-selector-button" Label="Select view" Type="button" Click="@this.OpenViewSelector">
-							<FeatherEye Size="20" Color="currentColor" StrokeWidth="2"/> <span>@this.ViewModel.CurrentView</span>
+							<FeatherEye Size="20" Color="currentColor" StrokeWidth="2"/> <span>@this.ViewModel.CurrentView.GetEnumDisplayName()</span>
 						</AppButton>
 						<DxDropDown @bind-IsOpen="@this.ViewModel.ViewSelectorVisible"
 						            Width="200"
@@ -60,14 +77,14 @@
 								           @bind-Value="@this.ViewModel.SelectedView"/>
 							</BodyTemplate>
 						</DxDropDown>
-						
+
 						@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask))
 						{
 							<AppButton Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success">
 								<FeatherCheckCircle Size="20" Color="currentColor" StrokeWidth="2"/> <span>Done</span>
 							</AppButton>
 						}
-						
+
 					</div>
 				</div>
 				<div class="task-page__body-inner">

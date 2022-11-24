@@ -83,5 +83,17 @@ namespace UI_DSM.Shared.Models
             dto.IncludeCommonProperties(this);
             return dto;
         }
+
+        /// <summary>
+        ///     Gets the iteration number of this <see cref="Model" />
+        /// </summary>
+        /// <returns>The iteration number</returns>
+        public int GetIterationNumber()
+        {
+            var dashSplittedName = this.ModelName.Split('-');
+            var iterationField = dashSplittedName[^1];
+            var spaceSplitted = iterationField.Split(' ');
+            return int.Parse(spaceSplitted[^1]);
+        }
     }
 }

@@ -30,7 +30,7 @@ namespace UI_DSM.Server.Validator
             this.RuleFor(x => x.Description).NotEmpty();
             this.RuleFor(x => x.Title).NotEmpty();
             this.RuleFor(x => x.Author).NotEqual(Guid.Empty);
-            this.RuleFor(x => x.Artifacts.Count).LessThanOrEqualTo(1);
+            this.RuleFor(x => x.Artifacts.Count).GreaterThan(0);
         }
     }
 }

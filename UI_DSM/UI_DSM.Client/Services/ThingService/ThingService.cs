@@ -33,6 +33,11 @@ namespace UI_DSM.Client.Services.ThingService
     public class ThingService : ServiceBase, IThingService
     {
         /// <summary>
+        ///     A <see cref="Dictionary{TKey,TValue}" /> that will cache
+        /// </summary>
+        private Dictionary<Guid, IEnumerable<Thing>> queriedIterations = new();
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ServiceBase" /> class.
         /// </summary>
         /// <param name="httpClient">The <see cref="ServiceBase.HttpClient" /></param>
@@ -89,6 +94,28 @@ namespace UI_DSM.Client.Services.ThingService
         public Task<IEnumerable<Thing>> GetThings(Guid projectId, Guid modelId, ClassKind classKind = ClassKind.Iteration)
         {
             return this.GetThings(projectId, new List<Guid> { modelId }, classKind);
+        }
+
+        /// <summary>
+        ///     Gets a collection of <see cref="Thing" /> contained into a <see cref="Model" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id where <see cref="Model" />s are contained</param>
+        /// <param name="model">The <see cref="Model" /></param>
+        /// <param name="classKind">The <see cref="ClassKind" /></param>
+        /// <returns>A <see cref="Task" /> with the collection of retrieved <see cref="Thing" /></returns>
+        public async Task<IEnumerable<Thing>> GetThings(Guid projectId, Model model, ClassKind classKind = ClassKind.Iteration)
+        {
+            if (model == null || model.IterationId == Guid.Empty)
+            {
+                return Enumerable.Empty<Thing>();
+            }
+
+            if (!this.queriedIterations.ContainsKey(model.IterationId))
+            {
+                this.queriedIterations[model.IterationId] = await this.GetThings(projectId, model.Id, classKind);
+            }
+
+            return this.queriedIterations[model.IterationId];
         }
 
         /// <summary>

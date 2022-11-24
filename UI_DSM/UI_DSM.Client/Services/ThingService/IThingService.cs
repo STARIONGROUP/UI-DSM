@@ -42,6 +42,15 @@ namespace UI_DSM.Client.Services.ThingService
         Task<IEnumerable<Thing>> GetThings(Guid projectId, Guid modelId, ClassKind classKind = ClassKind.Iteration);
 
         /// <summary>
+        ///     Gets a collection of <see cref="Thing" /> contained into a <see cref="Model" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id where <see cref="Model" />s are contained</param>
+        /// <param name="model">The <see cref="Model" /></param>
+        /// <param name="classKind">The <see cref="ClassKind" /></param>
+        /// <returns>A <see cref="Task" /> with the collection of retrieved <see cref="Thing" /></returns>
+        Task<IEnumerable<Thing>> GetThings(Guid projectId, Model model, ClassKind classKind = ClassKind.Iteration);
+
+        /// <summary>
         ///     Gets a collection of <see cref="Thing" /> that will be needed for the current <see cref="View" />
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
