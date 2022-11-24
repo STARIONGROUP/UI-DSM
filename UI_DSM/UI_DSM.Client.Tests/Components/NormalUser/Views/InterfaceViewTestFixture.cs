@@ -119,7 +119,11 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Iid = Guid.NewGuid(),
                     Name = "Port_ALL",
                     ElementDefinition = portDefinition.Iid,
-                    InterfaceEnd = InterfaceEndKind.INPUT
+                    InterfaceEnd = InterfaceEndKind.INPUT,
+                    Category =
+                {
+                    portCategoryId
+                }
                 };
 
                 var targetPort = new ElementUsage()
@@ -127,7 +131,11 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Iid = Guid.NewGuid(),
                     Name = "Port_BLL",
                     ElementDefinition = portDefinition.Iid,
-                    InterfaceEnd = InterfaceEndKind.OUTPUT
+                    InterfaceEnd = InterfaceEndKind.OUTPUT,
+                    Category =
+                {
+                    portCategoryId
+                }
                 };
 
                 var accelorometerBox = new ElementDefinition()

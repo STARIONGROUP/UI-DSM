@@ -19,12 +19,13 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
     using System.Threading.Tasks;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Shared.Enumerator;
 
     /// <summary>
     /// Component for the <see cref="View.PhysicalFlowView"/>
     /// </summary>
-    public partial class PhysicalFlowView 
+    public partial class PhysicalFlowView : GenericBaseView<IInterfaceViewViewModel>
     {
         /// <summary>
         /// Gets or sets the diagram component.
@@ -35,18 +36,23 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// Method invoked when the component is ready to start, having received its
         /// initial parameters from its parent in the render tree.
         /// </summary>
-        protected override void OnInitialized()
+        protected async override void OnInitialized()
         {
             base.OnInitialized();
 
             this.Diagram = new Diagram();
 
-            this.ViewModel.OnCentralNodeChanged += (s, e) =>
+            this.ViewModel.OnCentralNodeChanged += () =>
             {
                 this.Diagram.Nodes.Clear();
                 this.ViewModel.ProductNodes.ForEach(node => this.Diagram.Nodes.Add(node));
                 this.StateHasChanged();
             };
+
+            //await this.ViewModel.OnCentralNodeChanged += () =>
+            //{
+
+            //};
 
             this.Diagram.MouseUp += Diagram_MouseUp;
         }

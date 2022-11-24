@@ -156,6 +156,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         /// Event fired when the state of the component needs to change.
         /// </summary>
-        event EventHandler OnCentralNodeChanged;
+        Action OnCentralNodeChanged { get; set; }
     }
 }

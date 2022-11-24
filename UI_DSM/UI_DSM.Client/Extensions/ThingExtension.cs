@@ -237,8 +237,7 @@ namespace UI_DSM.Client.Extensions
         /// <returns>The asserts</returns>
         public static bool IsPort(this ElementBase elementBase)
         {
-            //   return elementBase is ElementUsage && elementBase.IsCategorizedBy("ports");
-            return elementBase is ElementUsage && elementBase.Name.Contains("Port_");
+            return elementBase is ElementUsage && elementBase.IsCategorizedBy("ports");
         }
 
         /// <summary>

@@ -130,7 +130,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         /// Event fired when the state of the component needs to change.
         /// </summary>
-        public event EventHandler OnCentralNodeChanged;
+        public Action OnCentralNodeChanged { get; set; }
 
         /// <summary>
         ///     Filters current rows
@@ -467,7 +467,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 }
             }
 
-            this.OnCentralNodeChanged?.Invoke(this, EventArgs.Empty);
+            
+            Task.Run(() => this.OnCentralNodeChanged);
         }
 
         /// <summary>
