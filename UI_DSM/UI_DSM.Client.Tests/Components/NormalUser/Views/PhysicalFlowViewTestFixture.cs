@@ -243,5 +243,32 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             var nodeModel = this.viewModel.CreateNewNodeFromProduct(product);
             Assert.That(nodeModel, Is.Not.Null);
         }
+
+        [Test]
+        public void VerifyThatCentralNodeCanBeCreated()
+        {
+            var product = this.renderer.Instance.ViewModel.Products.Last();
+            this.viewModel.ProductsMap.Clear();
+            this.viewModel.ProductNodes.Clear();          
+            this.viewModel.CreateCentralNodeAndNeighbours(product);
+            Assert.That(this.viewModel.ProductsMap.Count > 0);
+            Assert.That(this.viewModel.ProductNodes.Count > 0);
+        }
+
+        [Test]
+        public void VerifyThatHasChildrenWorks()
+        {
+            var product = this.renderer.Instance.ViewModel.Products.Last();
+            var result = this.viewModel.HasChildren(product);
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void VerifyThatCanLoadChildren()
+        {
+            var product = this.renderer.Instance.ViewModel.Products.Last();
+            var result = this.viewModel.LoadChildren(product);
+            Assert.That(result, Is.Not.Null);
+        }
     }
 }
