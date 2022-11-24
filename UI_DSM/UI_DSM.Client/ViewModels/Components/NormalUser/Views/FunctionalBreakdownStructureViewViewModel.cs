@@ -19,19 +19,21 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    /// View model for the <see cref="Client.Components.NormalUser.Views.FunctionalBreakdownStructureView"/>
+    ///     View model for the <see cref="Client.Components.NormalUser.Views.FunctionalBreakdownStructureView" />
     /// </summary>
-    public class FunctionalBreakdownStructureViewViewModel: ElementBreakdownStructureViewViewModel, IFunctionalBreakdownStructureViewViewModel
+    public class FunctionalBreakdownStructureViewViewModel : ElementBreakdownStructureViewViewModel, IFunctionalBreakdownStructureViewViewModel
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="FunctionalBreakdownStructureViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
-        public FunctionalBreakdownStructureViewViewModel(IReviewItemService reviewItemService) : base(reviewItemService)
+        /// <param name="filterViewModel">The <see cref="IFilterViewModel" /></param>
+        public FunctionalBreakdownStructureViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel) : base(reviewItemService, filterViewModel)
         {
         }
 

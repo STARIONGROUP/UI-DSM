@@ -57,7 +57,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ParticipantManagement
                         RoleName = "Project administrator",
                         AccessRights = new List<AccessRight>()
                         {
-                            AccessRight.ManageParticipant
+                            AccessRight.ReviewTask
                         }
                     },
                     User = new UserEntity(Guid.NewGuid())

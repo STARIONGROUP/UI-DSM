@@ -66,7 +66,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
                     RoleName = "Project administrator",
                     AccessRights = new List<AccessRight>()
                     {
-                        AccessRight.ManageParticipant
+                        AccessRight.ReviewTask
                     }
                 }
             };
@@ -99,7 +99,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
                 RoleName = "Project administrator",
                 AccessRights = new List<AccessRight>()
                 {
-                    AccessRight.ManageParticipant
+                    AccessRight.ReviewTask
                 }
             };
 
@@ -121,7 +121,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
                 RoleName = "Project administrator",
                 AccessRights = new List<AccessRight>()
                 {
-                    AccessRight.ManageParticipant
+                    AccessRight.ReviewTask
                 }
             };
 
@@ -182,7 +182,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.RoleService
                 RoleName = "Project administrator",
                 AccessRights = new List<AccessRight>()
                 {
-                    AccessRight.ManageParticipant
+                    AccessRight.ReviewTask
                 }
             };
 

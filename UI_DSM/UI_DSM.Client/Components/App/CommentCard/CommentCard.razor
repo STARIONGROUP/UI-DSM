@@ -1,3 +1,4 @@
+@using UI_DSM.Shared.Enumerator
 <!--------------------------------------------------------------------------------------------------------
 // CommentCard.razor
 // Copyright (c) 2022 RHEA System S.A.
@@ -46,7 +47,7 @@
 			</span>
 
 
-			@if (this.ViewModel.IsAllowedToEdit)
+			@if (this.ViewModel.CurrentParticipant.IsAllowedTo(AccessRight.ReviewTask) && this.ViewModel.IsAllowedToEdit)
 			{
 				<button id="@this.CardUniqueId" class="app-comment__status" @onclick="() => this.IsOnStatusUpdateMode = true">
 					@this.ViewModel.Comment.Status
@@ -58,22 +59,25 @@
 	</div>
 
 	<div class="app-comment__actions">
-				<button class="app-comment__button" @onclick="this.OnReplyCallback">
-					<FeatherMessageCircle Size="20" Color="currentColor" StrokeWidth="2" />
-					Reply
-				</button>
+		@if (this.ViewModel.CurrentParticipant.IsAllowedTo(AccessRight.ReviewTask))
+		{
+			<button class="app-comment__button" @onclick="this.OnReplyCallback">
+				<FeatherMessageCircle Size="20" Color="currentColor" StrokeWidth="2"/>
+				Reply
+			</button>
 			@if (this.ViewModel.IsAllowedToEdit)
 			{
-			<button class="app-comment__button" @onclick="this.OnContentEditClick">
-				<FeatherEdit Size="20" Color="currentColor" StrokeWidth="2" />
-				Edit
-			</button>
+				<button class="app-comment__button" @onclick="this.OnContentEditClick">
+					<FeatherEdit Size="20" Color="currentColor" StrokeWidth="2"/>
+					Edit
+				</button>
 
-			<button class="app-comment__button" @onclick="this.OnDeleteClick">
-				<FeatherTrash2 Size="20" Color="currentColor" StrokeWidth="2" />
-				Delete
-			</button>
+				<button class="app-comment__button" @onclick="this.OnDeleteClick">
+					<FeatherTrash2 Size="20" Color="currentColor" StrokeWidth="2"/>
+					Delete
+				</button>
 			}
+		}
 	</div>
 
 	@if (this.ViewModel.Comment.Replies.Any())

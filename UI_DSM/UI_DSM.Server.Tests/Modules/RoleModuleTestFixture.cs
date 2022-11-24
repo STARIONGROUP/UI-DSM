@@ -47,7 +47,7 @@ namespace UI_DSM.Server.Tests.Modules
                     RoleName = "Role 1",
                     AccessRights = new List<AccessRight>()
                     {
-                        AccessRight.ManageParticipant
+                        AccessRight.ReviewTask
                     }
                 }
             };

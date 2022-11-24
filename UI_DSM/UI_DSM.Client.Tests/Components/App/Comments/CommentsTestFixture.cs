@@ -77,7 +77,6 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
                 .ReturnsAsync(this.participant);
 
             this.viewModel = new CommentsViewModel(this.reviewItemService.Object, this.annotationService.Object, this.participantService.Object, this.replyService.Object);
-            this.viewModel.InitializesProperties(Guid.NewGuid(), Guid.NewGuid(), View.RequirementBreakdownStructureView);
             this.context.Services.AddSingleton(this.viewModel);
         }
 
@@ -93,6 +92,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
             try
             {
                 var renderer = this.context.RenderComponent<Comments>();
+                await renderer.Instance.InitializesProperties(Guid.NewGuid(), Guid.NewGuid(), View.RequirementBreakdownStructureView);
                 var commentsCard = renderer.FindComponents<CommentCard>();
 
                 Assert.That(commentsCard, Has.Count.EqualTo(0));

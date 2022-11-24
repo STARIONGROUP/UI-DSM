@@ -83,7 +83,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
                     RoleName = "Project administrator",
                     AccessRights = new List<AccessRight>()
                     {
-                        AccessRight.ManageParticipant
+                        AccessRight.ReviewTask
                     }
                 },
                 new UserEntityDto(userGuid1)
@@ -149,7 +149,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
                     RoleName = "Project administrator",
                     AccessRights = new List<AccessRight>()
                     {
-                        AccessRight.ManageParticipant
+                        AccessRight.ReviewTask
                     }
                 },
                 new UserEntityDto(userGuid1)
@@ -179,7 +179,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
                     RoleName = "Project administrator",
                     AccessRights = new List<AccessRight>()
                     {
-                        AccessRight.ManageParticipant
+                        AccessRight.ReviewTask
                     }
                 },
                 User = new UserEntity(Guid.NewGuid())
@@ -234,7 +234,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
                     RoleName = "Project administrator",
                     AccessRights = new List<AccessRight>()
                     {
-                        AccessRight.ManageParticipant
+                        AccessRight.ReviewTask
                     }
                 },
                 User = new UserEntity(Guid.NewGuid())
@@ -269,7 +269,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
                     RoleName = "Project administrator",
                     AccessRights = new List<AccessRight>()
                     {
-                        AccessRight.ManageParticipant
+                        AccessRight.ReviewTask
                     }
                 },
                 User = new UserEntity(Guid.NewGuid())

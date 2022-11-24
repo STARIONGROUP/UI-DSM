@@ -23,33 +23,35 @@ namespace UI_DSM.Shared.Enumerator
     public enum AccessRight
     {
         /// <summary>
-        ///     This right provide the capability to add and remove <see cref="Participant" /> for a <see cref="Project" />
+        ///     This right provide the capability to review a <see cref="ReviewTask" /> (commenting and marking as done)
         /// </summary>
-        [Display(Name = "Manage Participant")]
-        ManageParticipant = 0,
+        [Display(Name = "Review Task")] ReviewTask = 0,
 
         /// <summary>
-        ///     This right provide the capability to create a new Task inside a <see cref="Project" />
+        ///     This right provide the capability to create a new <see cref="Review" /> inside a <see cref="Project" />
         /// </summary>
-        [Display(Name = "Create Task")]
-        CreateTask = 1,
+        [Display(Name = "Create Review")] CreateReview = 1,
 
         /// <summary>
-        ///     This right provide the capability to delete a Task from a <see cref="Project" />
+        ///     This right provide the capability to delete a <see cref="Review" /> from a <see cref="Project" />
         /// </summary>
-        [Display(Name = "Delete Task")]
-        DeleteTask = 2,
+        [Display(Name = "Delete Review")] DeleteReview = 2,
 
         /// <summary>
-        ///     This right provide the capability to update a Task inside a <see cref="Project" />
+        ///     This right provide the capability to create a new <see cref="ReviewObjective" /> inside a <see cref="Project" />
         /// </summary>
-        [Display(Name = "Update Task")]
-        UpdateTask = 3,
+        [Display(Name = "Create Review Objective")]
+        CreateReviewObjective = 3,
 
         /// <summary>
-        ///     This right provide the capability to review a Task inside a <see cref="Project" />
+        ///     This right provide the capability to delete a <see cref="ReviewObjective" /> from a <see cref="Project" />
         /// </summary>
-        [Display(Name = "Review Task")]
-        ReviewTask = 4
+        [Display(Name = "Delete Review Objective")]
+        DeleteReviewObjective = 4,
+
+        /// <summary>
+        ///     This right provide the capability to assign a <see cref="ReviewTask" /> to a <see cref="Participant" />
+        /// </summary>
+        [Display(Name = "Assign Task")] AssignTask = 5
     }
 }

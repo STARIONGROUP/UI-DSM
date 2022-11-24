@@ -28,12 +28,10 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewPage
         /// </summary>
         IReviewObjectiveViewModel ReviewObjectiveViewModel { get; }
 
-
         /// <summary>
         ///     Gets the <see cref="IErrorMessageViewModel" />
         /// </summary>
         IErrorMessageViewModel ErrorMessageViewModel { get; }
-
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its

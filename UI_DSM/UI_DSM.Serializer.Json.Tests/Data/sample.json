@@ -34,7 +34,7 @@
     "@type": "RoleDto",
     "roleName": "A role",
     "accessRights": [
-      "CREATETASK",
+      "CREATEREVIEW",
       "REVIEWTASK"
     ],
     "id": "d92d3637-0a4b-4f33-adee-8e1814f917b8"

@@ -13,12 +13,13 @@
 
 namespace UI_DSM.Server.Modules
 {
+    using System.Diagnostics.CodeAnalysis;
+
     using Carter.Response;
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Components;
-    using Newtonsoft.Json;
-    using System.Linq;
+
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Managers.ReviewManager;
@@ -55,7 +56,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="jsonService">The <see cref="IJsonService" /></param>
         public ReviewObjectiveModule(IJsonService jsonService)
         {
-            var dtos = jsonService.Deserialize<List<EntityDto>>(File.OpenRead(Path.Combine("Data","ReviewObjectives.json")));
+            var dtos = jsonService.Deserialize<List<EntityDto>>(File.OpenRead(Path.Combine("Data", "ReviewObjectives.json")));
             this.reviewObjectivesTemplates = Assembler.CreateEntities<ReviewObjective>(dtos).ToList();
         }
 
@@ -63,6 +64,7 @@ namespace UI_DSM.Server.Modules
         ///     Adds routes to the <see cref="IEndpointRouteBuilder" />
         /// </summary>
         /// <param name="app">The <see cref="IEndpointRouteBuilder" /></param>
+        [ExcludeFromCodeCoverage]
         public override void AddRoutes(IEndpointRouteBuilder app)
         {
             base.AddRoutes(app);
@@ -175,6 +177,11 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
+            if (!await IsAllowedTo(context, participant, AccessRight.CreateReviewObjective))
+            {
+                return;
+            }
+
             var requestResponse = new EntityRequestResponseDto();
 
             if (!await this.AdditionalRouteValidation(context))
@@ -224,7 +231,8 @@ namespace UI_DSM.Server.Modules
             List<ReviewObjectiveCreationDto> dtos, int deepLevel = 0)
         {
             var templates = this.reviewObjectivesTemplates.Where(x => dtos.Any(y => y.Kind == x.ReviewObjectiveKind
-                                                                                  && y.KindNumber == x.ReviewObjectiveKindNumber));
+                                                                                    && y.KindNumber == x.ReviewObjectiveKindNumber));
+
             if (templates == null || !templates.Any())
             {
                 context.Response.StatusCode = 400;
@@ -234,6 +242,11 @@ namespace UI_DSM.Server.Modules
             var participant = await this.GetParticipantBasedOnRequest(context, ProjectKey);
 
             if (participant == null)
+            {
+                return;
+            }
+
+            if (!await IsAllowedTo(context, participant, AccessRight.CreateReviewObjective))
             {
                 return;
             }
@@ -289,6 +302,16 @@ namespace UI_DSM.Server.Modules
                 return new RequestResponseDto();
             }
 
+            if (!participant.IsAllowedTo(AccessRight.DeleteReviewObjective))
+            {
+                context.Response.StatusCode = 403;
+
+                return new RequestResponseDto
+                {
+                    Errors = new List<string> { "You don't have requested access right" }
+                };
+            }
+
             return await base.DeleteEntity(manager, entityId, context);
         }
 
@@ -312,6 +335,23 @@ namespace UI_DSM.Server.Modules
             }
 
             await base.UpdateEntity(manager, entityId, dto, context, deepLevel);
+        }
+
+        /// <summary>
+        ///     Gets, all <see cref="ReviewObjectiveDto" />s from the json file
+        ///     and filters them based on the given <see cref="ReviewObjectiveKind" />
+        /// </summary>
+        /// <param name="reviewObjectiveManager">The <see cref="IReviewObjectiveManager" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        [Authorize]
+        public async Task GetAvailableTemplates(IReviewObjectiveManager reviewObjectiveManager, HttpContext context)
+        {
+            var reviewId = this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey);
+            var existingReviewObjectives = reviewObjectiveManager.GetReviewObjectiveCreationForReview(reviewId);
+            var reviewObjectiveCreationTemplates = this.reviewObjectivesTemplates.Select(x => new ReviewObjectiveCreationDto { Kind = x.ReviewObjectiveKind, KindNumber = x.ReviewObjectiveKindNumber }).ToList();
+            reviewObjectiveCreationTemplates.RemoveAll(x => existingReviewObjectives.Any(y => y.Kind == x.Kind && y.KindNumber == x.KindNumber));
+            await context.Response.Negotiate(reviewObjectiveCreationTemplates);
         }
 
         /// <summary>
@@ -349,23 +389,6 @@ namespace UI_DSM.Server.Modules
             }
 
             return true;
-        }
-
-        /// <summary>
-        ///     Gets, all <see cref="ReviewObjectiveDto" />s from the json file
-        ///     and filters them based on the given <see cref="ReviewObjectiveKind" />
-        /// </summary>
-        /// <param name="reviewObjectiveManager">The <see cref="IReviewObjectiveManager"/></param>
-        /// <param name="context">The <see cref="HttpContext"/></param>
-        /// <returns>A <see cref="Task"/></returns>
-        [Authorize]
-        public async Task GetAvailableTemplates(IReviewObjectiveManager reviewObjectiveManager, HttpContext context)
-        {
-            var reviewId = this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey);
-            var existingReviewObjectives = reviewObjectiveManager.GetReviewObjectiveCreationForReview(reviewId);
-            var reviewObjectiveCreationTemplates = this.reviewObjectivesTemplates.Select(x => new ReviewObjectiveCreationDto() { Kind = x.ReviewObjectiveKind, KindNumber = x.ReviewObjectiveKindNumber }).ToList();
-            reviewObjectiveCreationTemplates.RemoveAll(x => existingReviewObjectives.Any(y => y.Kind == x.Kind && y.KindNumber == x.KindNumber));
-            await context.Response.Negotiate(reviewObjectiveCreationTemplates);
         }
     }
 }

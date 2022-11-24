@@ -24,9 +24,51 @@ namespace UI_DSM.Client.Components.App.ReviewTaskCard
     public partial class ReviewTaskCard
     {
         /// <summary>
+        ///     The <see cref="NavigationManager" />
+        /// </summary>
+        [Inject]
+        public NavigationManager NavigationManager { get; set; }
+
+        /// <summary>
         ///     The <see cref="ReviewTask" /> to display information
         /// </summary>
         [Parameter]
         public ReviewTask ReviewTask { get; set; }
+
+        /// <summary>
+        ///     The id of the current <see cref="Project" />
+        /// </summary>
+        [Parameter]
+        public string ProjectId { get; set; }
+
+        /// <summary>
+        ///     The id of the current <see cref="Review" />
+        /// </summary>
+        [Parameter]
+        public string ReviewId { get; set; }
+
+        /// <summary>
+        ///     The id of the current <see cref="ReviewObjective" />
+        /// </summary>
+        [Parameter]
+        public string ReviewObjectiveId { get; set; }
+
+        /// <summary>
+        ///     Value indicating if the NavLink component should be present
+        /// </summary>
+        [Parameter]
+        public bool UseNavLink { get; set; } = true;
+
+        /// <summary>
+        ///     Navigate to the correct uri
+        /// </summary>
+        private void Navigate()
+        {
+            if (this.UseNavLink)
+            {
+                this.NavigationManager.NavigateTo($"Project/{this.ProjectId}/Review/{this.ReviewId}/ReviewObjective/{this.ReviewObjectiveId}" +
+                                                  $"/ReviewTask/{this.ReviewTask.Id}");
+            }
+        }
     }
 }

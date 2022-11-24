@@ -40,5 +40,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="reviewId">The <see cref="Review" /> id</param>
         /// <returns>A <see cref="Task" /></returns>
         Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId);
+
+        /// <summary>
+        ///     Tries to set the <see cref="SelectedElement" /> to the previous selected item
+        /// </summary>
+        /// <param name="selectedItem">The previously selectedItem</param>
+        void TrySetSelectedItem(object selectedItem);
     }
 }

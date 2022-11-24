@@ -73,7 +73,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.RolePages
                 RoleName = "Project Manager",
                 AccessRights = new List<AccessRight>()
                 {
-                    AccessRight.ManageParticipant
+                    AccessRight.ReviewTask
                 }
             };
 

@@ -32,8 +32,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
+    using BinaryRelationship = CDP4Common.DTO.BinaryRelationship;
+    using ElementDefinition = CDP4Common.DTO.ElementDefinition;
+    using ElementUsage = CDP4Common.DTO.ElementUsage;
+    using Iteration = CDP4Common.DTO.Iteration;
+    using Requirement = CDP4Common.EngineeringModelData.Requirement;
     using TestContext = Bunit.TestContext;
 
     [TestFixture]
@@ -49,9 +55,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.context = new TestContext();
             this.context.ConfigureDevExpressBlazor();
             this.reviewItemService = new Mock<IReviewItemService>();
-            this.viewModel = new FunctionalBreakdownStructureViewViewModel(this.reviewItemService.Object);
+            this.viewModel = new FunctionalBreakdownStructureViewViewModel(this.reviewItemService.Object, new FilterViewModel());
             this.context.Services.AddSingleton(this.viewModel);
-            this.context.Services.AddTransient<IFilterViewModel, FilterViewModel>();
         }
 
         [TearDown]
@@ -226,6 +231,21 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 });
 
                 await renderer.InvokeAsync(() => renderer.Instance.Grid.RowSelect.InvokeAsync(renderer.Instance.ViewModel.TopElement.First()));
+                Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+
+                this.viewModel.TrySetSelectedItem((renderer.Instance.ViewModel.TopElement.First()));
+                Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+                this.viewModel.TrySetSelectedItem((renderer.Instance.ViewModel.LoadChildren(this.viewModel.SelectedElement as ElementBaseRowViewModel).FirstOrDefault()));
+                Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+                
+                this.viewModel.TrySetSelectedItem(new RequirementRowViewModel(new Requirement()
+                {
+                    Iid= Guid.NewGuid()
+                }, null));
+
+                Assert.That(this.viewModel.SelectedElement, Is.Not.TypeOf<RequirementRowViewModel>());
+
+                this.viewModel.TrySetSelectedItem(null);
                 Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
             }
             catch

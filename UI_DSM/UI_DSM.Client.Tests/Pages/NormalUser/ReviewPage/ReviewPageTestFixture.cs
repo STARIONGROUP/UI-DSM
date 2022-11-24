@@ -23,6 +23,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewPage
 
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.Pages.NormalUser.ReviewPage;
+    using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
@@ -38,6 +39,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewPage
         private IReviewPageViewModel viewModel;
         private IReviewObjectiveViewModel reviewObjectiveViewModel;
         private Mock<IReviewService> reviewService;
+        private Mock<IParticipantService> participantService;
         
         [SetUp]
         public void Setup()
@@ -46,7 +48,11 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewPage
             this.context.ConfigureDevExpressBlazor();
             this.reviewObjectiveViewModel = new ReviewObjectiveViewModel(null, null);
             this.reviewService = new Mock<IReviewService>();
-            this.viewModel = new ReviewPageViewModel(this.reviewService.Object, this.reviewObjectiveViewModel, null);
+            this.participantService = new Mock<IParticipantService>();
+            
+            this.viewModel = new ReviewPageViewModel(this.reviewService.Object, this.reviewObjectiveViewModel, 
+                null, this.participantService.Object);
+
             this.context.Services.AddSingleton(this.viewModel);
         }
 
@@ -82,6 +88,9 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewPage
             };
 
             this.reviewService.Setup(x => x.GetReviewOfProject(projectGuid, reviewGuid, 1)).ReturnsAsync(review);
+
+            this.participantService.Setup(x => x.GetCurrentParticipant(projectGuid))
+                .ReturnsAsync(new Participant(Guid.NewGuid()));
 
             await this.viewModel.OnInitializedAsync(projectGuid, reviewGuid);
             renderer.Render();

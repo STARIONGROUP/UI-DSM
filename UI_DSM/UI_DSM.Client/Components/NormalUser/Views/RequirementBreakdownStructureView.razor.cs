@@ -21,7 +21,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
     using ReactiveUI;
 
-    using UI_DSM.Client.Components.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
@@ -30,10 +29,10 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     /// <summary>
     ///     Component for the <see cref="View.RequirementBreakdownStructureView" />
     /// </summary>
-    public partial class RequirementBreakdownStructureView : GenericBaseView<IRequirementBreakdownStructureViewViewModel>, IDisposable
+    public partial class RequirementBreakdownStructureView : GenericBaseView<IRequirementBreakdownStructureViewViewModel>, IDisposable, IReusableView
     {
         /// <summary>
-        /// A collection of <see cref="IDisposable"/>
+        ///     A collection of <see cref="IDisposable" />
         /// </summary>
         private readonly List<IDisposable> disposables = new();
 
@@ -43,9 +42,29 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         protected DxGrid DxGrid { get; set; }
 
         /// <summary>
-        ///     Reference to the <see cref="Filter" />
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public Filter RowFiltering { get; set; }
+        public void Dispose()
+        {
+            this.disposables.ForEach(x => x.Dispose());
+        }
+
+        /// <summary>
+        ///     Tries to copy components from another <see cref="BaseView" />
+        /// </summary>
+        /// <param name="otherView">The other <see cref="BaseView" /></param>
+        /// <returns>Value indicating if it could copy components</returns>
+        public async Task<bool> CopyComponents(BaseView otherView)
+        {
+            if (otherView is not RequirementBreakdownStructureView requirementBreakdown)
+            {
+                return false;
+            }
+
+            this.ViewModel = requirementBreakdown.ViewModel;
+            await this.HasChanged();
+            return true;
+        }
 
         /// <summary>
         ///     Initialize the correspondant ViewModel for this component
@@ -58,21 +77,9 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             await base.InitializeViewModel(things, projectId, reviewId);
 
-            this.RowFiltering.ViewModel.InitializeProperties(this.ViewModel.AvailableRowFilters);
-
-            this.disposables.Add(this.WhenAnyValue(x => x.RowFiltering.ViewModel.IsFilterVisible)
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.FilterViewModel.IsFilterVisible)
                 .Where(x => !x)
                 .Subscribe(_ => this.InvokeAsync(this.OnRowFilteringClose)));
-        }
-
-        /// <summary>
-        ///     Apply the filtering on rows
-        /// </summary>
-        /// <returns>A <see cref="Task" /></returns>
-        private Task OnRowFilteringClose()
-        {
-            this.ViewModel.FilterRequirementRows(this.RowFiltering.ViewModel.GetSelectedFilters());
-            return this.InvokeAsync(this.StateHasChanged);
         }
 
         /// <summary>
@@ -95,11 +102,13 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        ///     Apply the filtering on rows
         /// </summary>
-        public void Dispose()
+        /// <returns>A <see cref="Task" /></returns>
+        private Task OnRowFilteringClose()
         {
-            this.disposables.ForEach(x => x.Dispose());
+            this.ViewModel.FilterRequirementRows(this.ViewModel.FilterViewModel.GetSelectedFilters());
+            return this.InvokeAsync(this.StateHasChanged);
         }
     }
 }

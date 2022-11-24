@@ -16,6 +16,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using CDP4Common.CommonData;
 
     using UI_DSM.Client.Model;
+    using UI_DSM.Client.ViewModels.App.Filter;
 
     /// <summary>
     ///     Interface definition for <see cref="HaveTraceabilityTableViewModel" />
@@ -23,19 +24,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     public interface IHaveTraceabilityTableViewModel : IBaseViewViewModel, IDisposable
     {
         /// <summary>
+        ///     The <see cref="IFilterViewModel" /> for rows
+        /// </summary>
+        IFilterViewModel RowsFilterViewModel { get; }
+
+        /// <summary>
+        ///     The <see cref="IFilterViewModel" /> for columns
+        /// </summary>
+        IFilterViewModel ColumnsFilterViewModel { get; }
+
+        /// <summary>
         ///     The <see cref="ITraceabilityTableViewModel" />
         /// </summary>
         ITraceabilityTableViewModel TraceabilityTableViewModel { get; }
-
-        /// <summary>
-        ///     A collection of available <see cref="FilterModel" /> for rows
-        /// </summary>
-        List<FilterModel> AvailableRowFilters { get; }
-
-        /// <summary>
-        ///     A collection of available <see cref="FilterModel" />  for columns
-        /// </summary>
-        List<FilterModel> AvailableColumnFilters { get; }
 
         /// <summary>
         ///     Apply a filtering on rows

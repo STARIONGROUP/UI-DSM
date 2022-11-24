@@ -41,7 +41,8 @@
 		</DxFormLayout>
 		<ValidationSummary/>
 		<div class="modal-footer m-top-10px">
-			<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="@this.ConnectButtonText" SubmitFormOnClick="true"/>
+			<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="@this.ConnectButtonText" 
+			          Enabled="@(this.ViewModel.CometConnectionStatus != AuthenticationStatus.Authenticating)"  SubmitFormOnClick="true"/>
 		</div>
 	</EditForm>
 }
@@ -63,7 +64,9 @@ else
 			</DxFormLayoutItem>
 		</DxFormLayout>
 		<div class="modal-footer m-top-10px">
-			<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="@this.UploadText" SubmitFormOnClick="true"/>
+			<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="@this.UploadText" 
+			          Enabled="@(this.ViewModel.IterationUploadStatus != UploadStatus.Uploading)"
+			          SubmitFormOnClick="true"/>
 		</div>
 	</EditForm>
 }

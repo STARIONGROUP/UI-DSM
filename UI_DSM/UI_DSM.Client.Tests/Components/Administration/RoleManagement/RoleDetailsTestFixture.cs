@@ -56,9 +56,9 @@ namespace UI_DSM.Client.Tests.Components.Administration.RoleManagement
                 RoleName = "Project manager",
                 AccessRights = new List<AccessRight>()
                 {
-                    AccessRight.CreateTask,
-                    AccessRight.DeleteTask,
-                    AccessRight.ManageParticipant
+                    AccessRight.CreateReview,
+                    AccessRight.DeleteReviewObjective,
+                    AccessRight.ReviewTask
                 }
             };
 

@@ -1,4 +1,5 @@
-﻿<!--------------------------------------------------------------------------------------------------------
+﻿@using UI_DSM.Shared.Enumerator
+<!--------------------------------------------------------------------------------------------------------
 // Comments.razor
 // Copyright (c) 2022 RHEA System S.A.
 //
@@ -11,9 +12,12 @@
 -------------------------------------------------------------------------------------------------------->
 <AppAccordion Label="Comments">
 	<div class="comments__header">
-		<button class="comments__add-button" @onclick="@this.ViewModel.OpenCommentCreationPopup">
-			<FeatherMessageCircle Size="24" Color="currentColor" StrokeWidth="1.5f" /> Leave a comment
-		</button>
+		@if (this.ViewModel.Participant != null && this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask))
+		{
+			<button class="comments__add-button" @onclick="@this.ViewModel.OpenCommentCreationPopup">
+				<FeatherMessageCircle Size="24" Color="currentColor" StrokeWidth="1.5f"/> Leave a comment
+			</button>
+		}
 	</div>
 
 	<DxPopup CloseOnOutsideClick="false" HeaderText="Add comment" @bind-Visible="@(this.ViewModel.IsOnCommentCreationMode)">

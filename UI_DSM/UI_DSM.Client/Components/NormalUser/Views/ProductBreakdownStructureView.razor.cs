@@ -20,24 +20,41 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     /// <summary>
     ///     Component for the <see cref="View.ProductBreakdownStructureView" />
     /// </summary>
-    public partial class ProductBreakdownStructureView: ElementBreakdownStructureView<IProductBreakdownStructureViewViewModel>
+    public partial class ProductBreakdownStructureView : ElementBreakdownStructureView<IProductBreakdownStructureViewViewModel>, IReusableView
     {
+        /// <summary>
+        ///     Tries to copy components from another <see cref="BaseView" />
+        /// </summary>
+        /// <param name="otherView">The other <see cref="BaseView" /></param>
+        /// <returns>A <see cref="Task" /> with the value indicating if it could copy components</returns>
+        public async Task<bool> CopyComponents(BaseView otherView)
+        {
+            if (otherView is not TrlView trlView)
+            {
+                return false;
+            }
+
+            this.ViewModel = trlView.ViewModel;
+            await this.HasChanged();
+            return true;
+        }
+
         /// <summary>
         ///     Hides columns on start
         /// </summary>
         protected override void HideColumnsAtStart()
         {
             var trlColumn = this.Grid.ColumnsCollection.FirstOrDefault(x => x.Property == nameof(ProductRowViewModel.TrlValue));
-            var techonologyColumn = this.Grid.ColumnsCollection.FirstOrDefault(x => x.Property == nameof(ProductRowViewModel.TechnologyValue));
+            var technologyColumn = this.Grid.ColumnsCollection.FirstOrDefault(x => x.Property == nameof(ProductRowViewModel.TechnologyValue));
 
             if (trlColumn != null)
             {
                 this.ColumnChooser.OnChangeValue(trlColumn);
             }
 
-            if (techonologyColumn != null)
+            if (technologyColumn != null)
             {
-                this.ColumnChooser.OnChangeValue(techonologyColumn);
+                this.ColumnChooser.OnChangeValue(technologyColumn);
             }
         }
     }

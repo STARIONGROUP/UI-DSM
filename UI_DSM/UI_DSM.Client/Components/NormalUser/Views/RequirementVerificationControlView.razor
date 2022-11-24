@@ -17,7 +17,7 @@
 
 	</div>
 	<div class="right-actions">
-		<Filter @ref="this.RowFiltering" Id="row">
+		<Filter ViewModel="this.ViewModel.FilterViewModel" Id="row">
 			<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
 		</Filter>
 		<AppButton Id="column-chooser" Label="Select visible columns" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="this.OnClick">

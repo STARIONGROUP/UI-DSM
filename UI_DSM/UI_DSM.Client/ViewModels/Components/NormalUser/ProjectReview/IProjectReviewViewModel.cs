@@ -55,6 +55,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         NavigationManager NavigationManager { get; set; }
 
         /// <summary>
+        ///     The current <see cref="Participant" />
+        /// </summary>
+        Participant Participant { get; set; }
+
+        /// <summary>
         ///     Navigate to the page dedicated to the given <see cref="Review" />
         /// </summary>
         /// <param name="review">The <see cref="Review" /></param>
