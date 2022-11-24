@@ -1,0 +1,39 @@
+﻿.over {
+    box-shadow: 0 0 0 2px gray;
+}
+
+.central-node {
+    box-shadow: 0 0 0 3px #008bd2;
+}
+
+.default-node {
+    width: auto;
+    height: auto;
+    min-width: 100px;
+    min-height: 80px;
+    padding: 3%;
+}
+
+    .default-node .port {
+        width: 14px;
+        height: 14px;
+        margin: -7px;
+    }
+
+.port-text {
+    text-align: center;
+}
+
+.node-comment {
+    width: 7px;
+    height: 7px;
+    background-color: green;
+    position: absolute;
+    border-radius: 50%;
+    right: 5px;
+    bottom: 5px;
+}
+
+.port-comment {
+    box-shadow: 0 0 0 1px green;
+}

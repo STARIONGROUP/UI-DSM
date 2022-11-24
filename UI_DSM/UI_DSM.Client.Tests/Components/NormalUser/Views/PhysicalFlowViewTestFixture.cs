@@ -234,6 +234,16 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             Assert.That(this.viewModel.SelectedElement, Is.Null);
             this.viewModel.SetSelectedModel(productNode);
             Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+
+            var portNode = this.viewModel.PortsNodes.First();
+            this.viewModel.SelectedElement = null;
+            this.viewModel.SetSelectedModel(portNode);
+            Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+
+            var linkNode = this.viewModel.InterfacesLinks.First();
+            this.viewModel.SelectedElement = null;
+            this.viewModel.SetSelectedModel(linkNode);
+            Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
         }
 
         [Test]
@@ -269,6 +279,22 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             var product = this.renderer.Instance.ViewModel.Products.Last();
             var result = this.viewModel.LoadChildren(product);
             Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public void VerifyThatInterfaceLinksCanBeCreated()
+        {
+            this.viewModel.InterfacesLinks.Clear();
+            this.viewModel.InterfacesMap.Clear();
+
+            Assert.That(this.viewModel.InterfacesLinks.Count == 0);
+            Assert.That(this.viewModel.InterfacesMap.Count == 0);
+
+            this.viewModel.CreateInterfacesLinks();
+
+            Assert.That(this.viewModel.Interfaces.Count > 0);
+            Assert.That(this.viewModel.InterfacesLinks.Count > 0);
+            Assert.That(this.viewModel.InterfacesMap.Count > 0);
         }
     }
 }
