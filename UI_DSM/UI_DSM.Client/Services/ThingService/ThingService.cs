@@ -35,7 +35,7 @@ namespace UI_DSM.Client.Services.ThingService
         /// <summary>
         ///     A <see cref="Dictionary{TKey,TValue}" /> that will cache
         /// </summary>
-        private Dictionary<Guid, IEnumerable<Thing>> queriedIterations = new();
+        private readonly Dictionary<Guid, IEnumerable<Thing>> queriedIterations = new();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ServiceBase" /> class.
