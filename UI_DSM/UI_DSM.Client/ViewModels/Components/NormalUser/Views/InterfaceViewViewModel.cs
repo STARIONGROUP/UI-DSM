@@ -219,9 +219,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.InitializesFilter();
 
             //TODO: the selection of the product shall not be random. It will be the selected thing.
-            Random rand = new Random();
-            int index = rand.Next(this.Products.Count);
-            var firstNode = this.Products[index];
+            var firstNode = this.Products.FirstOrDefault(p =>
+            {
+                var neighbours = this.GetNeighbours(p);
+                if (neighbours is not null && neighbours.Count() > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }, this.Products.First());
+
             this.CreateCentralNodeAndNeighbours(firstNode);
         }
 

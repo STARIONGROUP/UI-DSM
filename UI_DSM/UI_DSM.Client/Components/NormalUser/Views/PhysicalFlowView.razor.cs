@@ -25,7 +25,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     /// <summary>
     /// Component for the <see cref="View.PhysicalFlowView"/>
     /// </summary>
-    public partial class PhysicalFlowView : GenericBaseView<IInterfaceViewViewModel>
+    public partial class PhysicalFlowView : GenericBaseView<IInterfaceViewViewModel>, IReusableView
     {
         /// <summary>
         /// Gets or sets the diagram component.
@@ -41,19 +41,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             base.OnInitialized();
 
             this.Diagram = new Diagram();
-
-            this.ViewModel.OnCentralNodeChanged += () =>
-            {
-                this.Diagram.Nodes.Clear();
-                this.ViewModel.ProductNodes.ForEach(node => this.Diagram.Nodes.Add(node));
-                this.StateHasChanged();
-            };
-
-            //await this.ViewModel.OnCentralNodeChanged += () =>
-            //{
-
-            //};
-
             this.Diagram.MouseUp += Diagram_MouseUp;
         }
 
@@ -69,6 +56,38 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             {
                 this.ViewModel.SetSelectedModel(model);
             }
-        }            
+        }
+
+        /// <summary>
+        ///     Tries to copy components from another <see cref="BaseView" />
+        /// </summary>
+        /// <param name="otherView">The other <see cref="BaseView" /></param>
+        /// <returns>Value indicating if it could copy components</returns>
+        public async Task<bool> CopyComponents(BaseView otherView)
+        {
+            this.ViewModel.OnCentralNodeChanged -= this.OnCentralNodeChanged;
+            if (otherView is not GenericBaseView<IInterfaceViewViewModel> interfaceView)
+            {
+                return false;
+            }
+
+            this.ViewModel = interfaceView.ViewModel;
+            this.OnCentralNodeChanged();
+            await this.HasChanged();
+
+            this.ViewModel.OnCentralNodeChanged += this.OnCentralNodeChanged;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Method that handles the on central node changed event.
+        /// </summary>
+        public void OnCentralNodeChanged()
+        {
+            this.Diagram.Nodes.Clear();
+            this.ViewModel.ProductNodes.ForEach(node => this.Diagram.Nodes.Add(node));
+            this.StateHasChanged();
+        }
     }
 }
