@@ -55,5 +55,14 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             await this.ViewModel.InitializeProperties(things, projectId, reviewId);
             await this.HasChanged();
         }
+
+        /// <summary>
+        ///     Tries to set the selected item to the ViewModel
+        /// </summary>
+        /// <param name="selectedItem">The previous selected <see cref="object" /></param>
+        public override void TrySetSelectedItem(object selectedItem)
+        {
+            this.ViewModel.TrySetSelectedItem(selectedItem);
+        }
     }
 }

@@ -31,6 +31,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Server.Validator;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Server.Types;
+    using UI_DSM.Shared.Enumerator;
 
     [TestFixture]
     public class AnnotationModuleTestFixture
@@ -176,6 +177,12 @@ namespace UI_DSM.Server.Tests.Modules
 
             await this.module.CreateEntity(this.annotationManager.Object, dto, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
+
+            this.participantManager.Setup(x => x.GetParticipantForProject(project.Id, "user")).ReturnsAsync(this.participant);
+            await this.module.CreateEntity(this.annotationManager.Object, dto, this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 403, Times.Once);
+
+            this.participant.Role = new Role() {AccessRights = { AccessRight.ReviewTask }};
 
             this.participantManager.Setup(x => x.GetParticipantForProject(project.Id, "user")).ReturnsAsync(this.participant);
             await this.module.CreateEntity(this.annotationManager.Object, dto, this.context.Object);

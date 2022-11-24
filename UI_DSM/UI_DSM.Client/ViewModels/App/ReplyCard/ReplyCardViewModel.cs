@@ -15,6 +15,7 @@ namespace UI_DSM.Client.ViewModels.App.ReplyCard
 {
     using Microsoft.AspNetCore.Components;
 
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -55,7 +56,7 @@ namespace UI_DSM.Client.ViewModels.App.ReplyCard
         /// <summary>
         ///     Value asserting if the current <see cref="Participant" /> is allow to edit the <see cref="Comment" />
         /// </summary>
-        public bool IsAllowedToEdit => this.Reply.Author.Id == this.CurrentParticipant.Id;
+        public bool IsAllowedToEdit =>this.CurrentParticipant.IsAllowedTo(AccessRight.ReviewTask) &&  this.Reply.Author.Id == this.CurrentParticipant.Id;
 
         /// <summary>
         ///     The currently logged <see cref="Participant" />

@@ -1,4 +1,5 @@
-﻿<!--------------------------------------------------------------------------------------------------------
+﻿@using UI_DSM.Shared.Enumerator
+<!--------------------------------------------------------------------------------------------------------
 // ProjectReview.razor
 // Copyright (c) 2022 RHEA System S.A.
 //
@@ -12,10 +13,13 @@
 
 <div class="project-page">
   <div class="page-header">
-        <h1 class="h3">Review plans for @this.ViewModel.Project.ProjectName</h1>
-        <AppButton Click="@this.ViewModel.OpenCreatePopup" Type="button">
-            <FeatherPlusCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Create review</span>
-        </AppButton>
+	  <h1 class="h3">Review plans for @this.ViewModel.Project.ProjectName</h1>
+      @if (this.ViewModel.Participant.IsAllowedTo(AccessRight.CreateReview))
+      {
+	      <AppButton Click="@this.ViewModel.OpenCreatePopup" Type="button">
+		      <FeatherPlusCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Create review</span>
+	      </AppButton>
+      }
   </div>
   <DxPopup CloseOnOutsideClick="false" HeaderText="Create Review" @bind-Visible="@this.ViewModel.IsOnCreationMode">
 		<Content>

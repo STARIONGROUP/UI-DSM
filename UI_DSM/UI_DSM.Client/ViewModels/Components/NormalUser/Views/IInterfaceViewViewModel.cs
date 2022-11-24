@@ -17,6 +17,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
     using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
+    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>
@@ -24,11 +25,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     /// </summary>
     public interface IInterfaceViewViewModel : IBaseViewViewModel
     {
-        /// <summary>
-        ///     A collection of available <see cref="FilterModel" /> for rows
-        /// </summary>
-        List<FilterModel> AvailableRowFilters { get; }
-
         /// <summary>
         ///     A collection <see cref="IBelongsToInterfaceView" />
         /// </summary>
@@ -58,6 +54,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Value asserting if products has to been shown
         /// </summary>
         bool ShouldShowProducts { get; }
+
+        /// <summary>
+        ///     The <see cref="IFilterViewModel" />
+        /// </summary>
+        IFilterViewModel FilterViewModel { get; }
 
         /// <summary>
         ///     Filters current rows
@@ -90,7 +91,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="productRow">The <see cref="ProductRowViewModel" /></param>
         /// <returns>A collection of <see cref="PortRowViewModel" /></returns>
         IEnumerable<PortRowViewModel> LoadChildren(ProductRowViewModel productRow);
-        
+
         /// <summary>
         ///     Loads all <see cref="InterfaceRowViewModel" /> children rows of a <see cref="PortRowViewModel" />
         /// </summary>

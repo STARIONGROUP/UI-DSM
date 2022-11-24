@@ -19,6 +19,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
@@ -31,7 +32,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Initializes a new instance of the <see cref="ProductBreakdownStructureViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
-        public ProductBreakdownStructureViewViewModel(IReviewItemService reviewItemService) : base(reviewItemService)
+        /// <param name="filterViewModel">The <see cref="IFilterViewModel" /></param>
+        public ProductBreakdownStructureViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel) : base(reviewItemService, filterViewModel)
         {
         }
 

@@ -48,10 +48,12 @@ namespace UI_DSM.Server.Context.Configuration
                 RoleName = "Project Administrator",
                 AccessRights = new List<AccessRight>()
                 {
-                    AccessRight.ManageParticipant,
-                    AccessRight.CreateTask,
-                    AccessRight.DeleteTask,
-                    AccessRight.UpdateTask
+                    AccessRight.ReviewTask,
+                    AccessRight.CreateReview,
+                    AccessRight.DeleteReview,
+                    AccessRight.CreateReviewObjective,
+                    AccessRight.DeleteReviewObjective,
+                    AccessRight.AssignTask
                 }
             }, new Role(new Guid(ReviewerRoleId))
             {

@@ -26,7 +26,7 @@
 		</div>
 	</div>	
 	<div class="right-actions">
-		<Filter @ref="this.RowFiltering" Id="row">
+		<Filter ViewModel="this.ViewModel.FilterViewModel" Id="row">
 			<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
 		</Filter>
 		<ColumnChooser TItem="IBelongsToInterfaceView" ViewModel="@this.columnChooser"/>
@@ -50,8 +50,8 @@
 		</RadzenDataGridColumn>
 		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.Owner)" Title="Owner"/>
 		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.Nature)" Title="Interface Nature"/>
-		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.SourceEnd)" Title="Source End" />
-		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.TargetEnd)" Title="Target End" />
+		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.SourceEnd)" Title="Source" />
+		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.TargetEnd)" Title="Target" />
 		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.SourceOwner)" Title="Source Owner" />
 		<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.TargetOwner)" Title="Target Owner" />
 	</Columns>

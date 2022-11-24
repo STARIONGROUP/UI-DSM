@@ -73,5 +73,24 @@ namespace UI_DSM.Client.Services.ArtifactService
                 Entity = (TArtifact)createdArtifact.Entity
             };
         }
+
+        /// <summary>
+        ///     Gets all <see cref="Artifact" />s contained inside a <see cref="Project" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
+        /// <param name="deepLevel">The deep level to get associated entities from the server</param>
+        /// <returns>A <see cref="Task" /> with the collection of <see cref="Artifact" /></returns>
+        public async Task<List<Artifact>> GetArtifactsOfProject(Guid projectId, int deepLevel = 0)
+        {
+            try
+            {
+                this.ComputeMainRoute(projectId);
+                return await this.GetEntities(deepLevel);
+            }
+            catch (Exception exception)
+            {
+                throw new HttpRequestException(exception.Message);
+            }
+        }
     }
 }

@@ -19,12 +19,13 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
     using Bunit.TestDoubles;
 
     using Microsoft.Extensions.DependencyInjection;
+   
     using Moq;
+    
     using NUnit.Framework;
 
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.Services.ReviewObjectiveService;
-    using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
@@ -53,7 +54,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
 
             this.viewModel = new ReviewObjectiveViewModel(this.reviewObjectiveService.Object, null)
             {
-                Review = new Review()
+                Review = new Review(),
+                Participant = new Participant(Guid.NewGuid())
+                {
+                    Role = new Role(Guid.NewGuid())
+                    {
+                        AccessRights = { AccessRight.CreateReviewObjective }
+                    }
+                }
             };
 
             this.viewModel.NavigationManager = this.context.Services.GetRequiredService<FakeNavigationManager>();
@@ -124,7 +132,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
                 {
                     Kind = ReviewObjectiveKind.Prr,
                     KindNumber = 1,
-
                 });
 
                 this.reviewObjectiveService.Setup(x => x.CreateReviewObjectives(projectGuid, this.viewModel.Review.Id, this.viewModel.ReviewObjectiveCreationViewModel.SelectedReviewObjectives))
@@ -144,7 +151,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
                 this.reviewObjectiveService.Setup(x => x.CreateReviewObjectives(projectGuid, this.viewModel.Review.Id, this.viewModel.ReviewObjectiveCreationViewModel.SelectedReviewObjectives))
                     .ReturnsAsync(EntitiesRequestResponses<ReviewObjective>.Success(new List<ReviewObjective>
                     {
-                        new ReviewObjective(Guid.NewGuid())
+                        new (Guid.NewGuid())
                     }));
 
                 await this.viewModel.ReviewObjectiveCreationViewModel.OnValidSubmit.InvokeAsync();

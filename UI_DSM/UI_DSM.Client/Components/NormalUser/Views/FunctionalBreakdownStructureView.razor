@@ -15,14 +15,14 @@
 
 @if (!this.ViewModel.TopElement.Any())
 {
-	<p>TopElement of the Model is not set, can not compute the Product Breakdown</p>
+	<p>TopElement of the Model is not set, can not compute the Functional Breakdown</p>
 }
 else
 {
 	<div class="view-actions">
 		<div class="left-actions"></div>
 		<div class="right-actions">
-			<Filter @ref="this.RowFiltering" Id="row">
+			<Filter ViewModel="this.ViewModel.FilterViewModel" Id="row">
 				<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
 			</Filter>
 			<ColumnChooser TItem="ElementBaseRowViewModel" ViewModel="@this.ColumnChooser"/>

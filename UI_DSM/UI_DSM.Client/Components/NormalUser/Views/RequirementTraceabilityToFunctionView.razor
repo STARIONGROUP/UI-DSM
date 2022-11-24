@@ -17,11 +17,11 @@
 	</div>
 
 	<div class="right-actions">
-		<Filter @ref="this.RowFiltering" Id="row">
+		<Filter ViewModel="this.ViewModel.RowsFilterViewModel" Id="row">
 			<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
 		</Filter>
 
-		<Filter @ref="this.ColumnFiltering" Id="column">
+		<Filter ViewModel="this.ViewModel.ColumnsFilterViewModel" Id="column">
 			<FeatherColumns Size="20" Color="currentColor" StrokeWidth="2" /> <span>Column</span>
 		</Filter>
 	</div>

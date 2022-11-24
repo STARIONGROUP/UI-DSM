@@ -19,6 +19,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>
@@ -32,17 +33,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         protected readonly List<ElementBaseRowViewModel> AllRows = new();
 
         /// <summary>
-        ///     A collection of available <see cref="FilterModel" /> for rows
-        /// </summary>
-        public List<FilterModel> AvailableRowFilters { get; } = new();
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
-        protected ElementBreakdownStructureViewViewModel(IReviewItemService reviewItemService) : base(reviewItemService)
+        /// <param name="filterViewModel">The <see cref="IFilterViewModel" /></param>
+        protected ElementBreakdownStructureViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel) : base(reviewItemService)
         {
+            this.FilterViewModel = filterViewModel;
         }
+
+        /// <summary>
+        ///     The <see cref="FilterViewModel" />
+        /// </summary>
+        public IFilterViewModel FilterViewModel { get; private set; }
 
         /// <summary>
         ///     A collection of <see cref="ElementBaseRowViewModel" /> for the top element
@@ -71,17 +74,41 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Initializes the <see cref="AvailableRowFilters"/> for <see cref="RequirementRowViewModel" /> rows
+        ///     Verifies that a <see cref="ElementBaseRowViewModel" /> is visible
         /// </summary>
-        protected void InitializesFilter<T>(string categoryNameFiltering) where T: ElementBaseRowViewModel
+        /// <param name="rowData">The <see cref="ElementBaseRowViewModel" /></param>
+        /// <returns>The assert</returns>
+        public bool IsVisible(ElementBaseRowViewModel rowData)
         {
-            this.AvailableRowFilters.Clear();
+            if (this.TopElement.Any(x => x.ThingId == rowData.ThingId))
+            {
+                return true;
+            }
+
+            var row = this.AllRows.FirstOrDefault(x => x.ThingId == rowData.ThingId);
+            return row is { IsVisible: true };
+        }
+
+        /// <summary>
+        ///     Filters current rows
+        /// </summary>
+        /// <param name="selectedFilters">The selected filters</param>
+        public abstract void FilterRows(IReadOnlyDictionary<ClassKind, List<FilterRow>> selectedFilters);
+
+        /// <summary>
+        ///     Initializes the filters criteria for rows
+        /// </summary>
+        protected void InitializesFilter<T>(string categoryNameFiltering) where T : ElementBaseRowViewModel
+        {
+            var availableRowFilters = new List<FilterModel>();
 
             var owners = new List<DefinedThing>(this.AllRows.OfType<T>()
-                .Select(x => x.Thing.Owner)
-                .DistinctBy(x => x.Iid));
+                    .Select(x => x.Thing.Owner)
+                    .DistinctBy(x => x.Iid))
+                .OrderBy(x => x.Name)
+                .ToList();
 
-            this.AvailableRowFilters.Add(new FilterModel()
+            availableRowFilters.Add(new FilterModel
             {
                 ClassKind = ClassKind.DomainOfExpertise,
                 UseShortName = true,
@@ -90,26 +117,35 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             });
 
             var categories = new List<DefinedThing>(this.AllRows.OfType<T>()
-                .SelectMany(x => x.Thing.GetAppliedCategories())
-                .Where(x => string.Equals(categoryNameFiltering, x.Name, StringComparison.InvariantCultureIgnoreCase) 
-                            || x.AllSuperCategories()
-                                .Any(cat => !cat.IsDeprecated && string.Equals(cat.Name, categoryNameFiltering, StringComparison.InvariantCultureIgnoreCase)))
-                .DistinctBy(x => x.Iid))
+                    .SelectMany(x => x.Thing.GetAppliedCategories())
+                    .Where(x => string.Equals(categoryNameFiltering, x.Name, StringComparison.InvariantCultureIgnoreCase)
+                                || x.AllSuperCategories()
+                                    .Any(cat => !cat.IsDeprecated && string.Equals(cat.Name, categoryNameFiltering, StringComparison.InvariantCultureIgnoreCase)))
+                    .DistinctBy(x => x.Iid))
                 .OrderBy(x => x.Name)
                 .ToList();
 
-            this.AvailableRowFilters.Add(new FilterModel()
+            availableRowFilters.Add(new FilterModel
             {
                 ClassKind = ClassKind.Category,
                 DisplayName = "Category",
                 Values = categories
             });
+
+            this.FilterViewModel.InitializeProperties(availableRowFilters);
         }
 
         /// <summary>
-        ///     Filters current rows
+        ///     Tries to set the <see cref="IBaseViewViewModel.SelectedElement" /> to the previous selected item
         /// </summary>
-        /// <param name="selectedFilters">The selected filters</param>
-        public abstract void FilterRows(IReadOnlyDictionary<ClassKind, List<FilterRow>> selectedFilters);
+        /// <param name="selectedItem">The previously selectedItem</param>
+        public override void TrySetSelectedItem(object selectedItem)
+        {
+            if (selectedItem is ElementBaseRowViewModel elementBaseRow)
+            {
+                var topElement = this.TopElement.FirstOrDefault(x => x.ThingId == elementBaseRow.ThingId);
+                this.SelectedElement = topElement ?? this.AllRows.FirstOrDefault(x => x.ThingId == elementBaseRow.ThingId);
+            }
+        }
     }
 }

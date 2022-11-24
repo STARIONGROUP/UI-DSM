@@ -20,7 +20,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using ReactiveUI;
 
     using UI_DSM.Client.Components.App.ConnectionVisibilitySelector;
-    using UI_DSM.Client.Components.App.Filter;
     using UI_DSM.Client.Components.App.TraceabilityTable;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Shared.Models;
@@ -41,16 +40,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     The <see cref="TraceabilityTable" /> reference
         /// </summary>
         public TraceabilityTable Table { get; set; }
-
-        /// <summary>
-        ///     The <see cref="Filter" /> on row reference
-        /// </summary>
-        public Filter RowFiltering { get; set; }
-
-        /// <summary>
-        ///     The <see cref="Filter" /> on column reference
-        /// </summary>
-        public Filter ColumnFiltering { get; set; }
 
         /// <summary>
         ///     The <see cref="Components.App.ConnectionVisibilitySelector.ConnectionVisibilitySelector" /> reference
@@ -91,14 +80,11 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.ViewModel.TraceabilityTableViewModel.VisibilityState = this.ConnectionVisibilitySelector.ViewModel;
             await this.Table.InitiliazeProperties(this.ViewModel.TraceabilityTableViewModel);
 
-            this.ColumnFiltering.ViewModel.InitializeProperties(this.ViewModel.AvailableColumnFilters);
-            this.RowFiltering.ViewModel.InitializeProperties(this.ViewModel.AvailableRowFilters);
-
-            this.Disposables.Add(this.WhenAnyValue(x => x.ColumnFiltering.ViewModel.IsFilterVisible)
+            this.Disposables.Add(this.WhenAnyValue(x => x.ViewModel.ColumnsFilterViewModel.IsFilterVisible)
                 .Where(x => !x)
                 .Subscribe(_ => this.InvokeAsync(this.OnColumnFilteringClose)));
 
-            this.Disposables.Add(this.WhenAnyValue(x => x.RowFiltering.ViewModel.IsFilterVisible)
+            this.Disposables.Add(this.WhenAnyValue(x => x.ViewModel.RowsFilterViewModel.IsFilterVisible)
                 .Where(x => !x)
                 .Subscribe(_ => this.InvokeAsync(this.OnRowFilteringClose)));
 
@@ -111,7 +97,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <returns>A <see cref="Task" /></returns>
         private async Task OnRowFilteringClose()
         {
-            this.ViewModel.FilterRows(this.RowFiltering.ViewModel.GetSelectedFilters());
+            this.ViewModel.FilterRows(this.ViewModel.RowsFilterViewModel.GetSelectedFilters());
             await this.Table.Update();
         }
 
@@ -121,7 +107,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <returns>A <see cref="Task" /></returns>
         private async Task OnColumnFilteringClose()
         {
-            this.ViewModel.FilterColumns(this.ColumnFiltering.ViewModel.GetSelectedFilters());
+            this.ViewModel.FilterColumns(this.ViewModel.ColumnsFilterViewModel.GetSelectedFilters());
             await this.Table.Update();
         }
     }

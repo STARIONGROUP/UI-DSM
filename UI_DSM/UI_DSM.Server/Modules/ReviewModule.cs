@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Server.Modules
 {
+    using System.Diagnostics.CodeAnalysis;
+
     using Carter.Response;
     
     using Microsoft.AspNetCore.Authorization;
@@ -22,6 +24,7 @@ namespace UI_DSM.Server.Modules
     using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -35,6 +38,7 @@ namespace UI_DSM.Server.Modules
         ///     Adds routes to the <see cref="IEndpointRouteBuilder" />
         /// </summary>
         /// <param name="app">The <see cref="IEndpointRouteBuilder" /></param>
+        [ExcludeFromCodeCoverage]
         public override void AddRoutes(IEndpointRouteBuilder app)
         {
             base.AddRoutes(app);
@@ -104,6 +108,11 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
+            if (!(await IsAllowedTo(context, participant, AccessRight.CreateReview)))
+            {
+                return;
+            }
+
             dto.Author = participant.Id;
             await base.CreateEntity(manager, dto, context, deepLevel);
         }
@@ -123,6 +132,16 @@ namespace UI_DSM.Server.Modules
             if (participant == null)
             {
                 return new RequestResponseDto();
+            }
+
+            if (!participant.IsAllowedTo(AccessRight.DeleteReview))
+            {
+                context.Response.StatusCode = 403;
+               
+                return new RequestResponseDto()
+                {
+                    Errors = new List<string> { "You don't have requested access right" }
+                };
             }
 
             return await base.DeleteEntity(manager, entityId, context);

@@ -60,5 +60,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.Rows = new List<HyperLinkRowViewModel>(filteredThings.Select(x =>
                 new HyperLinkRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));
         }
+
+        /// <summary>
+        ///     Tries to set the <see cref="IBaseViewViewModel.SelectedElement" /> to the previous selected item
+        /// </summary>
+        /// <param name="selectedItem">The previously selectedItem</param>
+        public override void TrySetSelectedItem(object selectedItem)
+        {
+            if (selectedItem is HyperLinkRowViewModel hyperLinkRow)
+            {
+                this.SelectedElement = this.Rows.FirstOrDefault(x => x.ThingId == hyperLinkRow.ThingId);
+            }
+        }
     }
 }

@@ -16,17 +16,23 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using CDP4Common.CommonData;
 
     using UI_DSM.Client.Model;
+    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>
     ///     Interface definition for <see cref="ElementBreakdownStructureViewViewModel" />
     /// </summary>
-    public interface IElementBreakdownStructureViewViewModel: IBaseViewViewModel
+    public interface IElementBreakdownStructureViewViewModel : IBaseViewViewModel
     {
         /// <summary>
         ///     A collection of <see cref="ElementBaseRowViewModel" /> for the top element
         /// </summary>
         List<ElementBaseRowViewModel> TopElement { get; }
+
+        /// <summary>
+        ///     The <see cref="FilterViewModel" />
+        /// </summary>
+        IFilterViewModel FilterViewModel { get; }
 
         /// <summary>
         ///     Loads all children <see cref="ElementBaseRowViewModel" /> of the <see cref="ElementBaseRowViewModel" /> parent
@@ -43,9 +49,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         bool HasChildren(ElementBaseRowViewModel rowData);
 
         /// <summary>
-        ///     A collection of available <see cref="FilterModel" /> for rows
+        ///     Verifies that a <see cref="ElementBaseRowViewModel" /> is visible
         /// </summary>
-        List<FilterModel> AvailableRowFilters { get; }
+        /// <param name="rowData">The <see cref="ElementBaseRowViewModel" /></param>
+        /// <returns>The assert</returns>
+        bool IsVisible(ElementBaseRowViewModel rowData);
 
         /// <summary>
         ///     Filters current rows

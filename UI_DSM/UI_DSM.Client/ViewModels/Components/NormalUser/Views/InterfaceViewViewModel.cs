@@ -23,6 +23,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
+    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
@@ -60,8 +61,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
-        public InterfaceViewViewModel(IReviewItemService reviewItemService) : base(reviewItemService)
+        /// <param name="filterViewModel">The <see cref="IFilterViewModel"/></param>
+        public InterfaceViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel) : base(reviewItemService)
         {
+            this.FilterViewModel = filterViewModel;
         }
 
         /// <summary>
@@ -72,6 +75,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             get => this.shouldShowProducts;
             private set => this.RaiseAndSetIfChanged(ref this.shouldShowProducts, value);
         }
+
+        /// <summary>
+        ///     The <see cref="IFilterViewModel" />
+        /// </summary>
+        public IFilterViewModel FilterViewModel { get; }
 
         /// <summary>
         ///     A collection of filtered <see cref="InterfaceRowViewModel" />
@@ -97,11 +105,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     The <see cref="IConnectionVisibilitySelectorViewModel" /> for ports
         /// </summary>
         public IConnectionVisibilitySelectorViewModel PortVisibilityState { get; set; }
-
-        /// <summary>
-        ///     A collection of available <see cref="FilterModel" /> for rows
-        /// </summary>
-        public List<FilterModel> AvailableRowFilters { get; } = new();
 
         /// <summary>
         ///     Filters current rows
@@ -180,6 +183,21 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.Interfaces = new List<InterfaceRowViewModel>(this.allInterfaces.OrderBy(x => x.Id));
             this.ApplyVisibility();
             this.InitializesFilter();
+        }
+
+        /// <summary>
+        ///     Tries to set the <see cref="IBaseViewViewModel.SelectedElement" /> to the previous selected item
+        /// </summary>
+        /// <param name="selectedItem">The previously selectedItem</param>
+        public override void TrySetSelectedItem(object selectedItem)
+        {
+            if (selectedItem is IHaveThingRowViewModel row)
+            {
+                var existingRow = this.Interfaces.FirstOrDefault(x => x.ThingId == row.ThingId) as IHaveThingRowViewModel;
+                existingRow ??= this.Products.FirstOrDefault(x => x.ThingId == row.ThingId);
+                existingRow ??= this.allPorts.FirstOrDefault(x => x.ThingId == row.ThingId);
+                this.SelectedElement = existingRow;
+            }
         }
 
         /// <summary>
@@ -270,18 +288,18 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Initializes the <see cref="AvailableRowFilters" /> for <see cref="PortRowViewModel" /> rows
+        ///     Initializes the filters criteria for rows
         /// </summary>
         private void InitializesFilter()
         {
-            this.AvailableRowFilters.Clear();
+            var availableRowFilters = new List<FilterModel>();
 
             var availableOwners = new List<DefinedThing>(this.allInterfaces
                 .Select(x => x.InterfaceOwner)
                 .OrderBy(x => x.ShortName)
                 .DistinctBy(x => x.Iid));
 
-            this.AvailableRowFilters.Add(new FilterModel
+            availableRowFilters.Add(new FilterModel
             {
                 ClassKind = ClassKind.DomainOfExpertise,
                 DisplayName = "Interface Owner",
@@ -294,7 +312,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 .OrderBy(x => x.Name)
                 .DistinctBy(x => x.Iid));
 
-            this.AvailableRowFilters.Add(new FilterModel
+            availableRowFilters.Add(new FilterModel
             {
                 ClassKind = ClassKind.Category,
                 DisplayName = "Interface Nature",
@@ -306,12 +324,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 .OrderBy(x => x.Name)
                 .ToList();
 
-            this.AvailableRowFilters.Add(new FilterModel
+            availableRowFilters.Add(new FilterModel
             {
                 ClassKind = ClassKind.ElementDefinition,
                 DisplayName = "Product",
                 Values = availableProducts
             });
+
+            this.FilterViewModel.InitializeProperties(availableRowFilters);
         }
     }
 }

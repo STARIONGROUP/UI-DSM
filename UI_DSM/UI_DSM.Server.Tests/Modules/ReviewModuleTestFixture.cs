@@ -189,6 +189,12 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.participantManager.Setup(x => x.GetParticipantForProject(project.Id, "user")).ReturnsAsync(participant);
             await this.module.CreateEntity(this.reviewManager.Object, dto, this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 403, Times.Once);
+
+            participant.Role.AccessRights.Add(AccessRight.CreateReview);
+
+            this.participantManager.Setup(x => x.GetParticipantForProject(project.Id, "user")).ReturnsAsync(participant);
+            await this.module.CreateEntity(this.reviewManager.Object, dto, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 422, Times.Once);
 
             dto.Author = participant.Id;
@@ -210,6 +216,9 @@ namespace UI_DSM.Server.Tests.Modules
             var review = new Review(Guid.NewGuid())
             {
                 Author = new Participant(Guid.NewGuid())
+                {
+                    Role = new Role(Guid.NewGuid())
+                }
             };
 
             var project = new Project(Guid.NewGuid())
@@ -224,6 +233,11 @@ namespace UI_DSM.Server.Tests.Modules
             await this.module.DeleteEntity(this.reviewManager.Object, review.Id, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
 
+            this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(review.Author);
+
+            await this.module.DeleteEntity(this.reviewManager.Object, review.Id, this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 403, Times.Once);
+            review.Author.Role.AccessRights.Add(AccessRight.DeleteReview);
             this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(review.Author);
 
             this.reviewManager.As<IContainedEntityManager<Review>>().Setup(x => x.FindEntityWithContainer(review.Id)).ReturnsAsync(review);

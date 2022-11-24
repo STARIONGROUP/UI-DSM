@@ -9,19 +9,22 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.Enumerator
 
 <EditForm Context="editFormContext" Model="@this.ViewModel.ReviewObjective" OnValidSubmit="@this.ViewModel.OnValidSubmit">
 	<div>PRR</div>
-	<DxListBox Data="@AvailableReviewObjectiveCreationDtoPrr"
+	<DxListBox Data="@this.AvailableReviewObjectiveCreationDtoPrr"
 				   @bind-Values="@this.ViewModel.SelectedReviewObjectivesPrr"
 					   ShowCheckboxes="true"
 					   SelectionMode="ListBoxSelectionMode.Multiple"/>
 	<div>SRR</div>
-	<DxListBox Data="@AvailableReviewObjectiveCreationDtoSrr"
+	<DxListBox Data="@this.AvailableReviewObjectiveCreationDtoSrr"
 			   @bind-Values="@this.ViewModel.SelectedReviewObjectivesSrr"
 			   ShowCheckboxes="true"
 			   SelectionMode="ListBoxSelectionMode.Multiple" />
 	<div class="modal-footer m-top-10px">
-		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="@this.CreationText" SubmitFormOnClick="true" />
+		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="@this.CreationText"
+				  Enabled="@(this.ViewModel.ReviewObjectivesCreationStatus != CreationStatus.Creating)"
+		          SubmitFormOnClick="true" />
 	</div>
 </EditForm>

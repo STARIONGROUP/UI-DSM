@@ -19,6 +19,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
@@ -26,13 +27,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     ///     ViewModel for the <see cref="Client.Components.NormalUser.Views.RequirementTraceabilityToFunctionView" />
     ///     component
     /// </summary>
-    public class RequirementTraceabilityToFunctionViewViewModel: HaveTraceabilityTableViewModel, IRequirementTraceabilityToFunctionViewViewModel
+    public class RequirementTraceabilityToFunctionViewViewModel : HaveTraceabilityTableViewModel, IRequirementTraceabilityToFunctionViewViewModel
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="RequirementTraceabilityToFunctionViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
-        public RequirementTraceabilityToFunctionViewViewModel(IReviewItemService reviewItemService) : base(reviewItemService)
+        /// <param name="rowsFilter">The <see cref="IFilterViewModel" /> for rows</param>
+        /// <param name="columnsFilter">The <see cref="IFilterViewModel" /> for columns</param>
+        public RequirementTraceabilityToFunctionViewViewModel(IReviewItemService reviewItemService, IFilterViewModel rowsFilter, IFilterViewModel columnsFilter)
+            : base(reviewItemService, rowsFilter, columnsFilter)
         {
         }
 
@@ -97,8 +101,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             var reviewItemsForRelationships = reviewItems.Where(x => relationships.Any(rel => x.ThingId == rel.Iid)).ToList();
 
             this.PopulateRelationships(rows, columns, reviewItemsForRelationships);
-            InitializesFilterForElementBaseRows(this.AvailableRowFilters, rows.OfType<FunctionRowViewModel>());
-            InitializesFilterForRequirementRows(this.AvailableColumnFilters, columns.OfType<RequirementRowViewModel>());
+            InitializesFilterForElementBaseRows(this.RowsFilterViewModel, rows.OfType<FunctionRowViewModel>());
+            InitializesFilterForRequirementRows(this.ColumnsFilterViewModel, columns.OfType<RequirementRowViewModel>());
             this.TraceabilityTableViewModel.InitializeProperties(rows, columns);
         }
 

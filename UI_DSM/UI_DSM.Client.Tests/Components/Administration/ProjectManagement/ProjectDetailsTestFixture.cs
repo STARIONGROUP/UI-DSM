@@ -48,7 +48,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ProjectManagement
             this.participantService = new Mock<IParticipantService>();
             this.roleService = new Mock<IRoleService>();
 
-            this.viewModel = new ProjectDetailsViewModel(participantService.Object, roleService.Object)
+            this.viewModel = new ProjectDetailsViewModel(this.participantService.Object, this.roleService.Object)
             {
                 Project = new Project(Guid.NewGuid())
                 {
@@ -80,14 +80,14 @@ namespace UI_DSM.Client.Tests.Components.Administration.ProjectManagement
         {
             try
             {
-
                 var roleId = Guid.NewGuid();
+                
                 var newRole = new Role(roleId)
                 {
                     RoleName = "Project Manager",
                     AccessRights = new List<AccessRight>()
                     {
-                        AccessRight.ManageParticipant
+                        AccessRight.ReviewTask
                     }
                 };
 

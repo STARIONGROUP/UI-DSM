@@ -80,6 +80,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         public NavigationManager NavigationManager { get; set; }
 
         /// <summary>
+        ///     The current <see cref="Participant" />
+        /// </summary>
+        public Participant Participant { get; set; }
+
+        /// <summary>
         ///     Value indicating the user is currently creating a new <see cref="Review" />
         /// </summary>
         public bool IsOnCreationMode

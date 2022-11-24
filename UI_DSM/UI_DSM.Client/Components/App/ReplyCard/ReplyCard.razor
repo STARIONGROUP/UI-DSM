@@ -22,15 +22,15 @@
 	<div class="app-reply__actions">
 		@if (this.ViewModel.IsAllowedToEdit)
 		{
-		<button class="app-reply__button" @onclick="this.OnContentEditClick">
-			<FeatherEdit Size="20" Color="currentColor" StrokeWidth="2" />
-			Edit
-		</button>
+			<button class="app-reply__button" @onclick="this.OnContentEditClick">
+				<FeatherEdit Size="20" Color="currentColor" StrokeWidth="2"/>
+				Edit
+			</button>
 
-		<button class="app-reply__button" @onclick="this.OnDeleteClick">
-			<FeatherTrash2 Size="20" Color="currentColor" StrokeWidth="2" />
-			Delete
-		</button>
+			<button class="app-reply__button" @onclick="this.OnDeleteClick">
+				<FeatherTrash2 Size="20" Color="currentColor" StrokeWidth="2"/>
+				Delete
+			</button>
 		}
 	</div>
 </div>

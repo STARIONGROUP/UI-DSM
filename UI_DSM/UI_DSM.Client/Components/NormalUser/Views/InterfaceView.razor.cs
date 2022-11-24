@@ -23,7 +23,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using ReactiveUI;
 
     using UI_DSM.Client.Components.App.ConnectionVisibilitySelector;
-    using UI_DSM.Client.Components.App.Filter;
     using UI_DSM.Client.ViewModels.App.ColumnChooser;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
@@ -33,7 +32,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     /// <summary>
     ///     Component for the <see cref="View.InterfaceView" />
     /// </summary>
-    public partial class InterfaceView : GenericBaseView<IInterfaceViewViewModel>, IDisposable
+    public partial class InterfaceView : GenericBaseView<IInterfaceViewViewModel>, IDisposable, IReusableView
     {
         /// <summary>
         ///     Reference to the <see cref="IColumnChooserViewModel{TItem}" />
@@ -44,11 +43,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     A collection of <see cref="IDisposable" />
         /// </summary>
         private readonly List<IDisposable> disposables = new();
-
-        /// <summary>
-        ///     Reference to the <see cref="Filter" />
-        /// </summary>
-        public Filter RowFiltering { get; set; }
 
         /// <summary>
         ///     Reference to the <see cref="ConnectionVisibilitySelector" /> for ports
@@ -84,7 +78,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             await base.InitializeViewModel(things, projectId, reviewId);
 
-            this.RowFiltering.ViewModel.InitializeProperties(this.ViewModel.AvailableRowFilters);
             this.ViewModel.PortVisibilityState = this.ConnectionVisibilitySelectorPort.ViewModel;
             this.ViewModel.ProductVisibilityState = this.ConnectionVisibilitySelectorProduct.ViewModel;
 
@@ -94,7 +87,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ProductVisibilityState.CurrentState)
                 .Subscribe(_ => this.InvokeAsync(this.OnVisibilityStateChanged)));
 
-            this.disposables.Add(this.WhenAnyValue(x => x.RowFiltering.ViewModel.IsFilterVisible)
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.FilterViewModel.IsFilterVisible)
                 .Where(x => !x)
                 .Subscribe(_ => this.InvokeAsync(this.OnRowFilteringClose)));
 
@@ -192,7 +185,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <returns>A <see cref="Task" /></returns>
         private Task OnRowFilteringClose()
         {
-            this.ViewModel.FilterRows(this.RowFiltering.ViewModel.GetSelectedFilters());
+            this.ViewModel.FilterRows(this.ViewModel.FilterViewModel.GetSelectedFilters());
             return this.InvokeAsync(this.StateHasChanged);
         }
 
@@ -228,6 +221,24 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         private string GetSelectorsClass()
         {
             return this.ViewModel.ShouldShowProducts ? string.Empty : "invisible";
+        }
+
+        /// <summary>
+        ///     Tries to copy components from another <see cref="BaseView" />
+        /// </summary>
+        /// <param name="otherView">The other <see cref="BaseView" /></param>
+        /// <returns>Value indicating if it could copy components</returns>
+        public async Task<bool> CopyComponents(BaseView otherView)
+        {
+            if (otherView is not GenericBaseView<IInterfaceViewViewModel> interfaceView)
+            {
+                return false;
+            }
+
+            this.ViewModel = interfaceView.ViewModel;
+            await this.HasChanged();
+
+            return true;
         }
     }
 }

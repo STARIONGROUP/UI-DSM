@@ -84,5 +84,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.ReviewId = reviewId;
             return Task.CompletedTask;
         }
+
+        /// <summary>
+        ///     Tries to set the <see cref="IBaseViewViewModel.SelectedElement" /> to the previous selected item
+        /// </summary>
+        /// <param name="selectedItem">The previously selectedItem</param>
+        public abstract void TrySetSelectedItem(object selectedItem);
     }
 }

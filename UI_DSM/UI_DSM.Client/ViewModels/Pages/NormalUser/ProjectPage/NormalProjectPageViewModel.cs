@@ -16,7 +16,9 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
     using ReactiveUI;
 
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
+    using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.Administration.ProjectService;
+    using UI_DSM.Client.Services.ArtifactService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
@@ -27,6 +29,16 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
     /// </summary>
     public class NormalProjectPageViewModel : ReactiveObject, INormalProjectPageViewModel
     {
+        /// <summary>
+        ///     The <see cref="IArtifactService" />
+        /// </summary>
+        private readonly IArtifactService artifactService;
+
+        /// <summary>
+        ///     The <see cref="IParticipantService" />
+        /// </summary>
+        private readonly IParticipantService participantService;
+
         /// <summary>
         ///     The <see cref="IProjectService" />
         /// </summary>
@@ -43,11 +55,16 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
         /// <param name="projectService">The <see cref="IProjectService" /></param>
         /// <param name="reviewService">The <see cref="IReviewService" /></param>
         /// <param name="projectReviewViewModel">The <see cref="IProjectReviewViewModel" /></param>
-        public NormalProjectPageViewModel(IProjectService projectService, IReviewService reviewService, IProjectReviewViewModel projectReviewViewModel)
+        /// <param name="participantService">The <see cref="IParticipantService" /></param>
+        /// <param name="artifactService">The <see cref="IArtifactService" /></param>
+        public NormalProjectPageViewModel(IProjectService projectService, IReviewService reviewService, IProjectReviewViewModel projectReviewViewModel,
+            IParticipantService participantService, IArtifactService artifactService)
         {
             this.projectService = projectService;
             this.reviewService = reviewService;
+            this.participantService = participantService;
             this.ProjectReviewViewModel = projectReviewViewModel;
+            this.artifactService = artifactService;
         }
 
         /// <summary>
@@ -70,12 +87,15 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
         public async Task OnInitializedAsync(Guid projectGuid)
         {
-            var projectResponse = await this.projectService.GetProject(projectGuid, 1);
+            var projectResponse = await this.projectService.GetProject(projectGuid);
 
             if (projectResponse != null)
             {
-                this.ProjectReviewViewModel.Project = projectResponse;
+                projectResponse.Reviews.AddRange(await this.reviewService.GetReviewsOfProject(projectGuid));
+                projectResponse.Artifacts.AddRange(await this.artifactService.GetArtifactsOfProject(projectGuid));
                 this.ProjectReviewViewModel.CommentsAndTasks = await this.reviewService.GetOpenTasksAndComments(projectGuid);
+                this.ProjectReviewViewModel.Participant = await this.participantService.GetCurrentParticipant(projectGuid);
+                this.ProjectReviewViewModel.Project = projectResponse;
             }
         }
     }

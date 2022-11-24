@@ -49,7 +49,7 @@ namespace UI_DSM.Server.Tests.Managers
                     RoleName = "Project administrator",
                     AccessRights = new List<AccessRight>()
                     {
-                        AccessRight.ManageParticipant, AccessRight.CreateTask, AccessRight.DeleteTask, AccessRight.UpdateTask, AccessRight.ReviewTask
+                        AccessRight.ReviewTask, AccessRight.CreateReview, AccessRight.DeleteReview, AccessRight.CreateReviewObjective, AccessRight.AssignTask
                     }
                 },
                 new(Guid.NewGuid())
@@ -93,7 +93,7 @@ namespace UI_DSM.Server.Tests.Managers
                 RoleName = "Task Manager",
                 AccessRights = new List<AccessRight>()
                 {
-                    AccessRight.CreateTask
+                    AccessRight.CreateReview
                 }
             };
 
@@ -125,7 +125,7 @@ namespace UI_DSM.Server.Tests.Managers
             {
                 AccessRights = new List<AccessRight>()
                 {
-                    AccessRight.ManageParticipant
+                    AccessRight.ReviewTask
                 },
                 RoleName = "New Role name"
             };

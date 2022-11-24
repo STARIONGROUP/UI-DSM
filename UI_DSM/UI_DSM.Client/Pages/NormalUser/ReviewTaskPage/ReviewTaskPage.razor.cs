@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 {
+    using System.Reactive.Linq;
+
     using Microsoft.AspNetCore.Components;
 
     using ReactiveUI;
@@ -21,6 +23,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Components.App.SelectedItemCard;
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -32,6 +35,11 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         ///     The collection of <see cref="IDisposable" />
         /// </summary>
         private readonly List<IDisposable> disposables = new();
+
+        /// <summary>
+        ///     The collection of <see cref="IDisposable" /> linked to a <see cref="BaseView" />
+        /// </summary>
+        private readonly List<IDisposable> viewDisposables = new();
 
         /// <summary>
         ///     The <see cref="Guid" /> of the project
@@ -97,36 +105,108 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         ///     Override this method if you will perform an asynchronous operation and
         ///     want the component to refresh when that operation is completed.
         /// </summary>
-        /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ReviewTask)
                 .Subscribe(async _ => await this.OnSelectedItemChanged(this.ViewModel.ReviewTask)));
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.CurrentBaseView)
-                .Subscribe(async _ => await this.OnCurrentBaseViewChanged()));
+                .Subscribe(async _ => await this.InvokeAsync(this.StateHasChanged)));
 
-            await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId), new Guid(this.ReviewId),
-                new Guid(this.ReviewObjectiveId), new Guid(this.ReviewTaskId));
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.SelectedView)
+                .Where(x => x != null)
+                .Subscribe(_ => this.OnSelectedViewChange()));
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ViewSelectorVisible)
+                .Subscribe(async _ => await this.OnViewSelectorChanged()));
         }
 
         /// <summary>
-        ///     Initialize the viewModel of the <see cref="BaseView" /> when it changes
+        /// Method invoked when the component has received parameters from its parent in
+        /// the render tree, and the incoming values have been assigned to properties.
         /// </summary>
-        /// <returns>A <see cref="Task" /></returns>
-        private async Task OnCurrentBaseViewChanged()
+        /// <returns>A <see cref="T:System.Threading.Tasks.Task" /> representing any asynchronous operation.</returns>
+        protected override async Task OnParametersSetAsync()
         {
-            await this.InvokeAsync(this.StateHasChanged);
+            this.ViewModel.Reset();
 
-            if (this.BaseView?.Instance is BaseView baseView)
+            await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId), new Guid(this.ReviewId),
+                new Guid(this.ReviewObjectiveId), new Guid(this.ReviewTaskId));
+
+            await base.OnParametersSetAsync();
+        }
+
+        /// <summary>
+        ///     Method invoked after each time the component has been rendered. Note that the component does
+        ///     not automatically re-render after the completion of any returned <see cref="T:System.Threading.Tasks.Task" />, because
+        ///     that would cause an infinite render loop.
+        /// </summary>
+        /// <param name="firstRender">
+        ///     Set to <c>true</c> if this is the first time
+        ///     <see cref="M:Microsoft.AspNetCore.Components.ComponentBase.OnAfterRender(System.Boolean)" /> has been invoked
+        ///     on this component instance; otherwise <c>false</c>.
+        /// </param>
+        /// <returns>A <see cref="T:System.Threading.Tasks.Task" /> representing any asynchronous operation.</returns>
+        /// <remarks>
+        ///     The <see cref="M:Microsoft.AspNetCore.Components.ComponentBase.OnAfterRender(System.Boolean)" /> and
+        ///     <see cref="M:Microsoft.AspNetCore.Components.ComponentBase.OnAfterRenderAsync(System.Boolean)" /> lifecycle methods
+        ///     are useful for performing interop, or interacting with values received from <c>@ref</c>.
+        ///     Use the <paramref name="firstRender" /> parameter to ensure that initialization work is only performed
+        ///     once.
+        /// </remarks>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (this.BaseView?.Instance is BaseView baseView && this.ViewModel.ShouldInitializeBaseView)
             {
+                this.ViewModel.ShouldInitializeBaseView = false;
+                this.DisposeViewDisposables();
                 var projectId = new Guid(this.ProjectId);
                 var reviewId = new Guid(this.ReviewId);
-                await this.Comments.ViewModel.InitializesProperties(projectId, reviewId, this.ViewModel.CurrentView);
-                await baseView.InitializeViewModel(this.ViewModel.Things, projectId, reviewId);
-                this.disposables.Add(baseView.SelectedItemObservable.Subscribe(async x => await this.OnSelectedItemChanged(x)));
-                this.disposables.Add(this.Comments.ViewModel.Comments.CountChanged.Subscribe(async _ => await baseView.HasChanged()));
+                await this.Comments.InitializesProperties(projectId, reviewId, this.ViewModel.CurrentView);
+
+                if (baseView is not IReusableView reusableView || !await reusableView.CopyComponents(this.ViewModel.CurrentBaseViewInstance))
+                {
+                    await baseView.InitializeViewModel(this.ViewModel.Things, projectId, reviewId);
+                    baseView.TrySetSelectedItem(this.SelectedItem);
+                }
+
+                this.ViewModel.CurrentBaseViewInstance = baseView;
+                this.viewDisposables.Add(baseView.SelectedItemObservable.Subscribe(async x => await this.OnSelectedItemChanged(x)));
+                this.viewDisposables.Add(this.Comments.ViewModel.Comments.CountChanged.Subscribe(async _ => await baseView.HasChanged()));
             }
+
+            await base.OnAfterRenderAsync(firstRender);
+        }
+
+        /// <summary>
+        ///     Dispose all <see cref="IDisposable" /> linked to the current view
+        /// </summary>
+        private void DisposeViewDisposables()
+        {
+            this.viewDisposables.ForEach(x => x.Dispose());
+            this.viewDisposables.Clear();
+        }
+
+        /// <summary>
+        ///     Handle the changed of the selected view
+        /// </summary>
+        private void OnSelectedViewChange()
+        {
+            this.ViewModel.ViewSelectorVisible = false;
+        }
+
+        /// <summary>
+        ///     Handles the change of the ViewSelector visibility
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task OnViewSelectorChanged()
+        {
+            if (this.ViewModel.SelectedView != null && this.ViewModel.CurrentView != this.ViewModel.SelectedView.View)
+            {
+                this.ViewModel.UpdateView(this.ViewModel.SelectedView.View);
+            }
+
+            await this.InvokeAsync(this.StateHasChanged);
         }
 
         /// <summary>
@@ -146,6 +226,25 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
             this.SelectedItem = newSelectedItem;
             this.SelectedItemCard.ViewModel.SelectedItem = this.SelectedItem;
             this.Comments.ViewModel.SelectedItem = this.SelectedItem;
+            await this.InvokeAsync(this.StateHasChanged);
+        }
+
+        /// <summary>
+        ///     Opens the view selector
+        /// </summary>
+        private void OpenViewSelector()
+        {
+            this.ViewModel.ViewSelectorVisible = !this.ViewModel.ViewSelectorVisible;
+        }
+
+        /// <summary>
+        ///     Handle the selection of a new <see cref="View" />
+        /// </summary>
+        /// <param name="newView">The new <see cref="View" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task OnViewSelect(View newView)
+        {
+            this.ViewModel.UpdateView(newView, true);
             await this.InvokeAsync(this.StateHasChanged);
         }
     }

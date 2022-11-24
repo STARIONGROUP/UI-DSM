@@ -18,6 +18,7 @@ namespace UI_DSM.Shared.Models
 
     using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Enumerator;
 
     /// <summary>
     ///     Represents a <see cref="User" /> that is linked to a <see cref="Project" />
@@ -84,6 +85,16 @@ namespace UI_DSM.Shared.Models
 
             this.Role = this.GetEntity<Role>(participantDto.Role, resolvedEntity);
             this.User = this.GetEntity<UserEntity>(participantDto.User, resolvedEntity);
+        }
+
+        /// <summary>
+        ///     Asserts that the current <see cref="Participant" /> has right to do something
+        /// </summary>
+        /// <param name="requestedAccessRight">The requested <see cref="AccessRight" /></param>
+        /// <returns>The assert</returns>
+        public bool IsAllowedTo(AccessRight requestedAccessRight)
+        {
+            return this.Role != null && this.Role.AccessRights.Any(x => x == requestedAccessRight);
         }
     }
 }

@@ -20,7 +20,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
     using Moq;
     
     using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.Components.Forms;
 
     using NUnit.Framework;
 
@@ -30,11 +29,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Shared.Models;
-
-    using TestContext = Bunit.TestContext;
-    using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Enumerator;
+
+    using TestContext = Bunit.TestContext;
 
     [TestFixture]
     public class ReviewObjectiveCreationTestFixture
@@ -43,7 +41,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
         private IReviewObjectiveCreationViewModel reviewObjectiveCreationViewModel;
         private IErrorMessageViewModel errorMessageViewModel;
         private Mock<IReviewObjectiveService> reviewObjectiveService;
-
 
         [SetUp]
         public void Setup()
@@ -58,7 +55,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
                 ReviewObjective = new ReviewObjective(),
                 OnValidSubmit = new EventCallbackFactory().Create(this, () => this.reviewObjectiveCreationViewModel.ReviewObjective = new ReviewObjective()),
             };
-
         }
 
         [TearDown]
@@ -68,11 +64,13 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
         }
 
         [Test]
-        public async Task VerifyComponent()
+        public void VerifyComponent()
         {
             try
             {
-                this.reviewObjectiveService.Setup(x => x.GetAvailableTemplates(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(new List<ReviewObjectiveCreationDto> { new ReviewObjectiveCreationDto() });
+                this.reviewObjectiveService.Setup(x => x.GetAvailableTemplates(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                    .ReturnsAsync(new List<ReviewObjectiveCreationDto> { new () });
+                
                 var renderer = this.context.RenderComponent<ReviewObjectiveCreation>(parameters =>
                 {
                     parameters.AddCascadingValue(this.errorMessageViewModel);
@@ -86,7 +84,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
                     Assert.That(listBox.ToList(), Has.Count.EqualTo(2));
                     Assert.That(renderer.Instance.CreationText, Is.EqualTo("Create"));
                 });
-
 
                 var reviewCreationDtoPrr = new ReviewObjectiveCreationDto()
                 {
@@ -105,10 +102,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
 
                 renderer.Render();
 
-                Assert.That(listBox, Has.Count.EqualTo(2));
+                Assert.Multiple(() =>
+                {
+                    Assert.That(listBox, Has.Count.EqualTo(2));
+                    Assert.That(this.reviewObjectiveCreationViewModel.AvailableReviewObjectiveCreationDto[1].ToString(), Is.EqualTo(reviewCreationDtoPrr.ToString()));
 
-                var dxButton = renderer.FindComponent<EditForm>();
-                Assert.That(this.reviewObjectiveCreationViewModel.AvailableReviewObjectiveCreationDto[1].ToString(), Is.EqualTo(reviewCreationDtoPrr.ToString()));
+                });
             }
             catch
             {

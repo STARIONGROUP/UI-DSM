@@ -29,6 +29,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
     using TestContext = Bunit.TestContext;
@@ -45,10 +46,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         {
             this.context = new TestContext();
             this.reviewItemService = new Mock<IReviewItemService>();
-            this.viewModel = new RequirementBreakdownStructureViewViewModel(this.reviewItemService.Object);
+            this.viewModel = new RequirementBreakdownStructureViewViewModel(this.reviewItemService.Object, new FilterViewModel());
             this.context.ConfigureDevExpressBlazor();
             this.context.Services.AddSingleton(this.viewModel);
-            this.context.Services.AddTransient<IFilterViewModel, FilterViewModel>();
         }
 
         [TearDown]
@@ -86,12 +86,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 things.Add(requirementsSpecificiation);
 
                 var reviewItems = new List<ReviewItem>
-            {
-                new ()
                 {
-                    ThingId = requirementsSpecificiation.Requirement.First().Iid
-                }
-            };
+                    new ()
+                    {
+                        ThingId = requirementsSpecificiation.Requirement.First().Iid
+                    }
+                };
 
                 this.reviewItemService.Setup(x => x.GetReviewItemsForThings(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IEnumerable<Guid>>(), It.IsAny<int>()))
                     .ReturnsAsync(reviewItems);
@@ -110,7 +110,29 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 {
                     Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
                     Assert.That(renderer.Instance.SelectedItemObservable, Is.Not.Null);
-                    Assert.That(() => this.context.RenderComponent<RequirementVerificationControlView>(), Throws.Nothing);
+                });
+
+                this.viewModel.TrySetSelectedItem(this.viewModel.Rows.First());
+                Assert.That(this.viewModel.SelectedElement, Is.TypeOf<RequirementRowViewModel>());
+
+                this.viewModel.TrySetSelectedItem(new ProductRowViewModel(new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid()
+                }, null));
+
+                Assert.That(this.viewModel.SelectedElement, Is.Not.TypeOf<ProductRowViewModel>());
+
+                this.viewModel.TrySetSelectedItem(null);
+                Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+
+                var verificationRenderer = this.context.RenderComponent<RequirementVerificationControlView>();
+                var otherRenderer = this.context.RenderComponent<TrlView>();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(async () => await verificationRenderer.Instance.CopyComponents(renderer.Instance), Is.True);
+                    Assert.That(async () => await verificationRenderer.Instance.CopyComponents(otherRenderer.Instance), Is.False);
+                    Assert.That(async () => await renderer.Instance.CopyComponents(verificationRenderer.Instance), Is.True);
                 });
             }
             catch

@@ -16,6 +16,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using ReactiveUI;
 
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>
@@ -32,7 +33,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
-        protected HaveTechnologyViewViewModel(IReviewItemService reviewItemService) : base(reviewItemService)
+        /// <param name="rowsFilter">The <see cref="IFilterViewModel" /> for rows</param>
+        /// <param name="columnsFilter">The <see cref="IFilterViewModel" /> for columns</param>
+        protected HaveTechnologyViewViewModel(IReviewItemService reviewItemService, IFilterViewModel rowsFilter, IFilterViewModel columnsFilter)
+            : base(reviewItemService, rowsFilter, columnsFilter)
         {
         }
 

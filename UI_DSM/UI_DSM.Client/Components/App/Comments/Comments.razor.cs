@@ -22,6 +22,7 @@ namespace UI_DSM.Client.Components.App.Comments
     using UI_DSM.Client.Components.App.CommentCard;
     using UI_DSM.Client.ViewModels.App.CommentCard;
     using UI_DSM.Client.ViewModels.App.Comments;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -78,6 +79,19 @@ namespace UI_DSM.Client.Components.App.Comments
             return new CommentCardViewModel(comment, this.ViewModel.Participant, this.ViewModel.OnCommentEditCallback, this.ViewModel.OnDeleteCallback, 
                 this.ViewModel.OnUpdateStatusCallback, this.ViewModel.OnReplyCallback, this.ViewModel.OnReplyEditContentCallback,
                 this.ViewModel.OnDeleteReplyCallback);
+        }
+
+        /// <summary>
+        ///     Initializes the <see cref="ViewModel"/> properties
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
+        /// <param name="currentView">The current <see cref="View" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        public async Task InitializesProperties(Guid projectId, Guid reviewId, View currentView)
+        {
+            await this.ViewModel.InitializesProperties(projectId, reviewId, currentView);
+            await this.InvokeAsync(this.StateHasChanged);
         }
     }
 }

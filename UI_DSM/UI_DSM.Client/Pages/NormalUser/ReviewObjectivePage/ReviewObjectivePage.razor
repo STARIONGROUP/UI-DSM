@@ -32,9 +32,7 @@ else
 
 				@foreach (var task in this.ViewModel.ReviewObjective.ReviewTasks.OrderBy(x => x.TaskNumber))
 				{
-					<NavLink href=@($"/Project/{this.ProjectId}/Review/{this.ReviewId}/ReviewObjective/{this.ReviewObjectiveId}/ReviewTask/{task.Id}")>
-						<ReviewTaskCard ReviewTask="@task"/>
-					</NavLink>
+					<ReviewTaskCard ReviewTask="@task" ProjectId="@this.ProjectId" ReviewId="@this.ReviewId" ReviewObjectiveId="@this.ReviewObjectiveId" />
 				}
 			</div>
 		</div>

@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Tests.Services.ArtifactService
 {
+    using System.Net;
+
     using NUnit.Framework;
 
     using RichardSzalay.MockHttp;
@@ -22,6 +24,7 @@ namespace UI_DSM.Client.Tests.Services.ArtifactService
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
@@ -31,6 +34,7 @@ namespace UI_DSM.Client.Tests.Services.ArtifactService
         private ArtifactService service;
         private MockHttpMessageHandler httpMessageHandler;
         private IJsonService jsonService;
+        private List<EntityDto> entitiesDto;
 
         [SetUp]
         public void Setup()
@@ -43,6 +47,15 @@ namespace UI_DSM.Client.Tests.Services.ArtifactService
 
             this.jsonService = JsonSerializerHelper.CreateService();
             this.service = new ArtifactService(httpClient, this.jsonService);
+           
+            this.entitiesDto = new List<EntityDto>
+            {
+                new ModelDto(Guid.NewGuid())
+                {
+                    FileName = "file.zip"
+                }
+            };
+
             EntityHelper.RegisterEntities();
         }
 
@@ -84,6 +97,26 @@ namespace UI_DSM.Client.Tests.Services.ArtifactService
             httpResponse.Content = new StringContent(string.Empty);
 
             Assert.That(async () => await this.service.UploadModel(projectId, fileName, modelName), Throws.Exception);
+        }
+
+        [Test]
+        public async Task VerifyGetArtifacts()
+        {
+            var projectId = Guid.NewGuid();
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.NotFound;
+
+            var request = this.httpMessageHandler.When($"/Project/{projectId}/Artifact");
+            request.Respond(_ => httpResponse);
+
+            Assert.That(async () => await this.service.GetArtifactsOfProject(projectId), Throws.Exception);
+            httpResponse.StatusCode = HttpStatusCode.OK;
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(this.entitiesDto));
+            var reviews = await this.service.GetArtifactsOfProject(projectId);
+            Assert.That(reviews, Has.Count.EqualTo(1));
+            httpResponse.Content = new StringContent(string.Empty);
+            Assert.That(async () => await this.service.GetArtifactsOfProject(projectId), Throws.Exception);
         }
     }
 }
