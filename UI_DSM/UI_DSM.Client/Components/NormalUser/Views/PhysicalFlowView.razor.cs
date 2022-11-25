@@ -29,7 +29,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     /// <summary>
     /// Component for the <see cref="View.PhysicalFlowView"/>
     /// </summary>
-    public partial class PhysicalFlowView : GenericBaseView<IInterfaceViewViewModel>, IReusableView
+    public partial class PhysicalFlowView : GenericBaseView<IInterfaceViewViewModel>, IReusableView, IDisposable
     {
         /// <summary>
         /// Gets or sets the diagram component.
@@ -120,8 +120,8 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// </summary>
         public void Dispose()
         {
-            this.Diagram.MouseUp -= Diagram_MouseUp;
-            this.Diagram.MouseDoubleClick -= Diagram_MouseDoubleClick;
+            this.Diagram.MouseUp -= this.Diagram_MouseUp;
+            this.Diagram.MouseDoubleClick -= this.Diagram_MouseDoubleClick;
             this.ViewModel.OnCentralNodeChanged -= this.OnCentralNodeChanged;
         }
     }
