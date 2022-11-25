@@ -1,0 +1,26 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// OptionChooser.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using CDP4Common.EngineeringModelData
+<AppButton Id="option-chooser-button" Label="Select Option" Type="button" Click="@this.OpenOptionChooser">
+	<FeatherSettings Size="20" Color="currentColor" StrokeWidth="2"/> <span>@this.ViewModel.SelectedOption.Name</span>
+</AppButton>
+<DxDropDown @bind-IsOpen="@this.ViewModel.IsVisible"
+            Width="200"
+            MaxHeight="500"
+            PositionTarget="#option-chooser-button"
+            PositionMode="DropDownPositionMode.Bottom"
+            PreventCloseOnPositionTargetClick="true">
+	<BodyTemplate>
+		<DxListBox Data="@this.ViewModel.AvailableOptions" TextFieldName="@nameof(Option.Name)"
+		           @bind-Value="@this.ViewModel.SelectedOption"/>
+	</BodyTemplate>
+</DxDropDown>

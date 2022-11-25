@@ -16,6 +16,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using Bunit;
 
     using CDP4Common.DTO;
+    using CDP4Common.Types;
 
     using CDP4Dal;
 
@@ -31,6 +32,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.Filter;
+    using UI_DSM.Client.ViewModels.App.OptionChooser;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Shared.Models;
 
@@ -49,7 +51,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.context = new TestContext();
             this.context.ConfigureDevExpressBlazor();
             this.reviewItemService = new Mock<IReviewItemService>();
-            this.viewModel = new ProductBreakdownStructureViewViewModel(this.reviewItemService.Object, new FilterViewModel());
+            this.viewModel = new ProductBreakdownStructureViewViewModel(this.reviewItemService.Object, new FilterViewModel(), new OptionChooserViewModel());
             this.context.Services.AddSingleton(this.viewModel);
         }
 
@@ -87,6 +89,18 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Iid = functionCategory,
                     Name="functions"
                 }
+            };
+
+            var option1 = new Option()
+            {
+                Iid = Guid.NewGuid(),
+                Name = "Option 1"
+            };
+
+            var option2 = new Option()
+            {
+                Iid = Guid.NewGuid(),
+                Name = "Option 2"
             };
 
             var envision = new ElementDefinition()
@@ -133,7 +147,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Iid = Guid.NewGuid(),
                     Name = groundSegment.Name,
                     ElementDefinition = groundSegment.Iid,
-                    Category = new List<Guid>{equipmentCategory}
+                    Category = new List<Guid>{equipmentCategory},
+                    ExcludeOption = {option2.Iid}
                 },
                 new()
                 {
@@ -155,7 +170,21 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             {
                 Iid = Guid.NewGuid(),
                 TopElement = envision.Iid,
-                Element = elementDefinitions.Select(x => x.Iid).ToList()
+                Element = elementDefinitions.Select(x => x.Iid).ToList(),
+                DefaultOption = option2.Iid,
+                Option = 
+                {
+                    new OrderedItem()
+                    {
+                        K = 1,
+                        V = option1.Iid
+                    },
+                    new OrderedItem()
+                    {
+                        K = 2,
+                        V = option2.Iid
+                    }
+                }
             };
 
             var assembler = new Assembler(new Uri("http://localhost"));
@@ -166,7 +195,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 function,
                 groundSegment,
                 envision,
-                launchSegment
+                launchSegment,
+                option1,
+                option2
             };
 
             things.AddRange(usages);
@@ -222,6 +253,16 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Assert.That(async () => await trlRenderer.Instance.CopyComponents(trlRenderer.Instance), Is.False);
                     Assert.That(async () => await renderer.Instance.CopyComponents(trlRenderer.Instance), Is.True);
                     Assert.That(async () => await renderer.Instance.CopyComponents(renderer.Instance), Is.False);
+                    Assert.That(this.viewModel.OptionChooserViewModel.SelectedOption.Iid, Is.EqualTo(option2.Iid));
+                });
+
+                this.viewModel.OptionChooserViewModel.IsVisible = true;
+                this.viewModel.OptionChooserViewModel.SelectedOption = this.viewModel.OptionChooserViewModel.AvailableOptions.Last();
+                
+                Assert.Multiple(() =>
+                {
+                    Assert.That(this.viewModel.OptionChooserViewModel.SelectedOption.Iid, Is.EqualTo(option1.Iid));
+                    this.viewModel.OptionChooserViewModel.IsVisible = false;
                 });
             }
             catch
