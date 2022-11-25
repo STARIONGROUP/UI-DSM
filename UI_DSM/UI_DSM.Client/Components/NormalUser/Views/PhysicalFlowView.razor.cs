@@ -52,7 +52,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.Diagram.MouseUp += Diagram_MouseUp;
             this.Diagram.MouseDoubleClick += Diagram_MouseDoubleClick;
         }
-
+                
         /// <summary>
         /// MouseUp event for the diagram component
         /// </summary>
@@ -106,6 +106,12 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             return true;
         }
 
+        public override Task HasChanged()
+        {
+            this.OnCentralNodeChanged();
+            return base.HasChanged();
+        }
+
         /// <summary>
         /// Method that handles the on central node changed event.
         /// </summary>
@@ -114,7 +120,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.Diagram.Links.Clear();
             this.Diagram.Nodes.Clear();
             this.ViewModel.ProductNodes.ForEach(node => this.Diagram.Nodes.Add(node));
-            this.ViewModel.InterfacesLinks.ForEach(link => this.Diagram.Links.Add(link));
+            this.ViewModel.LinkNodes.ForEach(link => this.Diagram.Links.Add(link));
             this.StateHasChanged();
         }
 

@@ -66,12 +66,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         /// A list of the <see cref="PortModel"/> in the <see cref="Diagram"/>
         /// </summary>
-        List<PortModel> PortsNodes { get; } 
+        List<PortModel> PortNodes { get; } 
 
         /// <summary>
         /// A list of the <see cref="LinkModel"/> in the <see cref="Diagram"/>
         /// </summary>
-        List<LinkModel> InterfacesLinks { get; } 
+        List<LinkModel> LinkNodes { get; } 
 
         /// <summary>
         /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>

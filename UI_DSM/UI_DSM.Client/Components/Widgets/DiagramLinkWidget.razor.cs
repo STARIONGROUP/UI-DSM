@@ -15,6 +15,7 @@ namespace UI_DSM.Client.Components.Widgets
 {
     using Microsoft.AspNetCore.Components;
 
+    using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Model;
 
     /// <summary>
@@ -29,12 +30,38 @@ namespace UI_DSM.Client.Components.Widgets
         public DiagramLink Link { get; set; }
 
         /// <summary>
+        /// Gets or sets the category of the interface
+        /// </summary>
+        public InterfaceCategory Category { get; set; } = InterfaceCategory.Other;
+
+        /// <summary>
+        /// Gets the color of the interface, which depends on the <see cref="InterfaceCategory"/>
+        /// </summary>
+        public string Color => this.CategoryColorMap[this.Category];
+
+        private readonly Dictionary<InterfaceCategory, string> CategoryColorMap = new Dictionary<InterfaceCategory, string>()
+        {
+            { InterfaceCategory.Other, "gray" },
+            { InterfaceCategory.Power_Interfaces, "red" },
+            { InterfaceCategory.Signal_Interfaces, "#00B0F0" },
+            { InterfaceCategory.TM_TC_Interfaces, "green" },
+            { InterfaceCategory.DataBus_Interfaces, "yellow" },
+            { InterfaceCategory.Str_Interfaces, "black" },
+            { InterfaceCategory.TC_Interfaces, "#843C0C" },
+            { InterfaceCategory.Mechanisms_Interfaces, "#7030A0" },
+            { InterfaceCategory.Prop_Interfaces, "#FFC000" },
+            { InterfaceCategory.Comms_Interfaces, "#99FFCC" },
+        };
+
+        /// <summary>
         /// Method invoked when the component is ready to start, having received its
         /// initial parameters from its parent in the render tree.
         /// </summary>
         protected override void OnInitialized()
         {
             base.OnInitialized();
+
+            this.Link.Color = this.Color;
 
             if (this.Link.HasComments)
             {

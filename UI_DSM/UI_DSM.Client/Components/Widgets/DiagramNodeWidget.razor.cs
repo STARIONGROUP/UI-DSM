@@ -15,7 +15,7 @@ namespace UI_DSM.Client.Components.Widgets
 {
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
-
+    using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Model;
 
     /// <summary>
@@ -53,5 +53,6 @@ namespace UI_DSM.Client.Components.Widgets
             this.NodeClass = string.Empty;
             this.StateHasChanged();
         }
+
     }
 }

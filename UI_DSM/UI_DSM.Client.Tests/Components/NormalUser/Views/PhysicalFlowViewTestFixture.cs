@@ -238,12 +238,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.viewModel.SetSelectedModel(productNode);
             Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
 
-            var portNode = this.viewModel.PortsNodes.First();
+            var portNode = this.viewModel.PortNodes.First();
             this.viewModel.SelectedElement = null;
             this.viewModel.SetSelectedModel(portNode);
             Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
 
-            var linkNode = this.viewModel.InterfacesLinks.First();
+            var linkNode = this.viewModel.LinkNodes.First();
             this.viewModel.SelectedElement = null;
             this.viewModel.SetSelectedModel(linkNode);
             Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
@@ -287,12 +287,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         [Test]
         public void VerifyThatInterfaceLinksCanBeCreated()
         {
-            this.viewModel.InterfacesLinks.Clear();
+            this.viewModel.LinkNodes.Clear();
             this.viewModel.InterfacesMap.Clear();
 
             Assert.Multiple(() =>
             {
-                Assert.That(this.viewModel.InterfacesLinks.Count, Is.EqualTo(0));
+                Assert.That(this.viewModel.LinkNodes.Count, Is.EqualTo(0));
                 Assert.That(this.viewModel.InterfacesMap.Count, Is.EqualTo(0));
             });
 
@@ -301,7 +301,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             Assert.Multiple(() =>
             {
                 Assert.That(this.viewModel.Interfaces.Count, Is.GreaterThan(0));
-                Assert.That(this.viewModel.InterfacesLinks.Count, Is.GreaterThan(0));
+                Assert.That(this.viewModel.LinkNodes.Count, Is.GreaterThan(0));
                 Assert.That(this.viewModel.InterfacesMap.Count, Is.GreaterThan(0));
             });
         }
@@ -347,6 +347,25 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             var newViewModel = this.renderer.Instance.ViewModel;
 
             Assert.That(oldViewModel, Is.EqualTo(newViewModel));
+        }
+
+        [Test]
+        public void VerifyThatFirstProductCanBeCreatedBySelectedElement()
+        {
+            var product = this.viewModel.ProductsMap.Values.First();
+            var port = this.viewModel.PortsMap.Values.First();
+            var interf = this.viewModel.InterfacesMap.Values.First();
+
+            var productRow = this.viewModel.SelectedFirstProductByCloserSelectedItem(product);
+            var portRow = this.viewModel.SelectedFirstProductByCloserSelectedItem(port);
+            var interfaceRow = this.viewModel.SelectedFirstProductByCloserSelectedItem(interf);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(productRow, Is.Not.Null);
+                Assert.That(portRow, Is.Not.Null);
+                Assert.That(interfaceRow, Is.Not.Null);
+            });
         }
     }
 }

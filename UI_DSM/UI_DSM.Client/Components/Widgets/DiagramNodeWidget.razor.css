@@ -1,12 +1,4 @@
-﻿.over {
-    box-shadow: 0 0 0 2px gray;
-}
-
-.central-node {
-    box-shadow: 0 0 0 3px #008bd2;
-}
-
-.default-node {
+﻿.custom-node {
     width: auto;
     height: auto;
     min-width: 100px;
@@ -14,26 +6,79 @@
     padding: 3%;
 }
 
-.default-node .port {
-    width: 14px;
-    height: 14px;
-    margin: -7px;
+    .custom-node.over {
+        box-shadow: 0 0 0 2px gray;
+    }
+
+    .custom-node.selected {
+        box-shadow: 0 0 0 0.5px #1155FF;
+    }
+
+    .custom-node.central-node {
+        box-shadow: 0 0 0 3px #008bd2;
+    }
+
+::deep .custom-port {
+    width: 14px !important;
+    height: 14px !important;
+    margin: -7px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.port-text {
-    text-align: center;
+::deep .custom-port.has-links {
+    background: whitesmoke !important;
 }
+
+    ::deep .custom-port:hover {
+        background: lightgray !important;
+        box-shadow: 0 0 0 2px gray;
+    }
+
+    ::deep .custom-port .In {
+        width: 8px;
+        height: 8px;
+        background: #44CC55;
+        border-radius: 50%;
+    }
+
+    ::deep .custom-port .Out {
+        width: 8px;
+        height: 8px;
+        background: #FF3355;
+        border-radius: 50%;
+    }
+
+    ::deep .custom-port .InOut {
+        width: 8px;
+        height: 8px;
+        background: #4499FF;
+        border-radius: 50%;
+    }
+
+    ::deep .port-text {
+        display: none;
+    }
+
+    ::deep .port-text.over{
+        display : inline-block;
+    }
 
 .node-comment {
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 8px;
     background-color: green;
     position: absolute;
     border-radius: 50%;
     right: 5px;
     bottom: 5px;
+    box-shadow: 0 0 0 2px green;
 }
 
-.port-comment {
-    box-shadow: 0 0 0 1px green;
+::deep .port-comment {
+    box-shadow: 0 0 0 2px green !important;
 }
+
+
+

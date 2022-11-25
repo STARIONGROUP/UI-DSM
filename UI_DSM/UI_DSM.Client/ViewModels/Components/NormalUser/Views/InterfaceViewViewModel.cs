@@ -126,12 +126,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         /// A list of the <see cref="PortModel"/> in the <see cref="Blazor.Diagrams.Core.Diagram"/>
         /// </summary>
-        public List<PortModel> PortsNodes { get; } = new();
+        public List<PortModel> PortNodes { get; } = new();
 
         /// <summary>
         /// A list of the <see cref="LinkModel"/> in the <see cref="Blazor.Diagrams.Core.Diagram"/>
         /// </summary>
-        public List<LinkModel> InterfacesLinks { get; } = new();
+        public List<LinkModel> LinkNodes { get; } = new();
 
         /// <summary>
         /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>
@@ -513,8 +513,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public void CreateCentralNodeAndNeighbours(ProductRowViewModel centerNode)
         {
             this.ProductNodes.Clear();
-            this.PortsNodes.Clear();
-            this.InterfacesLinks.Clear();
+            this.PortNodes.Clear();
+            this.LinkNodes.Clear();
 
             this.ProductsMap.Clear();
             this.PortsMap.Clear();
@@ -539,8 +539,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 {
                     var x = cx - r * Math.Cos(angle);
                     var y = cy - r * Math.Sin(angle);
-
-                    Console.WriteLine($"The node {neighbour.Name} is positioned in {x},{y}");
 
                     var neighbourNode = CreateNewNodeFromProduct(neighbour);
                     neighbourNode.SetPosition(x, y);
@@ -577,7 +575,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                     portNode.Locked = true;
                     portNode.HasComments = port.HasComment();
 
-                    this.PortsNodes.Add(portNode);
+                    switch (port.InterfaceEnd)
+                    {
+                        case "INPUT": portNode.Direction = PortDirection.In; 
+                            break;
+                        case "IN_OUT": portNode.Direction = PortDirection.InOut;
+                            break;
+                        case "OUT": portNode.Direction = PortDirection.Out;
+                            break;
+                    }
+
+                    this.PortNodes.Add(portNode);
                     this.PortsMap.Add(portNode.Id, port);
                 }
             }
@@ -598,8 +606,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 var sourcePortID = this.PortsMap.FirstOrDefault(item => item.Value == sourcePortRowVM).Key;
                 var targetPortID = this.PortsMap.FirstOrDefault(item => item.Value == targetPortRowVM).Key;
 
-                var source = this.PortsNodes.FirstOrDefault(port => port.Id == sourcePortID);
-                var target = this.PortsNodes.FirstOrDefault(port => port.Id == targetPortID);
+                var source = this.PortNodes.FirstOrDefault(port => port.Id == sourcePortID);
+                var target = this.PortNodes.FirstOrDefault(port => port.Id == targetPortID);
 
                 if(source != null && target != null)
                 {
@@ -610,7 +618,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                     link.TargetMarker = LinkMarker.Arrow;
                     link.HasComments = interf.HasComment();
 
-                    this.InterfacesLinks.Add(link);
+                    this.LinkNodes.Add(link);
                     this.InterfacesMap.Add(link.Id, interf);
                 }
             }
