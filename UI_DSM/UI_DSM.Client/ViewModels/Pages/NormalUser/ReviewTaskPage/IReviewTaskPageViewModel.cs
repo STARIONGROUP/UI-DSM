@@ -81,19 +81,39 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         Participant Participant { get; set; }
 
         /// <summary>
+        ///     The currently selected <see cref="Model" />
+        /// </summary>
+        Model SelectedModel { get; set; }
+
+        /// <summary>
+        ///     A collection of available <see cref="Model" />
+        /// </summary>
+        List<Model> AvailableModels { get; }
+
+        /// <summary>
+        ///     Value indicating if the model selector is visible or not
+        /// </summary>
+        bool ModelSelectorVisible { get; set; }
+
+        /// <summary>
+        ///     The current <see cref="Model" />
+        /// </summary>
+        Model CurrentModel { get; }
+
+        /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
         ///     Override this method if you will perform an asynchronous operation and
         ///     want the component to refresh when that operation is completed.
         /// </summary>
-        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
-        /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
+        /// <param name="projectGuid">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="reviewGuid">The <see cref="Guid" /> of the <see cref="Review" /></param>
         /// <param name="reviewObjectiveId">
         ///     The <see cref="Guid" /> of the <see cref="ReviewTaskPageViewModel.ReviewObjective" />
         /// </param>
         /// <param name="reviewTaskId">The <see cref="Guid" /> of the <see cref="IReviewTaskPageViewModel.ReviewTask" /></param>
         /// <returns>A <see cref="Task" /></returns>
-        Task OnInitializedAsync(Guid projectId, Guid reviewId, Guid reviewObjectiveId, Guid reviewTaskId);
+        Task OnInitializedAsync(Guid projectGuid, Guid reviewGuid, Guid reviewObjectiveId, Guid reviewTaskId);
 
         /// <summary>
         ///     Updates the current view
@@ -118,5 +138,12 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         ///     Reset this view model
         /// </summary>
         void Reset();
+
+        /// <summary>
+        ///     Update the current model
+        /// </summary>
+        /// <param name="newModel">The new <see cref="Model" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        Task UpdateModel(Model newModel);
     }
 }

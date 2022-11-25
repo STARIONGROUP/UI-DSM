@@ -58,6 +58,16 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         private Type currentBaseView;
 
         /// <summary>
+        ///     Backing filed for <see cref="ModelSelectorVisible" />
+        /// </summary>
+        private bool modelSelectorVisible;
+
+        /// <summary>
+        ///     The current <see cref="Project" /> id
+        /// </summary>
+        private Guid projectId;
+
+        /// <summary>
         ///     Backing field for <see cref="ReviewObjective" />
         /// </summary>
         private ReviewObjective reviewObjective;
@@ -66,6 +76,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         ///     Backing field for <see cref="ReviewTask" />
         /// </summary>
         private ReviewTask reviewTask;
+
+        /// <summary>
+        ///     Backing field for <see cref="SelectedModel" />
+        /// </summary>
+        private Model selectedModel;
 
         /// <summary>
         ///     Backing field for <see cref="SelectedView" />
@@ -91,6 +106,34 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
             this.reviewService = reviewService;
             this.viewProviderService = viewProviderService;
             this.participantService = participantService;
+        }
+
+        /// <summary>
+        ///     The current <see cref="Model" />
+        /// </summary>
+        public Model CurrentModel { get; private set; }
+
+        /// <summary>
+        ///     The currently selected <see cref="Model" />
+        /// </summary>
+        public Model SelectedModel
+        {
+            get => this.selectedModel;
+            set => this.RaiseAndSetIfChanged(ref this.selectedModel, value);
+        }
+
+        /// <summary>
+        ///     A collection of available <see cref="Model" />
+        /// </summary>
+        public List<Model> AvailableModels { get; private set; } = new();
+
+        /// <summary>
+        ///     Value indicating if the model selector is visible or not
+        /// </summary>
+        public bool ModelSelectorVisible
+        {
+            get => this.modelSelectorVisible;
+            set => this.RaiseAndSetIfChanged(ref this.modelSelectorVisible, value);
         }
 
         /// <summary>
@@ -148,7 +191,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         /// <summary>
         ///     A collection of <see cref="Thing" /> that are suitable for the current <see cref="ReviewTask" />
         /// </summary>
-        public IEnumerable<Thing> Things { get; set; }
+        public IEnumerable<Thing> Things { get; set; } = new List<Thing>();
 
         /// <summary>
         ///     The current <see cref="Type" /> for the <see cref="GenericBaseView{TViewModel}" />
@@ -174,25 +217,28 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         ///     Override this method if you will perform an asynchronous operation and
         ///     want the component to refresh when that operation is completed.
         /// </summary>
-        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
-        /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
+        /// <param name="projectGuid">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="reviewGuid">The <see cref="Guid" /> of the <see cref="Review" /></param>
         /// <param name="reviewObjectiveId">The <see cref="Guid" /> of the <see cref="ReviewObjective" /></param>
         /// <param name="reviewTaskId">The <see cref="Guid" /> of the <see cref="IReviewTaskPageViewModel.ReviewTask" /></param>
         /// <returns>A <see cref="Task" /></returns>
-        public async Task OnInitializedAsync(Guid projectId, Guid reviewId, Guid reviewObjectiveId, Guid reviewTaskId)
+        public async Task OnInitializedAsync(Guid projectGuid, Guid reviewGuid, Guid reviewObjectiveId, Guid reviewTaskId)
         {
             this.AvailableViews.Clear();
-            var review = await this.reviewService.GetReviewOfProject(projectId, reviewId, 3);
+            this.projectId = projectGuid;
+            var review = await this.reviewService.GetReviewOfProject(this.projectId, reviewGuid, 3);
             var reviewObjectiveInsideReview = review?.ReviewObjectives.FirstOrDefault(x => x.Id == reviewObjectiveId);
 
             var reviewTaskInsideObjective = reviewObjectiveInsideReview?.ReviewTasks.FirstOrDefault(x => x.Id == reviewTaskId);
 
             if (reviewTaskInsideObjective != null)
             {
-                this.Participant = await this.participantService.GetCurrentParticipant(projectId);
+                this.Participant = await this.participantService.GetCurrentParticipant(this.projectId);
                 this.ReviewTask = reviewTaskInsideObjective;
-                this.Things = await this.thingService.GetThings(projectId, review.Artifacts.OfType<Model>().Select(x => x.Id));
 
+                this.AvailableModels = review.Artifacts.OfType<Model>().OrderBy(x => x.ModelName).ToList();
+                this.SelectedModel = this.GetModelWithHighestIteration();
+                await this.UpdateModel(this.SelectedModel);
                 this.ReviewObjective = reviewObjectiveInsideReview;
                 this.AvailableViews.Add(new ViewWrapper(this.ReviewTask.MainView));
 
@@ -260,12 +306,34 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
             this.ReviewTask = null;
             this.Things = Enumerable.Empty<Thing>();
             this.AvailableViews.Clear();
+            this.AvailableModels.Clear();
+            this.SelectedModel = null;
             this.Participant = null;
             this.SelectedView = null;
             this.ShouldInitializeBaseView = false;
             this.CurrentView = View.None;
             this.CurrentBaseView = null;
             this.CurrentBaseViewInstance = null;
+        }
+
+        /// <summary>
+        ///     Update the current model
+        /// </summary>
+        /// <param name="newModel">The new <see cref="Model" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        public async Task UpdateModel(Model newModel)
+        {
+            this.CurrentModel = newModel;
+            this.Things = this.CurrentModel == null ? new List<Thing>() : await this.thingService.GetThings(this.projectId, this.CurrentModel);
+        }
+
+        /// <summary>
+        ///     Gets the model where the iteration number is the highest
+        /// </summary>
+        /// <returns>The <see cref="Model" /></returns>
+        private Model GetModelWithHighestIteration()
+        {
+            return this.AvailableModels.MaxBy(x => x.GetIterationNumber());
         }
 
         /// <summary>

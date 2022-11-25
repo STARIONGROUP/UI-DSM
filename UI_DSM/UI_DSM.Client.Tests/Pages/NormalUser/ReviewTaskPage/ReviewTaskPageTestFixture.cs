@@ -86,7 +86,11 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             IRequirementBreakdownStructureViewViewModel breakdown = 
                 new RequirementBreakdownStructureViewViewModel(new Mock<IReviewItemService>().Object, new FilterViewModel());
 
+            IInterfaceViewViewModel interfaceView =
+                new InterfaceViewViewModel(new Mock<IReviewItemService>().Object, new FilterViewModel());
+
             this.context.Services.AddSingleton(breakdown);
+            this.context.Services.AddSingleton(interfaceView);
             this.context.ConfigureDevExpressBlazor();
             ViewProviderService.RegisterViews();
         }
@@ -113,7 +117,19 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             var review = new Review(this.reviewId)
             {
                 ReviewObjectives = { new ReviewObjective(Guid.NewGuid()) },
-                Artifacts = { new Model(Guid.NewGuid()) }
+                Artifacts = 
+                {
+                    new Model(Guid.NewGuid())
+                    {
+                        IterationId = Guid.NewGuid(),
+                        ModelName = "Envision - Iteration 4"
+                    },
+                    new Model(Guid.NewGuid())
+                    {
+                        IterationId = Guid.NewGuid(),
+                        ModelName = "Envision - Iteration 5"
+                    }
+                }
             };
 
             this.reviewService.Setup(x => x.GetReviewOfProject(this.projectId, this.reviewId, It.IsAny<int>()))
@@ -143,7 +159,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
 
             reviewObjective.ReviewTasks.Add(reviewTask);
 
-            this.thingService.Setup(x => x.GetThings(this.projectId, It.IsAny<IEnumerable<Guid>>(),
+            this.thingService.Setup(x => x.GetThings(this.projectId, It.IsAny<Model>(),
                 ClassKind.Iteration)).ReturnsAsync(new List<Thing>());
 
             await this.viewModel.OnInitializedAsync(this.projectId, this.reviewId, this.reviewObjectiveId, this.reviewTaskId);
@@ -170,6 +186,21 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             Assert.That(renderer.Instance.BaseView.Type, Is.EqualTo(typeof(ProductBreakdownStructureView)));
             await renderer.InvokeAsync(async () => await relatedViews.Instance.OnViewSelect.InvokeAsync(relatedViews.Instance.OtherRelatedViews[0]));
             Assert.That(this.viewModel.CurrentBaseView, Is.EqualTo(typeof(InterfaceView)));
+
+
+            this.viewModel.ModelSelectorVisible = true;
+            Assert.That(this.viewModel.CurrentModel, Is.EqualTo(review.Artifacts[1]));
+
+            this.viewModel.SelectedModel = this.viewModel.AvailableModels[1];
+            Assert.That(this.viewModel.ModelSelectorVisible, Is.True);
+
+            this.viewModel.SelectedModel = this.viewModel.AvailableModels[0];
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.ModelSelectorVisible, Is.False);
+                Assert.That(this.viewModel.CurrentModel, Is.EqualTo(review.Artifacts[0]));
+            });
         }
     }
 }

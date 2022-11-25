@@ -40,8 +40,6 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Server.Managers.ReviewTaskManager;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Common;
-    using Microsoft.EntityFrameworkCore;
-    using UI_DSM.Server.Managers.ProjectManager;
 
     [TestFixture]
     public class ReviewObjectiveModuleTestFixture
@@ -293,7 +291,7 @@ namespace UI_DSM.Server.Tests.Modules
                 KindNumber = 3
             };
 
-            List<ReviewObjectiveCreationDto> reviewCreationDtos = new List<ReviewObjectiveCreationDto>
+            var reviewCreationDtos = new List<ReviewObjectiveCreationDto>
             {
                 reviewCreationDto
             };
@@ -349,7 +347,7 @@ namespace UI_DSM.Server.Tests.Modules
             });
 
             this.reviewObjectiveManager.As<IReviewObjectiveManager>().Setup(x => x.CreateEntityBasedOnTemplates(It.IsAny<IEnumerable<ReviewObjective>>()
-                , It.IsAny<Review>(), It.IsAny<Participant>())).ReturnsAsync(EntityOperationResult<ReviewObjective>.AllSuccess(new List<ReviewObjective> { new ReviewObjective() }));
+                , It.IsAny<Review>(), It.IsAny<Participant>())).ReturnsAsync(EntityOperationResult<ReviewObjective>.AllSuccess(new List<ReviewObjective> { new () }));
 
             await this.module.CreateEntityTemplates(this.reviewManager.As<IReviewManager>().Object, this.reviewObjectiveManager.As<IReviewObjectiveManager>().Object,
                 this.context.Object, reviewCreationDtos);
@@ -454,7 +452,7 @@ namespace UI_DSM.Server.Tests.Modules
         [Test]
         public async Task VerifyGetAvailableTemplates()
         {
-            Review review = new Review(this.reviewId);
+            var review = new Review(this.reviewId);
 
             this.reviewObjectiveManager.As<IReviewObjectiveManager>().Setup(x => x.GetReviewObjectiveCreationForReview(review.Id)).Returns(new List<ReviewObjectiveCreationDto>());
 

@@ -29,6 +29,7 @@ namespace UI_DSM.Client.Tests.Services.ThingService
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Extensions;
+    using UI_DSM.Shared.Models;
 
     [TestFixture]
     public class ThingServiceTestFixture
@@ -142,6 +143,30 @@ namespace UI_DSM.Client.Tests.Services.ThingService
             httpResponse.Content = new StringContent(dtos);
             things = await this.thingService.GetThingsByView(this.projectId, this.modelsId, View.ProductBreakdownStructureView);
             Assert.That(things, Is.Not.Empty);
+
+            var model = new Model(this.modelsId[0])
+            {
+                IterationId = Guid.NewGuid()
+            };
+
+            dtos = this.jsonService.Serialize(this.iteration.RequirementsSpecification.GetContainedAndReferencedThings());
+            httpResponse.Content = new StringContent(dtos);
+            things = await this.thingService.GetThings(this.projectId, model);
+            Assert.That(things, Is.Not.Empty);
+
+            var modelWithSameIteration = new Model(Guid.NewGuid())
+            {
+                IterationId = model.IterationId
+            };
+
+            things = await this.thingService.GetThings(this.projectId, modelWithSameIteration);
+            Assert.That(things, Is.Not.Empty);
+
+            things = await this.thingService.GetThings(this.projectId, (Model)null);
+            Assert.That(things, Is.Empty);
+
+            things = await this.thingService.GetThings(this.projectId, new Model());
+            Assert.That(things, Is.Empty);
         }
     }
 }

@@ -200,9 +200,10 @@ namespace UI_DSM.Server.Tests.Modules
             dto.Author = participant.Id;
             dto.Description = "A description";
             dto.Title = "a title";
+            dto.Artifacts = new List<Guid> { Guid.NewGuid() };
 
             await this.module.CreateEntity(this.reviewManager.Object, dto, this.context.Object);
-            this.response.VerifySet(x => x.StatusCode = 400, Times.Once);
+            this.response.VerifySet(x => x.StatusCode = 500, Times.Once);
             this.projectManager.Setup(x => x.GetEntity(project.Id,0)).ReturnsAsync(project.GetAssociatedEntities());
             this.reviewManager.Setup(x => x.CreateEntity(It.IsAny<Review>())).ReturnsAsync(EntityOperationResult<Review>.Success(new Review(Guid.NewGuid())));
             await this.module.CreateEntity(this.reviewManager.Object, dto, this.context.Object);
@@ -259,7 +260,8 @@ namespace UI_DSM.Server.Tests.Modules
             {
                 Author = participant,
                 Description = "Description",
-                Title = "Title"
+                Title = "Title",
+                Artifacts = { new Model(Guid.NewGuid()) }
             };
 
             var reviewDto = new ReviewDto()
@@ -267,7 +269,8 @@ namespace UI_DSM.Server.Tests.Modules
                 Author = participant.Id,
                 Description = "Description",
                 Title = "Title",
-                Status = StatusKind.Closed
+                Status = StatusKind.Closed,
+                Artifacts = review.Artifacts.Select(x => x.Id).ToList()
             };
 
             var project = new Project(Guid.NewGuid())
