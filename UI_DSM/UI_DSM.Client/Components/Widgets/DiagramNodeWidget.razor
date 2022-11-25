@@ -13,14 +13,13 @@
 @using Blazor.Diagrams.Core.Models
 @using UI_DSM.Client.Model
 
-<div class="default-node @(this.Node.IsCentralNode ? "central-node" : "") @this.NodeClass" @onmouseover="@((e)=> this.OnMouseOver(e))" @onmouseout="@((e)=> this.OnMouseOut(e))">
-    @if(this.Node != null)
-    {
-        <label>@this.Node.Title</label>
-    }
+<div class="default-node @(this.Node.IsCentralNode ? "central-node" : "") @(Node.Selected ? "selected" : "") @this.NodeClass" @onmouseover="@((e)=> this.OnMouseOver(e))" @onmouseout="@((e)=> this.OnMouseOut(e))">
+
+    @(this.Node.Title ?? "Title")
+
     @foreach (var port in this.Node.Ports.Cast<DiagramPort>())
     {
-        <PortRenderer Port="port" Class="@(port.HasComments ? "port-comment" : "")">
+        <PortRenderer Port="port" Class="@(port.HasComments ? "port-comment " : "")">
             @if (this.NodeClass != string.Empty)
             {
                 <label class="port-text" @key="port">@port.Text</label>

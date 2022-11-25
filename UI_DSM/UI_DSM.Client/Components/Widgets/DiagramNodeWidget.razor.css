@@ -14,11 +14,11 @@
     padding: 3%;
 }
 
-    .default-node .port {
-        width: 14px;
-        height: 14px;
-        margin: -7px;
-    }
+.default-node .port {
+    width: 14px;
+    height: 14px;
+    margin: -7px;
+}
 
 .port-text {
     text-align: center;

@@ -139,6 +139,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         void SetProductsVisibility(bool visibility);
 
         /// <summary>
+        /// Selects the first central product depending on the selected element.
+        /// </summary>
+        /// <param name="selectedElement">the selected element</param>
+        /// <returns>the selected <see cref="ProductRowViewModel"/></returns>
+        /// <exception cref="ArgumentException">if the selected element is not null and is not of type <see cref="ElementBaseRowViewModel"/></exception>
+        ProductRowViewModel SelectedFirstProductByCloserSelectedItem(object selectedElement);
+
+        /// <summary>
         /// Tries to get all the neighbours of a <see cref="ProductRowViewModel"/>
         /// </summary>
         /// <param name="productRow">the product to get the neighbours from</param>

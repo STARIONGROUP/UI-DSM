@@ -231,21 +231,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.ApplyVisibility();
             this.InitializesFilter();
 
-            //TODO: the selection of the product shall not be random. It will be the selected thing.
-            var firstNode = this.Products.FirstOrDefault(p =>
-            {
-                var neighbours = this.GetNeighbours(p);
-                if (neighbours is not null && neighbours.Count() > 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }, this.Products.First());
-
-            this.CreateCentralNodeAndNeighbours(firstNode);
+            var firstCenterProduct = this.SelectedFirstProductByCloserSelectedItem(this.SelectedElement);
+            this.CreateCentralNodeAndNeighbours(firstCenterProduct);
         }
 
         /// <summary>
@@ -395,6 +382,37 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             });
 
             this.FilterViewModel.InitializeProperties(availableRowFilters);
+        }
+
+        /// <summary>
+        /// Selects the first central product depending on the selected element.
+        /// </summary>
+        /// <param name="selectedElement">the selected element</param>
+        /// <returns>the selected <see cref="ProductRowViewModel"/></returns>
+        /// <exception cref="ArgumentException">if the selected element is not null and is not of type <see cref="ElementBaseRowViewModel"/></exception>
+        public ProductRowViewModel SelectedFirstProductByCloserSelectedItem(object selectedElement)
+        {
+            if (selectedElement is ProductRowViewModel productRowViewModel)
+            {
+                return productRowViewModel;
+            }
+            else if (selectedElement is PortRowViewModel portRowViewModel)
+            {
+                return this.Products.FirstOrDefault(x => x.ThingId == portRowViewModel.ContainerId, this.Products.First());
+            }
+            else if (selectedElement is InterfaceRowViewModel interfaceRowViewModel)
+            {
+                var source = this.allPorts.FirstOrDefault(x => x.ThingId == interfaceRowViewModel.SourceId, this.allPorts.First());
+                return this.Products.FirstOrDefault(x => x.ThingId == source.ContainerId, this.Products.First());
+            }
+            else if (selectedElement is null)
+            {
+                return this.Products.First();
+            }
+            else
+            {
+                throw new ArgumentException($"the {selectedElement} is not a valid argument");
+            }
         }
 
         /// <summary>

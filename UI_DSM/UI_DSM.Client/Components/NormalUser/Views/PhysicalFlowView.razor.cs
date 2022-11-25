@@ -96,6 +96,9 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
             this.ViewModel = interfaceView.ViewModel;
             await this.HasChanged();
+
+            var firstCenterProduct = this.ViewModel.SelectedFirstProductByCloserSelectedItem(this.ViewModel.SelectedElement);
+            this.ViewModel.CreateCentralNodeAndNeighbours(firstCenterProduct);
             this.OnCentralNodeChanged();
 
             this.ViewModel.OnCentralNodeChanged += this.OnCentralNodeChanged;
