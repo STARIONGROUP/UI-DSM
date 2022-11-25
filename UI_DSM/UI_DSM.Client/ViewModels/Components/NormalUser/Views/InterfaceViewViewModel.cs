@@ -2,7 +2,7 @@
 // <copyright file="InterfaceViewViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
-//  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+//  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar, Jaime Bernar
 // 
 //  This file is part of UI-DSM.
 //  The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
@@ -13,8 +13,16 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
+    using System.Linq;
+    using System.Reactive.Linq;
+
+    using Blazor.Diagrams.Core.Models;
+    using Blazor.Diagrams.Core.Models.Base;
+
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
+
+    using DynamicData;
 
     using ReactiveUI;
 
@@ -25,11 +33,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
-
-    using System.Linq;
-    using DynamicData;
-    using Blazor.Diagrams.Core.Models.Base;
-    using Blazor.Diagrams.Core.Models;
 
     /// <summary>
     ///     View model for the <see cref="Client.Components.NormalUser.Views.InterfaceView" /> component
@@ -116,9 +119,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public List<FilterModel> AvailableRowFilters { get; } = new();
 
         /// <summary>
-        /// A list of the nodes in the <see cref="Diagram"/>
+        /// A list of the <see cref="NodeModel"/> in the <see cref="Blazor.Diagrams.Core.Diagram"/>
         /// </summary>
         public List<NodeModel> ProductNodes { get; } = new();
+
+        /// <summary>
+        /// A list of the <see cref="PortModel"/> in the <see cref="Blazor.Diagrams.Core.Diagram"/>
+        /// </summary>
+        public List<PortModel> PortsNodes { get; } = new();
+
+        /// <summary>
+        /// A list of the <see cref="LinkModel"/> in the <see cref="Blazor.Diagrams.Core.Diagram"/>
+        /// </summary>
+        public List<LinkModel> InterfacesLinks { get; } = new();
 
         /// <summary>
         /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>
@@ -398,10 +411,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 var neighbours = new List<ProductRowViewModel>();
 
                 foreach (var port in ports)
-                {
-                    var sourceInterface = this.Interfaces.FirstOrDefault(i => i.SourceId.ToString() == port.Id, null);
-
-                    var targetInterface = this.Interfaces.FirstOrDefault(i => i.TargetId.ToString() == port.Id, null);
+                {                                  
+                    var sourceInterface = this.Interfaces.FirstOrDefault(x => (x.SourceId == port.ThingId) && x.IsVisible, null);
+                    var targetInterface = this.Interfaces.FirstOrDefault(x => (x.TargetId == port.ThingId) && x.IsVisible, null);
 
                     if (sourceInterface != null && targetInterface != null)
                     {
@@ -409,10 +421,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                     }
                     else if (sourceInterface != null)
                     {
-                        var targetPort = this.allPorts.FirstOrDefault(p => p.Id == sourceInterface.TargetId.ToString(), null);
+                        var targetPort = this.allPorts.FirstOrDefault(p => p.ThingId == sourceInterface.TargetId, null);
+
                         if (targetPort != null)
                         {
-                            var targetPortContainer = this.Products.FirstOrDefault(pr => pr.Id == targetPort.ContainerId.ToString(), null);
+                            var targetPortContainer = this.Products.FirstOrDefault(pr => pr.ThingId == targetPort.ContainerId, null);
 
                             if (targetPortContainer != null)
                             {
@@ -422,10 +435,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                     }
                     else if (targetInterface != null)
                     {
-                        var sourcePort = this.allPorts.FirstOrDefault(p => p.Id == targetInterface.SourceId.ToString(), null);
+                        var sourcePort = this.allPorts.FirstOrDefault(p => p.ThingId == targetInterface.SourceId, null);
                         if (sourcePort != null)
                         {
-                            var sourcePortContainer = this.Products.FirstOrDefault(pr => pr.Id == sourcePort.ContainerId.ToString(), null);
+                            var sourcePortContainer = this.Products.FirstOrDefault(pr => pr.ThingId == sourcePort.ContainerId, null);
 
                             if (sourcePortContainer != null)
                             {
@@ -447,19 +460,31 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="model">the model to select</param>
         public void SetSelectedModel(Model model)
         {
-            if (model is NodeModel node)
+            if (model is NodeModel node && this.ProductsMap.ContainsKey(node.Id))
             {
-                var asociatedProduct = this.ProductsMap[node.Id];
-                this.CreateCentralNodeAndNeighbours(asociatedProduct);
-                this.SelectedElement = asociatedProduct;
+                this.SelectedElement = this.ProductsMap[node.Id]; 
             }
-            else if (model is PortModel port)
+            else if (model is PortModel port && this.PortsMap.ContainsKey(port.Id))
             {
                 this.SelectedElement = this.PortsMap[port.Id];
             }
-            else if (model is LinkModel link)
+            else if (model is LinkModel link && this.InterfacesMap.ContainsKey(link.Id))
             {
                 this.SelectedElement = this.InterfacesMap[link.Id];
+            }
+        }
+
+        /// <summary>
+        /// Sets the new central node for this <see cref="IInterfaceViewViewModel"/>
+        /// </summary>
+        /// <param name="nodeModel">the new central node</param>
+        public void SetCentralNodeModel(NodeModel nodeModel)
+        {
+            if (this.ProductsMap.ContainsKey(nodeModel.Id))
+            {
+                var asociatedProduct = this.ProductsMap[nodeModel.Id];
+                this.CreateCentralNodeAndNeighbours(asociatedProduct);
+                Task.Run(() => this.OnCentralNodeChanged?.Invoke());
             }
         }
 
@@ -470,6 +495,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public void CreateCentralNodeAndNeighbours(ProductRowViewModel centerNode)
         {
             this.ProductNodes.Clear();
+            this.PortsNodes.Clear();
+            this.InterfacesLinks.Clear();
+
             this.ProductsMap.Clear();
             this.PortsMap.Clear();
             this.InterfacesMap.Clear();
@@ -482,16 +510,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
             var node = CreateNewNodeFromProduct(centerNode);
             node.SetPosition(cx, cy);
+            node.IsCentralNode = true;
 
-            if (neighbours != null)
+            if (neighbours != null && neighbours.Count() > 0)
             {
-                var angle = 0.0;
-                var angleIncrement = neighbours.Count() > 0 ? (2.0 * Math.PI) / neighbours.Count() : 0;
+                var angle = Math.PI/2.0;
+                var angleIncrement = (2.0 * Math.PI) / neighbours.Count();
 
                 foreach (var neighbour in neighbours)
                 {
-                    var x = cx + r * Math.Cos(angle);
-                    var y = cy + r * Math.Sin(angle);
+                    var x = cx - r * Math.Cos(angle);
+                    var y = cy - r * Math.Sin(angle);
 
                     Console.WriteLine($"The node {neighbour.Name} is positioned in {x},{y}");
 
@@ -502,8 +531,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 }
             }
 
-            
-            Task.Run(() => this.OnCentralNodeChanged);
+            this.CreateInterfacesLinks();
         }
 
         /// <summary>
@@ -511,11 +539,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         /// <param name="product">the product for which the node will be created</param>
         /// <returns>the created <see cref="NodeModel"/></returns>
-        public NodeModel CreateNewNodeFromProduct(ProductRowViewModel product)
+        public DiagramNode CreateNewNodeFromProduct(ProductRowViewModel product)
         {
-            var node = new NodeModel();
+            var node = new DiagramNode();
             node.Title = product.Name;
-
+            node.HasComments = product.HasComment();
+            
             this.ProductNodes.Add(node);
             this.ProductsMap.Add(node.Id, product);
 
@@ -525,13 +554,48 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 foreach (var port in ports)
                 {
                     var index = ports.IndexOf(port);
-                    var portNode = node.AddPort((PortAlignment)index);
+                    var portNode = new DiagramPort(node, (PortAlignment)index, port.Name);
+                    node.AddPort(portNode);
                     portNode.Locked = true;
+                    portNode.HasComments = port.HasComment();
+
+                    this.PortsNodes.Add(portNode);
                     this.PortsMap.Add(portNode.Id, port);
                 }
             }
-
+                        
             return node;
+        }
+
+        /// <summary>
+        /// Creates the interfaces (links) between the ports of the products.
+        /// </summary>
+        public void CreateInterfacesLinks()
+        {
+            foreach(var interf in this.Interfaces)
+            {
+                var sourcePortRowVM = this.PortsMap.Values.FirstOrDefault(port => port.ThingId == interf.SourceId);
+                var targetPortRowVM = this.PortsMap.Values.FirstOrDefault(port => port.ThingId == interf.TargetId);
+
+                var sourcePortID = this.PortsMap.FirstOrDefault(item => item.Value == sourcePortRowVM).Key;
+                var targetPortID = this.PortsMap.FirstOrDefault(item => item.Value == targetPortRowVM).Key;
+
+                var source = this.PortsNodes.FirstOrDefault(port => port.Id == sourcePortID);
+                var target = this.PortsNodes.FirstOrDefault(port => port.Id == targetPortID);
+
+                if(source != null && target != null)
+                {
+                    //TODO: Use Routers.Orthogonal and PathGenerators.Straight and check if the bugs have been corrected.
+                    var link = new DiagramLink(source, target);
+                    link.Locked = true;
+                    link.SourceMarker = LinkMarker.Square;
+                    link.TargetMarker = LinkMarker.Arrow;
+                    link.HasComments = interf.HasComment();
+
+                    this.InterfacesLinks.Add(link);
+                    this.InterfacesMap.Add(link.Id, interf);
+                }
+            }
         }
     }
 }

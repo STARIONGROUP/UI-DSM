@@ -15,6 +15,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
     using Blazor.Diagrams.Core;
     using Blazor.Diagrams.Core.Models;
+
     using CDP4Common.CommonData;
 
     using UI_DSM.Client.Model;
@@ -58,9 +59,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         bool ShouldShowProducts { get; }
 
         /// <summary>
-        /// A list of the nodes in the <see cref="Diagram"/>
+        /// A list of the <see cref="NodeModel"/> in the <see cref="Diagram"/>
         /// </summary>
         List<NodeModel> ProductNodes { get; } 
+
+        /// <summary>
+        /// A list of the <see cref="PortModel"/> in the <see cref="Diagram"/>
+        /// </summary>
+        List<PortModel> PortsNodes { get; } 
+
+        /// <summary>
+        /// A list of the <see cref="LinkModel"/> in the <see cref="Diagram"/>
+        /// </summary>
+        List<LinkModel> InterfacesLinks { get; } 
 
         /// <summary>
         /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>
@@ -146,13 +157,24 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         /// <param name="product">the product for which the node will be created</param>
         /// <returns>the created <see cref="NodeModel"/></returns>
-        NodeModel CreateNewNodeFromProduct(ProductRowViewModel product);
+        DiagramNode CreateNewNodeFromProduct(ProductRowViewModel product);
+
+        /// <summary>
+        /// Creates the links for the <see cref="InterfaceRowViewModel"/>
+        /// </summary>
+        void CreateInterfacesLinks();
 
         /// <summary>
         /// Sets the selected model for this <see cref="IInterfaceViewViewModel"/>
         /// </summary>
         /// <param name="model">the model to select</param>
         void SetSelectedModel(Blazor.Diagrams.Core.Models.Base.Model model);
+
+        /// <summary>
+        /// Sets the new central node for this <see cref="IInterfaceViewViewModel"/>
+        /// </summary>
+        /// <param name="nodeModel">the new central node</param>
+        void SetCentralNodeModel(NodeModel nodeModel);
 
         /// <summary>
         /// Event fired when the state of the component needs to change.

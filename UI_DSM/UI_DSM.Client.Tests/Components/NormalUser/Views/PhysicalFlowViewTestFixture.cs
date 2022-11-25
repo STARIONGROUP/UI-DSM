@@ -14,6 +14,8 @@
 namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 {
     using Blazor.Diagrams.Core.Geometry;
+    using Blazor.Diagrams.Core.Models;
+    using Blazor.Diagrams.Core.Models.Base;
     using Bunit;
     using Castle.Components.DictionaryAdapter;
     using CDP4Common.DTO;
@@ -22,7 +24,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using CDP4Dal;
     using DevExpress.Blazor.Popup.Internal;
     using Feather.Blazor.Icons;
-
+    using Microsoft.AspNetCore.Components.Web;
     using Microsoft.Extensions.DependencyInjection;
    
     using Moq;
@@ -31,6 +33,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using Radzen.Blazor;
     using System.Collections.Concurrent;
     using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Client.Components.Widgets;
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
@@ -234,6 +237,16 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             Assert.That(this.viewModel.SelectedElement, Is.Null);
             this.viewModel.SetSelectedModel(productNode);
             Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+
+            var portNode = this.viewModel.PortsNodes.First();
+            this.viewModel.SelectedElement = null;
+            this.viewModel.SetSelectedModel(portNode);
+            Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+
+            var linkNode = this.viewModel.InterfacesLinks.First();
+            this.viewModel.SelectedElement = null;
+            this.viewModel.SetSelectedModel(linkNode);
+            Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
         }
 
         [Test]
@@ -249,7 +262,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         {
             var product = this.renderer.Instance.ViewModel.Products.Last();
             this.viewModel.ProductsMap.Clear();
-            this.viewModel.ProductNodes.Clear();          
+            this.viewModel.ProductNodes.Clear();
             this.viewModel.CreateCentralNodeAndNeighbours(product);
             Assert.That(this.viewModel.ProductsMap.Count > 0);
             Assert.That(this.viewModel.ProductNodes.Count > 0);
@@ -269,6 +282,71 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             var product = this.renderer.Instance.ViewModel.Products.Last();
             var result = this.viewModel.LoadChildren(product);
             Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public void VerifyThatInterfaceLinksCanBeCreated()
+        {
+            this.viewModel.InterfacesLinks.Clear();
+            this.viewModel.InterfacesMap.Clear();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.InterfacesLinks.Count, Is.EqualTo(0));
+                Assert.That(this.viewModel.InterfacesMap.Count, Is.EqualTo(0));
+            });
+
+            this.viewModel.CreateInterfacesLinks();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.Interfaces.Count, Is.GreaterThan(0));
+                Assert.That(this.viewModel.InterfacesLinks.Count, Is.GreaterThan(0));
+                Assert.That(this.viewModel.InterfacesMap.Count, Is.GreaterThan(0));
+            });
+        }
+
+        [Test]
+        public void VerifyPhysicalFlowView()
+        {
+            var diagram = this.renderer.Instance.Diagram;
+
+            Assert.That(diagram, Is.Not.Null);
+            Assert.That(diagram.Options.AllowMultiSelection, Is.False);
+        }
+
+        [Test]
+        public async Task VerifyThatDiagramIsUpdatedWhenCentralNodeChanged()
+        {
+            var diagram = this.renderer.Instance.Diagram;
+            var product1 = this.renderer.Instance.ViewModel.Products.First();
+            var product2 = this.renderer.Instance.ViewModel.Products[1];
+
+            this.viewModel.CreateCentralNodeAndNeighbours(product1);
+            await this.renderer.InvokeAsync(() => this.renderer.Instance.OnCentralNodeChanged());
+
+            var nodes = new List<NodeModel>(diagram.Nodes.ToList());
+            var links = new List<BaseLinkModel>(diagram.Links.ToList());
+
+            this.viewModel.CreateCentralNodeAndNeighbours(product2);
+            await this.renderer.InvokeAsync(() => this.renderer.Instance.OnCentralNodeChanged());
+
+            Assert.That(nodes, Is.Not.EqualTo(diagram.Nodes));
+            Assert.That(links, Is.Not.EqualTo(diagram.Links));
+        }
+
+        [Test]
+        public async Task VerifyThatComponentsCanBeCopied()
+        {
+            var component = this.context.RenderComponent<PhysicalFlowView>();
+            var anotherView = component.Instance;
+
+            var oldViewModel = anotherView.ViewModel;
+
+            await this.renderer.InvokeAsync(() => this.renderer.Instance.CopyComponents(anotherView));
+            var newViewModel = this.renderer.Instance.ViewModel;
+
+            Assert.That(oldViewModel, Is.EqualTo(newViewModel));
         }
     }
 }
