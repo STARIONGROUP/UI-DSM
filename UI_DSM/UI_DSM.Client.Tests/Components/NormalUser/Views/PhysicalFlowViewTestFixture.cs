@@ -313,7 +313,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
             Assert.That(diagram, Is.Not.Null);
             Assert.That(diagram.Options.AllowMultiSelection, Is.False);
-            Assert.That(diagram.Options.DefaultNodeComponent, Is.TypeOf(typeof(DiagramNodeWidget)));
         }
 
         [Test]
