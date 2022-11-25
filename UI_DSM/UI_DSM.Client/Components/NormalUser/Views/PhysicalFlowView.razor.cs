@@ -23,7 +23,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
     using UI_DSM.Client.Components.Widgets;
     using UI_DSM.Client.Model;
-
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Shared.Enumerator;
 
@@ -41,7 +40,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// Method invoked when the component is ready to start, having received its
         /// initial parameters from its parent in the render tree.
         /// </summary>
-        protected async override void OnInitialized()
+        protected override void OnInitialized()
         {
             base.OnInitialized();
 

@@ -14,8 +14,11 @@
 @using UI_DSM.Client.Model
 
 <div class="default-node @(this.Node.IsCentralNode ? "central-node" : "") @this.NodeClass" @onmouseover="@((e)=> this.OnMouseOver(e))" @onmouseout="@((e)=> this.OnMouseOut(e))">
-    <label>@Node.Title</label>
-    @foreach (var port in Node.Ports.Cast<DiagramPort>())
+    @if(this.Node != null)
+    {
+        <label>@this.Node.Title</label>
+    }
+    @foreach (var port in this.Node.Ports.Cast<DiagramPort>())
     {
         <PortRenderer Port="port" Class="@(port.HasComments ? "port-comment" : "")">
             @if (this.NodeClass != string.Empty)

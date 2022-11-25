@@ -13,8 +13,16 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
+    using System.Linq;
+    using System.Reactive.Linq;
+
+    using Blazor.Diagrams.Core.Models;
+    using Blazor.Diagrams.Core.Models.Base;
+
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
+
+    using DynamicData;
 
     using ReactiveUI;
 
@@ -25,12 +33,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
-
-    using System.Linq;
-    using DynamicData;
-    using Blazor.Diagrams.Core.Models.Base;
-    using Blazor.Diagrams.Core.Models;
-    using System.Reactive.Linq;
 
     /// <summary>
     ///     View model for the <see cref="Client.Components.NormalUser.Views.InterfaceView" /> component
