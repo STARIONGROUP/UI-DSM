@@ -50,6 +50,11 @@ namespace UI_DSM.Shared.Models
         public UserEntity User { get; set; }
 
         /// <summary>
+        ///     The <see cref="Participant" /> name
+        /// </summary>
+        public string ParticipantName => this.User?.UserName;
+
+        /// <summary>
         ///     The current <see cref="Role" /> for the <see cref="User" />
         /// </summary>
         [Required]
@@ -64,8 +69,8 @@ namespace UI_DSM.Shared.Models
         {
             var dto = new ParticipantDto(this.Id)
             {
-                User = this.User.Id,
-                Role = this.Role.Id
+                User = this.User == null ? Guid.Empty : this.User.Id,
+                Role = this.Role == null ? Guid.Empty : this.Role.Id,
             };
 
             return dto;

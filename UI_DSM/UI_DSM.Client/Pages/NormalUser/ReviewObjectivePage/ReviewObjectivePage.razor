@@ -13,30 +13,31 @@
 @layout DefaultLayout
 
 <PageTitle>Review Objective | UI-DSM</PageTitle>
+	  
+<DxPopup CloseOnOutsideClick="false" HeaderText="Assign Participant" @bind-Visible="@this.ViewModel.IsOnAssignmentMode">
+		<Content>
+			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+                <UI_DSM.Client.Components.NormalUser.ReviewTask.TaskAssignment ProjectParticipants="@this.ViewModel.ProjectParticipants" ViewModel="@this.ViewModel.TaskAssignmentViewModel" />
+			</CascadingValue>
+		</Content>
+</DxPopup>
+	
+<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.ViewModel.ReviewObjective is null">
+		<div class="objective-page">
 
-@if (this.ViewModel.ReviewObjective == null)
-{
-	<div>
-		Review Objective not found...
-	</div>
-}
-else
-{
-	<div class="objective-page">
+			<AppReviewHeader Title="@this.ViewModel.ReviewObjective.Title" Description="@this.ViewModel.ReviewObjective.Description" />
 
-		<AppReviewHeader Title="@this.ViewModel.ReviewObjective.Title" Description="@this.ViewModel.ReviewObjective.Description" />
+			<div class="task-section">
+				<h1 class="h3">Objective tasks</h1>
+				<div class="task-overview">
 
-		<div class="task-section">
-			<h1 class="h3">Objective tasks</h1>
-			<div class="task-overview">
-
-				@foreach (var task in this.ViewModel.ReviewObjective.ReviewTasks.OrderBy(x => x.TaskNumber))
-				{
-					<ReviewTaskCard ReviewTask="@task" ProjectId="@this.ProjectId" ReviewId="@this.ReviewId" ReviewObjectiveId="@this.ReviewObjectiveId" />
-				}
+					@foreach (var task in this.ViewModel.ReviewObjective.ReviewTasks.OrderBy(x => x.TaskNumber))
+					{
+						<ReviewTaskCard ReviewTask="@task" ProjectId="@this.ProjectId" ReviewId="@this.ReviewId" ReviewObjectiveId="@this.ReviewObjectiveId" ViewModel="this.ViewModel" />
+					}
+				</div>
 			</div>
 		</div>
-	</div>}
-
+</UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
 
 

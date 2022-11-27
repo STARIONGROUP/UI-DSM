@@ -1,5 +1,5 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
-// NormalProjectPage.razor
+// LoadingComponent.razor
 // Copyright (c) 2022 RHEA System S.A.
 //
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -9,11 +9,19 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-@page "/Project/{ProjectId}"
-@layout DefaultLayout
-
-<PageTitle>Project | UI-DSM</PageTitle>
-
-<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.ViewModel.ProjectReviewViewModel.Project is null">
-    <ProjectReview ViewModel="@this.ViewModel.ProjectReviewViewModel" />
-</UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
+@if (IsLoading)
+{
+    if (LoadingTemplate != null)
+    {
+        @LoadingTemplate
+    }
+    else
+    {
+        <div class="spinner-border"></div>
+        <span style="display: inline-block; vertical-align: super">@LoadingText</span>
+    }
+}
+else
+{
+    @ChildContent
+}

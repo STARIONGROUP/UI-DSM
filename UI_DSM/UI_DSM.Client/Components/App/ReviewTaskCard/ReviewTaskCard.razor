@@ -11,6 +11,15 @@
 -------------------------------------------------------------------------------------------------------->
 @using UI_DSM.Shared.Enumerator
 
+@if(this.ViewModel != null)
+{
+	@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.AssignTask))
+	{
+		<AppButton Click="@this.ViewModel.OpenTaskAssignmentPopup" Type="button">
+			<FeatherPlusCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Assign to</span>
+		</AppButton>
+	}
+}
 <div class="task-item" @onclick="() => this.Navigate()">
 	<div class="task-item__header">
 		<h2 class="h4">@(this.ReviewTask.Description)</h2>

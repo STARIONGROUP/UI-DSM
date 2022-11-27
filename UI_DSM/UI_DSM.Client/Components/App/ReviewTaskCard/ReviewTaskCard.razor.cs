@@ -16,6 +16,7 @@ namespace UI_DSM.Client.Components.App.ReviewTaskCard
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Client.Pages.NormalUser.ReviewObjectivePage;
+    using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -60,6 +61,12 @@ namespace UI_DSM.Client.Components.App.ReviewTaskCard
         public bool UseNavLink { get; set; } = true;
 
         /// <summary>
+        ///     The <see cref="IReviewObjectivePageViewModel" /> for the component
+        /// </summary>
+        [Parameter]
+        public IReviewObjectivePageViewModel ViewModel { get; set; }
+
+        /// <summary>
         ///     Navigate to the correct uri
         /// </summary>
         private void Navigate()
@@ -69,6 +76,15 @@ namespace UI_DSM.Client.Components.App.ReviewTaskCard
                 this.NavigationManager.NavigateTo($"Project/{this.ProjectId}/Review/{this.ReviewId}/ReviewObjective/{this.ReviewObjectiveId}" +
                                                   $"/ReviewTask/{this.ReviewTask.Id}");
             }
+        }
+        protected override void OnInitialized()
+        {
+            if (this.ViewModel != null)
+            {
+                this.ViewModel.ProjectId = new Guid(this.ProjectId);
+                this.ViewModel.ReviewId = new Guid(this.ReviewId);
+                this.ViewModel.SelectedReviewTask = this.ReviewTask;
+            } 
         }
     }
 }

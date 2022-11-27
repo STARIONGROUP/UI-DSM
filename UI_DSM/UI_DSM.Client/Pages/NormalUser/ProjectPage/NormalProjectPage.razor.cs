@@ -18,6 +18,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ProjectPage
     using ReactiveUI;
 
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ProjectPage;
+    using UI_DSM.Client.Components.App.LoadingComponent;
     using UI_DSM.Shared.Models;
 
     /// <summary>

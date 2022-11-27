@@ -77,9 +77,6 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ProjectPage
                 parameters.Add(p => p.ProjectId, projectGuid.ToString());
             });
 
-            var noProjectFound = renderer.Find("div");
-            Assert.That(noProjectFound.InnerHtml, Does.Contain("Project not found"));
-
             var project = new Project(projectGuid)
             {
                 ProjectName = "Project"

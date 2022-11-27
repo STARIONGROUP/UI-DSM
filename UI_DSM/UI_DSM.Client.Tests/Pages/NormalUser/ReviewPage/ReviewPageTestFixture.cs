@@ -74,9 +74,6 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewPage
                 parameters.Add(p => p.ReviewId, reviewGuid.ToString());
             });
 
-            var noReviewFound = renderer.Find("div");
-            Assert.That(noReviewFound.InnerHtml, Does.Contain("Review not found"));
-
             var project = new Project(projectGuid)
             {
                 ProjectName = "Project",

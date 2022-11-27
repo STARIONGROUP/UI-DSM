@@ -58,6 +58,7 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
             entity.MainView = foundEntity.MainView;
             entity.OptionalView = foundEntity.OptionalView;
             entity.HasPrimaryView = foundEntity.HasPrimaryView;
+            entity.CreatedOn = foundEntity.CreatedOn.ToUniversalTime();
 
             return await this.UpdateEntityIntoContext(entity);
         }
