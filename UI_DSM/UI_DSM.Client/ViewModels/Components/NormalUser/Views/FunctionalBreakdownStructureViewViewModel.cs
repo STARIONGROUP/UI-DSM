@@ -20,6 +20,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.ViewModels.App.Filter;
+    using UI_DSM.Client.ViewModels.App.OptionChooser;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
@@ -33,7 +34,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
         /// <param name="filterViewModel">The <see cref="IFilterViewModel" /></param>
-        public FunctionalBreakdownStructureViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel) : base(reviewItemService, filterViewModel)
+        /// <param name="optionChooserViewModel">The <see cref="IOptionChooserViewModel" /></param>
+        public FunctionalBreakdownStructureViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel,
+            IOptionChooserViewModel optionChooserViewModel) 
+            : base(reviewItemService, filterViewModel, optionChooserViewModel)
         {
         }
 
@@ -49,8 +53,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             await base.InitializeProperties(things, projectId, reviewId);
 
             var topElement = this.Things.OfType<Iteration>()
-                .Single()
-                .TopElement;
+                .SingleOrDefault()?.TopElement;
 
             if (topElement == null)
             {
@@ -91,6 +94,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         {
             var selectedOwner = selectedFilters[ClassKind.DomainOfExpertise];
             var selectedCategories = selectedFilters[ClassKind.Category];
+            var selectedOption = this.OptionChooserViewModel.SelectedOption;
 
             foreach (var row in this.AllRows)
             {
@@ -98,6 +102,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                                 (selectedOwner.Any(owner => owner.DefinedThing.Iid == row.Thing.Owner.Iid)
                                  && selectedCategories.Any(cat =>
                                      row.Thing.GetAppliedCategories().Any(thingCat => thingCat.Iid == cat.DefinedThing.Iid)));
+
+                row.IsVisible &= !row.HasOptionExcluded(selectedOption);
             }
         }
     }

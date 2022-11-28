@@ -20,7 +20,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.ViewModels.App.Filter;
+    using UI_DSM.Client.ViewModels.App.OptionChooser;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     Base view model for all breakdown Structure view for <see cref="ElementBase" />
@@ -37,15 +39,23 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
         /// <param name="filterViewModel">The <see cref="IFilterViewModel" /></param>
-        protected ElementBreakdownStructureViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel) : base(reviewItemService)
+        /// <param name="optionChooserViewModel">The <see cref="IOptionChooserViewModel" /></param>
+        protected ElementBreakdownStructureViewViewModel(IReviewItemService reviewItemService,
+            IFilterViewModel filterViewModel, IOptionChooserViewModel optionChooserViewModel) : base(reviewItemService)
         {
             this.FilterViewModel = filterViewModel;
+            this.OptionChooserViewModel = optionChooserViewModel;
         }
 
         /// <summary>
         ///     The <see cref="FilterViewModel" />
         /// </summary>
         public IFilterViewModel FilterViewModel { get; private set; }
+
+        /// <summary>
+        ///     The <see cref="IOptionChooserViewModel" />
+        /// </summary>
+        public IOptionChooserViewModel OptionChooserViewModel { get; private set; }
 
         /// <summary>
         ///     A collection of <see cref="ElementBaseRowViewModel" /> for the top element
@@ -90,10 +100,37 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     Initialize this view model properties
+        /// </summary>
+        /// <param name="things">A collection of <see cref="Thing" /></param>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
+        {
+            await base.InitializeProperties(things, projectId, reviewId);
+
+            this.OptionChooserViewModel.InitializesViewModel(this.Things.OfType<Option>().OrderBy(x => x.RevisionNumber).ToList());
+        }
+
+        /// <summary>
         ///     Filters current rows
         /// </summary>
         /// <param name="selectedFilters">The selected filters</param>
         public abstract void FilterRows(IReadOnlyDictionary<ClassKind, List<FilterRow>> selectedFilters);
+
+        /// <summary>
+        ///     Tries to set the <see cref="IBaseViewViewModel.SelectedElement" /> to the previous selected item
+        /// </summary>
+        /// <param name="selectedItem">The previously selectedItem</param>
+        public override void TrySetSelectedItem(object selectedItem)
+        {
+            if (selectedItem is ElementBaseRowViewModel elementBaseRow)
+            {
+                var topElement = this.TopElement.FirstOrDefault(x => x.ThingId == elementBaseRow.ThingId);
+                this.SelectedElement = topElement ?? this.AllRows.FirstOrDefault(x => x.ThingId == elementBaseRow.ThingId);
+            }
+        }
 
         /// <summary>
         ///     Initializes the filters criteria for rows
@@ -133,19 +170,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             });
 
             this.FilterViewModel.InitializeProperties(availableRowFilters);
-        }
-
-        /// <summary>
-        ///     Tries to set the <see cref="IBaseViewViewModel.SelectedElement" /> to the previous selected item
-        /// </summary>
-        /// <param name="selectedItem">The previously selectedItem</param>
-        public override void TrySetSelectedItem(object selectedItem)
-        {
-            if (selectedItem is ElementBaseRowViewModel elementBaseRow)
-            {
-                var topElement = this.TopElement.FirstOrDefault(x => x.ThingId == elementBaseRow.ThingId);
-                this.SelectedElement = topElement ?? this.AllRows.FirstOrDefault(x => x.ThingId == elementBaseRow.ThingId);
-            }
         }
     }
 }

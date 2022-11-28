@@ -17,6 +17,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
     using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.App.Filter;
+    using UI_DSM.Client.ViewModels.App.OptionChooser;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>
@@ -33,6 +34,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     The <see cref="FilterViewModel" />
         /// </summary>
         IFilterViewModel FilterViewModel { get; }
+
+        /// <summary>
+        ///     The <see cref="IOptionChooserViewModel" />
+        /// </summary>
+        IOptionChooserViewModel OptionChooserViewModel { get; }
 
         /// <summary>
         ///     Loads all children <see cref="ElementBaseRowViewModel" /> of the <see cref="ElementBaseRowViewModel" /> parent

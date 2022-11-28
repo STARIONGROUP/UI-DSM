@@ -86,6 +86,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public override string Id => this.Thing.Name;
 
         /// <summary>
+        ///     Verifies that the current <see cref="ElementBase" /> has the current <see cref="Option" /> has excluded
+        /// </summary>
+        /// <param name="option">The <see cref="Option" /></param>
+        /// <returns>True if the <see cref="Option" /> is excluded</returns>
+        public bool HasOptionExcluded(Option option)
+        {
+            return this.Thing is ElementUsage usage && usage.ExcludeOption.Any(x => x.Iid == option.Iid);
+        }
+
+        /// <summary>
         ///     Initializes this row view model properties
         /// </summary>
         private void InitializesProperties()

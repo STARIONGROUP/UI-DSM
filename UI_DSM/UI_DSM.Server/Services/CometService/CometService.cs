@@ -25,6 +25,8 @@ namespace UI_DSM.Server.Services.CometService
 
     using CDP4ServicesDal;
 
+    using NLog;
+
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Server.Services.FileService;
     using UI_DSM.Shared.DTO.CometData;
@@ -44,6 +46,11 @@ namespace UI_DSM.Server.Services.CometService
         ///     The <see cref="IFileService" />
         /// </summary>
         private readonly IFileService fileService;
+
+        /// <summary>
+        ///     The <see cref="NLog" /> logger
+        /// </summary>
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="CometService" /> class.
@@ -247,7 +254,15 @@ namespace UI_DSM.Server.Services.CometService
         {
             var session = await this.GetSession(model);
 
-            return session.OpenIterations.Keys.FirstOrDefault(x => x.Iid == model.IterationId) ?? await this.OpenIteration(session, model.IterationId);
+            try
+            {
+                return session.OpenIterations.Keys.FirstOrDefault(x => x.Iid == model.IterationId) ?? await this.OpenIteration(session, model.IterationId);
+            }
+            catch (Exception e)
+            {
+                this.logger.Error($"Error during opening the model {model.ModelName} : {e.Message}");
+                throw;
+            }
         }
 
         /// <summary>

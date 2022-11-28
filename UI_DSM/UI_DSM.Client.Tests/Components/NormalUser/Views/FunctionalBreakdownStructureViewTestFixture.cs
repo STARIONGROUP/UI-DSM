@@ -31,6 +31,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.Filter;
+    using UI_DSM.Client.ViewModels.App.OptionChooser;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
@@ -55,7 +56,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.context = new TestContext();
             this.context.ConfigureDevExpressBlazor();
             this.reviewItemService = new Mock<IReviewItemService>();
-            this.viewModel = new FunctionalBreakdownStructureViewViewModel(this.reviewItemService.Object, new FilterViewModel());
+            this.viewModel = new FunctionalBreakdownStructureViewViewModel(this.reviewItemService.Object, new FilterViewModel(), new OptionChooserViewModel());
             this.context.Services.AddSingleton(this.viewModel);
         }
 

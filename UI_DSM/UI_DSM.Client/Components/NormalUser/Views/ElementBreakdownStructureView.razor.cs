@@ -102,6 +102,9 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                 this.disposables.Add(this.WhenAnyValue(x => x.ColumnChooser.ColumnChooserVisible)
                     .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
+                this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.OptionChooserViewModel.SelectedOption)
+                    .Subscribe(_ => this.InvokeAsync(this.OnRowFilteringClose)));
+
                 this.HideColumnsAtStart();
 
                 this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.FilterViewModel.IsFilterVisible)
@@ -117,7 +120,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         protected void RowRender(RowRenderEventArgs<ElementBaseRowViewModel> row)
         {
             row.Expandable = this.ViewModel.HasChildren(row.Data);
-            row.Attributes["class"] = this.ViewModel.IsVisible(row.Data) ? string.Empty: "invisible-row";
+            row.Attributes["class"] = this.ViewModel.IsVisible(row.Data) ? string.Empty : "invisible-row";
         }
 
         /// <summary>
