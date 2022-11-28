@@ -13,6 +13,9 @@
 
 namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
 {
+    using UI_DSM.Client.ViewModels.Components;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.ReviewTask;
+    using UI_DSM.Client.Components.NormalUser.ReviewTask;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -21,9 +24,54 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
     public interface IReviewObjectivePageViewModel
     {
         /// <summary>
+        ///     The <see cref="Project" /> id
+        /// </summary>
+        Guid ProjectId { get; set; }
+
+        /// <summary>
+        ///     The <see cref="Review" /> id
+        /// </summary>
+        Guid ReviewId { get; set; }
+        
+        /// <summary>
         ///     The <see cref="ReviewObjective" /> of the page
         /// </summary>
         ReviewObjective ReviewObjective { get; }
+
+        /// <summary>
+        ///     The <see cref="Participant" />s of the project
+        /// </summary>
+        List<Participant> ProjectParticipants { get; set; }
+
+        /// <summary>
+        ///     Value indicating the user is currently assigning a <see cref="Participant" /> to a task
+        /// </summary>
+        bool IsOnAssignmentMode { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IErrorMessageViewModel" />
+        /// </summary>
+        IErrorMessageViewModel ErrorMessageViewModel { get; }
+
+        /// <summary>
+        ///     The <see cref="ITaskAssignmentViewModel" />
+        /// </summary>
+        ITaskAssignmentViewModel TaskAssignmentViewModel { get; }
+
+        /// <summary>
+        ///     Opens the <see cref="TaskAssignment" /> as a popup
+        /// </summary>
+        void OpenTaskAssignmentPopup();
+
+        /// <summary>
+        ///     The current <see cref="Participant" />
+        /// </summary>
+        Participant Participant { get; set; }
+
+        /// <summary>
+        ///     The selected <see cref="ReviewTask" /> 
+        /// </summary>
+        ReviewTask SelectedReviewTask { get; set; }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its

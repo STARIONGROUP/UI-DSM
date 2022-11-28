@@ -98,7 +98,7 @@ namespace UI_DSM.Client.Services.ReviewTaskService
             try
             {
                 this.ComputeMainRoute(projectId, reviewId, reviewTask.EntityContainer.Id);
-                return await this.UpdateEntity(reviewTask, 0);
+                return await this.UpdateEntity(reviewTask, 1);
             }
             catch (Exception exception)
             {

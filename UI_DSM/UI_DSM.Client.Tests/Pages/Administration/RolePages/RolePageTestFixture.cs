@@ -65,9 +65,6 @@ namespace UI_DSM.Client.Tests.Pages.Administration.RolePages
                 parameters.Add(p => p.RoleId, roleId.ToString());
             });
 
-            var notFoundDiv = renderer.Find("div");
-            Assert.That(notFoundDiv.TextContent.Contains("Role not found"), Is.True);
-
             var role = new Role(roleId)
             {
                 RoleName = "Project Manager",

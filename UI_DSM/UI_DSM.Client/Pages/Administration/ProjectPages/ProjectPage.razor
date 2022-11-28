@@ -13,14 +13,8 @@
 @layout DefaultLayout
 @attribute [Authorize(Roles = "Administrator")]
 
-@if (this.ViewModel.ProjectDetailsViewModel.Project == null)
-{
-	<div>
-		Project not found...
-	</div>
-}
-else
-{
+<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.ViewModel.ProjectDetailsViewModel.Project is null">
+
 	<div>
 		<AppButton Click="@this.ViewModel.OpenCreateParticipantPopup" Type="button">
 			<FeatherUserPlus Size="20" Color="currentColor" StrokeWidth="2"  /> <span>Add participant</span>
@@ -44,4 +38,4 @@ else
 			</Content>
 		</DxPopup>
 	</div>
-}
+</UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>

@@ -14,13 +14,6 @@
 
 <PageTitle>Project Review | UI-DSM</PageTitle>
 
-@if (this.ViewModel.ReviewObjectiveViewModel.Review == null)
-{
-	<div>
-		Review not found...
-	</div>
-}
-else
-{
+<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.ViewModel.ReviewObjectiveViewModel.Review is null">
 	<ReviewObjectiveComponent ViewModel="@this.ViewModel.ReviewObjectiveViewModel" />
-}
+</UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>

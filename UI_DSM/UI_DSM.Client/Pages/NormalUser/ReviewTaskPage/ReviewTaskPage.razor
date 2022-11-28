@@ -19,9 +19,7 @@
 <div class="task-page">
 	@if (this.ViewModel.ReviewTask == null)
 	{
-		<div>
-			Task not found...
-		</div>
+		<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.ViewModel.ReviewTask is null" />
 	}
 	else
 	{

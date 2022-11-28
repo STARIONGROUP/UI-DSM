@@ -49,63 +49,18 @@
 				}
 			</CellDisplayTemplate>
 		</DxGridDataColumn>
-			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Specification)" GroupIndex="0" GroupInterval="GridColumnGroupInterval.Value" Width="200" />
+		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Specification)" GroupIndex="0" GroupInterval="GridColumnGroupInterval.Value" Width="200" />
 		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Group)" GroupIndex="1" GroupInterval="GridColumnGroupInterval.Value" Width="200"  />
 		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Id)" Caption="ID" Width="150" />
 		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Name)"  Width="200" />
 		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Definition)"  Width="400" />
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Categories)"   Width="300" AllowSort="false">
-			<CellDisplayTemplate>
-				<ul class="grid-list">
-					@foreach (var category in (IEnumerable<string>)context.Value)
-					{
-							<li class="element on">@category</li>
-					}
-				</ul>
-			</CellDisplayTemplate>
-		</DxGridDataColumn>
+		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaCategories)" Caption="@("Categories")" Width="300" AllowSort="false"/>
 		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Justification)"  Width="250" Visible="false"/>
 		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.RequirementType)"  Width="250"/>
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.DerivesFrom)" AllowSort="false"  Width="250">
-			<CellDisplayTemplate>
-				<ul class="grid-list">
-					@foreach (var derivesFrom in (IEnumerable<string>)context.Value)
-					{
-						<li class="element on">@derivesFrom</li>
-					}
-				</ul>
-			</CellDisplayTemplate>
-		</DxGridDataColumn>
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.DerivesTo)" AllowSort="false"  Width="250">
-			<CellDisplayTemplate>
-				<ul class="grid-list">
-					@foreach (var derivesTo in (IEnumerable<string>)context.Value)
-					{
-						<li class="element on">@derivesTo</li>
-					}
-				</ul>
-			</CellDisplayTemplate>
-		</DxGridDataColumn>
-			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.SatisfyByFunction)" AllowSort="false" Width="250" Visible="false">
-			<CellDisplayTemplate>
-				<ul class="grid-list">
-					@foreach (var satisfyByFunction in (IEnumerable<string>)context.Value)
-					{
-						<li class="element on">@satisfyByFunction</li>
-					}
-				</ul>
-			</CellDisplayTemplate>
-		</DxGridDataColumn>
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.SatisfyByProduct)" AllowSort="false" Width="250" Visible="false">
-			<CellDisplayTemplate>
-				<ul class="grid-list">
-					@foreach (var satisfyByProduct in (IEnumerable<string>)context.Value)
-					{
-						<li class="element on">@satisfyByProduct</li>
-					}
-				</ul>
-			</CellDisplayTemplate>
-		</DxGridDataColumn>
+		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaDerivesFrom)" Caption="@("Derives From")" AllowSort="false" Width="250" />
+		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaDerivesTo)" Caption="@("Derives To")" AllowSort="false" Width="250" />
+		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaSatisfyByFunction)" Caption="@("Satisfy By Function")" AllowSort="false" Width="250" Visible="false"/>
+		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaSatisfyByProduct)" Caption="@("Satisfy By Product")" AllowSort="false" Width="250" Visible="false" />
 		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationMethod)"  Width="250" Visible="false"/>
 		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationStage)" Width="250" Visible="false" />
 	</Columns>
