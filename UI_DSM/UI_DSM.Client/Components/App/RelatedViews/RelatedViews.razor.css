@@ -1,7 +1,17 @@
-﻿p {
-    color: blue;
+﻿.related-views {
+    display: grid;
+    gap: var(--spacing-1);
+    padding: var(--spacing-3) 0;
 }
 
-p.bold {
-    font-weight: bold;
+.related-views__button {
+    text-align: left;
+    padding: var(--spacing-1) var(--spacing-4);
+    color: var(--colors-primary-500);
+
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: var(--spacing-1);
+    font-size: var(--text-sm);
+    font-weight: 500;
 }

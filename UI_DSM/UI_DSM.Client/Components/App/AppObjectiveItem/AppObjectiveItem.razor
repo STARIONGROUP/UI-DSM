@@ -15,15 +15,21 @@
 <NavLink href="@Link">
   <article class="app-objective-item">
     <h2 class="h4">@Title</h2>
+    <span>@Description</span>
   </article>
 </NavLink>
 
 
 @code {
   /// <summary>
-  /// Project title
+  /// Title label
   /// </summary>
   [Parameter] public string Title { get; set; }
+
+  /// <summary>
+  /// Description label
+  /// </summary>
+  [Parameter] public string Description { get; set; }
 
   /// <summary>
   /// Objective link
