@@ -15,3 +15,7 @@
     font-size: var(--text-sm);
     font-weight: 500;
 }
+
+.related-views__button--primary {
+    font-weight: 700;
+}

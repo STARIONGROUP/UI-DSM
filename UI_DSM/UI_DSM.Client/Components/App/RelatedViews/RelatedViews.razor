@@ -16,7 +16,7 @@
 	<div class="related-views">
 		@if (this.MainRelatedView != View.None)
 		{
-			<button class="related-views__button" @onclick="() => this.OnClick(this.MainRelatedView)">
+			<button class="related-views__button related-views__button--primary" @onclick="() => this.OnClick(this.MainRelatedView)">
 				<FeatherLink Size="20" Color="currentColor" StrokeWidth="2" />
 				<span>
 						@this.MainRelatedView.GetEnumDisplayName()
