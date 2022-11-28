@@ -12,11 +12,71 @@
 @using Blazor.Diagrams.Components;
 @using Blazor.Diagrams.Core
 @using Blazor.Diagrams.Core.Models
+@using UI_DSM.Client.Extensions
 @using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+@using UI_DSM.Client.Enumerator;
 @inherits GenericBaseView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IInterfaceViewViewModel>
 
 <CascadingValue Value="this.Diagram">
     <div id="diagram-parent">
         <DiagramCanvas></DiagramCanvas>     
+        
+        <div id="legend-parent">
+            <h4 id="legend-title">Legend</h4>
+            <DxTabs Id="legend">
+                <DxTabPage Text="Products">
+                    <div class="node-legend-row">
+                        <div class="physical-node selected-node"></div>
+                        <p>Selected Node</p>
+                    </div>
+                    <div class="node-legend-row">
+                        <div class="physical-node central-node"></div>
+                        <p>Center Node</p>
+                    </div>
+                    <div class="node-legend-row">
+                        <div class="physical-node">
+                            <div id="commented-node"></div>
+                        </div>
+                        <p>Node with comment</p>
+                    </div>
+                </DxTabPage>
+                <DxTabPage Text="Ports">
+                    <div class="port-legend-row">
+                        <div class="physical-port">
+                            <div class="port-color" style="background:var(--port-in-color)"></div>
+                        </div>
+                        <p>In</p>
+                    </div>
+                    <div class="port-legend-row">
+                        <div class="physical-port">
+                            <div class="port-color" style="background:var(--port-out-color)"></div>
+                        </div>
+                        <p>Out</p>
+                    </div>
+                    <div class="port-legend-row">
+                        <div class="physical-port">
+                            <div class="port-color" style="background:var(--port-inout-color)"></div>
+                        </div>
+                        <p>InOut</p>
+                    </div>
+                    <div class="port-legend-row">
+                        <div class="physical-port commented-port"></div>
+                        <p>Port with comment</p>
+                    </div>
+                </DxTabPage>
+                <DxTabPage Text="Interfaces">
+                    @{                            
+                        var enumValues = Enum.GetValues(typeof(InterfaceCategory)).Cast<InterfaceCategory>().ToList();
+                        @foreach (var enumValue in enumValues)
+                        {
+                            <div class="interface-legend-row" @key=enumValue>
+                                <div class="interface-color-block" style="background:@enumValue.ToColorString()"></div>
+                                <p>@enumValue.ToName()</p>
+                            </div>
+                        }
+                    }
+                </DxTabPage>
+            </DxTabs>
+        </div>
     </div>
 </CascadingValue>

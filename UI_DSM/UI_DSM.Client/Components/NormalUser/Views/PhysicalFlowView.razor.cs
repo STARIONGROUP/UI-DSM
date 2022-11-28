@@ -24,6 +24,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using UI_DSM.Client.Components.Widgets;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
 
     /// <summary>
@@ -36,6 +37,8 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// </summary>
         public Diagram Diagram { get; set; }
 
+
+
         /// <summary>
         /// Method invoked when the component is ready to start, having received its
         /// initial parameters from its parent in the render tree.
@@ -44,6 +47,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             base.OnInitialized();
 
+            this.ViewModel.ShouldUpdateDiagram = true;
             this.Diagram = new Diagram();
             this.Diagram.Options.AllowMultiSelection = false;
             this.Diagram.Options.DefaultNodeComponent = typeof(DiagramNodeWidget);
@@ -88,7 +92,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <returns>Value indicating if it could copy components</returns>
         public async Task<bool> CopyComponents(BaseView otherView)
         {
-            this.ViewModel.OnCentralNodeChanged -= this.OnCentralNodeChanged;
+            this.ViewModel.OnCentralNodeChanged -= this.RefreshDiagram;
             if (otherView is not GenericBaseView<IInterfaceViewViewModel> interfaceView)
             {
                 return false;
@@ -97,30 +101,39 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.ViewModel = interfaceView.ViewModel;
             await this.HasChanged();
 
-            var firstCenterProduct = this.ViewModel.SelectedFirstProductByCloserSelectedItem(this.ViewModel.SelectedElement);
-            this.ViewModel.CreateCentralNodeAndNeighbours(firstCenterProduct);
-            this.OnCentralNodeChanged();
+            this.ViewModel.InitializeDiagram();
+            this.RefreshDiagram();
 
-            this.ViewModel.OnCentralNodeChanged += this.OnCentralNodeChanged;
+            this.ViewModel.OnCentralNodeChanged += this.RefreshDiagram;
 
             return true;
         }
 
         public override Task HasChanged()
         {
-            this.OnCentralNodeChanged();
+            if (this.ViewModel.ShouldUpdateDiagram)
+            {                
+                var nodesWithComments = this.ViewModel.Things.OfType<ProductRowViewModel>().Where(x => x.HasComment()).ToList();
+                //this.ViewModel.UpdateNodesData();
+                //this.RefreshDiagram();
+                //this.ViewModel.ShouldUpdateDiagram = false;
+                this.ViewModel.InitializeDiagram();
+                this.RefreshDiagram();
+            }
+
             return base.HasChanged();
         }
 
         /// <summary>
         /// Method that handles the on central node changed event.
         /// </summary>
-        public void OnCentralNodeChanged()
+        public void RefreshDiagram()
         {
             this.Diagram.Links.Clear();
             this.Diagram.Nodes.Clear();
             this.ViewModel.ProductNodes.ForEach(node => this.Diagram.Nodes.Add(node));
             this.ViewModel.LinkNodes.ForEach(link => this.Diagram.Links.Add(link));
+            this.Diagram.Refresh();
             this.StateHasChanged();
         }
 
@@ -131,7 +144,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             this.Diagram.MouseUp -= this.Diagram_MouseUp;
             this.Diagram.MouseDoubleClick -= this.Diagram_MouseDoubleClick;
-            this.ViewModel.OnCentralNodeChanged -= this.OnCentralNodeChanged;
+            this.ViewModel.OnCentralNodeChanged -= this.RefreshDiagram;
         }
     }
 }

@@ -323,13 +323,13 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             var product2 = this.renderer.Instance.ViewModel.Products[1];
 
             this.viewModel.CreateCentralNodeAndNeighbours(product1);
-            await this.renderer.InvokeAsync(() => this.renderer.Instance.OnCentralNodeChanged());
+            await this.renderer.InvokeAsync(() => this.renderer.Instance.RefreshDiagram());
 
             var nodes = new List<NodeModel>(diagram.Nodes.ToList());
             var links = new List<BaseLinkModel>(diagram.Links.ToList());
 
             this.viewModel.CreateCentralNodeAndNeighbours(product2);
-            await this.renderer.InvokeAsync(() => this.renderer.Instance.OnCentralNodeChanged());
+            await this.renderer.InvokeAsync(() => this.renderer.Instance.RefreshDiagram());
 
             Assert.That(nodes, Is.Not.EqualTo(diagram.Nodes));
             Assert.That(links, Is.Not.EqualTo(diagram.Links));

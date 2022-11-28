@@ -11,11 +11,11 @@
     }
 
     .custom-node.selected {
-        box-shadow: 0 0 0 0.5px #1155FF;
+        box-shadow: 0 0 0 0.5px var(--selected-node-color);
     }
 
     .custom-node.central-node {
-        box-shadow: 0 0 0 3px #008bd2;
+        box-shadow: 0 0 0 3px var(--central-node-color);
     }
 
 ::deep .custom-port {
@@ -39,45 +39,37 @@
     ::deep .custom-port .In {
         width: 8px;
         height: 8px;
-        background: #44CC55;
+        background: var(--port-in-color);
         border-radius: 50%;
     }
 
     ::deep .custom-port .Out {
         width: 8px;
         height: 8px;
-        background: #FF3355;
+        background: var(--port-out-color);
         border-radius: 50%;
     }
 
     ::deep .custom-port .InOut {
         width: 8px;
         height: 8px;
-        background: #4499FF;
+        background: var(--port-inout-color);
         border-radius: 50%;
-    }
-
-    ::deep .port-text {
-        display: none;
-    }
-
-    ::deep .port-text.over{
-        display : inline-block;
     }
 
 .node-comment {
     width: 8px;
     height: 8px;
-    background-color: green;
+    background-color: var(--comment-color);
     position: absolute;
     border-radius: 50%;
     right: 5px;
     bottom: 5px;
-    box-shadow: 0 0 0 2px green;
+    box-shadow: 0 0 0 2px var(--comment-color);
 }
 
 ::deep .port-comment {
-    box-shadow: 0 0 0 2px green !important;
+    box-shadow: 0 0 0 2px var(--comment-color) !important;
 }
 
 

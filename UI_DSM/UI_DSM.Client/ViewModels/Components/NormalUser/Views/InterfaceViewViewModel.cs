@@ -154,6 +154,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public Action OnCentralNodeChanged { get; set; }
 
         /// <summary>
+        /// Indicates if the diagram should be updated or not
+        /// </summary>
+        public bool ShouldUpdateDiagram { get; set; }
+
+        /// <summary>
+        /// Gets the central node of the <see cref="IInterfaceViewViewModel"/>
+        /// </summary>
+        public NodeModel CentralNode { get; private set; }
+
+        /// <summary>
         ///     Filters current rows
         /// </summary>
         /// <param name="selectedFilters">The selected filters</param>
@@ -231,8 +241,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.ApplyVisibility();
             this.InitializesFilter();
 
-            var firstCenterProduct = this.SelectedFirstProductByCloserSelectedItem(this.SelectedElement);
-            this.CreateCentralNodeAndNeighbours(firstCenterProduct);
+            this.InitializeDiagram();
         }
 
         /// <summary>
@@ -385,11 +394,20 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
+        /// Initializes the diagram with the selected element as a center node.
+        /// </summary>
+        public void InitializeDiagram()
+        {
+            var firstCenterProduct = this.SelectedFirstProductByCloserSelectedItem(this.SelectedElement);
+            this.CreateCentralNodeAndNeighbours(firstCenterProduct);
+        }
+
+        /// <summary>
         /// Selects the first central product depending on the selected element.
         /// </summary>
         /// <param name="selectedElement">the selected element</param>
         /// <returns>the selected <see cref="ProductRowViewModel"/></returns>
-        /// <exception cref="ArgumentException">if the selected element is not null and is not of type <see cref="ElementBaseRowViewModel"/></exception>
+        /// <exception cref="ArgumentException">if the selected element is not null and is not of correct type</exception>
         public ProductRowViewModel SelectedFirstProductByCloserSelectedItem(object selectedElement)
         {
             if (selectedElement is ProductRowViewModel productRowViewModel)
@@ -500,6 +518,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         {
             if (this.ProductsMap.ContainsKey(nodeModel.Id))
             {
+                this.CentralNode = nodeModel;
+                this.ShouldUpdateDiagram = true;
                 var asociatedProduct = this.ProductsMap[nodeModel.Id];
                 this.CreateCentralNodeAndNeighbours(asociatedProduct);
                 Task.Run(() => this.OnCentralNodeChanged?.Invoke());
@@ -620,6 +640,38 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
                     this.LinkNodes.Add(link);
                     this.InterfacesMap.Add(link.Id, interf);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Upgrades the nodes with the actual data
+        /// </summary>
+        public async void UpdateNodesData()
+        {
+            await this.InitializeProperties(this.Things, this.ProjectId, this.ReviewId);
+
+            foreach(var node in this.ProductNodes.OfType<DiagramNode>())
+            {
+                if(this.ProductsMap.TryGetValue(node.Id, out var product))
+                {
+                    node.HasComments = product.HasComment();
+                }
+            }
+
+            foreach (var portNode in this.PortNodes.OfType<DiagramPort>())
+            {
+                if (this.PortsMap.TryGetValue(portNode.Id, out var port))
+                {
+                    portNode.HasComments = port.HasComment();
+                }
+            }
+
+            foreach (var linkNode in this.LinkNodes.OfType<DiagramLink>())
+            {
+                if (this.InterfacesMap.TryGetValue(linkNode.Id, out var link))
+                {
+                    linkNode.HasComments = link.HasComment();
                 }
             }
         }

@@ -2,5 +2,116 @@
     position:relative;
     width: 100%;
     min-height: 1000px;
-    height: 1000px;
+    height: 1050px;
+}
+
+#legend-parent {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    background: whitesmoke;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 1%;
+    box-shadow: 0 0 2px #666;
+    border-radius: 7px;
+    min-height: 410px;
+}
+
+#legend-title{
+    align-self:center;
+    margin-bottom:2%;
+}
+
+.interface-legend-row{
+    display : flex;
+    flex-direction: row;
+    justify-content : stretch;
+    align-items:flex-start;
+    margin: 2%;
+}
+
+    .interface-legend-row p {
+        margin: 0;
+        margin-left: 5px;
+        white-space: nowrap;
+    }
+
+.interface-legend-row .interface-color-block{
+    width: 40px;
+    height: 26px;
+}
+
+.port-legend-row{
+    width: 100%;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+}
+
+    .port-legend-row p {
+        margin: 0;
+        margin-left: 5px;
+    }
+
+.physical-port {
+    display: flex;
+    width: 14px;
+    height: 14px;
+    background: lightgray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius:50%;
+}
+
+.port-color {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.commented-port {
+    display: flex;
+    box-shadow: 0 0 0 2px var(--comment-color) !important;
+}
+
+.node-legend-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+    .node-legend-row p {
+        margin: 0;
+        margin-left: 5px;
+    }
+
+.physical-node {
+    width: 14px;
+    height: 14px;
+    background: lightgray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 1px #444;
+}
+
+.central-node {
+    box-shadow: 0 0 0 2px var(--central-node-color);
+}
+
+.selected-node {
+    box-shadow: 0 0 0 0.5px var(--central-node-color);
+}
+
+#commented-node {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--comment-color);
 }

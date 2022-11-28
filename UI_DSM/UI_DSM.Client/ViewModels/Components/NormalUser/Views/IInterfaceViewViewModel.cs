@@ -92,6 +92,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     The <see cref="IFilterViewModel" />
         /// </summary>
         IFilterViewModel FilterViewModel { get; }
+        
+        /// <summary>
+        /// Indicates if the diagram should be updated or not
+        /// </summary>
+        public bool ShouldUpdateDiagram { get; set; }
+
+        /// <summary>
+        /// Gets the central node of the <see cref="IInterfaceViewViewModel"/>
+        /// </summary>
+        public NodeModel CentralNode { get; }
 
         /// <summary>
         ///     Filters current rows
@@ -139,6 +149,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         void SetProductsVisibility(bool visibility);
 
         /// <summary>
+        /// Initializes the diagram with the selected element as a center node.
+        /// </summary>
+        void InitializeDiagram();
+
+        /// <summary>
         /// Selects the first central product depending on the selected element.
         /// </summary>
         /// <param name="selectedElement">the selected element</param>
@@ -183,6 +198,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         /// <param name="nodeModel">the new central node</param>
         void SetCentralNodeModel(NodeModel nodeModel);
+
+        /// <summary>
+        /// Upgrades the nodes with the actual data
+        /// </summary>
+        void UpdateNodesData();
 
         /// <summary>
         /// Event fired when the state of the component needs to change.
