@@ -15,9 +15,11 @@ namespace UI_DSM.Client.Tests.Helpers
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
+
     using Bunit;
+
     using DevExpress.Blazor.Internal;
-    using Microsoft.AspNetCore.Components.Rendering;
+
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -76,62 +78,84 @@ namespace UI_DSM.Client.Tests.Helpers
         }
     }
 
+    /// <summary>
+    /// Class for mocking the environment info factory of DevExpress
+    /// </summary>
     sealed class MockEnvironmentInfoFactory : IEnvironmentInfoFactory
     {
-        readonly IEnvironmentInfo _cached;
+        /// <summary>
+        /// Backing field for the <see cref="CreateEnvironmentInfo"/>
+        /// </summary>
+        readonly IEnvironmentInfo cached;
 
+        /// <summary>
+        /// Creates a new instance of type <see cref="MockEnvironmentInfoFactory"/>
+        /// </summary>
+        /// <param name="isWasm">if the app is a Blazor WASM application</param>
         public MockEnvironmentInfoFactory(bool isWasm = false)
         {
-            _cached = new MockEnvironmentInfo(isWasm);
+            this.cached = new MockEnvironmentInfo(isWasm);
         }
 
-        public IEnvironmentInfo CreateEnvironmentInfo() =>
-            _cached;
+        /// <summary>
+        /// Gets the environment info
+        /// </summary>
+        /// <returns>the environment info</returns>
+        public IEnvironmentInfo CreateEnvironmentInfo() => cached;
     }
 
+    /// <summary>
+    /// Class for mocking the environment of DevExpress
+    /// </summary>
     public class MockEnvironmentInfo : IEnvironmentInfo
     {
+        /// <summary>
+        /// Gets or sets if its a Blazor WASM application
+        /// </summary>
         public bool IsWasm { get; }
+
+        /// <summary>
+        /// Backing field for the method <see cref="GetDateTimeNow"/>
+        /// </summary>
         public static readonly DateTime DateTimeNow = DateTime.Now.Date;
 
-        public MockEnvironmentInfo(bool isWasm = false)
-        {
-            IsWasm = isWasm;
-        }
+        /// <summary>
+        /// Gets the current culture
+        /// </summary>
+        public CultureInfo CurrentCulture => CultureInfo.InvariantCulture;
 
-        public DateTime GetDateTimeNow()
-        {
-            return DateTimeNow;
-        }
-
+        /// <summary>
+        /// Gets the api scheme
+        /// </summary>
         Task<ApiScheme> IEnvironmentInfo.ApiScheme
         {
             get { return Task.FromResult(new ApiScheme(true)); }
         }
 
+        /// <summary>
+        /// Gets the device info
+        /// </summary>
         Task<DeviceInfo> IEnvironmentInfo.DeviceInfo
         {
             get { return Task.FromResult(new DeviceInfo(false)); }
         }
 
-        public CultureInfo CurrentCulture => CultureInfo.InvariantCulture;
-
-        public Task InitializeRuntime()
+        /// <summary>
+        /// Creates a new instance of type <see cref="MockEnvironmentInfo"/>
+        /// </summary>
+        /// <param name="isWasm">if the app is a Blazor WASM application</param>
+        public MockEnvironmentInfo(bool isWasm = false)
         {
-            return Task.CompletedTask;
+            IsWasm = isWasm;
         }
 
-        public void RenderScriptLoader(RenderTreeBuilder builder, Guid containerId)
+        /// <summary>
+        /// Gets the current date time
+        /// </summary>
+        /// <returns>the date time</returns>
+        public DateTime GetDateTimeNow()
         {
-
-        }
-
-        public string ResolveUrl(string url) { return url; }
-        public void OnMessage(int msg) { }
-
-        public ValueTask DisposeAsync()
-        {
-            return default;
+            return DateTimeNow;
         }
     }
 }

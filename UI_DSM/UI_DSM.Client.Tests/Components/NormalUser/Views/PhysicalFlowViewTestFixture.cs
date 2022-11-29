@@ -303,17 +303,17 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
             Assert.Multiple(() =>
             {
-                Assert.That(this.viewModel.LinkNodes.Count, Is.EqualTo(0));
-                Assert.That(this.viewModel.InterfacesMap.Count, Is.EqualTo(0));
+                Assert.That(this.viewModel.LinkNodes, Has.Count.EqualTo(0));
+                Assert.That(this.viewModel.InterfacesMap, Has.Count.EqualTo(0));
             });
 
             this.viewModel.CreateInterfacesLinks();
 
             Assert.Multiple(() =>
             {
-                Assert.That(this.viewModel.Interfaces.Count, Is.GreaterThan(0));
-                Assert.That(this.viewModel.LinkNodes.Count, Is.GreaterThan(0));
-                Assert.That(this.viewModel.InterfacesMap.Count, Is.GreaterThan(0));
+                Assert.That(this.viewModel.Interfaces, Has.Count.GreaterThan(0));
+                Assert.That(this.viewModel.LinkNodes, Has.Count.GreaterThan(0));
+                Assert.That(this.viewModel.InterfacesMap, Has.Count.GreaterThan(0));
             });
         }
 
