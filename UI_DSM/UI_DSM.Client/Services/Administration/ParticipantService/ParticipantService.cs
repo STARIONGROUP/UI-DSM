@@ -175,7 +175,7 @@ namespace UI_DSM.Client.Services.Administration.ParticipantService
 
                 if (!getResponse.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException(await getResponse.Content.ReadAsStringAsync());
+                    return null;
                 }
 
                 var dtos = this.jsonService.Deserialize<IEnumerable<EntityDto>>(await getResponse.Content.ReadAsStreamAsync());

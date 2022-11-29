@@ -257,7 +257,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 });
 
                 this.viewModel.OptionChooserViewModel.IsVisible = true;
-                this.viewModel.OptionChooserViewModel.SelectedOption = this.viewModel.OptionChooserViewModel.AvailableOptions.Last();
+                this.viewModel.OptionChooserViewModel.SelectedOption = this.viewModel.OptionChooserViewModel.AvailableOptions.First(x => x.Iid == option1.Iid);
                 
                 Assert.Multiple(() =>
                 {

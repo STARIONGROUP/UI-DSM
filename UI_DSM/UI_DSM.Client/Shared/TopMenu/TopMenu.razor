@@ -10,79 +10,82 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
-@namespace AppComponents
-
 <nav class="top-menu">
-  <div class="top-menu__left">
-    <div class="top-menu__icon-group">
-      <NavLink href="/">
-        <FeatherHome Size="28" Color="currentColor" StrokeWidth="1.5f"  aria-label="home button"/>
-      </NavLink>
-    </div>
+	<div class="top-menu__left">
+		<div class="top-menu__icon-group">
+			<NavLink href="/">
+				<FeatherHome Size="28" Color="currentColor" StrokeWidth="1.5f" aria-label="home button"/>
+			</NavLink>
+		</div>
 
 
-    <div class="top-menu__icon-group">
-      <button aria-label="Previous page" onclick="history.back()">
-        <FeatherArrowLeft Size="28" Color="currentColor" StrokeWidth="1.5f"  />
-      </button>
+		<div class="top-menu__icon-group">
+			<button aria-label="Previous page" onclick="history.back()">
+				<FeatherArrowLeft Size="28" Color="currentColor" StrokeWidth="1.5f"/>
+			</button>
 
-      <button aria-label="Previous page" onclick="history.forward()">
-        <FeatherArrowRight Size="28" Color="currentColor" StrokeWidth="1.5f" />
-      </button>
-    </div>
-  </div>
+			<button aria-label="Previous page" onclick="history.forward()">
+				<FeatherArrowRight Size="28" Color="currentColor" StrokeWidth="1.5f"/>
+			</button>
+		</div>
+	</div>
 
-  <SearchBar />
+	<SearchBar/>
 
-  <div class="top-menu__right">
-    <div class="top-menu__icon-group">
-      <div id="user-icon-button">
-        <button @onclick="() => IsUserMenuOpen = !IsUserMenuOpen">
-          <UserAvatar UserInitials="MJ" />
-        </button>
-        
-        <DxDropDown
-          @bind-IsOpen="@IsUserMenuOpen"
-          PositionMode="DropDownPositionMode.Bottom"
-          PositionTarget="#user-icon-button"
-          CloseMode="DropDownCloseMode.Close"
-          PreventCloseOnPositionTargetClick="true"
-          BodyCssClass="account-dropdown"
-        >
-          <ul>
-            <AuthorizeView Roles="Administrator">
-              <Authorized>
-                <li>
-                  <NavLink href="/Administration/UserManagement" Match="NavLinkMatch.All" @onclick="() => IsUserMenuOpen = !IsUserMenuOpen">
-                    <FeatherUserPlus Size="24" Color="currentColor" StrokeWidth="1.5f"  /> Users
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink class="account-dropdown__link" href="/Administration/ProjectManagement" @onclick="() => IsUserMenuOpen = !IsUserMenuOpen">
-                    <FeatherToggleLeft Size="24" Color="currentColor" StrokeWidth="1.5f"  /> Project Management
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink href="/Administration/RoleManagement" Match="NavLinkMatch.All" @onclick="() => IsUserMenuOpen = !IsUserMenuOpen">
-                    <FeatherUsers Size="24" Color="currentColor" StrokeWidth="1.5f"  /> Roles
-                  </NavLink>
-                </li>
-              </Authorized>
-            </AuthorizeView>
-            <li>
-              <Logout/>
-            </li>
-          </ul>
+	<div class="top-menu__right">
+		<div class="top-menu__icon-group">
+			<div id="user-icon-button">
+				@if (this.ViewModel.UserName != null)
+				{
+					<button @onclick="() => this.IsUserMenuOpen = !this.IsUserMenuOpen">
+						<UserAvatar UserInitials="@this.ViewModel.UserName[0].ToString()"/>
+					</button>
+				}
 
-        </DxDropDown>
-      </div>
-    </div>
-  </div>
+				<DxDropDown
+					@bind-IsOpen="@(this.IsUserMenuOpen)"
+					PositionMode="DropDownPositionMode.Bottom"
+					PositionTarget="#user-icon-button"
+					CloseMode="DropDownCloseMode.Close"
+					PreventCloseOnPositionTargetClick="true"
+					BodyCssClass="account-dropdown">
+					<ul>
+						<AuthorizeView Roles="Administrator">
+							<Authorized>
+								<li>
+									<NavLink href="/Administration/UserManagement" Match="NavLinkMatch.All" @onclick="() => this.IsUserMenuOpen = !this.IsUserMenuOpen">
+										<FeatherUserPlus Size="24" Color="currentColor" StrokeWidth="1.5f"/> Users
+									</NavLink>
+								</li>
+								<li>
+									<NavLink class="account-dropdown__link" href="/Administration/ProjectManagement" @onclick="() => this.IsUserMenuOpen = !this.IsUserMenuOpen">
+										<FeatherToggleLeft Size="24" Color="currentColor" StrokeWidth="1.5f"/> Project Management
+									</NavLink>
+								</li>
+								<li>
+									<NavLink href="/Administration/RoleManagement" Match="NavLinkMatch.All" @onclick="() => this.IsUserMenuOpen = !this.IsUserMenuOpen">
+										<FeatherUsers Size="24" Color="currentColor" StrokeWidth="1.5f"/> Roles
+									</NavLink>
+								</li>
+							</Authorized>
+							<NotAuthorized>
+								@if (this.ViewModel.HasAccessToProjectManagement())
+								{
+									<li>
+										<NavLink class="account-dropdown__link" href="/Administration/ProjectManagement" @onclick="() => this.IsUserMenuOpen = !this.IsUserMenuOpen">
+											<FeatherToggleLeft Size="24" Color="currentColor" StrokeWidth="1.5f"/> Project Management
+										</NavLink>
+									</li>
+								}
+							</NotAuthorized>
+						</AuthorizeView>
+
+						<li>
+							<Logout/>
+						</li>
+					</ul>
+				</DxDropDown>
+			</div>
+		</div>
+	</div>
 </nav>
-
-@code {
-  /// <summary>
-  ///     Bool to keep track of the open state of the user dropdown menu
-  /// </summary>
-  bool IsUserMenuOpen { get; set; } = false;
-}

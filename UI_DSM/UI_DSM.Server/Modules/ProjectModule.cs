@@ -21,9 +21,11 @@ namespace UI_DSM.Server.Modules
     using Microsoft.AspNetCore.Mvc;
 
     using UI_DSM.Server.Managers;
+    using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ProjectManager;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
@@ -75,10 +77,36 @@ namespace UI_DSM.Server.Modules
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
-        [Authorize(Roles = "Administrator")]
-        public override Task GetEntities(IEntityManager<Project> manager, HttpContext context, [FromQuery] int deepLevel = 0)
+        [Authorize]
+        public override async Task GetEntities(IEntityManager<Project> manager, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.GetEntities(manager, context, deepLevel);
+            if (context.User.IsInRole("Administrator"))
+            {
+                await base.GetEntities(manager, context, deepLevel);
+            }
+            else
+            {
+                var participantManager = context.RequestServices.GetService<IParticipantManager>();
+
+                if (participantManager == null)
+                {
+                    context.Response.StatusCode = 500;
+                    return;
+                }
+
+                var userName = context.User.Identity?.Name;
+                var participants = await participantManager.GetParticipants(userName);
+
+                if (participants.All(x => !x.IsAllowedTo(AccessRight.ProjectManagement)))
+                {
+                    context.Response.StatusCode = 403;
+                    return;
+                }
+
+                var projects = await ((IProjectManager)manager).GetProjectsForManagement(userName);
+                var dtos = projects.ToDtos();
+                await context.Response.Negotiate(dtos);
+            }
         }
 
         /// <summary>

@@ -13,8 +13,6 @@
 
 namespace UI_DSM.Client.ViewModels.Pages.Administration
 {
-    using DevExpress.Blazor;
-
     using DynamicData;
 
     using Microsoft.AspNetCore.Components;
@@ -24,8 +22,10 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
     using UI_DSM.Client.Components.Administration.ProjectManagement;
     using UI_DSM.Client.Pages.Administration;
     using UI_DSM.Client.Services.Administration.ProjectService;
+    using UI_DSM.Client.Services.Administration.UserService;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -39,6 +39,11 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         private readonly IProjectService projectService;
 
         /// <summary>
+        ///     The <see cref="IUserService" />
+        /// </summary>
+        private readonly IUserService userService;
+
+        /// <summary>
         ///     Backing field for <see cref="IsOnCreationMode" />
         /// </summary>
         private bool isOnCreationMode;
@@ -48,16 +53,23 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         /// </summary>
         /// <param name="projectService">The <see cref="IProjectService" /></param>
         /// <param name="navigationManager">The <see cref="NavigationManager" /></param>
-        public ProjectManagementViewModel(IProjectService projectService, NavigationManager navigationManager)
+        /// <param name="userService">The <see cref="IUserService" /></param>
+        public ProjectManagementViewModel(IProjectService projectService, NavigationManager navigationManager, IUserService userService)
         {
             this.NavigationManager = navigationManager;
             this.projectService = projectService;
+            this.userService = userService;
 
             this.ProjectCreationViewModel = new ProjectCreationViewModel
             {
                 OnValidSubmit = new EventCallbackFactory().Create(this, this.CreateProject)
             };
         }
+
+        /// <summary>
+        ///     Indicates if the current user is allowed to manage project even if he is not the site admin
+        /// </summary>
+        public bool IsAuthorized { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="NavigationManager" />
@@ -70,7 +82,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         public SourceList<Project> Projects { get; private set; } = new();
 
         /// <summary>
-        ///     Value indicating the user is currently creating a new <see cref="Project"/>
+        ///     Value indicating the user is currently creating a new <see cref="Project" />
         /// </summary>
         public bool IsOnCreationMode
         {
@@ -97,6 +109,8 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
         public async Task OnInitializedAsync()
         {
+            var participants = await this.userService.GetParticipantsForUser();
+            this.IsAuthorized = participants.Any(x => x.IsAllowedTo(AccessRight.ProjectManagement));
             this.Projects.AddRange(await this.projectService.GetProjects());
         }
 

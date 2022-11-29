@@ -5,12 +5,6 @@
     <AssemblyVersion>1.0.0</AssemblyVersion>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Components\App\LoadingComponent\LoadingComponent.razor.css" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Components\App\LoadingComponent\LoadingComponent.razor.css" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Blazored.SessionStorage" Version="2.2.0" />
     <PackageReference Include="CDP4JsonFileDal-CE" Version="8.3.0" />
     <PackageReference Include="CDP4JsonSerializer-CE" Version="8.3.0" />

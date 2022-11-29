@@ -94,7 +94,7 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
-        [Authorize(Roles = "Administrator")]
+        [Authorize]
         public async Task UploadAnnexC3(HttpContext context)
         {
             var response = new CometAuthenticationResponse();
@@ -159,7 +159,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="sessionId">The <see cref="Guid" /> of the <see cref="CDP4Dal.ISession" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
-        [Authorize(Roles = "Administrator")]
+        [Authorize]
         public async Task Logout(Guid sessionId, HttpContext context)
         {
             var response = new RequestResponseDto();
@@ -185,7 +185,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="sessionId">The <see cref="Guid" /> of the <see cref="CDP4Dal.ISession" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
-        [Authorize(Roles = "Administrator")]
+        [Authorize]
         public async Task GetAvailableEngineeringModels(Guid sessionId, HttpContext context)
         {
             var response = new ModelsDataResponse();
@@ -228,7 +228,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="uploadData">The <see cref="CometAuthenticationData" /> to use to establish the connection</param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
-        [Authorize(Roles = "Administrator")]
+        [Authorize]
         public async Task Login([FromBody] CometAuthenticationData uploadData, HttpContext context)
         {
             var cometResponse = new CometAuthenticationResponse();
@@ -270,7 +270,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="modelUpload">The <see cref="ModelUploadData" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
-        [Authorize(Roles = "Administrator")]
+        [Authorize]
         public async Task UploadIteration(Guid sessionId, [FromBody] ModelUploadData modelUpload, HttpContext context)
         {
             var response = new ModelUploadResponse();

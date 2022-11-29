@@ -21,7 +21,9 @@ namespace UI_DSM.Server.Tests.Modules
 
     using NUnit.Framework;
 
+    using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Server.Managers;
+    using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ProjectManager;
     using UI_DSM.Server.Modules;
     using UI_DSM.Server.Tests.Helpers;
@@ -29,6 +31,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Server.Validator;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     [TestFixture]
@@ -39,6 +42,8 @@ namespace UI_DSM.Server.Tests.Modules
         private List<Project> projects;
         private Mock<HttpContext> httpContext;
         private Mock<HttpResponse> httpResponse;
+        private Mock<IServiceProvider> provider;
+        private Mock<IParticipantManager> participantManager;
 
         [SetUp]
         public void Setup()
@@ -51,10 +56,12 @@ namespace UI_DSM.Server.Tests.Modules
                 }
             };
 
+            this.participantManager = new Mock<IParticipantManager>();
             this.projectManager = new Mock<IEntityManager<Project>>();
+            this.projectManager.As<IProjectManager>();
             this.projectManager.Setup(x => x.GetEntities(0)).ReturnsAsync(this.projects);
 
-             ModuleTestHelper.Setup<ProjectModule, ProjectDto>(new ProjectDtoValidator(), out this.httpContext, out this.httpResponse, out _, out _);
+             ModuleTestHelper.Setup<ProjectModule, ProjectDto>(new ProjectDtoValidator(), out this.httpContext, out this.httpResponse, out _, out this.provider);
              this.module = new ProjectModule();
 
              this.httpContext.Setup(x => x.User).Returns(new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>()
@@ -68,6 +75,30 @@ namespace UI_DSM.Server.Tests.Modules
         [Test]
         public async Task VerifyGetProjects()
         {
+            await this.module.GetEntities(this.projectManager.Object, this.httpContext.Object);
+            this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
+
+            this.provider.Setup(x => x.GetService(typeof(IParticipantManager))).Returns(this.participantManager.Object);
+
+            this.participantManager.Setup(x => x.GetParticipants(It.IsAny<string>()))
+                .ReturnsAsync(new List<Participant>());
+
+            await this.module.GetEntities(this.projectManager.Object, this.httpContext.Object);
+            this.httpResponse.VerifySet(x => x.StatusCode = 403, Times.Once);
+
+            this.participantManager.Setup(x => x.GetParticipants(It.IsAny<string>()))
+                .ReturnsAsync(new List<Participant>(){new (Guid.NewGuid()){Role = new Role(Guid.NewGuid()){AccessRights = { AccessRight.ProjectManagement }}}});
+
+            this.projectManager.As<IProjectManager>().Setup(x => x.GetProjectsForManagement(It.IsAny<string>())).ReturnsAsync(new List<Project>());
+            await this.module.GetEntities(this.projectManager.Object, this.httpContext.Object);
+            this.projectManager.As<IProjectManager>().Verify(x => x.GetProjectsForManagement(It.IsAny<string>()), Times.Once);
+            
+            this.httpContext.Setup(x => x.User).Returns(new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>()
+            {
+                new (ClaimTypes.Name, "user"),
+                new (ClaimTypes.Role, "Administrator")
+            })));
+
             await this.module.GetEntities(this.projectManager.Object, this.httpContext.Object);
             this.projectManager.Verify(x => x.GetEntities(0), Times.Once);
 

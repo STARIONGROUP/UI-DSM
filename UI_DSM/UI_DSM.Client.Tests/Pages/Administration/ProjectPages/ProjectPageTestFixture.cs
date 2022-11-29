@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
 {
     using Bunit;
+    using Bunit.TestDoubles;
 
     using Microsoft.Extensions.DependencyInjection;
 
@@ -30,6 +31,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components.Administration.ModelManagement;
     using UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
     using UI_DSM.Shared.Types;
 
@@ -60,6 +62,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
             this.viewModel = new ProjectPageViewModel(this.projectService.Object, this.participantService.Object, this.roleService.Object, 
                 this.cometConnexionViewModel.Object, this.artifactService.Object);
 
+            this.context.AddTestAuthorization();
             this.context.Services.AddSingleton(this.viewModel);
         }
 
@@ -85,6 +88,14 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
             };
 
             this.projectService.Setup(x => x.GetProject(projectGuid, 1)).ReturnsAsync(project);
+
+            this.participantService.Setup(x => x.GetCurrentParticipant(projectGuid)).ReturnsAsync(new Participant()
+            {
+                Role = new Role(Guid.NewGuid())
+                {
+                    AccessRights = { AccessRight.ProjectManagement }
+                }
+            });
 
             await this.viewModel.OnInitializedAsync(projectGuid);
             renderer.Render();

@@ -16,6 +16,7 @@ namespace UI_DSM.Client.Services.Administration.UserService
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     Interface definition for <see cref="UserService" />
@@ -41,5 +42,11 @@ namespace UI_DSM.Client.Services.Administration.UserService
         /// <param name="userEntityToDelete">The user to delete</param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /></returns>
         Task<RequestResponseDto> DeleteUser(UserEntityDto userEntityToDelete);
+
+        /// <summary>
+        ///     Gets all participants linked to the current user
+        /// </summary>
+        /// <returns>A collection of <see cref="Participant" /></returns>
+        Task<List<Participant>> GetParticipantsForUser();
     }
 }

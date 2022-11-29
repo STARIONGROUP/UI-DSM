@@ -9,6 +9,7 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.Enumerator
 
 <EditForm Context="editFormContext" Model="@this.ViewModel.Review" OnValidSubmit="@this.ViewModel.OnValidSubmit">
 	<DataAnnotationsValidator />
@@ -30,6 +31,6 @@
 	<ValidationSummary/>
 	<ErrorMessage />
 	<div class="modal-footer m-top-10px">
-		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Create" SubmitFormOnClick="true"/>
+		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Create" SubmitFormOnClick="true" Enabled="this.ViewModel.CreationStatus != CreationStatus.Creating"/>
 	</div>
 </EditForm>

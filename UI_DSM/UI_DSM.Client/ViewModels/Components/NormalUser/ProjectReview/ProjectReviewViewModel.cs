@@ -20,6 +20,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
     using ReactiveUI;
 
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
+    using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
@@ -131,6 +132,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         {
             try
             {
+                this.ReviewCreationViewModel.CreationStatus = CreationStatus.Creating;
                 this.ReviewCreationViewModel.Review.Artifacts.Add(this.ReviewCreationViewModel.SelectedModels);
 
                 var creationResult = await this.reviewService.CreateReview(this.project.Id, this.ReviewCreationViewModel.Review);
@@ -139,12 +141,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
                 if (creationResult.Errors.Any())
                 {
                     this.ErrorMessageViewModel.Errors.AddRange(creationResult.Errors);
+                    this.ReviewCreationViewModel.CreationStatus = CreationStatus.Fail;
                 }
 
                 if (creationResult.IsRequestSuccessful)
                 {
                     this.CommentsAndTasks[creationResult.Entity.Id] = new ComputedProjectProperties();
                     this.Project.Reviews.Add(creationResult.Entity);
+                    this.ReviewCreationViewModel.CreationStatus = CreationStatus.Done;
                 }
 
                 this.IsOnCreationMode = !creationResult.IsRequestSuccessful;

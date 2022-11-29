@@ -11,31 +11,47 @@
 -------------------------------------------------------------------------------------------------------->
 @page "/Administration/Project/{ProjectId}"
 @layout DefaultLayout
-@attribute [Authorize(Roles = "Administrator")]
-
-<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.ViewModel.ProjectDetailsViewModel.Project is null">
-
-	<div>
-		<AppButton Click="@this.ViewModel.OpenCreateParticipantPopup" Type="button">
-			<FeatherUserPlus Size="20" Color="currentColor" StrokeWidth="2"  /> <span>Add participant</span>
-		</AppButton>
-		<DxPopup CloseOnOutsideClick="false" HeaderText="Create Participant" @bind-Visible="@this.ViewModel.IsOnCreationMode">
-			<Content>
-				<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
-					<ParticipantCreation ViewModel="@this.ViewModel.ParticipantCreationViewModel"/>
-				</CascadingValue>
-			</Content>
-		</DxPopup>
-	</div>
-	<ProjectDetails ViewModel="@this.ViewModel.ProjectDetailsViewModel"/>
-	<div>
-		<AppButton Click="@this.ViewModel.OpenCometConnectionPopup" Type="button">
-			<FeatherUpload Size="20" Color="currentColor" StrokeWidth="2" /> <span>Add COMET Model</span>
-		</AppButton>
-		<DxPopup CloseOnOutsideClick="false" HeaderText="Upload an Iteration" @bind-Visible="@this.ViewModel.IsOnCometConnectionMode">
-			<Content>
-				<CometUpload ViewModel="@this.ViewModel.CometUploadViewModel"/>
-			</Content>
-		</DxPopup>
-	</div>
-</UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
+@attribute [Authorize]
+<LoadingComponent IsLoading="this.ViewModel.ProjectDetailsViewModel.Project is null">
+	<AuthorizeView Roles="Administrator">
+		<NotAuthorized>
+			@if (!this.ViewModel.IsAuthorized)
+			{
+				<text> You are not authorized to access this page. </text>
+			}
+		</NotAuthorized>
+		<Authorized>
+			@if(!this.ViewModel.IsAuthorized)
+			{
+				this.ViewModel.IsAuthorized = true;
+			}
+		</Authorized>
+	</AuthorizeView>
+	
+	@if (this.ViewModel.IsAuthorized)
+	{
+		<div>
+			<AppButton Click="@this.ViewModel.OpenCreateParticipantPopup" Type="button">
+				<FeatherUserPlus Size="20" Color="currentColor" StrokeWidth="2"/> <span>Add participant</span>
+			</AppButton>
+			<DxPopup CloseOnOutsideClick="false" HeaderText="Create Participant" @bind-Visible="@this.ViewModel.IsOnCreationMode">
+				<Content>
+					<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+						<ParticipantCreation ViewModel="@this.ViewModel.ParticipantCreationViewModel"/>
+					</CascadingValue>
+				</Content>
+			</DxPopup>
+		</div>
+		<ProjectDetails ViewModel="@this.ViewModel.ProjectDetailsViewModel"/>
+		<div>
+			<AppButton Click="@this.ViewModel.OpenCometConnectionPopup" Type="button">
+				<FeatherUpload Size="20" Color="currentColor" StrokeWidth="2"/> <span>Add COMET Model</span>
+			</AppButton>
+			<DxPopup CloseOnOutsideClick="false" HeaderText="Upload an Iteration" @bind-Visible="@this.ViewModel.IsOnCometConnectionMode">
+				<Content>
+					<CometUpload ViewModel="@this.ViewModel.CometUploadViewModel"/>
+				</Content>
+			</DxPopup>
+		</div>
+	}
+</LoadingComponent>

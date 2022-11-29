@@ -24,6 +24,7 @@ namespace UI_DSM.Server.Modules
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
@@ -94,9 +95,14 @@ namespace UI_DSM.Server.Modules
         /// <param name="projectId">The <see cref="Project" /> id</param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
-        [Authorize(Roles = "Administrator")]
+        [Authorize]
         public async Task GetAvailableUsers(IParticipantManager participantManager, IEntityManager<Project> projectManager, Guid projectId, HttpContext context)
         {
+            if (!await IsAuthorizedParticipant(participantManager, context, projectId))
+            {
+                return;
+            }
+
             var existingProject = await projectManager.FindEntity(projectId);
 
             if (existingProject == null)
@@ -144,10 +150,15 @@ namespace UI_DSM.Server.Modules
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
-        [Authorize(Roles = "Administrator")]
-        public override Task CreateEntity(IEntityManager<Participant> manager, ParticipantDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
+        [Authorize]
+        public override async Task CreateEntity(IEntityManager<Participant> manager, ParticipantDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.CreateEntity(manager, dto, context, deepLevel);
+            if (!await IsAuthorizedParticipant((IParticipantManager)manager, context, this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey)))
+            {
+                return;
+            }
+
+            await base.CreateEntity(manager, dto, context, deepLevel);
         }
 
         /// <summary>
@@ -159,10 +170,15 @@ namespace UI_DSM.Server.Modules
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
-        [Authorize(Roles = "Administrator")]
-        public override Task UpdateEntity(IEntityManager<Participant> manager, Guid entityId, ParticipantDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
+        [Authorize]
+        public override async Task UpdateEntity(IEntityManager<Participant> manager, Guid entityId, ParticipantDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.UpdateEntity(manager, entityId, dto, context, deepLevel);
+            if (!await IsAuthorizedParticipant((IParticipantManager)manager, context, this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey)))
+            {
+                return;
+            }
+
+            await base.UpdateEntity(manager, entityId, dto, context, deepLevel);
         }
 
         /// <summary>
@@ -172,10 +188,18 @@ namespace UI_DSM.Server.Modules
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Participant" /> to delete</param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
-        [Authorize(Roles = "Administrator")]
-        public override Task<RequestResponseDto> DeleteEntity(IEntityManager<Participant> manager, Guid entityId, HttpContext context)
+        [Authorize]
+        public override async Task<RequestResponseDto> DeleteEntity(IEntityManager<Participant> manager, Guid entityId, HttpContext context)
         {
-            return base.DeleteEntity(manager, entityId, context);
+            if (!await IsAuthorizedParticipant((IParticipantManager)manager, context, this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey)))
+            {
+                return new RequestResponseDto()
+                {
+                    Errors = {"Unauthorized user"}
+                };
+            }
+
+            return await base.DeleteEntity(manager, entityId, context);
         }
 
         /// <summary>
@@ -196,6 +220,29 @@ namespace UI_DSM.Server.Modules
         protected override async Task<bool> AdditionalRouteValidation(HttpContext context)
         {
             await Task.CompletedTask;
+            return true;
+        }
+
+        /// <summary>
+        ///     Verifies that a <see cref="Participant" /> has sufficient access right for management
+        /// </summary>
+        /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <returns>A <see cref="Task" /> with the resut </returns>
+        private static async Task<bool> IsAuthorizedParticipant(IParticipantManager participantManager, HttpContext context, Guid projectId)
+        {
+            if (!context.User.IsInRole("Administrator"))
+            {
+                var participant = await participantManager.GetParticipantForProject(projectId, context.User.Identity?.Name);
+
+                if (participant == null || !participant.IsAllowedTo(AccessRight.ProjectManagement))
+                {
+                    context.Response.StatusCode = 403;
+                    return false;
+                }
+            }
+
             return true;
         }
     }
