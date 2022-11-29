@@ -183,7 +183,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 {
                     if(baseView is PhysicalFlowView physicalFlowView)
                     {
-                        physicalFlowView.ViewModel.ShouldUpdateDiagram = true;
+                       physicalFlowView.SelectedElementChangedComments(this.SelectedItem, this.Comments.ViewModel.Comments.Count > 0);
                     }
                     await baseView.HasChanged();
                 }));

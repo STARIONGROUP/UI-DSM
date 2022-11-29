@@ -38,7 +38,7 @@ namespace UI_DSM.Client.Components.Widgets
         /// <summary>
         /// Gets the color of the interface, which depends on the <see cref="InterfaceCategory"/>
         /// </summary>
-        public string Color => this.Category.ToColorString();
+        public string Color => this.Link.HasComments ? "green" : this.Category.ToColorString();
 
         /// <summary>
         /// Method invoked when the component is ready to start, having received its
@@ -47,13 +47,9 @@ namespace UI_DSM.Client.Components.Widgets
         protected override void OnInitialized()
         {
             base.OnInitialized();
-
+                        
             this.Link.Color = this.Color;
-
-            if (this.Link.HasComments)
-            {
-                this.Link.Color = "green";
-            }
+            this.Link.SelectedColor = "#278EFF";                        
         }
     }
 }

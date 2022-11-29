@@ -61,17 +61,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         /// A list of the <see cref="NodeModel"/> in the <see cref="Diagram"/>
         /// </summary>
-        List<NodeModel> ProductNodes { get; } 
+        List<DiagramNode> ProductNodes { get; } 
 
         /// <summary>
         /// A list of the <see cref="PortModel"/> in the <see cref="Diagram"/>
         /// </summary>
-        List<PortModel> PortNodes { get; } 
+        List<DiagramPort> PortNodes { get; } 
 
         /// <summary>
         /// A list of the <see cref="LinkModel"/> in the <see cref="Diagram"/>
         /// </summary>
-        List<LinkModel> LinkNodes { get; } 
+        List<DiagramLink> LinkNodes { get; } 
 
         /// <summary>
         /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>
@@ -202,7 +202,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         /// Upgrades the nodes with the actual data
         /// </summary>
-        void UpdateNodesData();
+        void TryUpdate(object updatedObject, bool hasComments);
 
         /// <summary>
         /// Event fired when the state of the component needs to change.

@@ -29,8 +29,8 @@
     display : flex;
     flex-direction: row;
     justify-content : stretch;
-    align-items:flex-start;
-    margin: 2%;
+    align-items:center;
+    margin: 0.5%;
 }
 
     .interface-legend-row p {
@@ -41,7 +41,7 @@
 
 .interface-legend-row .interface-color-block{
     width: 40px;
-    height: 26px;
+    height: 20px;
 }
 
 .port-legend-row{

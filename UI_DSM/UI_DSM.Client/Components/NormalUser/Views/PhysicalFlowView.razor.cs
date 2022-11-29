@@ -24,7 +24,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using UI_DSM.Client.Components.Widgets;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
-    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
 
     /// <summary>
@@ -36,8 +35,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// Gets or sets the diagram component.
         /// </summary>
         public Diagram Diagram { get; set; }
-
-
 
         /// <summary>
         /// Method invoked when the component is ready to start, having received its
@@ -51,7 +48,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.Diagram = new Diagram();
             this.Diagram.Options.AllowMultiSelection = false;
             this.Diagram.Options.DefaultNodeComponent = typeof(DiagramNodeWidget);
-            this.Diagram.RegisterModelComponent<DiagramLink, DiagramLinkWidget>();                       
+            this.Diagram.RegisterModelComponent<DiagramLink, DiagramLinkWidget>();
 
             this.Diagram.MouseUp += Diagram_MouseUp;
             this.Diagram.MouseDoubleClick += Diagram_MouseDoubleClick;
@@ -109,19 +106,15 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             return true;
         }
 
-        public override Task HasChanged()
+        /// <summary>
+        /// The comments of the selected object have changed
+        /// </summary>
+        /// <param name="updatedObject">the object that the objects have changed</param>
+        /// <param name="hasComments">if have comments or not</param>
+        public void SelectedElementChangedComments(object updatedObject, bool hasComments)
         {
-            if (this.ViewModel.ShouldUpdateDiagram)
-            {                
-                var nodesWithComments = this.ViewModel.Things.OfType<ProductRowViewModel>().Where(x => x.HasComment()).ToList();
-                //this.ViewModel.UpdateNodesData();
-                //this.RefreshDiagram();
-                //this.ViewModel.ShouldUpdateDiagram = false;
-                this.ViewModel.InitializeDiagram();
-                this.RefreshDiagram();
-            }
-
-            return base.HasChanged();
+            this.ViewModel.TryUpdate(updatedObject, hasComments);
+            this.RefreshDiagram();
         }
 
         /// <summary>

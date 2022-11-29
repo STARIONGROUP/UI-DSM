@@ -21,7 +21,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
-
+    using DevExpress.Blazor.Internal;
     using DynamicData;
 
     using ReactiveUI;
@@ -121,17 +121,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         /// A list of the <see cref="NodeModel"/> in the <see cref="Blazor.Diagrams.Core.Diagram"/>
         /// </summary>
-        public List<NodeModel> ProductNodes { get; } = new();
+        public List<DiagramNode> ProductNodes { get; } = new();
 
         /// <summary>
         /// A list of the <see cref="PortModel"/> in the <see cref="Blazor.Diagrams.Core.Diagram"/>
         /// </summary>
-        public List<PortModel> PortNodes { get; } = new();
+        public List<DiagramPort> PortNodes { get; } = new();
 
         /// <summary>
         /// A list of the <see cref="LinkModel"/> in the <see cref="Blazor.Diagrams.Core.Diagram"/>
         /// </summary>
-        public List<LinkModel> LinkNodes { get; } = new();
+        public List<DiagramLink> LinkNodes { get; } = new();
 
         /// <summary>
         /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>
@@ -518,7 +518,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         {
             if (this.ProductsMap.ContainsKey(nodeModel.Id))
             {
-                this.CentralNode = nodeModel;
                 this.ShouldUpdateDiagram = true;
                 var asociatedProduct = this.ProductsMap[nodeModel.Id];
                 this.CreateCentralNodeAndNeighbours(asociatedProduct);
@@ -547,6 +546,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             var r = 200.0;
 
             var node = CreateNewNodeFromProduct(centerNode);
+            this.CentralNode = node;
             node.SetPosition(cx, cy);
             node.IsCentralNode = true;
 
@@ -647,32 +647,37 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         /// Upgrades the nodes with the actual data
         /// </summary>
-        public async void UpdateNodesData()
+        public void TryUpdate(object updatedObject, bool hasComments)
         {
-            await this.InitializeProperties(this.Things, this.ProjectId, this.ReviewId);
-
-            foreach(var node in this.ProductNodes.OfType<DiagramNode>())
+            if (updatedObject is ProductRowViewModel productRowViewModel)
             {
-                if(this.ProductsMap.TryGetValue(node.Id, out var product))
-                {
-                    node.HasComments = product.HasComment();
-                }
+                var indexOfProduct = this.Products.IndexOf(productRowViewModel);
+                var keyValuePair = this.ProductsMap.First(x => x.Value == productRowViewModel);
+                var node = this.ProductNodes.First(x => x.Id == keyValuePair.Key);
+
+                this.Products[indexOfProduct] = productRowViewModel;
+                this.ProductsMap[keyValuePair.Key] = productRowViewModel;
+                node.HasComments = hasComments;
             }
-
-            foreach (var portNode in this.PortNodes.OfType<DiagramPort>())
+            else if (updatedObject is PortRowViewModel portRowViewModel)
             {
-                if (this.PortsMap.TryGetValue(portNode.Id, out var port))
-                {
-                    portNode.HasComments = port.HasComment();
-                }
+                var indexOfPort = this.allPorts.IndexOf(portRowViewModel);
+                var keyValuePair = this.PortsMap.First(x => x.Value == portRowViewModel);
+                var port = this.PortNodes.First(x => x.Id == keyValuePair.Key);
+
+                this.allPorts[indexOfPort] = portRowViewModel;
+                this.PortsMap[keyValuePair.Key] = portRowViewModel;
+                port.HasComments = hasComments;
             }
-
-            foreach (var linkNode in this.LinkNodes.OfType<DiagramLink>())
+            else if (updatedObject is InterfaceRowViewModel interfaceRowViewModel)
             {
-                if (this.InterfacesMap.TryGetValue(linkNode.Id, out var link))
-                {
-                    linkNode.HasComments = link.HasComment();
-                }
+                var indexOfInterface = this.Interfaces.IndexOf(interfaceRowViewModel);
+                var keyValuePair = this.InterfacesMap.First(x => x.Value == interfaceRowViewModel);
+                var link = this.LinkNodes.First(x => x.Id == keyValuePair.Key);
+
+                this.Interfaces[indexOfInterface] = interfaceRowViewModel;
+                this.InterfacesMap[keyValuePair.Key] = interfaceRowViewModel;
+                link.HasComments = hasComments;
             }
         }
     }
