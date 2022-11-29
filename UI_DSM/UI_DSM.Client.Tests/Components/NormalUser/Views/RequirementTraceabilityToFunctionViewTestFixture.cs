@@ -120,7 +120,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var elementUsage = new ElementUsage()
                 {
                     Iid = Guid.NewGuid(),
-                    ElementDefinition = elementDefinition.Iid
+                    ElementDefinition = elementDefinition.Iid,
+                    Name="simple element usage with a lot of character to test a feature"
                 };
 
                 var function = new ElementDefinition()

@@ -93,7 +93,7 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
         /// <summary>
         ///     Gets the valid css class for a header element
         /// </summary>
-        /// <param name="currentRow">The current <see cref="IHaveThingRowViewModel" /> row</param>
+        /// <param name="row">The current <see cref="IHaveThingRowViewModel" /> row</param>
         /// <returns>The css class</returns>
         private string GetHeaderClass(IHaveThingRowViewModel row)
         {
