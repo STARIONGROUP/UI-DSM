@@ -17,16 +17,54 @@ namespace UI_DSM.Client.Enumerator
     /// </summary>
     public enum InterfaceCategory
     {
-
+        /// <summary>
+        /// Power interfaces Category
+        /// </summary>
         Power_Interfaces = 0,
+
+        /// <summary>
+        /// Signal interfaces Category
+        /// </summary>
         Signal_Interfaces = 1,
+
+        /// <summary>
+        /// Telemetry-Telecommand Category
+        /// </summary>
         TM_TC_Interfaces = 2,
+
+        /// <summary>
+        /// Data Bus Category
+        /// </summary>
         DataBus_Interfaces = 3,
+
+        /// <summary>
+        /// Structural Category
+        /// </summary>
         Str_Interfaces = 4,
+
+        /// <summary>
+        /// Thermal Control Category
+        /// </summary>
         TC_Interfaces = 5,
+
+        /// <summary>
+        /// Mechanisms Category
+        /// </summary>
         Mechanisms_Interfaces = 6,
+
+        /// <summary>
+        /// Propulsion Category
+        /// </summary>
         Prop_Interfaces = 7,
+
+        /// <summary>
+        /// Communications Category
+        /// </summary>
         Comms_Interfaces = 8,
+
+        /// <summary>
+        /// Other Category
+        /// </summary>
         Other = 9,
     }
 }
