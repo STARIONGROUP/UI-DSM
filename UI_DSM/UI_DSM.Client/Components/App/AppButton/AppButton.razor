@@ -24,7 +24,9 @@
         Primary,
         Secondary,
         Success,
-        Tertiary
+        Tertiary,
+        SmallSecondary,
+        SmallSuccess
     }
 
     [Parameter] public VariantValue Variant { get; set; } = VariantValue.Primary;
@@ -39,6 +41,8 @@
             VariantValue.Secondary => "app-button--secondary",
             VariantValue.Success => "app-button--success",
             VariantValue.Tertiary => "app-button--tertiary",
+            VariantValue.SmallSecondary => "app-button--small-secondary",
+            VariantValue.SmallSuccess => "app-button--small-success",
             _ => ""
         };
     }

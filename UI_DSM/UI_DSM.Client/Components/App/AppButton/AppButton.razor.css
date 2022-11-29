@@ -48,3 +48,20 @@
   background: var(--colors-primary-900);
   color: var(--colors-white);
 }
+
+
+.app-button--small-secondary {
+  font-weight: 600;
+  padding: var(--spacing-1) var(--spacing-3);
+  font-size: var(--text-sm);
+  height: auto;
+}
+
+.app-button--small-success {
+  font-weight: 600;
+  background: var(--colors-green-100);
+  color: var(--colors-green-800);
+  padding: var(--spacing-1) var(--spacing-3);
+  font-size: var(--text-sm);
+  height: auto;
+}
