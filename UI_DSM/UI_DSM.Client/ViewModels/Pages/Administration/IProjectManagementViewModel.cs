@@ -13,8 +13,6 @@
 
 namespace UI_DSM.Client.ViewModels.Pages.Administration
 {
-    using DevExpress.Blazor;
-
     using DynamicData;
 
     using Microsoft.AspNetCore.Components;
@@ -35,7 +33,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         SourceList<Project> Projects { get; }
 
         /// <summary>
-        ///     Value indicating the user is currently creating a new <see cref="Project"/>
+        ///     Value indicating the user is currently creating a new <see cref="Project" />
         /// </summary>
         bool IsOnCreationMode { get; set; }
 
@@ -53,6 +51,11 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         ///     Gets or sets the <see cref="NavigationManager" />
         /// </summary>
         NavigationManager NavigationManager { get; set; }
+
+        /// <summary>
+        ///     Indicates if the current user is allowed to manage project even if he is not the site admin
+        /// </summary>
+        bool IsAuthorized { get; set; }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its

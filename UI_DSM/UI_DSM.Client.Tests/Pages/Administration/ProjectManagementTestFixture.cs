@@ -33,6 +33,9 @@ namespace UI_DSM.Client.Tests.Pages.Administration
 
     using AppComponents;
 
+    using UI_DSM.Client.Services.Administration.UserService;
+    using UI_DSM.Shared.Enumerator;
+
     [TestFixture]
     public class ProjectManagementTestFixture
     {
@@ -40,6 +43,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration
         private IProjectManagementViewModel viewModel;
         private Mock<IProjectService> projectService;
         private List<Project> projects;
+        private Mock<IUserService> userService;
 
         [SetUp]
         public void Setup()
@@ -48,9 +52,23 @@ namespace UI_DSM.Client.Tests.Pages.Administration
             this.context = new TestContext();
             this.context.ConfigureDevExpressBlazor();
             this.projectService = new Mock<IProjectService>();
+            this.userService = new Mock<IUserService>();
             this.projectService.Setup(x => x.GetProjects(0)).ReturnsAsync(this.projects);
-            this.viewModel = new ProjectManagementViewModel(this.projectService.Object, null);
+            this.viewModel = new ProjectManagementViewModel(this.projectService.Object, null, this.userService.Object);
             this.context.Services.AddSingleton(this.viewModel);
+            this.context.AddTestAuthorization();
+
+            this.userService.Setup(x => x.GetParticipantsForUser()).ReturnsAsync(new List<Participant>()
+            {
+                new (Guid.NewGuid())
+                {
+                    Role = new Role(Guid.NewGuid())
+                    {
+                        AccessRights = { AccessRight.ProjectManagement }
+                    }
+                }
+            });
+
             this.viewModel.NavigationManager = this.context.Services.GetRequiredService<FakeNavigationManager>();
         }
 

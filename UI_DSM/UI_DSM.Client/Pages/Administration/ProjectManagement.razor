@@ -11,36 +11,52 @@
 -------------------------------------------------------------------------------------------------------->
 @page "/Administration/ProjectManagement"
 @layout DefaultLayout
-@attribute [Authorize(Roles = "Administrator")]
-
-<div>
-	<div class="page-header">
-		<h1>All projects</h1>
-    <AppButton Click="@this.ViewModel.OpenCreatePopup" Type="button">
-      <FeatherPlusCircle Size="20" Color="currentColor" StrokeWidth="2"  /> <span>Create project</span>
-		</AppButton>
-	</div>
-	<DxPopup CloseOnOutsideClick="false" HeaderText="Create Project" @bind-Visible="@this.ViewModel.IsOnCreationMode">
-		<Content>
-			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
-				<ProjectCreation ViewModel="@this.ViewModel.ProjectCreationViewModel"/>
-			</CascadingValue>
-		</Content>
-	</DxPopup>
-</div>
-
-@if (this.ViewModel.Projects.Count > 0)
+@attribute [Authorize]
+<AuthorizeView Roles="Administrator">
+	<NotAuthorized>
+		@if (!this.ViewModel.IsAuthorized)
+		{
+			<text> You are not authorized to access this page. </text>
+		}
+	</NotAuthorized>
+	<Authorized>
+		@if(!this.ViewModel.IsAuthorized)
+		{
+			this.ViewModel.IsAuthorized = true;
+		}
+	</Authorized>
+</AuthorizeView>
+@if (this.ViewModel.IsAuthorized)
 {
-	foreach (var project in this.ViewModel.Projects.Items)
+	<div>
+		<div class="page-header">
+			<h1>All projects</h1>
+			<AppButton Click="@(this.ViewModel.OpenCreatePopup)" Type="button">
+				<FeatherPlusCircle Size="20" Color="currentColor" StrokeWidth="2"/> <span>Create project</span>
+			</AppButton>
+		</div>
+		<DxPopup CloseOnOutsideClick="false" HeaderText="Create Project" @bind-Visible="@(this.ViewModel.IsOnCreationMode)">
+			<Content>
+				<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+					<ProjectCreation ViewModel="@(this.ViewModel.ProjectCreationViewModel)"/>
+				</CascadingValue>
+			</Content>
+		</DxPopup>
+	</div>
+
+	@if (this.ViewModel.Projects.Count > 0)
 	{
-		<div class="m-top-10px" @onclick="@(() => this.ViewModel.GoToProjectPage(project))">
-			@project.ProjectName
+		foreach (var project in this.ViewModel.Projects.Items.OrderBy(x => x.CreatedOn))
+		{
+			<div class="m-top-10px" @onclick="@(() => this.ViewModel.GoToProjectPage(project))">
+				@project.ProjectName
+			</div>
+		}
+	}
+	else
+	{
+		<div id="noProjectFound">
+			No project found...
 		</div>
 	}
-}
-else
-{
-	<div id="noProjectFound">
-		No project found...
-	</div>
 }

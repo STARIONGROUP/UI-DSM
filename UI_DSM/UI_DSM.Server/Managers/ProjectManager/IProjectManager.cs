@@ -36,5 +36,13 @@ namespace UI_DSM.Server.Managers.ProjectManager
         /// <param name="userName">The name of the current logged user</param>
         /// <returns>A <see cref="Task" /> with the <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
         Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> projectsId, string userName);
+
+        /// <summary>
+        ///     Get a collection of <see cref="Project" /> where a <see cref="UserEntity" /> is a <see cref="Participant" />
+        ///     and is allowed to manage those projects
+        /// </summary>
+        /// <param name="userName">The name of the <see cref="UserEntity" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Project" /></returns>
+        Task<IEnumerable<Project>> GetProjectsForManagement(string userName);
     }
 }

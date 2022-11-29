@@ -132,6 +132,20 @@ namespace UI_DSM.Server.Managers.ProjectManager
         }
 
         /// <summary>
+        ///     Get a collection of <see cref="Project" /> where a <see cref="UserEntity" /> is a <see cref="Participant" />
+        ///     and is allowed to manage those projects
+        /// </summary>
+        /// <param name="userName">The name of the <see cref="UserEntity" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Project" /></returns>
+        public async Task<IEnumerable<Project>> GetProjectsForManagement(string userName)
+        {
+            var participants = (await this.participantManager.GetParticipants(userName))
+                .Where(x => x.IsAllowedTo(AccessRight.ProjectManagement));
+
+            return participants.Select(x => x.EntityContainer as Project).OrderBy(x => x!.CreatedOn);
+        }
+
+        /// <summary>
         ///     Sets specific properties before the creation of the <see cref="Project" />
         /// </summary>
         /// <param name="entity">The <see cref="Project" /></param>

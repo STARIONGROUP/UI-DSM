@@ -27,10 +27,12 @@ namespace UI_DSM.Server.Modules
     using Microsoft.IdentityModel.Tokens;
 
     using UI_DSM.Server.Managers;
+    using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.UserManager;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
+    using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -77,6 +79,24 @@ namespace UI_DSM.Server.Modules
                 .Produces<RegistrationResponseDto>(422)
                 .WithTags("User")
                 .WithName("User/Register");
+
+            app.MapGet($"{this.MainRoute}/LinkedParticipants", this.GetLinkedParticipants)
+                .Produces<IEnumerable<EntityDto>>()
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/LinkedParticipants");
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Participant" /> that are linked to the current logged user
+        /// </summary>
+        /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns></returns>
+        [Authorize]
+        public async Task GetLinkedParticipants(IParticipantManager participantManager, HttpContext context)
+        {
+            var participants = await participantManager.GetParticipants(context.User!.Identity!.Name);
+            await context.Response.Negotiate(participants.SelectMany(x => x.GetAssociatedEntities()).DistinctBy(x => x.Id).ToDtos());
         }
 
         /// <summary>

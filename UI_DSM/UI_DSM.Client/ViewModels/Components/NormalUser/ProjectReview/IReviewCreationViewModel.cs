@@ -15,6 +15,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 {
     using Microsoft.AspNetCore.Components;
 
+    using UI_DSM.Client.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -36,5 +37,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         ///     A collection of <see cref="Model" /> that has been selected
         /// </summary>
         IEnumerable<Model> SelectedModels { get; set; }
+
+        /// <summary>
+        ///     The current <see cref="CreationStatus" />
+        /// </summary>
+        CreationStatus CreationStatus { get; set; }
     }
 }

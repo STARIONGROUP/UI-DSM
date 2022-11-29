@@ -52,6 +52,11 @@ namespace UI_DSM.Shared.Enumerator
         /// <summary>
         ///     This right provide the capability to assign a <see cref="ReviewTask" /> to a <see cref="Participant" />
         /// </summary>
-        [Display(Name = "Assign Task")] AssignTask = 5
+        [Display(Name = "Assign Task")] AssignTask = 5,
+
+        /// <summary>
+        ///     This right provide the capability to manage participants and models inside a project
+        /// </summary>
+        [Display(Name = "Manage Project")] ProjectManagement = 6
     }
 }

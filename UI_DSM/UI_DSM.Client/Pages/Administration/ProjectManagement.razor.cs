@@ -37,6 +37,12 @@ namespace UI_DSM.Client.Pages.Administration
         public IProjectManagementViewModel ViewModel { get; set; }
 
         /// <summary>
+        ///     Gets or sets the <see cref="NavigationManager" />
+        /// </summary>
+        [Inject]
+        public NavigationManager NavigationManager { get; set; }
+
+        /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()

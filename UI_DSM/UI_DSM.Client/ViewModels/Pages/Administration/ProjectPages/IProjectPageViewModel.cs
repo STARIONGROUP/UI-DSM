@@ -43,6 +43,11 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         bool IsOnCometConnectionMode { get; set; }
 
         /// <summary>
+        ///     Value indicating whether the user is authorized to access the page or not
+        /// </summary>
+        bool IsAuthorized { get; set; }
+
+        /// <summary>
         ///     Gets the <see cref="IErrorMessageViewModel" />
         /// </summary>
         IErrorMessageViewModel ErrorMessageViewModel { get; }
@@ -53,7 +58,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         IParticipantCreationViewModel ParticipantCreationViewModel { get; }
 
         /// <summary>
-        ///     The <see cref="ICometUploadViewModel" /> for the <see cref="CometConnection" /> component
+        ///     The <see cref="ICometUploadViewModel" /> for the <see cref="CometUpload" /> component
         /// </summary>
         ICometUploadViewModel CometUploadViewModel { get; }
 
@@ -73,7 +78,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         Task OpenCreateParticipantPopup();
 
         /// <summary>
-        ///     Opens the <see cref="CometConnection" /> popup
+        ///     Opens the <see cref="CometUpload" /> popup
         /// </summary>
         void OpenCometConnectionPopup();
     }

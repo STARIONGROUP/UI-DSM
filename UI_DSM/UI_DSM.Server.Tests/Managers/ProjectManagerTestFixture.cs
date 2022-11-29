@@ -30,6 +30,7 @@ namespace UI_DSM.Server.Tests.Managers
     using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     [TestFixture]
@@ -195,6 +196,14 @@ namespace UI_DSM.Server.Tests.Managers
                 },
                 new (Guid.NewGuid())
                 {
+                    User = user,
+                    Role = new Role(Guid.NewGuid())
+                    {
+                        AccessRights = { AccessRight.ProjectManagement }
+                    }
+                },
+                new (Guid.NewGuid())
+                {
                     User = admin
                 },
                 new (Guid.NewGuid())
@@ -207,11 +216,11 @@ namespace UI_DSM.Server.Tests.Managers
             {
                 new (Guid.NewGuid())
                 {
-                    Participants = { participants[0], participants[1] }
+                    Participants = { participants[0], participants[2] }
                 },
                 new (Guid.NewGuid())
                 {
-                    Participants = { participants[2] }
+                    Participants = { participants[3], participants[1] }
                 },
             };
 
@@ -223,11 +232,13 @@ namespace UI_DSM.Server.Tests.Managers
 
             var projectForUser = await this.manager.GetAvailableProjectsForUser(user.UserName);
             var projectForAdmin = await this.manager.GetAvailableProjectsForUser(admin.UserName);
+            var projectForAdministration = await this.manager.GetProjectsForManagement(user.UserName);
 
             Assert.Multiple(() =>
             {
                 Assert.That(projectForAdmin.ToList(), Has.Count.EqualTo(2));
-                Assert.That(projectForUser.ToList(), Has.Count.EqualTo(1));
+                Assert.That(projectForUser.ToList(), Has.Count.EqualTo(2));
+                Assert.That(projectForAdministration.ToList(), Has.Count.EqualTo(1));
             });
         }
 

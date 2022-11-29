@@ -187,7 +187,6 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             await renderer.InvokeAsync(async () => await relatedViews.Instance.OnViewSelect.InvokeAsync(relatedViews.Instance.OtherRelatedViews[0]));
             Assert.That(this.viewModel.CurrentBaseView, Is.EqualTo(typeof(InterfaceView)));
 
-
             this.viewModel.ModelSelectorVisible = true;
             Assert.That(this.viewModel.CurrentModel, Is.EqualTo(review.Artifacts[1]));
 

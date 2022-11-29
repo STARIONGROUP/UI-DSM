@@ -53,7 +53,8 @@ namespace UI_DSM.Server.Context.Configuration
                     AccessRight.DeleteReview,
                     AccessRight.CreateReviewObjective,
                     AccessRight.DeleteReviewObjective,
-                    AccessRight.AssignTask
+                    AccessRight.AssignTask,
+                    AccessRight.ProjectManagement
                 }
             }, new Role(new Guid(ReviewerRoleId))
             {

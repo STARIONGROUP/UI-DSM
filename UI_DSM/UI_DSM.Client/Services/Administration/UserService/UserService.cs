@@ -14,15 +14,16 @@
 namespace UI_DSM.Client.Services.Administration.UserService
 {
     using System.Text;
+    using System.Text.Json;
 
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Client.Services.JsonService;
+    using UI_DSM.Shared.Assembler;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
-
-    using JsonSerializer = System.Text.Json.JsonSerializer;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     The <see cref="UserService" /> provide capability to manage users.
@@ -52,7 +53,7 @@ namespace UI_DSM.Client.Services.Administration.UserService
                 throw new HttpRequestException(await response.Content.ReadAsStringAsync());
             }
 
-            var entities =  this.jsonService.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync());
+            var entities = this.jsonService.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync());
             return entities.Where(x => x.GetType() == typeof(UserEntityDto)).Cast<UserEntityDto>().ToList();
         }
 
@@ -92,6 +93,23 @@ namespace UI_DSM.Client.Services.Administration.UserService
                     "This action is forbidden"
                 }
             };
+        }
+
+        /// <summary>
+        ///     Gets all participants linked to the current user
+        /// </summary>
+        /// <returns>A collection of <see cref="Participant" /></returns>
+        public async Task<List<Participant>> GetParticipantsForUser()
+        {
+            var response = await this.HttpClient.GetAsync(Path.Combine(this.MainRoute, "LinkedParticipants"));
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
+            }
+
+            var dtos = this.jsonService.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync()).ToList();
+            return Assembler.CreateEntities<Participant>(dtos).ToList();
         }
     }
 }

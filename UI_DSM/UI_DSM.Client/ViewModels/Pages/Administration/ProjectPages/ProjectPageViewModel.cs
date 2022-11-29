@@ -35,6 +35,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
     using UI_DSM.Client.ViewModels.Components.Administration.ModelManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.ParticipantManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -115,7 +116,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         public IProjectDetailsViewModel ProjectDetailsViewModel { get; } 
 
         /// <summary>
-        ///     Value indicating the user is currently creating a new <see cref="Shared.Models.Participant" />
+        ///     Value indicating the user is currently creating a new <see cref="Participant" />
         /// </summary>
         public bool IsOnCreationMode
         {
@@ -131,6 +132,11 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
             get => this.isOnCometConnectionMode;
             set => this.RaiseAndSetIfChanged(ref this.isOnCometConnectionMode, value);
         }
+
+        /// <summary>
+        ///     Value indicating whether the user is authorized to access the page or not
+        /// </summary>
+        public bool IsAuthorized { get; set; }
 
         /// <summary>
         ///     Gets the <see cref="IErrorMessageViewModel" />
@@ -153,7 +159,18 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         public async Task OnInitializedAsync(Guid projectGuid)
         {
             var projectResponse = await this.projectService.GetProject(projectGuid, 1);
-            this.ProjectDetailsViewModel.Project = projectResponse;
+
+            if (projectResponse != null)
+            {
+                var participant = await this.participantService.GetCurrentParticipant(projectGuid);
+
+                if (participant != null)
+                {
+                    this.IsAuthorized = participant.IsAllowedTo(AccessRight.ProjectManagement);
+                }
+
+                this.ProjectDetailsViewModel.Project = projectResponse;
+            }
         }
 
         /// <summary>
@@ -212,7 +229,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         }
 
         /// <summary>
-        ///     Create a new <see cref="Shared.Models.Participant" /> with the provided data
+        ///     Create a new <see cref="Participant" /> with the provided data
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>
         private async Task CreateParticipant()

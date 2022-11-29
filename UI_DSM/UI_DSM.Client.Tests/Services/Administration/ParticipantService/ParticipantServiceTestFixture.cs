@@ -350,7 +350,7 @@ namespace UI_DSM.Client.Tests.Services.Administration.ParticipantService
             var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Project/{projectId}/Participant/LoggedUser");
             request.Respond(_ => httpResponse);
 
-            Assert.That(async () => await this.service.GetCurrentParticipant(projectId), Throws.Exception);
+            Assert.That(async () => await this.service.GetCurrentParticipant(projectId), Throws.Nothing);
 
             httpResponse.StatusCode = HttpStatusCode.OK;
 
