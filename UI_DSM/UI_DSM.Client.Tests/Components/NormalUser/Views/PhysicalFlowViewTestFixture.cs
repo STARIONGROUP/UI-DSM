@@ -66,6 +66,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             try
             {
                 this.context = new TestContext();
+                this.context.AddDevExpressBlazorTesting();
                 this.context.ConfigureDevExpressBlazor();
                 this.reviewItemService = new Mock<IReviewItemService>();
                 this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel());
@@ -211,7 +212,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 var reviewItem = new ReviewItem(Guid.NewGuid());
 
-                renderer.Instance.InitializeViewModel(pocos, projectId, reviewId).Wait();
+                renderer.Instance.InitializeViewModel(pocos, projectId, reviewId).RunSynchronously();
             }
             catch
             {
@@ -378,6 +379,44 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Assert.That(portRow, Is.Not.Null);
                     Assert.That(interfaceRow, Is.Not.Null);
                 });
+            }
+            catch
+            {
+                // On GitHub, exception is thrown even if the JSRuntime has been configured
+            }
+        }
+
+        [Test]
+        public void VerifyThatCentralNodeCanBeSet()
+        {
+            try
+            {
+                var product = this.viewModel.ProductNodes.First();
+                var result = this.viewModel.SetCentralNodeModel(product);
+                Assert.That(result, Is.True);
+
+                var product2 = new DiagramNode();
+                var result2 = this.viewModel.SetCentralNodeModel(product2);
+                Assert.That(result2, Is.False);
+            }
+            catch
+            {
+                // On GitHub, exception is thrown even if the JSRuntime has been configured
+            }
+        }
+
+        [Test]
+        public void VerifyThatObjectCanBeUpdated()
+        {
+            try
+            {
+                var product = this.viewModel.Products.First();
+                var result = this.viewModel.TryUpdate(product, true);
+                Assert.That(result, Is.True);
+
+                var product2 = new ProductRowViewModel(new CDP4Common.EngineeringModelData.ElementDefinition(), new ReviewItem());
+                var result2 = this.viewModel.TryUpdate(product2, true);
+                Assert.That(result2, Is.False);
             }
             catch
             {

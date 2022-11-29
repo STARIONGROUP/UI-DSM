@@ -14,12 +14,12 @@
 namespace UI_DSM.Client.Tests.Helpers
 {
     using System.Diagnostics.CodeAnalysis;
-
+    using System.Globalization;
     using Bunit;
-
     using DevExpress.Blazor.Internal;
-
+    using Microsoft.AspNetCore.Components.Rendering;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
 
     /// <summary>
     ///     Helper class that configures a <see cref="TestContext" /> to be able to test DevExpress components
@@ -59,6 +59,79 @@ namespace UI_DSM.Client.Tests.Helpers
 
             rootModule.Setup<DeviceInfo>("getDeviceInfo", _ => true)
                 .SetResult(new DeviceInfo(false));
+        }
+
+        /// <summary>
+        /// Adds the services for DevExpress testing
+        /// </summary>
+        /// <param name="testContext">the <see cref="TestContext"/> to add the services</param>
+        public static void AddDevExpressBlazorTesting(this TestContext testContext)
+        {
+            testContext.Services.TryAddScoped<IEnvironmentInfoFactory, MockEnvironmentInfoFactory>();
+            testContext.Services.TryAddScoped<IEnvironmentInfo, MockEnvironmentInfo>();
+
+            testContext.Services.AddOptions();
+            testContext.Services.AddLogging();
+            testContext.Services.TryAddComponentRequiredServices();
+        }
+    }
+
+    sealed class MockEnvironmentInfoFactory : IEnvironmentInfoFactory
+    {
+        readonly IEnvironmentInfo _cached;
+
+        public MockEnvironmentInfoFactory(bool isWasm = false)
+        {
+            _cached = new MockEnvironmentInfo(isWasm);
+        }
+
+        public IEnvironmentInfo CreateEnvironmentInfo() =>
+            _cached;
+    }
+
+    public class MockEnvironmentInfo : IEnvironmentInfo
+    {
+        public bool IsWasm { get; }
+        public static readonly DateTime DateTimeNow = DateTime.Now.Date;
+
+        public MockEnvironmentInfo(bool isWasm = false)
+        {
+            IsWasm = isWasm;
+        }
+
+        public DateTime GetDateTimeNow()
+        {
+            return DateTimeNow;
+        }
+
+        Task<ApiScheme> IEnvironmentInfo.ApiScheme
+        {
+            get { return Task.FromResult(new ApiScheme(true)); }
+        }
+
+        Task<DeviceInfo> IEnvironmentInfo.DeviceInfo
+        {
+            get { return Task.FromResult(new DeviceInfo(false)); }
+        }
+
+        public CultureInfo CurrentCulture => CultureInfo.InvariantCulture;
+
+        public Task InitializeRuntime()
+        {
+            return Task.CompletedTask;
+        }
+
+        public void RenderScriptLoader(RenderTreeBuilder builder, Guid containerId)
+        {
+
+        }
+
+        public string ResolveUrl(string url) { return url; }
+        public void OnMessage(int msg) { }
+
+        public ValueTask DisposeAsync()
+        {
+            return default;
         }
     }
 }
