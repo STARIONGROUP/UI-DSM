@@ -94,16 +94,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         IFilterViewModel FilterViewModel { get; }
         
         /// <summary>
-        /// Indicates if the diagram should be updated or not
-        /// </summary>
-        public bool ShouldUpdateDiagram { get; set; }
-
-        /// <summary>
-        /// Gets the central node of the <see cref="IInterfaceViewViewModel"/>
-        /// </summary>
-        public NodeModel CentralNode { get; }
-
-        /// <summary>
         ///     Filters current rows
         /// </summary>
         /// <param name="selectedFilters">The selected filters</param>
@@ -197,12 +187,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// Sets the new central node for this <see cref="IInterfaceViewViewModel"/>
         /// </summary>
         /// <param name="nodeModel">the new central node</param>
-        void SetCentralNodeModel(NodeModel nodeModel);
+        /// <returns>true if the node was set, false otherwise</returns>
+        bool SetCentralNodeModel(NodeModel nodeModel);
 
         /// <summary>
         /// Upgrades the nodes with the actual data
         /// </summary>
-        void TryUpdate(object updatedObject, bool hasComments);
+        /// <returns>true if the object was updated, false otherwise</returns>
+        bool TryUpdate(object updatedObject, bool hasComments);
 
         /// <summary>
         /// Event fired when the state of the component needs to change.

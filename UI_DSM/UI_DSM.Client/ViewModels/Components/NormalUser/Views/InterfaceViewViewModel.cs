@@ -21,6 +21,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
+
     using DevExpress.Blazor.Internal;
     using DynamicData;
 
@@ -152,16 +153,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// Event fired when the state of the component needs to change.
         /// </summary>
         public Action OnCentralNodeChanged { get; set; }
-
-        /// <summary>
-        /// Indicates if the diagram should be updated or not
-        /// </summary>
-        public bool ShouldUpdateDiagram { get; set; }
-
-        /// <summary>
-        /// Gets the central node of the <see cref="IInterfaceViewViewModel"/>
-        /// </summary>
-        public NodeModel CentralNode { get; private set; }
 
         /// <summary>
         ///     Filters current rows
@@ -514,15 +505,18 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// Sets the new central node for this <see cref="IInterfaceViewViewModel"/>
         /// </summary>
         /// <param name="nodeModel">the new central node</param>
-        public void SetCentralNodeModel(NodeModel nodeModel)
+        /// <returns>true if the node was set, false otherwise</returns>
+        public bool SetCentralNodeModel(NodeModel nodeModel)
         {
             if (this.ProductsMap.ContainsKey(nodeModel.Id))
             {
-                this.ShouldUpdateDiagram = true;
                 var asociatedProduct = this.ProductsMap[nodeModel.Id];
                 this.CreateCentralNodeAndNeighbours(asociatedProduct);
                 Task.Run(() => this.OnCentralNodeChanged?.Invoke());
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>
@@ -546,7 +540,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             var r = 200.0;
 
             var node = CreateNewNodeFromProduct(centerNode);
-            this.CentralNode = node;
             node.SetPosition(cx, cy);
             node.IsCentralNode = true;
 
@@ -647,9 +640,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         /// Upgrades the nodes with the actual data
         /// </summary>
-        public void TryUpdate(object updatedObject, bool hasComments)
+        public bool TryUpdate(object updatedObject, bool hasComments)
         {
-            if (updatedObject is ProductRowViewModel productRowViewModel)
+            if (updatedObject is ProductRowViewModel productRowViewModel && this.Products.Contains(productRowViewModel))
             {
                 var indexOfProduct = this.Products.IndexOf(productRowViewModel);
                 var keyValuePair = this.ProductsMap.First(x => x.Value == productRowViewModel);
@@ -658,8 +651,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 this.Products[indexOfProduct] = productRowViewModel;
                 this.ProductsMap[keyValuePair.Key] = productRowViewModel;
                 node.HasComments = hasComments;
+                return true;
             }
-            else if (updatedObject is PortRowViewModel portRowViewModel)
+            else if (updatedObject is PortRowViewModel portRowViewModel && this.allPorts.Contains(portRowViewModel))
             {
                 var indexOfPort = this.allPorts.IndexOf(portRowViewModel);
                 var keyValuePair = this.PortsMap.First(x => x.Value == portRowViewModel);
@@ -668,8 +662,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 this.allPorts[indexOfPort] = portRowViewModel;
                 this.PortsMap[keyValuePair.Key] = portRowViewModel;
                 port.HasComments = hasComments;
+                return true;
             }
-            else if (updatedObject is InterfaceRowViewModel interfaceRowViewModel)
+            else if (updatedObject is InterfaceRowViewModel interfaceRowViewModel && this.Interfaces.Contains(interfaceRowViewModel))
             {
                 var indexOfInterface = this.Interfaces.IndexOf(interfaceRowViewModel);
                 var keyValuePair = this.InterfacesMap.First(x => x.Value == interfaceRowViewModel);
@@ -678,7 +673,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 this.Interfaces[indexOfInterface] = interfaceRowViewModel;
                 this.InterfacesMap[keyValuePair.Key] = interfaceRowViewModel;
                 link.HasComments = hasComments;
+                return true;
             }
+
+            return false;
         }
     }
 }

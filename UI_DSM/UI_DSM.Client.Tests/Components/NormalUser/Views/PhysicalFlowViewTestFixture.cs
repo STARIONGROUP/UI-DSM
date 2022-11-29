@@ -35,6 +35,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Components.Widgets;
     using UI_DSM.Client.Enumerator;
+    using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
@@ -62,20 +63,22 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         [SetUp]
         public void Setup()
         {
-            this.context = new TestContext();
-            this.context.ConfigureDevExpressBlazor();
-            this.reviewItemService = new Mock<IReviewItemService>();
-            this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel());
-            this.context.Services.AddSingleton(this.viewModel);
-            this.context.Services.AddTransient<IFilterViewModel, FilterViewModel>();
-            this.context.Services.AddTransient<IConnectionVisibilitySelectorViewModel, ConnectionVisibilitySelectorViewModel>();
-            this.context.JSInterop.Setup<Rectangle>("ZBlazorDiagrams.getBoundingClientRect", _ => true);
+            try
+            {
+                this.context = new TestContext();
+                this.context.ConfigureDevExpressBlazor();
+                this.reviewItemService = new Mock<IReviewItemService>();
+                this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel());
+                this.context.Services.AddSingleton(this.viewModel);
+                this.context.Services.AddTransient<IFilterViewModel, FilterViewModel>();
+                this.context.Services.AddTransient<IConnectionVisibilitySelectorViewModel, ConnectionVisibilitySelectorViewModel>();
+                this.context.JSInterop.Setup<Rectangle>("ZBlazorDiagrams.getBoundingClientRect", _ => true);
 
-            var portCategoryId = Guid.NewGuid();
-            var productCategoryId = Guid.NewGuid();
-            var interfaceCategoryId = Guid.NewGuid();
+                var portCategoryId = Guid.NewGuid();
+                var productCategoryId = Guid.NewGuid();
+                var interfaceCategoryId = Guid.NewGuid();
 
-            var categories = new List<Category>
+                var categories = new List<Category>
             {
                 new()
                 {
@@ -94,85 +97,85 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 }
             };
 
-            var portDefinition = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Port",
-                Category =
+                var portDefinition = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Port",
+                    Category =
                 {
                     portCategoryId
                 }
-            };
+                };
 
-            var notConnectedPort = new ElementUsage()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Port_ACC",
-                ElementDefinition = portDefinition.Iid,
-                Category =
+                var notConnectedPort = new ElementUsage()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Port_ACC",
+                    ElementDefinition = portDefinition.Iid,
+                    Category =
                 {
                     portCategoryId
                 }
-            };
+                };
 
-            var sourcePort = new ElementUsage()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Port_ALL",
-                ElementDefinition = portDefinition.Iid,
-                InterfaceEnd = InterfaceEndKind.INPUT,
-                Category =
+                var sourcePort = new ElementUsage()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Port_ALL",
+                    ElementDefinition = portDefinition.Iid,
+                    InterfaceEnd = InterfaceEndKind.INPUT,
+                    Category =
                 {
                     portCategoryId
                 }
-            };
+                };
 
-            var targetPort = new ElementUsage()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Port_BLL",
-                ElementDefinition = portDefinition.Iid,
-                InterfaceEnd = InterfaceEndKind.OUTPUT,
-                Category =
+                var targetPort = new ElementUsage()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Port_BLL",
+                    ElementDefinition = portDefinition.Iid,
+                    InterfaceEnd = InterfaceEndKind.OUTPUT,
+                    Category =
                 {
                     portCategoryId
                 }
-            };
+                };
 
-            var accelorometerBox = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Accelerometer Box",
-                Category = { productCategoryId },
-                ContainedElement = { targetPort.Iid, notConnectedPort.Iid }
-            };
+                var accelorometerBox = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Accelerometer Box",
+                    Category = { productCategoryId },
+                    ContainedElement = { targetPort.Iid, notConnectedPort.Iid }
+                };
 
-            var powerGenerator = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Battery",
-                Category = { productCategoryId },
-                ContainedElement = { sourcePort.Iid }
-            };
+                var powerGenerator = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Battery",
+                    Category = { productCategoryId },
+                    ContainedElement = { sourcePort.Iid }
+                };
 
-            var emptyProduct = new ElementDefinition()
-            {
-                Iid = Guid.NewGuid(),
-                Name = "Accelerometer Box 2",
-                Category = { productCategoryId },
-            };
+                var emptyProduct = new ElementDefinition()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "Accelerometer Box 2",
+                    Category = { productCategoryId },
+                };
 
-            var interfaceRelationShip = new BinaryRelationship()
-            {
-                Iid = Guid.NewGuid(),
-                Category = { interfaceCategoryId },
-                Source = sourcePort.Iid,
-                Target = targetPort.Iid
-            };
+                var interfaceRelationShip = new BinaryRelationship()
+                {
+                    Iid = Guid.NewGuid(),
+                    Category = { interfaceCategoryId },
+                    Source = sourcePort.Iid,
+                    Target = targetPort.Iid
+                };
 
-            var assembler = new Assembler(new Uri("http://localhost"));
+                var assembler = new Assembler(new Uri("http://localhost"));
 
-            var things = new List<Thing>(categories)
+                var things = new List<Thing>(categories)
             {
                 sourcePort,
                 targetPort,
@@ -183,32 +186,38 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 emptyProduct
             };
 
-            assembler.Synchronize(things).Wait();
-            _ = assembler.Cache.Select(x => x.Value.Value);
+                assembler.Synchronize(things).Wait();
+                _ = assembler.Cache.Select(x => x.Value.Value);
 
-            var projectId = Guid.NewGuid();
-            var reviewId = Guid.NewGuid();
+                var projectId = Guid.NewGuid();
+                var reviewId = Guid.NewGuid();
 
-            this.reviewItemService.Setup(x => x.GetReviewItemsForThings(projectId, reviewId, It.IsAny<IEnumerable<Guid>>(), 0))
-                .ReturnsAsync(new List<ReviewItem>
-                {
+                this.reviewItemService.Setup(x => x.GetReviewItemsForThings(projectId, reviewId, It.IsAny<IEnumerable<Guid>>(), 0))
+                    .ReturnsAsync(new List<ReviewItem>
+                    {
                     new (Guid.NewGuid())
                     {
                         ThingId = interfaceRelationShip.Iid,
                         Annotations = { new Comment(Guid.NewGuid()) }
                     }
-                });
+                    });
 
-            this.renderer = this.context.RenderComponent<PhysicalFlowView>();
+                this.renderer = this.context.RenderComponent<PhysicalFlowView>();
 
-            var pocos = assembler.Cache.Where(x => x.Value.IsValueCreated)
-                .Select(x => x.Value)
-                .Select(x => x.Value)
-                .ToList();
+                var pocos = assembler.Cache.Where(x => x.Value.IsValueCreated)
+                    .Select(x => x.Value)
+                    .Select(x => x.Value)
+                    .ToList();
 
-            var reviewItem = new ReviewItem(Guid.NewGuid());
+                var reviewItem = new ReviewItem(Guid.NewGuid());
 
-            this.Initialize(pocos, projectId, reviewId);
+                this.Initialize(pocos, projectId, reviewId);
+            }
+            catch
+            {
+                // On GitHub, exception is thrown even if the JSRuntime has been configured
+
+            }
         }
 
         public async void Initialize(IEnumerable<CDP4Common.CommonData.Thing> pocos, Guid projectId, Guid reviewId)

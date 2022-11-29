@@ -44,7 +44,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             base.OnInitialized();
 
-            this.ViewModel.ShouldUpdateDiagram = true;
             this.Diagram = new Diagram();
             this.Diagram.Options.AllowMultiSelection = false;
             this.Diagram.Options.DefaultNodeComponent = typeof(DiagramNodeWidget);
