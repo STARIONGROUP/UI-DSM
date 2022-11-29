@@ -211,17 +211,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 var reviewItem = new ReviewItem(Guid.NewGuid());
 
-                this.Initialize(pocos, projectId, reviewId);
+                renderer.Instance.InitializeViewModel(pocos, projectId, reviewId).Wait();
             }
             catch
             {
                 // On GitHub, exception is thrown even if the JSRuntime has been configured
             }
-        }
-
-        public async void Initialize(IEnumerable<CDP4Common.CommonData.Thing> pocos, Guid projectId, Guid reviewId)
-        {
-            await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId);
         }
 
         [TearDown]
