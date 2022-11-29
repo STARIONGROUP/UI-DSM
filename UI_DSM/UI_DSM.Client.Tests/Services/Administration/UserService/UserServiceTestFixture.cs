@@ -150,5 +150,27 @@ namespace UI_DSM.Client.Tests.Services.Administration.UserService
             deleteResponse = this.service.DeleteUser(userToDelete).Result;
             Assert.That(deleteResponse.IsRequestSuccessful, Is.True);
         }
+
+        [Test]
+        public async Task VerifyGetParticipantsForUser()
+        {
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.BadRequest;
+
+            var request = this.httpMessageHandler.When("/User/LinkedParticipants");
+            request.Respond(_ => httpResponse);
+
+            Assert.That(async () => await this.service.GetParticipantsForUser(), Throws.Exception);
+
+            var dtos = new List<EntityDto>()
+            {
+                new ParticipantDto(Guid.NewGuid())
+            };
+
+            httpResponse.StatusCode = HttpStatusCode.OK;
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(dtos));
+            var participants = await this.service.GetParticipantsForUser();
+            Assert.That(participants, Has.Count.EqualTo(1));
+        }
     }
 }
