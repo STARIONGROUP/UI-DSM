@@ -100,3 +100,12 @@ tr.invalid {
     background-color: var(--colors-red-100);
     outline: none;
 }
+
+.app-traceability-table__row-header--large,
+.app-traceability-table__column-header--large {
+    width: 240px;
+    white-space: initial;
+    display: block;
+}
+
+

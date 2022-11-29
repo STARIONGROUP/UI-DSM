@@ -1,15 +1,17 @@
 .task-item {
-  padding: var(--spacing-4);
-  display: flex;
+  display: grid;
+  padding: var(--spacing-2) var(--spacing-4) var(--spacing-2) 0;
   gap: var(--spacing-1);
   border-bottom: 1px solid var(--colors-gray-100);
   text-decoration: none;
   align-items: center;
   color: var(--colors-gray-900);
+  grid-template-columns: 1fr auto;
 }
-
-.task-item button {
+.task-item__button {
+  width: 100%;
   text-align: left;
+  padding: var(--spacing-4);
 }
 
 .task-item__actions {

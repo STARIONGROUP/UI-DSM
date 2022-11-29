@@ -21,11 +21,13 @@
 					@foreach (var column in this.ViewModel.VisibleColumns)
 					{
 						<th @onclick="() => this.ViewModel.SelectElement(column)">
-							@if (column.HasComment())
-							{
-								<FeatherMessageCircle Size="20" Color="green"/>
-							}
-							@column.Id
+							<span class="app-traceability-table__column-header">
+								@if (column.HasComment())
+								{
+									<FeatherMessageCircle Size="20" Color="green"/>
+								}
+								@column.Id
+							</span>
 						</th>
 					}
 				</tr>
@@ -35,11 +37,13 @@
 				{
 					<tr class="@this.GetTrClass(currentRow)">
 						<th @onclick="() => this.ViewModel.SelectElement(currentRow)">
-							@if (currentRow.HasComment())
-							{
-								<FeatherMessageCircle Size="20" Color="green"/>
-							}
-							@currentRow.Id
+							<span class="app-traceability-table__row-header">
+								@if (currentRow.HasComment())
+								{
+									<FeatherMessageCircle Size="20" Color="green"/>
+								}
+								@currentRow.Id
+							</span>
 						</th>
 							@foreach (var currentColumn in this.ViewModel.VisibleColumns)
 						{
