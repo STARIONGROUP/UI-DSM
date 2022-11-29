@@ -61,17 +61,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         /// A list of the <see cref="NodeModel"/> in the <see cref="Diagram"/>
         /// </summary>
-        List<NodeModel> ProductNodes { get; } 
+        List<DiagramNode> ProductNodes { get; } 
 
         /// <summary>
         /// A list of the <see cref="PortModel"/> in the <see cref="Diagram"/>
         /// </summary>
-        List<PortModel> PortsNodes { get; } 
+        List<DiagramPort> PortNodes { get; } 
 
         /// <summary>
         /// A list of the <see cref="LinkModel"/> in the <see cref="Diagram"/>
         /// </summary>
-        List<LinkModel> InterfacesLinks { get; } 
+        List<DiagramLink> LinkNodes { get; } 
 
         /// <summary>
         /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>
@@ -92,7 +92,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     The <see cref="IFilterViewModel" />
         /// </summary>
         IFilterViewModel FilterViewModel { get; }
-
+        
         /// <summary>
         ///     Filters current rows
         /// </summary>
@@ -139,6 +139,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         void SetProductsVisibility(bool visibility);
 
         /// <summary>
+        /// Initializes the diagram with the selected element as a center node.
+        /// </summary>
+        void InitializeDiagram();
+
+        /// <summary>
+        /// Selects the first central product depending on the selected element.
+        /// </summary>
+        /// <param name="selectedElement">the selected element</param>
+        /// <returns>the selected <see cref="ProductRowViewModel"/></returns>
+        /// <exception cref="ArgumentException">if the selected element is not null and is not of type <see cref="ElementBaseRowViewModel"/></exception>
+        ProductRowViewModel SelectedFirstProductByCloserSelectedItem(object selectedElement);
+
+        /// <summary>
         /// Tries to get all the neighbours of a <see cref="ProductRowViewModel"/>
         /// </summary>
         /// <param name="productRow">the product to get the neighbours from</param>
@@ -174,7 +187,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// Sets the new central node for this <see cref="IInterfaceViewViewModel"/>
         /// </summary>
         /// <param name="nodeModel">the new central node</param>
-        void SetCentralNodeModel(NodeModel nodeModel);
+        /// <returns>true if the node was set, false otherwise</returns>
+        bool SetCentralNodeModel(NodeModel nodeModel);
+
+        /// <summary>
+        /// Upgrades the nodes with the actual data
+        /// </summary>
+        /// <returns>true if the object was updated, false otherwise</returns>
+        bool TryUpdate(object updatedObject, bool hasComments);
 
         /// <summary>
         /// Event fired when the state of the component needs to change.

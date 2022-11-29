@@ -179,7 +179,14 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
                 this.ViewModel.CurrentBaseViewInstance = baseView;
                 this.viewDisposables.Add(baseView.SelectedItemObservable.Subscribe(async x => await this.OnSelectedItemChanged(x)));
-                this.viewDisposables.Add(this.Comments.ViewModel.Comments.CountChanged.Subscribe(async _ => await baseView.HasChanged()));
+                this.viewDisposables.Add(this.Comments.ViewModel.Comments.CountChanged.Subscribe(async _ => 
+                {
+                    if(baseView is PhysicalFlowView physicalFlowView)
+                    {
+                       physicalFlowView.SelectedElementChangedComments(this.SelectedItem, this.Comments.ViewModel.Comments.Count > 0);
+                    }
+                    await baseView.HasChanged();
+                }));
             }
 
             await base.OnAfterRenderAsync(firstRender);

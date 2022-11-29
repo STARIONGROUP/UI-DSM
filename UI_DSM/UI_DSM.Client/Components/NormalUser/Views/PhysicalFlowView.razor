@@ -12,11 +12,17 @@
 @using Blazor.Diagrams.Components;
 @using Blazor.Diagrams.Core
 @using Blazor.Diagrams.Core.Models
+
+@using UI_DSM.Client.Extensions
 @using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+@using UI_DSM.Client.Enumerator;
+@using UI_DSM.Client.Components.Widgets;
+
 @inherits GenericBaseView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IInterfaceViewViewModel>
 
 <CascadingValue Value="this.Diagram">
     <div id="diagram-parent">
-        <DiagramCanvas></DiagramCanvas>     
+        <DiagramCanvas></DiagramCanvas>   
+        <DiagramLegendWidget></DiagramLegendWidget>
     </div>
 </CascadingValue>

@@ -47,12 +47,12 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.Diagram = new Diagram();
             this.Diagram.Options.AllowMultiSelection = false;
             this.Diagram.Options.DefaultNodeComponent = typeof(DiagramNodeWidget);
-            this.Diagram.RegisterModelComponent<DiagramLink, DiagramLinkWidget>();                       
+            this.Diagram.RegisterModelComponent<DiagramLink, DiagramLinkWidget>();
 
             this.Diagram.MouseUp += Diagram_MouseUp;
             this.Diagram.MouseDoubleClick += Diagram_MouseDoubleClick;
         }
-
+                
         /// <summary>
         /// MouseUp event for the diagram component
         /// </summary>
@@ -88,7 +88,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <returns>Value indicating if it could copy components</returns>
         public async Task<bool> CopyComponents(BaseView otherView)
         {
-            this.ViewModel.OnCentralNodeChanged -= this.OnCentralNodeChanged;
+            this.ViewModel.OnCentralNodeChanged -= this.RefreshDiagram;
             if (otherView is not GenericBaseView<IInterfaceViewViewModel> interfaceView)
             {
                 return false;
@@ -96,22 +96,36 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
             this.ViewModel = interfaceView.ViewModel;
             await this.HasChanged();
-            this.OnCentralNodeChanged();
 
-            this.ViewModel.OnCentralNodeChanged += this.OnCentralNodeChanged;
+            this.ViewModel.InitializeDiagram();
+            this.RefreshDiagram();
+
+            this.ViewModel.OnCentralNodeChanged += this.RefreshDiagram;
 
             return true;
         }
 
         /// <summary>
+        /// The comments of the selected object have changed
+        /// </summary>
+        /// <param name="updatedObject">the object that the objects have changed</param>
+        /// <param name="hasComments">if have comments or not</param>
+        public void SelectedElementChangedComments(object updatedObject, bool hasComments)
+        {
+            this.ViewModel.TryUpdate(updatedObject, hasComments);
+            this.RefreshDiagram();
+        }
+
+        /// <summary>
         /// Method that handles the on central node changed event.
         /// </summary>
-        public void OnCentralNodeChanged()
+        public void RefreshDiagram()
         {
             this.Diagram.Links.Clear();
             this.Diagram.Nodes.Clear();
             this.ViewModel.ProductNodes.ForEach(node => this.Diagram.Nodes.Add(node));
-            this.ViewModel.InterfacesLinks.ForEach(link => this.Diagram.Links.Add(link));
+            this.ViewModel.LinkNodes.ForEach(link => this.Diagram.Links.Add(link));
+            this.Diagram.Refresh();
             this.StateHasChanged();
         }
 
@@ -122,7 +136,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             this.Diagram.MouseUp -= this.Diagram_MouseUp;
             this.Diagram.MouseDoubleClick -= this.Diagram_MouseDoubleClick;
-            this.ViewModel.OnCentralNodeChanged -= this.OnCentralNodeChanged;
+            this.ViewModel.OnCentralNodeChanged -= this.RefreshDiagram;
         }
     }
 }

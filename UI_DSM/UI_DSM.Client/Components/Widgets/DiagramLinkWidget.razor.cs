@@ -15,6 +15,8 @@ namespace UI_DSM.Client.Components.Widgets
 {
     using Microsoft.AspNetCore.Components;
 
+    using UI_DSM.Client.Enumerator;
+    using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Model;
 
     /// <summary>
@@ -29,17 +31,25 @@ namespace UI_DSM.Client.Components.Widgets
         public DiagramLink Link { get; set; }
 
         /// <summary>
+        /// Gets or sets the category of the interface
+        /// </summary>
+        public InterfaceCategory Category { get; set; } = InterfaceCategory.Other;
+
+        /// <summary>
+        /// Gets the color of the interface, which depends on the <see cref="InterfaceCategory"/>
+        /// </summary>
+        public string Color => this.Link.HasComments ? "green" : this.Category.ToColorString();
+
+        /// <summary>
         /// Method invoked when the component is ready to start, having received its
         /// initial parameters from its parent in the render tree.
         /// </summary>
         protected override void OnInitialized()
         {
             base.OnInitialized();
-
-            if (this.Link.HasComments)
-            {
-                this.Link.Color = "green";
-            }
+                        
+            this.Link.Color = this.Color;
+            this.Link.SelectedColor = "#278EFF";                        
         }
     }
 }

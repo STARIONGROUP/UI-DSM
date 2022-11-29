@@ -22,6 +22,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
 
+    using DevExpress.Blazor.Internal;
     using DynamicData;
 
     using ReactiveUI;
@@ -121,17 +122,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         /// A list of the <see cref="NodeModel"/> in the <see cref="Blazor.Diagrams.Core.Diagram"/>
         /// </summary>
-        public List<NodeModel> ProductNodes { get; } = new();
+        public List<DiagramNode> ProductNodes { get; } = new();
 
         /// <summary>
         /// A list of the <see cref="PortModel"/> in the <see cref="Blazor.Diagrams.Core.Diagram"/>
         /// </summary>
-        public List<PortModel> PortsNodes { get; } = new();
+        public List<DiagramPort> PortNodes { get; } = new();
 
         /// <summary>
         /// A list of the <see cref="LinkModel"/> in the <see cref="Blazor.Diagrams.Core.Diagram"/>
         /// </summary>
-        public List<LinkModel> InterfacesLinks { get; } = new();
+        public List<DiagramLink> LinkNodes { get; } = new();
 
         /// <summary>
         /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>
@@ -231,21 +232,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.ApplyVisibility();
             this.InitializesFilter();
 
-            //TODO: the selection of the product shall not be random. It will be the selected thing.
-            var firstNode = this.Products.FirstOrDefault(p =>
-            {
-                var neighbours = this.GetNeighbours(p);
-                if (neighbours is not null && neighbours.Count() > 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }, this.Products.First());
-
-            this.CreateCentralNodeAndNeighbours(firstNode);
+            this.InitializeDiagram();
         }
 
         /// <summary>
@@ -398,6 +385,46 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
+        /// Initializes the diagram with the selected element as a center node.
+        /// </summary>
+        public void InitializeDiagram()
+        {
+            var firstCenterProduct = this.SelectedFirstProductByCloserSelectedItem(this.SelectedElement);
+            this.CreateCentralNodeAndNeighbours(firstCenterProduct);
+        }
+
+        /// <summary>
+        /// Selects the first central product depending on the selected element.
+        /// </summary>
+        /// <param name="selectedElement">the selected element</param>
+        /// <returns>the selected <see cref="ProductRowViewModel"/></returns>
+        /// <exception cref="ArgumentException">if the selected element is not null and is not of correct type</exception>
+        public ProductRowViewModel SelectedFirstProductByCloserSelectedItem(object selectedElement)
+        {
+            if (selectedElement is ProductRowViewModel productRowViewModel)
+            {
+                return productRowViewModel;
+            }
+            else if (selectedElement is PortRowViewModel portRowViewModel)
+            {
+                return this.Products.FirstOrDefault(x => x.ThingId == portRowViewModel.ContainerId, this.Products.First());
+            }
+            else if (selectedElement is InterfaceRowViewModel interfaceRowViewModel)
+            {
+                var source = this.allPorts.FirstOrDefault(x => x.ThingId == interfaceRowViewModel.SourceId, this.allPorts.First());
+                return this.Products.FirstOrDefault(x => x.ThingId == source.ContainerId, this.Products.First());
+            }
+            else if (selectedElement is null)
+            {
+                return this.Products.First();
+            }
+            else
+            {
+                throw new ArgumentException($"the {selectedElement} is not a valid argument");
+            }
+        }
+
+        /// <summary>
         /// Tries to get all the neighbours of a <see cref="ProductRowViewModel"/>
         /// </summary>
         /// <param name="productRow">the product to get the neighbours from</param>
@@ -478,14 +505,18 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// Sets the new central node for this <see cref="IInterfaceViewViewModel"/>
         /// </summary>
         /// <param name="nodeModel">the new central node</param>
-        public void SetCentralNodeModel(NodeModel nodeModel)
+        /// <returns>true if the node was set, false otherwise</returns>
+        public bool SetCentralNodeModel(NodeModel nodeModel)
         {
             if (this.ProductsMap.ContainsKey(nodeModel.Id))
             {
                 var asociatedProduct = this.ProductsMap[nodeModel.Id];
                 this.CreateCentralNodeAndNeighbours(asociatedProduct);
                 Task.Run(() => this.OnCentralNodeChanged?.Invoke());
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>
@@ -495,8 +526,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public void CreateCentralNodeAndNeighbours(ProductRowViewModel centerNode)
         {
             this.ProductNodes.Clear();
-            this.PortsNodes.Clear();
-            this.InterfacesLinks.Clear();
+            this.PortNodes.Clear();
+            this.LinkNodes.Clear();
 
             this.ProductsMap.Clear();
             this.PortsMap.Clear();
@@ -521,8 +552,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 {
                     var x = cx - r * Math.Cos(angle);
                     var y = cy - r * Math.Sin(angle);
-
-                    Console.WriteLine($"The node {neighbour.Name} is positioned in {x},{y}");
 
                     var neighbourNode = CreateNewNodeFromProduct(neighbour);
                     neighbourNode.SetPosition(x, y);
@@ -559,7 +588,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                     portNode.Locked = true;
                     portNode.HasComments = port.HasComment();
 
-                    this.PortsNodes.Add(portNode);
+                    switch (port.InterfaceEnd)
+                    {
+                        case "INPUT": portNode.Direction = PortDirection.In; 
+                            break;
+                        case "IN_OUT": portNode.Direction = PortDirection.InOut;
+                            break;
+                        case "OUT": portNode.Direction = PortDirection.Out;
+                            break;
+                    }
+
+                    this.PortNodes.Add(portNode);
                     this.PortsMap.Add(portNode.Id, port);
                 }
             }
@@ -580,8 +619,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 var sourcePortID = this.PortsMap.FirstOrDefault(item => item.Value == sourcePortRowVM).Key;
                 var targetPortID = this.PortsMap.FirstOrDefault(item => item.Value == targetPortRowVM).Key;
 
-                var source = this.PortsNodes.FirstOrDefault(port => port.Id == sourcePortID);
-                var target = this.PortsNodes.FirstOrDefault(port => port.Id == targetPortID);
+                var source = this.PortNodes.FirstOrDefault(port => port.Id == sourcePortID);
+                var target = this.PortNodes.FirstOrDefault(port => port.Id == targetPortID);
 
                 if(source != null && target != null)
                 {
@@ -592,10 +631,52 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                     link.TargetMarker = LinkMarker.Arrow;
                     link.HasComments = interf.HasComment();
 
-                    this.InterfacesLinks.Add(link);
+                    this.LinkNodes.Add(link);
                     this.InterfacesMap.Add(link.Id, interf);
                 }
             }
+        }
+
+        /// <summary>
+        /// Upgrades the nodes with the actual data
+        /// </summary>
+        public bool TryUpdate(object updatedObject, bool hasComments)
+        {
+            if (updatedObject is ProductRowViewModel productRowViewModel && this.Products.Contains(productRowViewModel))
+            {
+                var indexOfProduct = this.Products.IndexOf(productRowViewModel);
+                var keyValuePair = this.ProductsMap.First(x => x.Value == productRowViewModel);
+                var node = this.ProductNodes.First(x => x.Id == keyValuePair.Key);
+
+                this.Products[indexOfProduct] = productRowViewModel;
+                this.ProductsMap[keyValuePair.Key] = productRowViewModel;
+                node.HasComments = hasComments;
+                return true;
+            }
+            else if (updatedObject is PortRowViewModel portRowViewModel && this.allPorts.Contains(portRowViewModel))
+            {
+                var indexOfPort = this.allPorts.IndexOf(portRowViewModel);
+                var keyValuePair = this.PortsMap.First(x => x.Value == portRowViewModel);
+                var port = this.PortNodes.First(x => x.Id == keyValuePair.Key);
+
+                this.allPorts[indexOfPort] = portRowViewModel;
+                this.PortsMap[keyValuePair.Key] = portRowViewModel;
+                port.HasComments = hasComments;
+                return true;
+            }
+            else if (updatedObject is InterfaceRowViewModel interfaceRowViewModel && this.Interfaces.Contains(interfaceRowViewModel))
+            {
+                var indexOfInterface = this.Interfaces.IndexOf(interfaceRowViewModel);
+                var keyValuePair = this.InterfacesMap.First(x => x.Value == interfaceRowViewModel);
+                var link = this.LinkNodes.First(x => x.Id == keyValuePair.Key);
+
+                this.Interfaces[indexOfInterface] = interfaceRowViewModel;
+                this.InterfacesMap[keyValuePair.Key] = interfaceRowViewModel;
+                link.HasComments = hasComments;
+                return true;
+            }
+
+            return false;
         }
     }
 }

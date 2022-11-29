@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.Model
 {
     using Blazor.Diagrams.Core.Models;
+    using UI_DSM.Client.Enumerator;
 
     /// <summary>
     /// Derived class for holding data for the <see cref="Components.Widgets.DiagramNodeWidget.razor"/>
@@ -29,6 +30,11 @@ namespace UI_DSM.Client.Model
         /// Gets or sets the text of the port.
         /// </summary>
         public string Text { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the direction of the port.
+        /// </summary>
+        public PortDirection Direction { get; set; }
 
         /// <summary>
         /// Creates a new instance of type <see cref="DiagramPort"/>
