@@ -122,14 +122,16 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Iid = Guid.NewGuid(),
                     Owner = owner.Iid,
                     ElementDefinition = elementDefinitionForProduct.Iid,
-                    Category = new List<Guid> { productCategory }
+                    Category = new List<Guid> { productCategory },
+                    Name = "Product"
                 };
 
                 var functionUsage = new ElementUsage()
                 {
                     Iid = Guid.NewGuid(),
                     Owner = owner.Iid,
-                    ElementDefinition = elementDefinitionForFunction.Iid
+                    ElementDefinition = elementDefinitionForFunction.Iid,
+                    Name = "Function"
                 };
 
                 var product = new ElementDefinition()
@@ -194,10 +196,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     .ReturnsAsync(new List<ReviewItem>
                     {
                     new (Guid.NewGuid())
-                    {
-                        ThingId = functionUsage.Iid,
-                        Annotations = { new Comment(Guid.NewGuid()) }
-                    }
+                        {
+                            ThingId = functionUsage.Iid,
+                            Annotations = { new Comment(Guid.NewGuid()) }
+                        }
                     });
 
                 var renderer = this.context.RenderComponent<FunctionalTraceabilityToProductView>();
@@ -208,7 +210,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     .ToList();
 
                 await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId);
-
+                
                 Assert.Multiple(() =>
                 {
                     Assert.That(renderer.FindComponents<FeatherCheck>(), Has.Count.EqualTo(1));

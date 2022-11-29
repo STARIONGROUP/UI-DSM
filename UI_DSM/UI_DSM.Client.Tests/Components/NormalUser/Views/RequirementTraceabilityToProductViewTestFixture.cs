@@ -179,7 +179,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var elementUsage = new ElementUsage()
                 {
                     Iid = elementUsageId,
-                    ElementDefinition = productWithInvalidTechnology.Iid
+                    ElementDefinition = productWithInvalidTechnology.Iid,
+                    Name = "Element usage"
                 };
 
                 var productWithoutTechnology = new ElementDefinition()
@@ -189,9 +190,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     ShortName = "ProductShortName3",
                     Owner = owner.Iid,
                     Category = new List<Guid>
-                {
-                    instrumentsCategory
-                }
+                    {
+                        instrumentsCategory
+                    }
                 };
 
                 var validValueSet = new ParameterValueSet()
@@ -206,9 +207,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Iid = Guid.NewGuid(),
                     ParameterType = parameterType.Iid,
                     ValueSet = new List<Guid>
-                {
-                    validValueSet.Iid
-                }
+                    {
+                        validValueSet.Iid
+                    }
                 };
 
                 var productValidTechnology = new ElementDefinition()
@@ -218,13 +219,13 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     ShortName = "ProductShortName4",
                     Owner = owner.Iid,
                     Category = new List<Guid>
-                {
-                    instrumentsCategory
-                },
-                    Parameter = new List<Guid>
-                {
-                    validParameter.Iid
-                }
+                    {
+                        instrumentsCategory
+                    },
+                        Parameter = new List<Guid>
+                    {
+                        validParameter.Iid
+                    }
                 };
 
                 var specification = new RequirementsSpecification()
