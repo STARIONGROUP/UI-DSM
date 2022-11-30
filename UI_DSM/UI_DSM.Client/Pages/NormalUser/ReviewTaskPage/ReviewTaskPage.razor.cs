@@ -22,6 +22,8 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Components.App.Comments;
     using UI_DSM.Client.Components.App.SelectedItemCard;
     using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Client.Services.ViewProviderService;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
@@ -91,6 +93,11 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         /// </summary>
         public Comments Comments { get; set; }
 
+        [CascadingParameter]
+        protected bool IsLoading { get; set; }
+
+
+        ViewProviderService ViewProviderService;
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
@@ -126,6 +133,8 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ModelSelectorVisible)
                 .Subscribe(async _ => await this.OnModelSelectorChanged()));
+
+            this.ViewProviderService = new ViewProviderService();
         }
 
         /// <summary>
@@ -141,6 +150,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 new Guid(this.ReviewObjectiveId), new Guid(this.ReviewTaskId));
 
             await base.OnParametersSetAsync();
+            this.IsLoading = false;
         }
 
         /// <summary>
@@ -206,8 +216,16 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         /// <returns>A <see cref="Task" /></returns>
         private async Task OnModelSelectorChanged()
         {
+            IReusableView interfaceView = null;
             if (this.ViewModel.SelectedModel != null && this.ViewModel.CurrentModel.Id != this.ViewModel.SelectedModel.Id)
-            {
+            {                
+                if(this.BaseView.Instance is IReusableView reusableView)
+                {
+                    interfaceView = reusableView;
+                    interfaceView.IsLoading = true;
+                }
+
+                this.IsLoading = true;
                 var projectId = new Guid(this.ProjectId);
                 var reviewId = new Guid(this.ReviewId);
                 await this.ViewModel.UpdateModel(this.ViewModel.SelectedModel);
@@ -217,9 +235,16 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                     await this.ViewModel.CurrentBaseViewInstance.InitializeViewModel(this.ViewModel.Things, projectId, reviewId);
                     this.ViewModel.CurrentBaseViewInstance.TrySetSelectedItem(this.SelectedItem);
                 }
+
+                if (interfaceView != null)
+                {
+                    interfaceView.IsLoading = false;
+                }
             }
 
             await this.InvokeAsync(this.StateHasChanged);
+
+            this.IsLoading = false;
         }
 
         /// <summary>

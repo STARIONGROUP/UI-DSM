@@ -16,7 +16,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using System.Reactive.Linq;
 
     using CDP4Common.CommonData;
-
+    using Microsoft.AspNetCore.Components;
     using Radzen;
     using Radzen.Blazor;
 
@@ -58,6 +58,35 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     Reference to the <see cref="RadzenDataGrid{TItem}" />
         /// </summary>
         public RadzenDataGrid<IBelongsToInterfaceView> Grid { get; set; }
+
+        /// <summary>
+        /// Backing field for the <see cref="IsLoading"/> property
+        /// </summary>
+        private bool isLoading;
+
+        /// <summary>
+        /// Gets or sets if the view is loading
+        /// </summary>
+        [Parameter]
+        public bool IsLoading
+        {
+            get => this.isLoading;
+            set
+            {
+                this.isLoading = value;
+                this.InvokeAsync(this.HasChanged);
+            }
+        }
+
+        /// <summary>
+        /// Method invoked when the component is ready to start, having received its
+        /// initial parameters from its parent in the render tree.
+        /// </summary>
+        protected override void OnInitialized()
+        {
+            this.IsLoading = true;
+            base.OnInitialized();
+        }
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -102,6 +131,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.HideColumnsAtStart();
 
             await this.HasChanged();
+            this.IsLoading = false; 
         }
 
         /// <summary>
@@ -237,7 +267,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
             this.ViewModel = interfaceView.ViewModel;
             await this.HasChanged();
-
+            this.IsLoading = false;
             return true;
         }
     }

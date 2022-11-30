@@ -22,7 +22,9 @@
 
 <CascadingValue Value="this.Diagram">
     <div id="diagram-parent">
-        <DiagramCanvas></DiagramCanvas>   
-        <DiagramLegendWidget></DiagramLegendWidget>
+        <UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="@this.IsLoading">
+            <DiagramCanvas></DiagramCanvas>
+            <DiagramLegendWidget></DiagramLegendWidget>
+        </UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
     </div>
 </CascadingValue>

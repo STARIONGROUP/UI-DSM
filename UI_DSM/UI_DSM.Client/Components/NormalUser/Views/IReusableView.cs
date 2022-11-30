@@ -19,6 +19,11 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     public interface IReusableView
     {
         /// <summary>
+        /// Gets or sets if the view is loading
+        /// </summary>
+        public bool IsLoading { get; set; }
+
+        /// <summary>
         ///     Tries to copy components from another <see cref="BaseView" />
         /// </summary>
         /// <param name="otherView">The other <see cref="BaseView" /></param>

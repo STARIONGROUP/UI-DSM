@@ -13,12 +13,14 @@
 
 namespace UI_DSM.Client.Components.NormalUser.Views
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     using Blazor.Diagrams.Core;
     using Blazor.Diagrams.Core.Models;
     using Blazor.Diagrams.Core.Models.Base;
-
+    using CDP4Common.CommonData;
+    using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
 
     using UI_DSM.Client.Components.Widgets;
@@ -37,11 +39,31 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public Diagram Diagram { get; set; }
 
         /// <summary>
+        /// Backing field for the <see cref="IsLoading"/> property
+        /// </summary>
+        private bool isLoading;
+
+        /// <summary>
+        /// Gets or sets if the view is loading
+        /// </summary>
+        [Parameter]
+        public bool IsLoading
+        {
+            get => this.isLoading;
+            set
+            {
+                this.isLoading = value;
+                this.InvokeAsync(this.HasChanged);
+            }
+        }
+
+        /// <summary>
         /// Method invoked when the component is ready to start, having received its
         /// initial parameters from its parent in the render tree.
         /// </summary>
         protected override void OnInitialized()
         {
+            this.isLoading = true;
             base.OnInitialized();
 
             this.Diagram = new Diagram();
@@ -81,6 +103,12 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             }
         }
 
+        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
+        {
+            await base.InitializeViewModel(things, projectId, reviewId);
+            this.IsLoading = false;
+        }
+
         /// <summary>
         ///     Tries to copy components from another <see cref="BaseView" />
         /// </summary>
@@ -101,7 +129,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.RefreshDiagram();
 
             this.ViewModel.OnCentralNodeChanged += this.RefreshDiagram;
-
+            this.IsLoading = false;
             return true;
         }
 

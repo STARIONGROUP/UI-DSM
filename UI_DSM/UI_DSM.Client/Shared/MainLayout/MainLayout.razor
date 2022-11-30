@@ -10,6 +10,7 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
+@using UI_DSM.Client.Components.App.LoadingComponent;
 @inherits LayoutComponentBase
 @namespace AppComponents
 
@@ -20,11 +21,19 @@
 	</div>
 
 	<div class="main-layout__main">
-		@(this.Body)		
+@*		<LoadingComponent IsLoading=this.IsLoading>
+			<CascadingValue Value="this.IsLoading">
+				@(this.Body)
+			</CascadingValue>
+		</LoadingComponent>*@
+		@(this.Body)
 	</div>
 </div>
 
 @code {
+
+	public bool IsLoading { get; set; }
+
 	/// <summary>
 	/// Inject NavigationManager for redirecting to the login page
 	/// </summary>
