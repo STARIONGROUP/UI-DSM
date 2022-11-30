@@ -103,9 +103,18 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             }
         }
 
+        /// <summary>
+        ///     Initialize the correspondant ViewModel for this component
+        /// </summary>
+        /// <param name="things">The collection of <see cref="Thing" /></param>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <returns>A <see cref="Task" /></returns>
         public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
         {
             await base.InitializeViewModel(things, projectId, reviewId);
+            this.ViewModel.InitializeDiagram();
+            this.RefreshDiagram();
             this.IsLoading = false;
         }
 

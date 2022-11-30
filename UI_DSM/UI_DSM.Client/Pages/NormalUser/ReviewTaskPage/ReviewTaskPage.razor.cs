@@ -93,11 +93,6 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         /// </summary>
         public Comments Comments { get; set; }
 
-        [CascadingParameter]
-        protected bool IsLoading { get; set; }
-
-
-        ViewProviderService ViewProviderService;
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
@@ -133,8 +128,6 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ModelSelectorVisible)
                 .Subscribe(async _ => await this.OnModelSelectorChanged()));
-
-            this.ViewProviderService = new ViewProviderService();
         }
 
         /// <summary>
@@ -150,7 +143,6 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 new Guid(this.ReviewObjectiveId), new Guid(this.ReviewTaskId));
 
             await base.OnParametersSetAsync();
-            this.IsLoading = false;
         }
 
         /// <summary>
@@ -225,7 +217,6 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                     interfaceView.IsLoading = true;
                 }
 
-                this.IsLoading = true;
                 var projectId = new Guid(this.ProjectId);
                 var reviewId = new Guid(this.ReviewId);
                 await this.ViewModel.UpdateModel(this.ViewModel.SelectedModel);
@@ -243,8 +234,6 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
             }
 
             await this.InvokeAsync(this.StateHasChanged);
-
-            this.IsLoading = false;
         }
 
         /// <summary>
