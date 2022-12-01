@@ -10,99 +10,84 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @page "/Project/{ProjectId}/Review/{ReviewId}/ReviewObjective/{ReviewObjectiveId}/ReviewTask/{ReviewTaskId}"
-@using UI_DSM.Shared.Wrappers
-@using UI_DSM.Shared.Enumerator
 @using UI_DSM.Shared.Extensions
 @using UI_DSM.Shared.Models
+@using UI_DSM.Shared.Wrappers
+@using UI_DSM.Shared.Enumerator
 
 <PageTitle>Task | UI-DSM</PageTitle>
 <div class="task-page">
 
-	@if (!this.IsLoading && this.ViewModel.ReviewTask is null)
+	@if (!this.IsLoading && this.ViewModel.ReviewTask is null)
 	{
-		<div style="display: flex; align-items: center; justify-content: center;">
+		<div style="align-items: center; display: flex; justify-content: center;">
 			<h3>No review task found</h3>
 		</div>
-	}
-	else
+	}
+	else
 	{
-		if (this.ViewModel.ReviewObjective != null)
+		if (this.ViewModel.ReviewObjective != null)
 		{
 			<aside class="task-page__sidebar task-page__sidebar__left">
 				<AppAccordion Label="Review objective">
-					<AppSidebarText Description="@(this.ViewModel.ReviewObjective.Description)" />
+					<AppSidebarText Description="@(this.ViewModel.ReviewObjective.Description)"/>
 				</AppAccordion>
 
 				<AppAccordion Label="Tasks">
-					@foreach (var task in this.ViewModel.ReviewObjective.ReviewTasks.OrderBy(x => x.TaskNumber))
+					@foreach (var task in this.ViewModel.ReviewObjective.ReviewTasks.OrderBy(x => x.TaskNumber))
+
 					{
 						<ReviewTaskCard UseNavLink="@(task.Id != this.ViewModel.ReviewTask.Id)"
-							ReviewTask="task" ProjectId="@this.ProjectId" ReviewId="@this.ReviewId" ReviewObjectiveId="@this.ReviewObjectiveId" />
+						                ReviewTask="task" ProjectId="@(this.ProjectId)" ReviewId="@(this.ReviewId)" ReviewObjectiveId="@(this.ReviewObjectiveId)"/>
 					}
 				</AppAccordion>
 			</aside>
-		}
-		<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.IsLoading">
-			if (this.ViewModel.CurrentBaseView != null)
+		}
+
+		<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.IsLoading">
+			if (this.ViewModel.CurrentBaseView != null)
 			{
-				
-					<main class="task-page__body">
-						<div class="task-page__header">
-							<h1 class="h3">@this.ViewModel.ReviewTask.Description</h1>
-							<div class="task-page__actions">
-								<AppButton Id="model-selector-button" Label="Select view" Type="button" Click="@this.OpenModelSelector">
-									<FeatherDatabase Size="20" Color="currentColor" StrokeWidth="2" /> <span>@this.GetModelName()</span>
-								</AppButton>
-								<DxDropDown @bind-IsOpen="@this.ViewModel.ModelSelectorVisible"
-									Width="200"
-									MaxHeight="500"
-									PositionTarget="#model-selector-button"
-									PositionMode="DropDownPositionMode.Bottom"
-									PreventCloseOnPositionTargetClick="true">
-									<BodyTemplate>
-										<DxListBox Data="@this.ViewModel.AvailableModels" TextFieldName="@nameof(Model.ModelName)"
-										   @bind-Value="@this.ViewModel.SelectedModel" />
-									</BodyTemplate>
-								</DxDropDown>
+			<main class="task-page__body">
+				<div class="task-page__header">
+					<h1 class="h3">@(this.ViewModel.ReviewTask.Description)</h1>
+					<div class="task-page__actions">
+						<AppButton Id="model-selector-button" Label="Select view" Type="button" Click="@(this.OpenModelSelector)">
+							<FeatherDatabase Size="20" Color="currentColor" StrokeWidth="2"/> <span>@(this.GetModelName())</span>
+						</AppButton>
+						<DxDropDown @bind-IsOpen="@(this.ViewModel.ModelSelectorVisible)"
+						            Width="200"
+						            MaxHeight="500"
+						            PositionTarget="#model-selector-button"
+						            PositionMode="DropDownPositionMode.Bottom"
+						            PreventCloseOnPositionTargetClick="true">
+							<BodyTemplate>
+								<DxListBox Data="@(this.ViewModel.AvailableModels)" TextFieldName="@nameof(Model.ModelName)"
+								           @bind-Value="@(this.ViewModel.SelectedModel)"/>
+							</BodyTemplate>
+						</DxDropDown>
 
-								<AppButton Id="view-selector-button" Label="Select view" Type="button" Click="@this.OpenViewSelector">
-									<FeatherEye Size="20" Color="currentColor" StrokeWidth="2" /> <span>@this.ViewModel.CurrentView.GetEnumDisplayName()</span>
-								</AppButton>
-								<DxDropDown @bind-IsOpen="@this.ViewModel.ViewSelectorVisible"
-									Width="200"
-									MaxHeight="500"
-									PositionTarget="#view-selector-button"
-									PositionMode="DropDownPositionMode.Bottom"
-									PreventCloseOnPositionTargetClick="true">
-									<BodyTemplate>
-										<DxListBox Data="@this.ViewModel.AvailableViews" TextFieldName="@nameof(ViewWrapper.ViewName)"
-										   @bind-Value="@this.ViewModel.SelectedView" />
-									</BodyTemplate>
-								</DxDropDown>
+						<AppButton Id="view-selector-button" Label="Select view" Type="button" Click="@(this.OpenViewSelector)">
+							<FeatherEye Size="20" Color="currentColor" StrokeWidth="2"/> <span>@(this.ViewModel.CurrentView.GetEnumDisplayName())</span>
+						</AppButton>
+						<DxDropDown @bind-IsOpen="@(this.ViewModel.ViewSelectorVisible)"
+						            Width="200"
+						            MaxHeight="500"
+						            PositionTarget="#view-selector-button"
+						            PositionMode="DropDownPositionMode.Bottom"
+						            PreventCloseOnPositionTargetClick="true">
+							<BodyTemplate>
+								<DxListBox Data="@(this.ViewModel.AvailableViews)" TextFieldName="@nameof(ViewWrapper.ViewName)"
+								           @bind-Value="@(this.ViewModel.SelectedView)"/>
+							</BodyTemplate>
+						</DxDropDown>
 
-								@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask))
-								{
-									<AppButton Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success">
-										<FeatherCheckCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Done</span>
-									</AppButton>
-								}
+						@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask))
 
-							</div>
-						</div>
-						<div class="task-page__body-inner">
-							<DynamicComponent Type="@(this.ViewModel.CurrentBaseView)" @ref="this.BaseView" />
-						</div>
-					</main>
-				
-			}
-			<aside class="task-page__sidebar task-page__sidebar__right">
-				<SelectedItemCard @ref="this.SelectedItemCard" />
-				<RelatedViews MainRelatedView="@this.ViewModel.GetMainRelatedView()" OtherRelatedViews="@this.ViewModel.GetOtherRelatedViews()"
-						  OnViewSelect="@this.OnViewSelect" />
-				<Comments @ref="this.Comments" />
-			</aside>
-		</UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
-	}
+						{
+							<AppButton Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success">
+								<FeatherCheckCircle Size="20" Color="currentColor" StrokeWidth="2"/> <span>Done</span>
+							</AppButton>
+						}
 
 					</div>
 				</div>
@@ -110,13 +95,15 @@
 					<DynamicComponent Type="@(this.ViewModel.CurrentBaseView)" @ref="this.BaseView"/>
 				</div>
 			</main>
-		}
-		<aside class="task-page__sidebar task-page__sidebar__right">
-			<ConfirmCancelPopup ViewModel="this.ViewModel.ConfirmCancelDialog"/>
-			<SelectedItemCard @ref="this.SelectedItemCard" MarkAsReviewed="this.ViewModel.OpenConfirmDialog"/>
-			<RelatedViews MainRelatedView="@this.ViewModel.GetMainRelatedView()" OtherRelatedViews="@this.ViewModel.GetOtherRelatedViews()"
-			              OnViewSelect="@this.OnViewSelect"/>
-			<Comments @ref="this.Comments"/>
-		</aside>
+
+			}
+			<aside class="task-page__sidebar task-page__sidebar__right">
+				<ConfirmCancelPopup ViewModel="this.ViewModel.ConfirmCancelDialog"/>
+				<SelectedItemCard @ref="this.SelectedItemCard" MarkAsReviewed="this.ViewModel.OpenConfirmDialog"/>
+				<RelatedViews MainRelatedView="@(this.ViewModel.GetMainRelatedView())" OtherRelatedViews="@(this.ViewModel.GetOtherRelatedViews())"
+				              OnViewSelect="@(this.OnViewSelect)"/>
+				<Comments @ref="this.Comments"/>
+			</aside>
+		</UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
 	}
 </div>

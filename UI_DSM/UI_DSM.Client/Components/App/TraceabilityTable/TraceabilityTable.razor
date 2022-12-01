@@ -10,8 +10,7 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
-@if (this.ViewModel != null)
-{
+<LoadingComponent IsLoading="this.IsLoading">
 	<div class="app-traceability-table">
 		<div>
 			<table>
@@ -54,4 +53,4 @@
 			</table>
 		</div>
 	</div>
-}
+</LoadingComponent>

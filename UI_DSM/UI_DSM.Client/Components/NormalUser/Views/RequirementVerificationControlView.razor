@@ -26,16 +26,17 @@
 	</div>
 </div>
 
+<LoadingComponent IsLoading="this.IsLoading">
 <div class="breakdown-view">
 	<DxGrid PageSize="8"
-			CssClass="default-grid"
-			@ref="@this.DxGrid"
-			Data="@(this.ViewModel.Rows)"
-			@bind-SelectedDataItem="@this.ViewModel.SelectedElement"
-			SelectionMode="GridSelectionMode.Single"
-			AllowSelectRowByClick="true"
-			ShowFilterRow="true"
-			HorizontalScrollBarMode="ScrollBarMode.Visible">
+	        CssClass="default-grid"
+	        @ref="@this.DxGrid"
+	        Data="@(this.ViewModel.Rows)"
+	        @bind-SelectedDataItem="@this.ViewModel.SelectedElement"
+	        SelectionMode="GridSelectionMode.Single"
+	        AllowSelectRowByClick="true"
+	        ShowFilterRow="true"
+	        HorizontalScrollBarMode="ScrollBarMode.Visible">
 		<Columns>
 
 			<DxGridDataColumn ShowInColumnChooser="false">
@@ -64,3 +65,4 @@
 		</Columns>
 	</DxGrid>
 </div>
+</LoadingComponent>

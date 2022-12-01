@@ -27,7 +27,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     /// <summary>
     ///     Component for view that have a <see cref="TraceabilityTable" /> component
     /// </summary>
-    /// <typeparam name="TViewModel">A <see cref="IHaveTraceabilityTableViewModel"/></typeparam>
+    /// <typeparam name="TViewModel">A <see cref="IHaveTraceabilityTableViewModel" /></typeparam>
     public abstract partial class HaveTraceabilityTableView<TViewModel> : GenericBaseView<TViewModel>, IDisposable
         where TViewModel : IHaveTraceabilityTableViewModel
     {
@@ -42,7 +42,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public TraceabilityTable Table { get; set; }
 
         /// <summary>
-        ///     The <see cref="App.ConnectionVisibilitySelector.ConnectionVisibilitySelector" /> reference
+        ///     The <see cref="ConnectionVisibilitySelector" /> reference
         /// </summary>
         public ConnectionVisibilitySelector ConnectionVisibilitySelector { get; set; }
 

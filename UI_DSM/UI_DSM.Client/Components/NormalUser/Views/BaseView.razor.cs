@@ -24,6 +24,24 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     public abstract partial class BaseView
     {
         /// <summary>
+        /// Backing field for the <see cref="IsLoading"/> property
+        /// </summary>
+        private bool isLoading;
+
+        /// <summary>
+        /// Gets or sets if the view is loading
+        /// </summary>
+        public bool IsLoading
+        {
+            get => this.isLoading;
+            set
+            {
+                this.isLoading = value;
+                this.InvokeAsync(this.HasChanged);
+            }
+        }
+
+        /// <summary>
         ///     An <see cref="IObservable{T}" /> for the current Selected Item
         /// </summary>
         public IObservable<object> SelectedItemObservable { get; protected set; }

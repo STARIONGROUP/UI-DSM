@@ -15,6 +15,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 {
     using System.Reactive.Linq;
 
+    using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
 
     using Radzen;
@@ -26,6 +27,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using UI_DSM.Client.ViewModels.App.ColumnChooser;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     Abstract component for any breakdown view that is related to <see cref="ElementBase" />
@@ -59,6 +61,30 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public void Dispose()
         {
             this.disposables.ForEach(x => x.Dispose());
+        }
+
+        /// <summary>
+        ///     Initialize the correspondant ViewModel for this component
+        /// </summary>
+        /// <param name="things">The collection of <see cref="Thing" /></param>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
+        {
+            this.hasAlreadyExpandOnce = false;
+            await base.InitializeViewModel(things, projectId, reviewId);
+            this.IsLoading = false;
+        }
+
+        /// <summary>
+        ///     Method invoked when the component is ready to start, having received its
+        ///     initial parameters from its parent in the render tree.
+        /// </summary>
+        protected override void OnInitialized()
+        {
+            this.IsLoading = true;
+            base.OnInitialized();
         }
 
         /// <summary>

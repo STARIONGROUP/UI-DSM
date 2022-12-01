@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Components.App.TraceabilityTable
 {
+    using Microsoft.AspNetCore.Components;
+
     using ReactiveUI;
 
     using UI_DSM.Client.Enumerator;
@@ -35,12 +37,43 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
         private ITraceabilityTableViewModel ViewModel { get; set; }
 
         /// <summary>
+        /// Backing field for the <see cref="IsLoading"/> property
+        /// </summary>
+        private bool isLoading;
+
+        /// <summary>
+        /// Gets or sets if the view is loading
+        /// </summary>
+        [Parameter]
+        public bool IsLoading
+        {
+            get => this.isLoading;
+            set
+            {
+                this.isLoading = value;
+                this.InvokeAsync(this.StateHasChanged);
+            }
+        }
+
+        /// <summary>
+        ///     Method invoked when the component is ready to start, having received its
+        ///     initial parameters from its parent in the render tree.
+        /// </summary>
+        protected override void OnInitialized()
+        {
+            this.IsLoading = true;
+            base.OnInitialized();
+        }
+
+        /// <summary>
         ///     Initialize this component
         /// </summary>
         /// <param name="viewModel">The <see cref="ITraceabilityTableViewModel" /></param>
         public async Task InitiliazeProperties(ITraceabilityTableViewModel viewModel)
         {
             this.ViewModel = viewModel;
+            this.IsLoading = false;
+
             await this.InvokeAsync(this.StateHasChanged);
             
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.VisibilityState.CurrentState)

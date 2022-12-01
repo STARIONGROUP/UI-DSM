@@ -10,21 +10,15 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @using Blazor.Diagrams.Components;
-@using Blazor.Diagrams.Core
-@using Blazor.Diagrams.Core.Models
-
-@using UI_DSM.Client.Extensions
-@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
-@using UI_DSM.Client.Enumerator;
 @using UI_DSM.Client.Components.Widgets;
 
 @inherits GenericBaseView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IInterfaceViewViewModel>
 
 <CascadingValue Value="this.Diagram">
     <div id="diagram-parent">
-        <UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="@this.IsLoading">
+        <LoadingComponent IsLoading="@this.IsLoading">
             <DiagramCanvas></DiagramCanvas>
             <DiagramLegendWidget></DiagramLegendWidget>
-        </UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
+        </LoadingComponent>
     </div>
 </CascadingValue>

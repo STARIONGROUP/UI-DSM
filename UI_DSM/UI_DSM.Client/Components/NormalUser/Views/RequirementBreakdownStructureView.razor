@@ -26,43 +26,45 @@
 	</div>
 </div>
 
-<div class="breakdown-view">
-	<DxGrid
-		PageSize="8"
-		CssClass="default-grid"
-		@ref="@this.DxGrid"
-		Data="@(this.ViewModel.Rows)"
-		@bind-SelectedDataItem="@this.ViewModel.SelectedElement"
-		SelectionMode="GridSelectionMode.Single"
-		AllowSelectRowByClick="true"
-		ShowFilterRow="true"
-		HorizontalScrollBarMode="ScrollBarMode.Visible"
-		ShowGroupPanel="true">
-	<Columns>
+<LoadingComponent IsLoading="this.IsLoading">
+	<div class="breakdown-view">
+		<DxGrid
+			PageSize="8"
+			CssClass="default-grid"
+			@ref="@this.DxGrid"
+			Data="@(this.ViewModel.Rows)"
+			@bind-SelectedDataItem="@this.ViewModel.SelectedElement"
+			SelectionMode="GridSelectionMode.Single"
+			AllowSelectRowByClick="true"
+			ShowFilterRow="true"
+			HorizontalScrollBarMode="ScrollBarMode.Visible"
+			ShowGroupPanel="true">
+			<Columns>
 
-		<DxGridDataColumn  ShowInColumnChooser="false">
-			<FilterRowCellTemplate />
-			<CellDisplayTemplate>
-				@if (context.DataItem is RequirementRowViewModel row)
-				{
-					<HaveThingRowIcons Row="row"/>
-				}
-			</CellDisplayTemplate>
-		</DxGridDataColumn>
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Specification)" GroupIndex="0" GroupInterval="GridColumnGroupInterval.Value" Width="200" />
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Group)" GroupIndex="1" GroupInterval="GridColumnGroupInterval.Value" Width="200"  />
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Id)" Caption="ID" Width="150" />
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Name)"  Width="200" />
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Definition)"  Width="400" />
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaCategories)" Caption="@("Categories")" Width="300" AllowSort="false"/>
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Justification)"  Width="250" Visible="false"/>
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.RequirementType)"  Width="250"/>
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaDerivesFrom)" Caption="@("Derives From")" AllowSort="false" Width="250" />
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaDerivesTo)" Caption="@("Derives To")" AllowSort="false" Width="250" />
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaSatisfyByFunction)" Caption="@("Satisfy By Function")" AllowSort="false" Width="250" Visible="false"/>
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaSatisfyByProduct)" Caption="@("Satisfy By Product")" AllowSort="false" Width="250" Visible="false" />
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationMethod)"  Width="250" Visible="false"/>
-		<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationStage)" Width="250" Visible="false" />
-	</Columns>
-</DxGrid>
-</div>
+				<DxGridDataColumn  ShowInColumnChooser="false">
+					<FilterRowCellTemplate />
+					<CellDisplayTemplate>
+						@if (context.DataItem is RequirementRowViewModel row)
+						{
+							<HaveThingRowIcons Row="row"/>
+						}
+					</CellDisplayTemplate>
+				</DxGridDataColumn>
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Specification)" GroupIndex="0" GroupInterval="GridColumnGroupInterval.Value" Width="200" />
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Group)" GroupIndex="1" GroupInterval="GridColumnGroupInterval.Value" Width="200"  />
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Id)" Caption="ID" Width="150" />
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Name)"  Width="200" />
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Definition)"  Width="400" />
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaCategories)" Caption="@("Categories")" Width="300" AllowSort="false"/>
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Justification)"  Width="250" Visible="false"/>
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.RequirementType)"  Width="250"/>
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaDerivesFrom)" Caption="@("Derives From")" AllowSort="false" Width="250" />
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaDerivesTo)" Caption="@("Derives To")" AllowSort="false" Width="250" />
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaSatisfyByFunction)" Caption="@("Satisfy By Function")" AllowSort="false" Width="250" Visible="false"/>
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaSatisfyByProduct)" Caption="@("Satisfy By Product")" AllowSort="false" Width="250" Visible="false" />
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationMethod)"  Width="250" Visible="false"/>
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationStage)" Width="250" Visible="false" />
+			</Columns>
+		</DxGrid>
+	</div>
+</LoadingComponent>

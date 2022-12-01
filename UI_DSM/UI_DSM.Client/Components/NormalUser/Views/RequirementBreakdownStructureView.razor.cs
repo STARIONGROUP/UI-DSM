@@ -18,7 +18,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using CDP4Common.CommonData;
 
     using DevExpress.Blazor;
-    using Microsoft.AspNetCore.Components;
+
     using ReactiveUI;
 
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
@@ -39,25 +39,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     The <see cref="DxGrid" />
         /// </summary>
         protected DxGrid DxGrid { get; set; }
-
-        /// <summary>
-        /// Backing field for the <see cref="IsLoading"/> property
-        /// </summary>
-        private bool isLoading;
-
-        /// <summary>
-        /// Gets or sets if the view is loading
-        /// </summary>
-        [Parameter]
-        public bool IsLoading
-        {
-            get => this.isLoading;
-            set
-            {
-                this.isLoading = value;
-                this.InvokeAsync(this.HasChanged);
-            }
-        }
 
         /// <summary>
         /// Method invoked when the component is ready to start, having received its
@@ -104,6 +85,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
         {
             await base.InitializeViewModel(things, projectId, reviewId);
+            this.IsLoading = false;
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.FilterViewModel.IsFilterVisible)
                 .Where(x => !x)

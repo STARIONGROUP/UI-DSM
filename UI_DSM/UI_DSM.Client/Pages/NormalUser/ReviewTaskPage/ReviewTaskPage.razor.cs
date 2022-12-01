@@ -22,9 +22,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Components;
     using UI_DSM.Client.Components.App.Comments;
     using UI_DSM.Client.Components.App.SelectedItemCard;
-    using UI_DSM.Client.Components.NormalUser.Views;
-    using UI_DSM.Client.Services.ViewProviderService;
-    using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
+    using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
@@ -33,13 +31,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
     ///     Page to proceed to a <see cref="ReviewTask" />
     /// </summary>
     public partial class ReviewTaskPage : IDisposable
-    {
-        /// <summary>
-        /// Gets or sets if the <see cref="Components.App.LoadingComponent.LoadingComponent"/> is loading
-        /// </summary>
-        [Parameter]
-        public bool IsLoading { get; set; }
-
+    {
         /// <summary>
         ///     The collection of <see cref="IDisposable" />
         /// </summary>
@@ -49,6 +41,12 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         ///     The collection of <see cref="IDisposable" /> linked to a <see cref="BaseView" />
         /// </summary>
         private readonly List<IDisposable> viewDisposables = new();
+
+        /// <summary>
+        ///     Gets or sets if the <see cref="Components.App.LoadingComponent.LoadingComponent" /> is loading
+        /// </summary>
+        [Parameter]
+        public bool IsLoading { get; set; }
 
         /// <summary>
         ///     The <see cref="Guid" /> of the project
@@ -134,7 +132,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 .Subscribe(async _ => await this.OnViewSelectorChanged()));
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ModelSelectorVisible)
-                .Subscribe(async _ =>  await this.OnModelSelectorChanged()));
+                .Subscribe(async _ => await this.OnModelSelectorChanged()));
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ConfirmCancelDialog.IsVisible)
                 .Where(x => !x).Subscribe(async _ => await this.OnConfirmClosed()));
@@ -245,13 +243,14 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         /// <returns>A <see cref="Task" /></returns>
         private async Task OnModelSelectorChanged()
         {
-            IReusableView reusableView = null;
+            BaseView reusableView = null;
+
             if (this.ViewModel.SelectedModel != null && this.ViewModel.CurrentModel.Id != this.ViewModel.SelectedModel.Id)
-            {                
-                if(this.BaseView.Instance is IReusableView reusable)
-                {
-                    reusableView = reusable;
-                    reusableView.IsLoading = true;
+            {
+                if (this.BaseView.Instance is BaseView reusable)
+                {
+                    reusableView = reusable;
+                    reusableView.IsLoading = true;
                 }
 
                 var projectId = new Guid(this.ProjectId);
@@ -262,15 +261,15 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 {
                     await this.ViewModel.CurrentBaseViewInstance.InitializeViewModel(this.ViewModel.Things, projectId, reviewId);
                     this.ViewModel.CurrentBaseViewInstance.TrySetSelectedItem(this.SelectedItem);
-                }
-
-                if (reusableView != null)
-                {
-                    reusableView.IsLoading = false;
                 }
-            }
 
-            await this.InvokeAsync(this.StateHasChanged);
+                if (reusableView != null)
+                {
+                    reusableView.IsLoading = false;
+                }
+            }
+
+            await this.InvokeAsync(this.StateHasChanged);
         }
 
         /// <summary>
