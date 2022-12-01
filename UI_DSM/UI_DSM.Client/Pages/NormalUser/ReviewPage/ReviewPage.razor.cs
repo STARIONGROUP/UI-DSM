@@ -26,6 +26,12 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewPage
     public partial class ReviewPage : IDisposable
     {
         /// <summary>
+        /// Gets or sets if the <see cref="Components.App.LoadingComponent.LoadingComponent"/> is loading
+        /// </summary>
+        [Parameter]
+        public bool IsLoading { get; set; }
+
+        /// <summary>
         ///     The collection of <see cref="IDisposable" />
         /// </summary>
         private readonly List<IDisposable> disposables = new();
@@ -65,10 +71,12 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewPage
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
         protected override async Task OnInitializedAsync()
         {
+            this.IsLoading = true;
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ReviewObjectiveViewModel.Review)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
             await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId), new Guid(this.ReviewId));
+            this.IsLoading = false;
         }
     }
 }

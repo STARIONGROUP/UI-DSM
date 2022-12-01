@@ -34,6 +34,12 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
     public partial class ReviewTaskPage : IDisposable
     {
         /// <summary>
+        /// Gets or sets if the <see cref="Components.App.LoadingComponent.LoadingComponent"/> is loading
+        /// </summary>
+        [Parameter]
+        public bool IsLoading { get; set; }
+
+        /// <summary>
         ///     The collection of <see cref="IDisposable" />
         /// </summary>
         private readonly List<IDisposable> disposables = new();
@@ -137,12 +143,14 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         /// <returns>A <see cref="T:System.Threading.Tasks.Task" /> representing any asynchronous operation.</returns>
         protected override async Task OnParametersSetAsync()
         {
+            this.IsLoading = true;
             this.ViewModel.Reset();
 
             await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId), new Guid(this.ReviewId),
                 new Guid(this.ReviewObjectiveId), new Guid(this.ReviewTaskId));
 
             await base.OnParametersSetAsync();
+            this.IsLoading = false;
         }
 
         /// <summary>

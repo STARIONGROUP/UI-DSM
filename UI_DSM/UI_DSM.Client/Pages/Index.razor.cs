@@ -23,6 +23,12 @@ namespace UI_DSM.Client.Pages
     public partial class Index : IDisposable
     {
         /// <summary>
+        /// Gets or sets if the <see cref="Components.App.LoadingComponent.LoadingComponent"/> is loading
+        /// </summary>
+        [Parameter]
+        public bool IsLoading { get; set; } = true;
+
+        /// <summary>
         ///     A collection of <see cref="IDisposable" />
         /// </summary>
         private readonly List<IDisposable> disposables = new();
@@ -49,12 +55,13 @@ namespace UI_DSM.Client.Pages
         ///     want the component to refresh when that operation is completed.
         /// </summary>
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
-        protected override Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
             this.disposables.Add(this.ViewModel);
             this.disposables.Add(this.ViewModel.AvailableProject.CountChanged.Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
             this.ViewModel.PopulateAvailableProjects();
-            return base.OnInitializedAsync();
+            await base.OnInitializedAsync();
+            this.IsLoading = false;
         }
 
         /// <summary>
@@ -63,6 +70,7 @@ namespace UI_DSM.Client.Pages
         /// </summary>
         protected override void OnInitialized()
         {
+            this.IsLoading = true;
             base.OnInitialized();
             this.StateHasChanged();
         }

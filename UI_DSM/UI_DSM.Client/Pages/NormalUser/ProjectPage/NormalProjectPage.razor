@@ -14,6 +14,13 @@
 
 <PageTitle>Project | UI-DSM</PageTitle>
 
-<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.ViewModel.ProjectReviewViewModel.Project is null">
-    <ProjectReview ViewModel="@this.ViewModel.ProjectReviewViewModel" />
-</UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
+@if(!this.IsLoading && this.ViewModel.ProjectReviewViewModel.Project is null){
+    <div style="display: flex; align-items: center; justify-content: center;">
+        <h3>Project not found</h3>
+    </div>
+}
+else{
+    <UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.IsLoading">
+        <ProjectReview ViewModel="@this.ViewModel.ProjectReviewViewModel" />
+    </UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
+}
