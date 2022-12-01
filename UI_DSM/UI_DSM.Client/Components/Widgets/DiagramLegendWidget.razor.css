@@ -1,4 +1,18 @@
-﻿
+﻿#legend-collapsed-button {
+    position: absolute;
+    right: 7px;
+    bottom: 7px;
+    background: whitesmoke;
+    padding: 0.5%;
+    box-shadow: 0 0 2px #666;
+    border-radius: 7px;
+}
+
+::deep #legend-tab-control {
+    height: 100%;
+    min-height: 385px;
+}
+
 #legend-parent {
     position: absolute;
     right: 7px;
@@ -11,12 +25,17 @@
     padding: 1%;
     box-shadow: 0 0 2px #666;
     border-radius: 7px;
-    min-height: 410px;
+}
+
+#legend-title-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    width:100%;
 }
 
 #legend-title {
-    align-self: center;
-    margin-bottom: 2%;
+    margin: 0;
 }
 
 .interface-legend-row {
