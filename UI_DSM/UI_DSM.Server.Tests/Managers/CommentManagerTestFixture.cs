@@ -272,5 +272,30 @@ namespace UI_DSM.Server.Tests.Managers
                 Assert.That(comment.Replies, Is.Not.Empty);
             });
         }
+
+        [Test]
+        public async Task VerifyGetCommentsForAnnotatableItem()
+        {
+            var comments = new List<Comment>()
+            {
+                new(Guid.NewGuid())
+                {
+                    AnnotatableItems = this.annotatableItems
+                },
+                new(Guid.NewGuid()),
+                new(Guid.NewGuid())
+            };
+
+            var project1 = new Project(Guid.NewGuid());
+            project1.Annotations.Add(comments[0]);
+            project1.Annotations.Add(comments[1]);
+
+            var project2 = new Project(Guid.NewGuid());
+            project2.Annotations.Add(comments[2]);
+
+            this.commentDbSet.UpdateDbSetCollection(comments);
+            var retrievedComments = await this.manager.GetCommentsOfAnnotatableItem(project1.Id, this.annotatableItems[0].Id);
+            Assert.That(retrievedComments.OfType<Comment>().ToList(), Has.Count.EqualTo(1));
+        }
     }
 }

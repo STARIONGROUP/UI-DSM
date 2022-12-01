@@ -289,6 +289,15 @@ namespace UI_DSM.Server.Tests.Managers
                 this.noteManager.Verify(x => x.ResolveProperties(note, noteDto), Times.Once);
             });
         }
+
+        [Test]
+        public async Task VerifyGetAnnotationOfAnnotatableItem()
+        {
+            var projectId = Guid.NewGuid();
+            var annotatableItemId = Guid.NewGuid();
+            await this.manager.GetAnnotationsOfAnnotatableItem(projectId, annotatableItemId);
+            this.commentManager.Verify(x => x.GetCommentsOfAnnotatableItem(projectId, annotatableItemId), Times.Once);
+        }
     }
 
     [ExcludeFromCodeCoverage]

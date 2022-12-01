@@ -22,9 +22,17 @@ namespace UI_DSM.Server.Managers.CommentManager
     public interface ICommentManager : IContainedEntityManager<Comment>
     {
         /// <summary>
-        ///     Injects a <see cref="IAnnotatableItemManager"/> to break the circular dependency
+        ///     Injects a <see cref="IAnnotatableItemManager" /> to break the circular dependency
         /// </summary>
-        /// <param name="manager">The <see cref="IAnnotatableItemManager"/></param>
+        /// <param name="manager">The <see cref="IAnnotatableItemManager" /></param>
         void InjectManager(IAnnotatableItemManager manager);
+
+        /// <summary>
+        ///     Gets all <see cref="Comment" /> linked to a <see cref="AnnotatableItem" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="annotatableItemId">The <see cref="Guid" /> of the <see cref="AnnotatableItem" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
+        Task<IEnumerable<Entity>> GetCommentsOfAnnotatableItem(Guid projectId, Guid annotatableItemId);
     }
 }

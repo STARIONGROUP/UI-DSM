@@ -11,11 +11,8 @@
 -------------------------------------------------------------------------------------------------------->
 <div class="hyper-link-card" @onclick="() => this.OnClick.InvokeAsync(this.Row)">
 	<span class="hyper-link-card__title h4">
+		<HaveThingRowIcons Row="this.Row" />
 		@(this.Row.Id)
-		@if (this.Row.HasComment())
-		{
-			<FeatherMessageCircle Size="20" Color="green"/>
-		}
 	</span>
 	<div class="hyper-link-card__actions">		
 		<a class="hyper-link-card__link" href="@(this.Row.Url)" target="_blank">

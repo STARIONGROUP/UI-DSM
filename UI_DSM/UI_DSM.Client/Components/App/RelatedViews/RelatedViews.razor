@@ -12,26 +12,29 @@
 @using UI_DSM.Shared.Enumerator
 @using UI_DSM.Shared.Extensions
 
-<AppAccordion Label="Related views">
-	<div class="related-views">
-		@if (this.MainRelatedView != View.None)
-		{
-			<button class="related-views__button related-views__button--primary" @onclick="() => this.OnClick(this.MainRelatedView)">
-				<FeatherLink Size="20" Color="currentColor" StrokeWidth="2" />
-				<span>
+@if (this.MainRelatedView != View.None || this.OtherRelatedViews.Any())
+{
+	<AppAccordion Label="Related views">
+		<div class="related-views">
+			@if (this.MainRelatedView != View.None)
+			{
+				<button class="related-views__button related-views__button--primary" @onclick="() => this.OnClick(this.MainRelatedView)">
+					<FeatherLink Size="20" Color="currentColor" StrokeWidth="2" />
+					<span>
 						@this.MainRelatedView.GetEnumDisplayName()
-				</span>
-			</button>
-		}
+					</span>
+				</button>
+			}
 		
-		@foreach(var view in this.OtherRelatedViews)
-		{
-			<button class="related-views__button" @onclick="() => this.OnClick(view)">
-				<FeatherLink Size="20" Color="currentColor" StrokeWidth="2" />
-				<span>
-					@view.GetEnumDisplayName()
-				</span>
-			</button>
-		}
-	</div>
-</AppAccordion>
+			@foreach(var view in this.OtherRelatedViews)
+			{
+				<button class="related-views__button" @onclick="() => this.OnClick(view)">
+					<FeatherLink Size="20" Color="currentColor" StrokeWidth="2" />
+					<span>
+						@view.GetEnumDisplayName()
+					</span>
+				</button>
+			}
+		</div>
+	</AppAccordion>
+}

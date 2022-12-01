@@ -42,6 +42,11 @@ namespace UI_DSM.Shared.DTO.Models
         }
 
         /// <summary>
+        ///    Gets or sets the IsReviewed of the ReviewItem
+        /// </summary>
+        public bool IsReviewed { get; set; }
+
+        /// <summary>
         ///    Gets or sets the ReviewCategories of the ReviewItem
         /// </summary>
         public List<Guid> ReviewCategories { get; set; }

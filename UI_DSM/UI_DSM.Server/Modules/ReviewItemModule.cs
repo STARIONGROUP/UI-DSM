@@ -231,8 +231,14 @@ namespace UI_DSM.Server.Modules
         [Authorize]
         public override async Task UpdateEntity(IEntityManager<ReviewItem> manager, Guid entityId, ReviewItemDto dto, HttpContext context, int deepLevel = 0)
         {
-            context.Response.StatusCode = 405;
-            await Task.CompletedTask;
+            var participant = await this.GetParticipantBasedOnRequest(context, ProjectKey);
+
+            if (participant == null)
+            {
+                return;
+            }
+
+            await base.UpdateEntity(manager, entityId, dto, context, deepLevel);
         }
 
         /// <summary>

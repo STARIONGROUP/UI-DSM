@@ -19,7 +19,6 @@ namespace UI_DSM.Client.ViewModels.App.Comments
 
     using ReactiveUI;
 
-    using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.AnnotationService;
     using UI_DSM.Client.Services.ReplyService;
     using UI_DSM.Client.Services.ReviewItemService;
@@ -44,11 +43,6 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         ///     A collection of <see cref="IDisposable" />
         /// </summary>
         private readonly List<IDisposable> disposables = new();
-
-        /// <summary>
-        ///     The <see cref="IParticipantService" />
-        /// </summary>
-        private readonly IParticipantService participantService;
 
         /// <summary>
         ///     The <see cref="IReplyService" />
@@ -100,14 +94,11 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
         /// <param name="annotationService">The <see cref="IAnnotationService" /></param>
-        /// <param name="participantService">The <see cref="IParticipantService" /></param>
         /// <param name="replyService">The <see cref="IReplyService" /></param>
-        public CommentsViewModel(IReviewItemService reviewItemService, IAnnotationService annotationService, IParticipantService participantService,
-            IReplyService replyService)
+        public CommentsViewModel(IReviewItemService reviewItemService, IAnnotationService annotationService, IReplyService replyService)
         {
             this.reviewItemService = reviewItemService;
             this.annotationService = annotationService;
-            this.participantService = participantService;
             this.replyService = replyService;
 
             this.CommentCreationViewModel = new CommentCreationViewModel
@@ -286,13 +277,13 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
         /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
         /// <param name="currentView">The <see cref="View" /></param>
-        /// <returns>A <see cref="Task" /></returns>
-        public async Task InitializesProperties(Guid projectId, Guid reviewId, View currentView)
+        /// <param name="currentParticipant">The current <see cref="Participant"/></param>
+        public void InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant currentParticipant)
         {
             this.ProjectId = projectId;
             this.ReviewId = reviewId;
             this.CurrentView = currentView;
-            this.Participant = await this.participantService.GetCurrentParticipant(this.ProjectId);
+            this.Participant = currentParticipant;
         }
 
         /// <summary>
@@ -589,8 +580,8 @@ namespace UI_DSM.Client.ViewModels.App.Comments
 
             if (this.SelectedItem is IHaveThingRowViewModel { ReviewItem: { } } thingRowViewModel)
             {
-                var reviewItem = await this.reviewItemService.GetReviewItemOfReview(this.ProjectId, this.ReviewId, thingRowViewModel.ReviewItem.Id, 2);
-                this.Comments.AddRange(reviewItem.Annotations.OfType<Comment>());
+                var annotations = await this.annotationService.GetAnnotationsOfAnnotatableItem(this.ProjectId, thingRowViewModel.ReviewItem.Id);
+                this.Comments.AddRange(annotations.OfType<Comment>());
             }
         }
     }

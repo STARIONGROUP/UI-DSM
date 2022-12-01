@@ -25,6 +25,11 @@ namespace UI_DSM.Client.Components
     public partial class ConfirmCancelPopup : IDisposable
     {
         /// <summary>
+        ///     Value that indicates if buttons are enabled or not
+        /// </summary>
+        private bool buttonsEnabled = true;
+
+        /// <summary>
         ///     The <see cref="IDisposable" />
         /// </summary>
         private IDisposable disposable;
@@ -34,6 +39,14 @@ namespace UI_DSM.Client.Components
         /// </summary>
         [Parameter]
         public IConfirmCancelPopupViewModel ViewModel { get; set; }
+
+        /// <summary>
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.disposable.Dispose();
+        }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its
@@ -49,11 +62,13 @@ namespace UI_DSM.Client.Components
         }
 
         /// <summary>
-        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        ///     Performs the OnConfirm <see cref="EventHandler" /> when the Confirm button has been pressed
         /// </summary>
-        public void Dispose()
+        /// <returns>A <see cref="Task" /></returns>
+        private Task OnConfirmClicked()
         {
-            this.disposable.Dispose();
+            this.buttonsEnabled = false;
+            return this.ViewModel.OnConfirm.InvokeAsync();
         }
     }
 }

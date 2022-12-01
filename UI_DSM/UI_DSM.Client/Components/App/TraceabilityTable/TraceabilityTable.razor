@@ -22,10 +22,7 @@
 					{
 						<th @onclick="() => this.ViewModel.SelectElement(column)">
 							<span class="@this.GetHeaderClass(column)">
-								@if (column.HasComment())
-								{
-									<FeatherMessageCircle Size="20" Color="green"/>
-								}
+								<HaveThingRowIcons Row="column"/>
 								@column.Id
 							</span>
 						</th>
@@ -38,10 +35,7 @@
 					<tr class="@this.GetTrClass(currentRow)">
 						<th @onclick="() => this.ViewModel.SelectElement(currentRow)">
 							<span class="@this.GetHeaderClass(currentRow)">
-								@if (currentRow.HasComment())
-								{
-									<FeatherMessageCircle Size="20" Color="green"/>
-								}
+								<HaveThingRowIcons Row="currentRow"/>
 								@currentRow.Id
 							</span>
 						</th>

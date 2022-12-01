@@ -43,6 +43,9 @@ namespace UI_DSM.Serializer.Json
             writer.WritePropertyName("@type");
             writer.WriteStringValue("ReviewItemDto");
 
+            writer.WritePropertyName("isReviewed");
+            writer.WriteBooleanValue(dto.IsReviewed);
+
             writer.WriteStartArray("reviewCategories");
 
             foreach (var item in dto.ReviewCategories)

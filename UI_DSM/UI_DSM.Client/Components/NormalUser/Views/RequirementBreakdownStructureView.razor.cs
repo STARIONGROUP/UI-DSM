@@ -22,7 +22,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using ReactiveUI;
 
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
-    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
@@ -117,17 +116,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         protected void OnClick()
         {
             this.DxGrid.ShowColumnChooser("#column-chooser");
-        }
-
-        /// <summary>
-        ///     Checks if the current <see cref="RequirementRowViewModel" /> has a <see cref="Comment" />
-        /// </summary>
-        /// <param name="context">The <see cref="GridColumnCellDisplayTemplateContext" /></param>
-        /// <returns>The result of the check</returns>
-        protected static bool HasComment(GridColumnCellDisplayTemplateContext context)
-        {
-            return context.DataItem is RequirementRowViewModel { ReviewItem: { } } row &&
-                   row.ReviewItem.Annotations.OfType<Comment>().Any();
         }
 
         /// <summary>

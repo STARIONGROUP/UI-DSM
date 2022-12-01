@@ -43,9 +43,9 @@
 		<DxGridDataColumn  ShowInColumnChooser="false">
 			<FilterRowCellTemplate />
 			<CellDisplayTemplate>
-				@if (HasComment(context))
+				@if (context.DataItem is RequirementRowViewModel row)
 				{
-					<FeatherMessageCircle Size="20" Color="green" />
+					<HaveThingRowIcons Row="row"/>
 				}
 			</CellDisplayTemplate>
 		</DxGridDataColumn>

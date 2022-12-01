@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Server.Managers.CommentManager
 {
+    using Microsoft.EntityFrameworkCore;
+
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.AnnotatableItemManager;
@@ -83,6 +85,22 @@ namespace UI_DSM.Server.Managers.CommentManager
         public void InjectManager(IAnnotatableItemManager manager)
         {
             this.annotatableItemManager = manager;
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Comment" /> linked to a <see cref="AnnotatableItem" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="annotatableItemId">The <see cref="Guid" /> of the <see cref="AnnotatableItem" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
+        public async Task<IEnumerable<Entity>> GetCommentsOfAnnotatableItem(Guid projectId, Guid annotatableItemId)
+        {
+            var comments = this.EntityDbSet.Where(x => x.EntityContainer.Id == projectId && x.AnnotatableItems.Any(item => item.Id == annotatableItemId))
+                .BuildIncludeEntityQueryable(1);
+
+            var list = await comments.ToListAsync();
+
+            return list.SelectMany(x => x.GetAssociatedEntities(1)).DistinctBy(x => x.Id);
         }
 
         /// <summary>

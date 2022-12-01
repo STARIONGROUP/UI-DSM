@@ -45,10 +45,20 @@ namespace UI_DSM.Shared.Models
         }
 
         /// <summary>
-        /// A collection of <see cref="ReviewCategories"/>
+        ///     Value indicating if the current <see cref="ReviewItem" /> has been reviewed
+        /// </summary>
+        public bool IsReviewed { get; set; }
+
+        /// <summary>
+        ///     A collection of <see cref="ReviewCategories" />
         /// </summary>
         [DeepLevel(0)]
         public List<ReviewCategory> ReviewCategories { get; set; }
+
+        /// <summary>
+        ///     The <see cref="Guid" /> of the related <see cref="Thing" />
+        /// </summary>
+        public Guid ThingId { get; set; }
 
         /// <summary>
         ///     Resolve the properties of the current <see cref="Entity" /> from its <see cref="EntityDto" /> counter-part
@@ -65,13 +75,9 @@ namespace UI_DSM.Shared.Models
             }
 
             this.ThingId = reviewItemDto.ThingId;
+            this.IsReviewed = reviewItemDto.IsReviewed;
             this.ReviewCategories.ResolveList(reviewItemDto.ReviewCategories, resolvedEntity);
         }
-
-        /// <summary>
-        ///     The <see cref="Guid" /> of the related <see cref="Thing" />
-        /// </summary>
-        public Guid ThingId { get; set; }
 
         /// <summary>
         ///     Instantiate a <see cref="EntityDto" /> from a <see cref="Entity" />
@@ -83,6 +89,7 @@ namespace UI_DSM.Shared.Models
             dto.IncludeCommonProperties(this);
             dto.ReviewCategories = this.ReviewCategories.Select(x => x.Id).ToList();
             dto.ThingId = this.ThingId;
+            dto.IsReviewed = this.IsReviewed;
             return dto;
         }
 

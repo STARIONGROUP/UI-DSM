@@ -19,11 +19,12 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
     using ReactiveUI;
 
+    using UI_DSM.Client.Components;
     using UI_DSM.Client.Components.App.Comments;
     using UI_DSM.Client.Components.App.SelectedItemCard;
-    using UI_DSM.Client.Components.NormalUser.Views;
-    using UI_DSM.Client.Services.ViewProviderService;
-    using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
+    using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Client.Services.ViewProviderService;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
@@ -32,7 +33,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
     ///     Page to proceed to a <see cref="ReviewTask" />
     /// </summary>
     public partial class ReviewTaskPage : IDisposable
-    {
+    {
         /// <summary>
         /// Gets or sets if the <see cref="Components.App.LoadingComponent.LoadingComponent"/> is loading
         /// </summary>
@@ -119,7 +120,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 .Subscribe(async _ => await this.OnSelectedItemChanged(this.ViewModel.ReviewTask)));
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.CurrentBaseView)
-                .Subscribe(async _ => await this.InvokeAsync(this.StateHasChanged)));
+                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.SelectedView)
                 .Where(x => x != null)
@@ -133,7 +134,10 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 .Subscribe(async _ => await this.OnViewSelectorChanged()));
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ModelSelectorVisible)
-                .Subscribe(async _ => await this.OnModelSelectorChanged()));
+                .Subscribe(async _ =>  await this.OnModelSelectorChanged()));
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ConfirmCancelDialog.IsVisible)
+                .Where(x => !x).Subscribe(async _ => await this.OnConfirmClosed()));
         }
 
         /// <summary>
@@ -179,7 +183,8 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 this.DisposeViewDisposables();
                 var projectId = new Guid(this.ProjectId);
                 var reviewId = new Guid(this.ReviewId);
-                await this.Comments.InitializesProperties(projectId, reviewId, this.ViewModel.CurrentView);
+                await this.Comments.InitializesProperties(projectId, reviewId, this.ViewModel.CurrentView, this.ViewModel.Participant);
+                this.SelectedItemCard.InitializeViewModel(this.ViewModel.Participant);
 
                 if (baseView is not IReusableView reusableView || !await reusableView.CopyComponents(this.ViewModel.CurrentBaseViewInstance))
                 {
@@ -189,17 +194,41 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
                 this.ViewModel.CurrentBaseViewInstance = baseView;
                 this.viewDisposables.Add(baseView.SelectedItemObservable.Subscribe(async x => await this.OnSelectedItemChanged(x)));
-                this.viewDisposables.Add(this.Comments.ViewModel.Comments.CountChanged.Subscribe(async _ => 
-                {
-                    if(baseView is PhysicalFlowView physicalFlowView)
-                    {
-                       physicalFlowView.SelectedElementChangedComments(this.SelectedItem, this.Comments.ViewModel.Comments.Count > 0);
-                    }
-                    await baseView.HasChanged();
-                }));
+
+                this.viewDisposables.Add(this.Comments.ViewModel.Comments.CountChanged
+                    .Subscribe(async _ => await this.OnCommentsCountChanged(baseView)));
             }
 
             await base.OnAfterRenderAsync(firstRender);
+        }
+
+        /// <summary>
+        ///     Handle the count Changed event on the Comments collection
+        /// </summary>
+        /// <param name="baseView">The <see cref="BaseView" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task OnCommentsCountChanged(BaseView baseView)
+        {
+            if (baseView is PhysicalFlowView physicalFlowView)
+            {
+                physicalFlowView.SelectedElementChangedComments(this.SelectedItem, this.Comments.ViewModel.Comments.Count > 0);
+            }
+
+            await baseView.HasChanged();
+        }
+
+        /// <summary>
+        ///     Handles the close event of the <see cref="ConfirmCancelPopup" /> component
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task OnConfirmClosed()
+        {
+            if (this.ViewModel.CurrentBaseViewInstance != null)
+            {
+                await this.ViewModel.CurrentBaseViewInstance.HasChanged();
+            }
+
+            await this.InvokeAsync(this.StateHasChanged);
         }
 
         /// <summary>
@@ -218,11 +247,11 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         {
             IReusableView reusableView = null;
             if (this.ViewModel.SelectedModel != null && this.ViewModel.CurrentModel.Id != this.ViewModel.SelectedModel.Id)
-            {                
-                if(this.BaseView.Instance is IReusableView reusable)
-                {
-                    reusableView = reusable;
-                    reusableView.IsLoading = true;
+            {                
+                if(this.BaseView.Instance is IReusableView reusable)
+                {
+                    reusableView = reusable;
+                    reusableView.IsLoading = true;
                 }
 
                 var projectId = new Guid(this.ProjectId);
@@ -233,15 +262,15 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 {
                     await this.ViewModel.CurrentBaseViewInstance.InitializeViewModel(this.ViewModel.Things, projectId, reviewId);
                     this.ViewModel.CurrentBaseViewInstance.TrySetSelectedItem(this.SelectedItem);
+                }
+
+                if (reusableView != null)
+                {
+                    reusableView.IsLoading = false;
                 }
+            }
 
-                if (reusableView != null)
-                {
-                    reusableView.IsLoading = false;
-                }
-            }
-
-            await this.InvokeAsync(this.StateHasChanged);
+            await this.InvokeAsync(this.StateHasChanged);
         }
 
         /// <summary>

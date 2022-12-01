@@ -18,15 +18,15 @@
 <PageTitle>Task | UI-DSM</PageTitle>
 <div class="task-page">
 
-	@if (!this.IsLoading && this.ViewModel.ReviewTask is null)
+	@if (!this.IsLoading && this.ViewModel.ReviewTask is null)
 	{
 		<div style="display: flex; align-items: center; justify-content: center;">
 			<h3>No review task found</h3>
 		</div>
-	}
-	else
+	}
+	else
 	{
-		if (this.ViewModel.ReviewObjective != null)
+		if (this.ViewModel.ReviewObjective != null)
 		{
 			<aside class="task-page__sidebar task-page__sidebar__left">
 				<AppAccordion Label="Review objective">
@@ -34,16 +34,16 @@
 				</AppAccordion>
 
 				<AppAccordion Label="Tasks">
-					@foreach (var task in this.ViewModel.ReviewObjective.ReviewTasks.OrderBy(x => x.TaskNumber))
+					@foreach (var task in this.ViewModel.ReviewObjective.ReviewTasks.OrderBy(x => x.TaskNumber))
 					{
 						<ReviewTaskCard UseNavLink="@(task.Id != this.ViewModel.ReviewTask.Id)"
 							ReviewTask="task" ProjectId="@this.ProjectId" ReviewId="@this.ReviewId" ReviewObjectiveId="@this.ReviewObjectiveId" />
 					}
 				</AppAccordion>
 			</aside>
-		}
-		<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.IsLoading">
-			if (this.ViewModel.CurrentBaseView != null)
+		}
+		<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.IsLoading">
+			if (this.ViewModel.CurrentBaseView != null)
 			{
 				
 					<main class="task-page__body">
@@ -80,7 +80,7 @@
 									</BodyTemplate>
 								</DxDropDown>
 
-								@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask))
+								@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask))
 								{
 									<AppButton Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success">
 										<FeatherCheckCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Done</span>
@@ -104,4 +104,19 @@
 		</UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
 	}
 
+					</div>
+				</div>
+				<div class="task-page__body-inner">
+					<DynamicComponent Type="@(this.ViewModel.CurrentBaseView)" @ref="this.BaseView"/>
+				</div>
+			</main>
+		}
+		<aside class="task-page__sidebar task-page__sidebar__right">
+			<ConfirmCancelPopup ViewModel="this.ViewModel.ConfirmCancelDialog"/>
+			<SelectedItemCard @ref="this.SelectedItemCard" MarkAsReviewed="this.ViewModel.OpenConfirmDialog"/>
+			<RelatedViews MainRelatedView="@this.ViewModel.GetMainRelatedView()" OtherRelatedViews="@this.ViewModel.GetOtherRelatedViews()"
+			              OnViewSelect="@this.OnViewSelect"/>
+			<Comments @ref="this.Comments"/>
+		</aside>
+	}
 </div>

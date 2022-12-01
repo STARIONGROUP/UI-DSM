@@ -57,6 +57,11 @@ namespace UI_DSM.Serializer.Json
                 dto.Id = Guid.Parse(propertyValue);
             }
 
+            if (jsonElement.TryGetProperty("isReviewed", out var isReviewedProperty))
+            {
+                dto.IsReviewed = isReviewedProperty.GetBoolean();
+            }
+
             if (jsonElement.TryGetProperty("reviewCategories", out var reviewCategoriesProperty))
             {
                 foreach (var item in reviewCategoriesProperty.EnumerateArray())

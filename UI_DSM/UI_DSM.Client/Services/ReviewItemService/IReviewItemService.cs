@@ -70,5 +70,14 @@ namespace UI_DSM.Client.Services.ReviewItemService
         /// <param name="deepLevel">The deep level to get associated entities from the server</param>
         /// <returns>A <see cref="Task" /> with the retrieved collection of <see cref="ReviewItem" /></returns>
         Task<List<ReviewItem>> GetReviewItemsForThings(Guid projectId, Guid reviewId, IEnumerable<Guid> thingIds, int deepLevel = 0);
+
+        /// <summary>
+        ///     Updates a <see cref="ReviewItem" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="reviewItem">The <see cref="ReviewItem" /> to update</param>
+        /// <returns>A <see cref="Task" /> with the updated <see cref="ReviewItem" /></returns>
+        Task<EntityRequestResponse<ReviewItem>> UpdateReviewItem(Guid projectId, Guid reviewId, ReviewItem reviewItem);
     }
 }

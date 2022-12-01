@@ -38,10 +38,7 @@ else
 			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(ElementBaseRowViewModel.Name)" Title="Name">
 				<Template Context="data">
 					<div>
-						@if (data.HasComment())
-						{
-							<FeatherMessageCircle Size="20" Color="green"/>
-						}
+						<HaveThingRowIcons Row="data"/>
 						@data.Name
 					</div>
 				</Template>

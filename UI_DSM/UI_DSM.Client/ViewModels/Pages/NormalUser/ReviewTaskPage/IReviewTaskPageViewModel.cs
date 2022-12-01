@@ -16,6 +16,8 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
     using CDP4Common.CommonData;
 
     using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Client.ViewModels.Components;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
     using UI_DSM.Shared.Wrappers;
@@ -101,6 +103,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         Model CurrentModel { get; }
 
         /// <summary>
+        ///     The <see cref="IConfirmCancelPopupViewModel" />
+        /// </summary>
+        IConfirmCancelPopupViewModel ConfirmCancelDialog { get; set; }
+
+        /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
         ///     Override this method if you will perform an asynchronous operation and
@@ -145,5 +152,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         /// <param name="newModel">The new <see cref="Model" /></param>
         /// <returns>A <see cref="Task" /></returns>
         Task UpdateModel(Model newModel);
+
+        /// <summary>
+        ///     Opens the confirmation dialog to set a <see cref="ReviewItem" /> as reviewed
+        /// </summary>
+        /// <param name="row">The <see cref="IHaveThingRowViewModel" /></param>
+        void OpenConfirmDialog(IHaveThingRowViewModel row);
     }
 }

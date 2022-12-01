@@ -15,14 +15,19 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
 {
     using CDP4Common.CommonData;
 
+    using Microsoft.AspNetCore.Components;
+
     using ReactiveUI;
 
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Services.Administration.CometService;
     using UI_DSM.Client.Services.Administration.ParticipantService;
+    using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Services.ViewProviderService;
+    using UI_DSM.Client.ViewModels.Components;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
     using UI_DSM.Shared.Wrappers;
@@ -36,6 +41,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         ///     The <see cref="IParticipantService" />
         /// </summary>
         private readonly IParticipantService participantService;
+
+        /// <summary>
+        ///     The <see cref="IReviewItemService" />
+        /// </summary>
+        private readonly IReviewItemService reviewItemService;
 
         /// <summary>
         ///     The <see cref="IReviewService" />
@@ -58,6 +68,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         private Type currentBaseView;
 
         /// <summary>
+        ///     The currently selected <see cref="IHaveThingRowViewModel" /> for the marking as reviewed
+        /// </summary>
+        private IHaveThingRowViewModel currentSelectedRow;
+
+        /// <summary>
         ///     Backing filed for <see cref="ModelSelectorVisible" />
         /// </summary>
         private bool modelSelectorVisible;
@@ -66,6 +81,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         ///     The current <see cref="Project" /> id
         /// </summary>
         private Guid projectId;
+
+        /// <summary>
+        ///     The <see cref="Guid" /> of the current <see cref="Review" />
+        /// </summary>
+        private Guid reviewId;
 
         /// <summary>
         ///     Backing field for <see cref="ReviewObjective" />
@@ -99,14 +119,29 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         /// <param name="reviewService">The <see cref="IReviewService" /></param>
         /// <param name="viewProviderService">The <see cref="IViewProviderService" /></param>
         /// <param name="participantService">The <see cref="IParticipantService" /></param>
+        /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
         public ReviewTaskPageViewModel(IThingService thingService, IReviewService reviewService,
-            IViewProviderService viewProviderService, IParticipantService participantService)
+            IViewProviderService viewProviderService, IParticipantService participantService, IReviewItemService reviewItemService)
         {
             this.thingService = thingService;
             this.reviewService = reviewService;
             this.viewProviderService = viewProviderService;
             this.participantService = participantService;
+            this.reviewItemService = reviewItemService;
+
+            this.ConfirmCancelDialog = new ConfirmCancelPopupViewModel
+            {
+                ContentText = "Are you sure to mark this element as 'Reviewed' ?",
+                HeaderText = "Mark as Reviewed",
+                OnCancel = new EventCallbackFactory().Create(this, this.OnMarkAsReviewedCanceled),
+                OnConfirm = new EventCallbackFactory().Create(this, this.MarkAsReviewed)
+            };
         }
+
+        /// <summary>
+        ///     The <see cref="IConfirmCancelPopupViewModel" />
+        /// </summary>
+        public IConfirmCancelPopupViewModel ConfirmCancelDialog { get; set; }
 
         /// <summary>
         ///     The current <see cref="Model" />
@@ -226,6 +261,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         {
             this.AvailableViews.Clear();
             this.projectId = projectGuid;
+            this.reviewId = reviewGuid;
             var review = await this.reviewService.GetReviewOfProject(this.projectId, reviewGuid, 3);
             var reviewObjectiveInsideReview = review?.ReviewObjectives.FirstOrDefault(x => x.Id == reviewObjectiveId);
 
@@ -325,6 +361,58 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         {
             this.CurrentModel = newModel;
             this.Things = this.CurrentModel == null ? new List<Thing>() : await this.thingService.GetThings(this.projectId, this.CurrentModel);
+        }
+
+        /// <summary>
+        ///     Opens the confirmation dialog to set a <see cref="ReviewItem" /> as reviewed
+        /// </summary>
+        /// <param name="row">The <see cref="IHaveThingRowViewModel" /></param>
+        public void OpenConfirmDialog(IHaveThingRowViewModel row)
+        {
+            this.currentSelectedRow = row;
+            this.ConfirmCancelDialog.IsVisible = true;
+        }
+
+        /// <summary>
+        ///     Marks the currently selected <see cref="IHaveThingRowViewModel" /> has reviewed
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task MarkAsReviewed()
+        {
+            var reviewItem = this.currentSelectedRow.ReviewItem;
+
+            if (reviewItem == null)
+            {
+                var entityCreation = await this.reviewItemService.CreateReviewItem(this.projectId, this.reviewId, this.currentSelectedRow.ThingId);
+
+                if (entityCreation.IsRequestSuccessful)
+                {
+                    reviewItem = entityCreation.Entity;
+                }
+                else
+                {
+                    throw new HttpRequestException($"Failed to create the reviewItem : {entityCreation.Errors.FirstOrDefault()}");
+                }
+            }
+
+            reviewItem.IsReviewed = true;
+            var entityUpdate = await this.reviewItemService.UpdateReviewItem(this.projectId, this.reviewId, reviewItem);
+
+            if (!entityUpdate.IsRequestSuccessful)
+            {
+                throw new HttpRequestException($"Failed to update the reviewItem : {entityUpdate.Errors.FirstOrDefault()}");
+            }
+
+            this.currentSelectedRow.UpdateReviewItem(entityUpdate.Entity);
+            this.ConfirmCancelDialog.IsVisible = false;
+        }
+
+        /// <summary>
+        ///     Handles the cancelation process for marking an element as reviewed
+        /// </summary>
+        private void OnMarkAsReviewedCanceled()
+        {
+            this.ConfirmCancelDialog.IsVisible = false;
         }
 
         /// <summary>
