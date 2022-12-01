@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="CDP4Common-CE" Version="8.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.7" />
+    <PackageReference Include="GP.SearchService.SDK" Version="1.0.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,6 +19,11 @@
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Search\" />
+    <Folder Include="Search\SearchDto\" />
   </ItemGroup>
 
 </Project>
