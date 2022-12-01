@@ -22,6 +22,9 @@ jobs:
       - name: add DevExpress nuget feed
         run: dotnet nuget add source https://nuget.devexpress.com/api -n DXFeed -u DevExpress -p ${{ secrets.DEVEXPRESS_NUGET_KEY }} --store-password-in-clear-text
 
+      - name: add Gitlab Generic Platform nuget feed
+        run: dotnet nuget add source https://gitlab.esa.int/api/v4/projects/7524/packages/nuget/index.json -n generic-platform-feed -u gp_github -p ${{ secrets.GP_NUGET_KEY }} --store-password-in-clear-text
+
       - name: Restore dependencies
         run: dotnet restore UI_DSM/UI_DSM.sln
         
