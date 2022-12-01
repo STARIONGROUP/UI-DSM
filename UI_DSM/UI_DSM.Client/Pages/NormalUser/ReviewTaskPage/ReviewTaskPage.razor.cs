@@ -22,6 +22,8 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Components.App.Comments;
     using UI_DSM.Client.Components.App.SelectedItemCard;
     using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Client.Services.ViewProviderService;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
@@ -31,6 +33,12 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
     /// </summary>
     public partial class ReviewTaskPage : IDisposable
     {
+        /// <summary>
+        /// Gets or sets if the <see cref="Components.App.LoadingComponent.LoadingComponent"/> is loading
+        /// </summary>
+        [Parameter]
+        public bool IsLoading { get; set; }
+
         /// <summary>
         ///     The collection of <see cref="IDisposable" />
         /// </summary>
@@ -135,12 +143,14 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         /// <returns>A <see cref="T:System.Threading.Tasks.Task" /> representing any asynchronous operation.</returns>
         protected override async Task OnParametersSetAsync()
         {
+            this.IsLoading = true;
             this.ViewModel.Reset();
 
             await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId), new Guid(this.ReviewId),
                 new Guid(this.ReviewObjectiveId), new Guid(this.ReviewTaskId));
 
             await base.OnParametersSetAsync();
+            this.IsLoading = false;
         }
 
         /// <summary>
@@ -206,8 +216,15 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         /// <returns>A <see cref="Task" /></returns>
         private async Task OnModelSelectorChanged()
         {
+            IReusableView reusableView = null;
             if (this.ViewModel.SelectedModel != null && this.ViewModel.CurrentModel.Id != this.ViewModel.SelectedModel.Id)
-            {
+            {                
+                if(this.BaseView.Instance is IReusableView reusable)
+                {
+                    reusableView = reusable;
+                    reusableView.IsLoading = true;
+                }
+
                 var projectId = new Guid(this.ProjectId);
                 var reviewId = new Guid(this.ReviewId);
                 await this.ViewModel.UpdateModel(this.ViewModel.SelectedModel);
@@ -216,6 +233,11 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 {
                     await this.ViewModel.CurrentBaseViewInstance.InitializeViewModel(this.ViewModel.Things, projectId, reviewId);
                     this.ViewModel.CurrentBaseViewInstance.TrySetSelectedItem(this.SelectedItem);
+                }
+
+                if (reusableView != null)
+                {
+                    reusableView.IsLoading = false;
                 }
             }
 

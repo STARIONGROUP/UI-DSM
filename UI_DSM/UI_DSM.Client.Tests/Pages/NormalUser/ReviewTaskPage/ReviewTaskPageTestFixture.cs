@@ -166,7 +166,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             
             renderer.Render();
 
-            Assert.That(renderer.Instance.BaseView, Is.Null);
+            Assert.That(renderer.Instance.BaseView.Instance, Is.Null);
 
             reviewTask.MainView = View.RequirementBreakdownStructureView;
             reviewTask.AdditionalView = View.RequirementVerificationControlView;

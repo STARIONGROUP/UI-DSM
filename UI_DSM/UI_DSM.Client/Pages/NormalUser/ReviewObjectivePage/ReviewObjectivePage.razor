@@ -22,7 +22,13 @@
 		</Content>
 </DxPopup>
 	
-<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.ViewModel.ReviewObjective is null">
+@if(!this.IsLoading && this.ViewModel.ReviewObjective is null){
+    <div style="display: flex; align-items: center; justify-content: center;">
+        <h3>No reviews found</h3>
+    </div>
+}
+else{
+	<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.IsLoading">
 		<div class="objective-page">
 
 			<AppReviewHeader Title="@this.ViewModel.ReviewObjective.Title" Description="@this.ViewModel.ReviewObjective.Description" />
@@ -38,6 +44,9 @@
 				</div>
 			</div>
 		</div>
-</UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
+	</UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
+}
+
+
 
 

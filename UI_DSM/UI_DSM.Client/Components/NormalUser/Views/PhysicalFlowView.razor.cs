@@ -13,12 +13,14 @@
 
 namespace UI_DSM.Client.Components.NormalUser.Views
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     using Blazor.Diagrams.Core;
     using Blazor.Diagrams.Core.Models;
     using Blazor.Diagrams.Core.Models.Base;
-
+    using CDP4Common.CommonData;
+    using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
 
     using UI_DSM.Client.Components.Widgets;
@@ -37,11 +39,31 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public Diagram Diagram { get; set; }
 
         /// <summary>
+        /// Backing field for the <see cref="IsLoading"/> property
+        /// </summary>
+        private bool isLoading;
+
+        /// <summary>
+        /// Gets or sets if the view is loading
+        /// </summary>
+        [Parameter]
+        public bool IsLoading
+        {
+            get => this.isLoading;
+            set
+            {
+                this.isLoading = value;
+                this.InvokeAsync(this.HasChanged);
+            }
+        }
+
+        /// <summary>
         /// Method invoked when the component is ready to start, having received its
         /// initial parameters from its parent in the render tree.
         /// </summary>
         protected override void OnInitialized()
         {
+            this.isLoading = true;
             base.OnInitialized();
 
             this.Diagram = new Diagram();
@@ -82,6 +104,21 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     Initialize the correspondant ViewModel for this component
+        /// </summary>
+        /// <param name="things">The collection of <see cref="Thing" /></param>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
+        {
+            await base.InitializeViewModel(things, projectId, reviewId);
+            this.ViewModel.InitializeDiagram();
+            this.RefreshDiagram();
+            this.IsLoading = false;
+        }
+
+        /// <summary>
         ///     Tries to copy components from another <see cref="BaseView" />
         /// </summary>
         /// <param name="otherView">The other <see cref="BaseView" /></param>
@@ -101,7 +138,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.RefreshDiagram();
 
             this.ViewModel.OnCentralNodeChanged += this.RefreshDiagram;
-
+            this.IsLoading = false;
             return true;
         }
 

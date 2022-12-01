@@ -42,7 +42,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public TraceabilityTable Table { get; set; }
 
         /// <summary>
-        ///     The <see cref="Components.App.ConnectionVisibilitySelector.ConnectionVisibilitySelector" /> reference
+        ///     The <see cref="App.ConnectionVisibilitySelector.ConnectionVisibilitySelector" /> reference
         /// </summary>
         public ConnectionVisibilitySelector ConnectionVisibilitySelector { get; set; }
 

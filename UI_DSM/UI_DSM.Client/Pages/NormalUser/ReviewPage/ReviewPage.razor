@@ -14,6 +14,15 @@
 
 <PageTitle>Project Review | UI-DSM</PageTitle>
 
-<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.ViewModel.ReviewObjectiveViewModel.Review is null">
+@if (!this.IsLoading && this.ViewModel.ReviewObjectiveViewModel.Review is null)
+{
+	<div style="display: flex; align-items: center; justify-content: center;">
+		<h3>No reviews objectives found</h3>
+	</div>
+}
+else
+{
+<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.IsLoading">
 	<ReviewObjectiveComponent ViewModel="@this.ViewModel.ReviewObjectiveViewModel" />
 </UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
+}

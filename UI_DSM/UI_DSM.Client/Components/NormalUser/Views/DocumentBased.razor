@@ -11,12 +11,15 @@
 -------------------------------------------------------------------------------------------------------->
 @inherits GenericBaseView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IDocumentBasedViewModel>
 
-<div class="document-section">
-	<h1 class="h3">Documents</h1>
-	<div class="document-overview">
-		@foreach (var row in this.ViewModel.Rows)
-		{
-			<HyperLinkCard Row="row" OnClick="@this.HandleOnClick"/>
-		}
+<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.ViewModel is null">
+	<div class="document-section">
+		<h1 class="h3">Documents</h1>
+		<div class="document-overview">
+			@foreach (var row in this.ViewModel.Rows)
+			{
+				<HyperLinkCard Row="row" OnClick="@this.HandleOnClick" />
+			}
+		</div>
 	</div>
-</div>
+</UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
+

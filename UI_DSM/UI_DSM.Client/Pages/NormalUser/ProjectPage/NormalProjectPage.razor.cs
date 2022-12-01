@@ -26,6 +26,12 @@ namespace UI_DSM.Client.Pages.NormalUser.ProjectPage
     public partial class NormalProjectPage : IDisposable
     {
         /// <summary>
+        /// Gets or sets if the <see cref="Components.App.LoadingComponent.LoadingComponent"/> is loading
+        /// </summary>
+        [Parameter]
+        public bool IsLoading { get; set; }
+
+        /// <summary>
         ///     The collection of <see cref="IDisposable" />
         /// </summary>
         private readonly List<IDisposable> disposables = new();
@@ -59,10 +65,12 @@ namespace UI_DSM.Client.Pages.NormalUser.ProjectPage
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
         protected override async Task OnInitializedAsync()
         {
+            this.IsLoading = true;
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ProjectReviewViewModel.Project)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
             await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId));
+            this.IsLoading = false;
         }
     }
 }
