@@ -216,13 +216,13 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         /// <returns>A <see cref="Task" /></returns>
         private async Task OnModelSelectorChanged()
         {
-            IReusableView interfaceView = null;
+            IReusableView reusableView = null;
             if (this.ViewModel.SelectedModel != null && this.ViewModel.CurrentModel.Id != this.ViewModel.SelectedModel.Id)
             {                
-                if(this.BaseView.Instance is IReusableView reusableView)
+                if(this.BaseView.Instance is IReusableView reusable)
                 {
-                    interfaceView = reusableView;
-                    interfaceView.IsLoading = true;
+                    reusableView = reusable;
+                    reusableView.IsLoading = true;
                 }
 
                 var projectId = new Guid(this.ProjectId);
@@ -235,9 +235,9 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                     this.ViewModel.CurrentBaseViewInstance.TrySetSelectedItem(this.SelectedItem);
                 }
 
-                if (interfaceView != null)
+                if (reusableView != null)
                 {
-                    interfaceView.IsLoading = false;
+                    reusableView.IsLoading = false;
                 }
             }
 
