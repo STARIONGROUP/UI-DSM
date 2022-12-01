@@ -2,7 +2,7 @@
 // AppBreadcrumb.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
-// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Jaime Bernar
 // 
 // This file is part of UI-DSM. 
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
@@ -12,38 +12,17 @@
 
 @namespace AppComponents
 
-
 <nav class="app-breadcrumb">
   <ul>
-    <li>
-      <NavLink href="/">
-        All projects
-      </NavLink>
-    </li>
-    <FeatherChevronRight Size="16" Color="currentColor" StrokeWidth="1.5f" />
-    <li>
-      <NavLink href="/project/1">
-        Project title
-      </NavLink>
-    </li>
-    <FeatherChevronRight Size="16" Color="currentColor" StrokeWidth="1.5f" />
-    <li>
-      <NavLink href="/project/1/review/1">
-        Review title
-      </NavLink>
-    </li>
-    <FeatherChevronRight Size="16" Color="currentColor" StrokeWidth="1.5f" />
-    <li>
-      <NavLink href="/project/1/review/1/objective/1">
-        Objective title
-      </NavLink>
-    </li>
-    <FeatherChevronRight Size="16" Color="currentColor" StrokeWidth="1.5f" />
-    <li>
-      <NavLink href="/project/1/review/1/objective/1/task/1">
-        Verify the proper...
-      </NavLink>
-    </li>
+        @foreach (var link in this.BreadcrumbLinks)
+        {
+            <li>
+                <NavLink href="@link.Uri">
+                    @link.Title
+                </NavLink>
+            </li>
+            <FeatherChevronRight Size="16" Color="currentColor" StrokeWidth="1.5f" />
+        }
   </ul>
 </nav>
 
