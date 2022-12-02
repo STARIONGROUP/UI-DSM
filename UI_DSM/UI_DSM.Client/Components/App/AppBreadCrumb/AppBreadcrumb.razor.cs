@@ -17,6 +17,9 @@ namespace AppComponents
 
 	using UI_DSM.Client.Model;
 
+	/// <summary>
+	/// Partial class for the component <see cref="AppBreadcrumb"/>
+	/// </summary>
 	public partial class AppBreadcrumb : IDisposable
 	{
 		/// <summary>
