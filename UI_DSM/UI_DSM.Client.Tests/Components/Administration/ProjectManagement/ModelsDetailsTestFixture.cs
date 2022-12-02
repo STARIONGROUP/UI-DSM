@@ -11,7 +11,6 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-
 namespace UI_DSM.Client.Tests.Components.Administration.ProjectManagement
 {
     using System;
