@@ -35,12 +35,13 @@ namespace UI_DSM.Server.Tests.Managers
         private Mock<IReviewCategoryManager> reviewCategoryManager;
         private Mock<IAnnotationManager> annotationManager;
         private Mock<DbSet<ReviewItem>> reviewItemDbSet;
+        private Mock<DbSet<Review>> reviewDbSet;
 
         [SetUp]
         public void Setup()
         {
             this.context = new Mock<DatabaseContext>();
-            this.context.CreateDbSetForContext(out this.reviewItemDbSet, out Mock<DbSet<Review>> _);
+            this.context.CreateDbSetForContext(out this.reviewItemDbSet, out this.reviewDbSet);
             this.annotationManager = new Mock<IAnnotationManager>();
             this.reviewCategoryManager = new Mock<IReviewCategoryManager>();
             this.manager = new ReviewItemManager(this.context.Object,this.reviewCategoryManager.Object, this.annotationManager.Object);
@@ -91,7 +92,24 @@ namespace UI_DSM.Server.Tests.Managers
         [Test]
         public async Task VerifyUpdate()
         {
-            var result = await this.manager.UpdateEntity(new ReviewItem());
+            var reviewItem = new ReviewItem(Guid.NewGuid());
+            var result = await this.manager.UpdateEntity(reviewItem);
+            Assert.That(result.Succeeded, Is.False);
+
+            reviewItem.ThingId = Guid.NewGuid();
+
+            var review = new Review(Guid.NewGuid())
+            {
+                ReviewItems = { reviewItem }
+            };
+
+            this.reviewDbSet.UpdateDbSetCollection(new List<Review>{review});
+            this.reviewItemDbSet.UpdateDbSetCollection(new List<ReviewItem>{reviewItem});
+            await this.manager.UpdateEntity(reviewItem);
+            this.context.Verify(x => x.Update(reviewItem), Times.Once);
+
+            this.context.Setup(x => x.SaveChangesAsync(default)).ThrowsAsync(new InvalidOperationException());
+            result = await this.manager.UpdateEntity(reviewItem);
             Assert.That(result.Succeeded, Is.False);
         }
     }

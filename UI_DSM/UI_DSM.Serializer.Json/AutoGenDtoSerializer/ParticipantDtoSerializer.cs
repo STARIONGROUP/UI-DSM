@@ -46,6 +46,9 @@ namespace UI_DSM.Serializer.Json
             writer.WritePropertyName("user");
             writer.WriteStringValue(dto.User);
 
+            writer.WritePropertyName("participantName");
+            writer.WriteStringValue(dto.ParticipantName);
+
             writer.WritePropertyName("role");
             writer.WriteStringValue(dto.Role);
 

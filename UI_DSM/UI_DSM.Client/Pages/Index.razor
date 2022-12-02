@@ -21,7 +21,7 @@
     </div>
     <div class="projects-overview">
 
-        <UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.IsLoading">
+        <LoadingComponent IsLoading="this.IsLoading">
             @foreach (var project in this.ViewModel.AvailableProject.Items.OrderBy(x => x.CreatedOn))
             {
                 <NavLink href=@("/Project/"+project.Id)>
@@ -35,7 +35,7 @@
                     }
                 </NavLink>
             }
-        </UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
+        </LoadingComponent>
 
     </div>
 </div>

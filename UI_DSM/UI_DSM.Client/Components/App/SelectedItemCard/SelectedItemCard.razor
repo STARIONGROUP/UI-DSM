@@ -9,9 +9,20 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+@using UI_DSM.Shared.Enumerator
+
 <AppAccordion Label="@this.ViewModel.Label">
 	@if (this.ViewModel.SelectedItem != null)
 	{
 		<DynamicComponent Type="@this.ViewModel.ComponentType" Parameters="this.parameters"/>
+	}
+	@if (this.ViewModel.Participant != null && 
+	     this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask) 
+	     && this.ViewModel.SelectedItem is IHaveThingRowViewModel {ReviewItem: not {IsReviewed: true } } row)
+	{
+		<button class="selectedItem__reviewed-button" @onclick="() => this.MarkAsReviewed.InvokeAsync(row)">
+			<FeatherCheckCircle Size="24" Color="currentColor" StrokeWidth="1.5f"/>Mark as Reviewed
+		</button>
 	}
 </AppAccordion>

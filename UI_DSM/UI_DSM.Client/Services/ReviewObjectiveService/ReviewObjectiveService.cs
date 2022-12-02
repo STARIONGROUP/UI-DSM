@@ -119,7 +119,7 @@ namespace UI_DSM.Client.Services.ReviewObjectiveService
 
                 var content = this.jsonService.Serialize(reviewObjectives);
                 var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-                var response = await this.HttpClient.PostAsync(this.CreateUri(Path.Combine(this.MainRoute, "CreateTemplates"), 1), bodyContent);
+                var response = await this.HttpClient.PostAsync(this.CreateUri(Path.Combine(this.MainRoute, "CreateTemplates"), 0), bodyContent);
                 var entityRequest = this.jsonService.Deserialize<EntityRequestResponseDto>(await response.Content.ReadAsStreamAsync());
                 return HandleEntitiesRequestResponse(entityRequest);
             }

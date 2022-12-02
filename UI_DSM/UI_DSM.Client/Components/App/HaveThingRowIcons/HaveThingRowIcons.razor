@@ -1,5 +1,5 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
-// TraceabilityCell.razor
+// HaveThingRowIcons.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -9,7 +9,19 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-<div @onclick="() => this.OnClick.InvokeAsync(this.RelationshipRow)" >
-	<HaveThingRowIcons Row="this.RelationshipRow"/>
-	<FeatherCheck Size="24" Color="currentColor" StrokeWidth="2"/>
-</div>
+
+@if (this.Row.ReviewItem != null)
+{
+	<span class="@(this.GetCssClass())">
+		@{
+			if (this.Row.ReviewItem.IsReviewed)
+			{
+				<FeatherCheckCircle Size="20" Color="green"/>
+			}
+			if (this.Row.HasComment())
+			{
+				<FeatherMessageCircle Size="20" Color="green"/>
+			}
+		}
+	</span>
+}

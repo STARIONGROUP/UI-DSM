@@ -158,10 +158,12 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
         public async Task OnInitializedAsync(Guid projectGuid)
         {
-            var projectResponse = await this.projectService.GetProject(projectGuid, 1);
+            var projectResponse = await this.projectService.GetProject(projectGuid);
 
             if (projectResponse != null)
             {
+                projectResponse.Participants.AddRange(await this.participantService.GetParticipantsOfProject(projectGuid));
+                projectResponse.Artifacts.AddRange(await this.artifactService.GetArtifactsOfProject(projectGuid));
                 var participant = await this.participantService.GetCurrentParticipant(projectGuid);
 
                 if (participant != null)

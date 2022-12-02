@@ -164,7 +164,7 @@ namespace UI_DSM.Client.Services
         /// <summary>
         ///     Handles the result of the <see cref="EntityRequestResponseDto" />
         /// </summary>
-        /// <param name="entityRequest">The <see cref="EntityRequestResponseDto" /></param>
+        /// <param name="entityRequests">The <see cref="EntityRequestResponseDto" /></param>
         /// <returns>The <see cref="EntityRequestResponse{TEntity}" /></returns>
         protected static EntitiesRequestResponses<TEntity> HandleEntitiesRequestResponse(EntityRequestResponseDto entityRequests)
         {

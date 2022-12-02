@@ -13,14 +13,20 @@
 
 namespace UI_DSM.Server.Modules
 {
+    using System.Diagnostics.CodeAnalysis;
+
+    using Carter.Response;
+
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Managers.AnnotatableItemManager;
+    using UI_DSM.Server.Managers.AnnotationManager;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -49,6 +55,21 @@ namespace UI_DSM.Server.Modules
             }
 
             await base.GetEntities(manager, context, deepLevel);
+        }
+
+        /// <summary>
+        ///     Adds routes to the <see cref="IEndpointRouteBuilder" />
+        /// </summary>
+        /// <param name="app">The <see cref="IEndpointRouteBuilder" /></param>
+        [ExcludeFromCodeCoverage]
+        public override void AddRoutes(IEndpointRouteBuilder app)
+        {
+            base.AddRoutes(app);
+
+            app.MapGet(this.MainRoute + "/AnnotatableItem/{annotatableItemId:guid}", this.GetAnnotationsOfAnnotatableItem)
+                .Produces<IEnumerable<EntityDto>>()
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/GetAnnotationsOfAnnotatableItem");
         }
 
         /// <summary>
@@ -90,7 +111,7 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            if (!(await IsAllowedTo(context, participant, AccessRight.ReviewTask)))
+            if (!await IsAllowedTo(context, participant, AccessRight.ReviewTask))
             {
                 return;
             }
@@ -123,9 +144,9 @@ namespace UI_DSM.Server.Modules
             {
                 context.Response.StatusCode = 403;
 
-                return new RequestResponseDto()
+                return new RequestResponseDto
                 {
-                   Errors = new List<string>{"Unable to delete a Comment from someelse"}
+                    Errors = new List<string> { "Unable to delete a Comment from someone else" }
                 };
             }
 
@@ -182,6 +203,28 @@ namespace UI_DSM.Server.Modules
         {
             await Task.CompletedTask;
             return true;
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Annotation" /> that are linked to the a <see cref="AnnotatableItem" />
+        /// </summary>
+        /// <param name="manager">The <see cref="IAnnotationManager" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="annotatableItemId">The <see cref="Guid" /> of the <see cref="AnnotatableItem" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        [Authorize]
+        public async Task GetAnnotationsOfAnnotatableItem(IAnnotationManager manager, HttpContext context, Guid projectId, Guid annotatableItemId)
+        {
+            var participant = await this.GetParticipantBasedOnRequest(context, this.ContainerRouteKey);
+
+            if (participant == null)
+            {
+                return;
+            }
+
+            var annotations = await manager.GetAnnotationsOfAnnotatableItem(projectId, annotatableItemId);
+            await context.Response.Negotiate(annotations.ToDtos());
         }
     }
 }

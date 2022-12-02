@@ -38,13 +38,18 @@ namespace UI_DSM.Client.ViewModels.App.SelectedItemCard
             [typeof(PortRowViewModel)] = new Tuple<Type, string>(typeof(PortSelectedItem), "Port Description"),
             [typeof(InterfaceRowViewModel)] = new Tuple<Type, string>(typeof(InterfaceSelectedItem), "Interface Description"),
             [typeof(ElementBaseRowViewModel)] = new Tuple<Type, string>(typeof(ElementBaseSelectedItem), "Element Description"),
-            [typeof(ReviewTask)] = new Tuple<Type, string>(typeof(ReviewTaskSelectedItem), "Task Description"),
+            [typeof(ReviewTask)] = new Tuple<Type, string>(typeof(ReviewTaskSelectedItem), "Task Description")
         };
 
         /// <summary>
         ///     Backing field for <see cref="SelectedItem" />
         /// </summary>
         private object selectedItem;
+
+        /// <summary>
+        ///     The current <see cref="Participant" />
+        /// </summary>
+        public Participant Participant { get; private set; }
 
         /// <summary>
         ///     The currently selected item
@@ -64,6 +69,15 @@ namespace UI_DSM.Client.ViewModels.App.SelectedItemCard
         ///     The <see cref="Type" /> of the component
         /// </summary>
         public Type ComponentType => this.GetComponentType();
+
+        /// <summary>
+        ///     Initializes this view model
+        /// </summary>
+        /// <param name="participant">The <see cref="Participant" /></param>
+        public void InitializeViewModel(Participant participant)
+        {
+            this.Participant = participant;
+        }
 
         /// <summary>
         ///     Gets the correct <see cref="Type" /> component

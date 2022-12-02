@@ -16,6 +16,7 @@ namespace UI_DSM.Client.Services.AnnotationService
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Client.Services.JsonService;
+    using UI_DSM.Shared.Assembler;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -126,6 +127,33 @@ namespace UI_DSM.Client.Services.AnnotationService
             {
                 this.ComputeMainRoute(projectId);
                 return await this.DeleteEntity(annotation);
+            }
+            catch (Exception exception)
+            {
+                throw new HttpRequestException(exception.Message);
+            }
+        }
+
+        /// <summary>
+        ///     Gets a collection of <see cref="Annotation" /> that are linked to a <see cref="AnnotatableItem" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="annotatableItemId">The <see cref="Guid" /> of the <see cref="AnnotatableItem" /></param>
+        /// <returns>A <see cref="Task" /> with the collection of <see cref="Annotation" /></returns>
+        public async Task<List<Annotation>> GetAnnotationsOfAnnotatableItem(Guid projectId, Guid annotatableItemId)
+        {
+            try
+            {
+                this.ComputeMainRoute(projectId);
+                var response = await this.HttpClient.GetAsync($"{this.MainRoute}/AnnotatableItem/{annotatableItemId}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new List<Annotation>();
+                }
+
+                var dtos= this.jsonService.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync()).ToList();
+                return Assembler.CreateEntities<Annotation>(dtos).ToList();
             }
             catch (Exception exception)
             {

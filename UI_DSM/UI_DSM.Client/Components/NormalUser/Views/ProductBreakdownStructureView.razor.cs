@@ -13,7 +13,6 @@
 
 namespace UI_DSM.Client.Components.NormalUser.Views
 {
-    using Microsoft.AspNetCore.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
@@ -23,25 +22,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     /// </summary>
     public partial class ProductBreakdownStructureView : ElementBreakdownStructureView<IProductBreakdownStructureViewViewModel>, IReusableView
     {
-        /// <summary>
-        /// Backing field for the <see cref="IsLoading"/> property
-        /// </summary>
-        private bool isLoading;
-
-        /// <summary>
-        /// Gets or sets if the view is loading
-        /// </summary>
-        [Parameter]
-        public bool IsLoading
-        {
-            get => this.isLoading;
-            set
-            {
-                this.isLoading = value;
-                this.InvokeAsync(this.HasChanged);
-            }
-        }
-
         /// <summary>
         /// Method invoked when the component is ready to start, having received its
         /// initial parameters from its parent in the render tree.
@@ -65,7 +45,8 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             }
 
             this.ViewModel = trlView.ViewModel;
-            await this.HasChanged();
+            this.IsLoading = false;
+            await Task.CompletedTask;
             return true;
         }
 

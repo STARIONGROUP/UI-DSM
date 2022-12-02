@@ -195,5 +195,34 @@ namespace UI_DSM.Client.Tests.Services.ReviewItemService
 
             Assert.That(async () => await this.service.GetReviewItemsForThings(projectId, reviewId, guid), Throws.Exception);
         }
+
+        [Test]
+        public async Task VerifyUpdateReviewItem()
+        {
+            var reviewItem = new ReviewItem(Guid.NewGuid());
+            var projectId = Guid.NewGuid();
+            var reviewId = Guid.NewGuid();
+
+            var httpResponse = new HttpResponseMessage();
+            var requestResponse = new EntityRequestResponseDto() { IsRequestSuccessful = false };
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
+
+            var request = this.httpMessageHandler.When(HttpMethod.Put, $"/Project/{projectId}/Review/{reviewId}/ReviewItem/{reviewItem.Id}");
+            request.Respond(_ => httpResponse);
+
+            var result = await this.service.UpdateReviewItem(projectId, reviewId, reviewItem);
+            Assert.That(result.IsRequestSuccessful, Is.False);
+
+            requestResponse.IsRequestSuccessful = true;
+
+            requestResponse.Entities = reviewItem.GetAssociatedEntities().ToDtos();
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
+
+            result = await this.service.UpdateReviewItem(projectId, reviewId, reviewItem);
+            Assert.That(result.IsRequestSuccessful, Is.True);
+            httpResponse.Content = new StringContent(string.Empty);
+            Assert.That(async () => await this.service.UpdateReviewItem(projectId, reviewId, reviewItem), Throws.Exception);
+        }
     }
 }

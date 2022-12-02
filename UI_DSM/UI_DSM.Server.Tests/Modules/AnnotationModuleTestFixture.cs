@@ -286,5 +286,17 @@ namespace UI_DSM.Server.Tests.Modules
             await this.module.UpdateEntity(this.annotationManager.Object, annotation.Id, annotationDto, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 200, Times.Once);
         }
+
+        [Test]
+        public async Task VerifyGetAnnotationOfAnnotatableItem()
+        {
+            var annotatableItemId = Guid.NewGuid();
+            await this.module.GetAnnotationsOfAnnotatableItem(this.annotationManager.As<IAnnotationManager>().Object, this.context.Object, this.projectId, annotatableItemId);
+            this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
+
+            this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(new Participant(Guid.NewGuid()));
+            await this.module.GetAnnotationsOfAnnotatableItem(this.annotationManager.As<IAnnotationManager>().Object, this.context.Object, this.projectId, annotatableItemId);
+            this.annotationManager.As<IAnnotationManager>().Verify(x => x.GetAnnotationsOfAnnotatableItem(this.projectId, annotatableItemId), Times.Once);
+        }
     }
 }

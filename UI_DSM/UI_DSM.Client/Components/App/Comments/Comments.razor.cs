@@ -55,6 +55,7 @@ namespace UI_DSM.Client.Components.App.Comments
         /// </summary>
         protected override void OnInitialized()
         {
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.SelectedItem).Where(x => x != null).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
             this.disposables.Add(this.ViewModel.Comments.CountChanged.Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
             this.disposables.Add(this.ViewModel);
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCommentCreationMode).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
@@ -87,11 +88,12 @@ namespace UI_DSM.Client.Components.App.Comments
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
         /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
         /// <param name="currentView">The current <see cref="View" /></param>
+        /// <param name="participant">The <see cref="Participant"/></param>
         /// <returns>A <see cref="Task" /></returns>
-        public async Task InitializesProperties(Guid projectId, Guid reviewId, View currentView)
+        public Task InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant participant)
         {
-            await this.ViewModel.InitializesProperties(projectId, reviewId, currentView);
-            await this.InvokeAsync(this.StateHasChanged);
+            this.ViewModel.InitializesProperties(projectId, reviewId, currentView, participant);
+            return this.InvokeAsync(this.StateHasChanged);
         }
     }
 }

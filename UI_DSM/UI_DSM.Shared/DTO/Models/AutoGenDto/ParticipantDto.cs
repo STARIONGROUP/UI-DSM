@@ -45,6 +45,11 @@ namespace UI_DSM.Shared.DTO.Models
         public Guid User { get; set; }
 
         /// <summary>
+        ///    Gets or sets the ParticipantName of the Participant
+        /// </summary>
+        public string ParticipantName { get; set; }
+
+        /// <summary>
         ///    Gets or sets the Role of the Participant
         /// </summary>
         public Guid Role { get; set; }

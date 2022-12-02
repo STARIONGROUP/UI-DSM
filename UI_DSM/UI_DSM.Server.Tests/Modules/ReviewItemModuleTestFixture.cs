@@ -242,7 +242,17 @@ namespace UI_DSM.Server.Tests.Modules
         public async Task VerifyUpdateEntity()
         {
             await this.module.UpdateEntity(this.reviewItemManager.Object, Guid.NewGuid(), new ReviewItemDto(), this.context.Object);
-            this.response.VerifySet(x => x.StatusCode = 405, Times.Once);
+            this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
+
+            var participant = new Participant(Guid.NewGuid())
+            {
+                Role = new Role(Guid.NewGuid()),
+                User = new UserEntity(Guid.NewGuid())
+            };
+
+            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(participant);
+            await this.module.UpdateEntity(this.reviewItemManager.Object, Guid.NewGuid(), new ReviewItemDto(), this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
         }
 
         [Test]

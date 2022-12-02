@@ -86,13 +86,13 @@ namespace UI_DSM.Client.Services.ReviewItemService
         /// </summary>
         /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
         /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
-        /// <param name="thingId">The <see cref="Guid" /> of the linked <see cref="Thing"/></param>
+        /// <param name="thingId">The <see cref="Guid" /> of the linked <see cref="Thing" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{ReviewItem}" /></returns>
         public async Task<EntityRequestResponse<ReviewItem>> CreateReviewItem(Guid projectId, Guid reviewId, Guid thingId)
         {
             try
             {
-                var reviewItem = new ReviewItem()
+                var reviewItem = new ReviewItem
                 {
                     ThingId = thingId
                 };
@@ -147,6 +147,26 @@ namespace UI_DSM.Client.Services.ReviewItemService
 
                 var response = await this.HttpClient.PostAsync(this.CreateUri($"{this.MainRoute}/ForThings", deepLevel), stringContent);
                 return (await this.GetEntitiesFromRequest(response)).ToList();
+            }
+            catch (Exception exception)
+            {
+                throw new HttpRequestException(exception.Message);
+            }
+        }
+
+        /// <summary>
+        ///     Updates a <see cref="ReviewItem" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="reviewItem">The <see cref="ReviewItem" /> to update</param>
+        /// <returns>A <see cref="Task" /> with the updated <see cref="ReviewItem" /></returns>
+        public Task<EntityRequestResponse<ReviewItem>> UpdateReviewItem(Guid projectId, Guid reviewId, ReviewItem reviewItem)
+        {
+            try
+            {
+                this.ComputeMainRoute(projectId, reviewId);
+                return this.UpdateEntity(reviewItem, 0);
             }
             catch (Exception exception)
             {

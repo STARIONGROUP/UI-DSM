@@ -95,11 +95,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 this.reviewItemService.Setup(x => x.GetReviewItemsForThings(projectId, reviewId, It.IsAny<IEnumerable<Guid>>(), 0))
                     .ReturnsAsync(new List<ReviewItem>
                     {
-                    new (Guid.NewGuid())
-                    {
-                        ThingId = elementDefinition.HyperLink.First().Iid,
-                        Annotations = { new Comment(Guid.NewGuid()) }
-                    }
+                        new (Guid.NewGuid())
+                        {
+                            ThingId = elementDefinition.HyperLink.First().Iid,
+                            Annotations = { new Comment(Guid.NewGuid()) },
+                            IsReviewed = true
+                        }
                     });
 
                 var renderer = this.context.RenderComponent<DocumentBased>();
@@ -109,6 +110,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 Assert.Multiple(() =>
                 {
                     Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
+                    Assert.That(renderer.FindComponents<FeatherCheckCircle>(), Has.Count.EqualTo(1));
                     Assert.That(renderer.FindComponents<HyperLinkCard>(), Has.Count.EqualTo(2));
                 });
 

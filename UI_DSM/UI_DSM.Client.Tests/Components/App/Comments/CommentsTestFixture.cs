@@ -31,7 +31,6 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
     using UI_DSM.Client.Components.App.CommentCard;
     using UI_DSM.Client.Components.App.Comments;
     using UI_DSM.Client.Components.App.ReplyCard;
-    using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.AnnotationService;
     using UI_DSM.Client.Services.ReplyService;
     using UI_DSM.Client.Services.ReviewItemService;
@@ -52,7 +51,6 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
         private Participant participant;
         private Mock<IReviewItemService> reviewItemService;
         private Mock<IAnnotationService> annotationService;
-        private Mock<IParticipantService> participantService;
         private Mock<IReplyService> replyService;
 
         [SetUp]
@@ -62,7 +60,6 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
             this.context.ConfigureDevExpressBlazor();
             this.reviewItemService = new Mock<IReviewItemService>();
             this.annotationService = new Mock<IAnnotationService>();
-            this.participantService = new Mock<IParticipantService>();
             this.replyService = new Mock<IReplyService>();
 
             this.participant = new Participant(Guid.NewGuid())
@@ -73,10 +70,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
                 }
             };
 
-            this.participantService.Setup(x => x.GetCurrentParticipant(It.IsAny<Guid>()))
-                .ReturnsAsync(this.participant);
-
-            this.viewModel = new CommentsViewModel(this.reviewItemService.Object, this.annotationService.Object, this.participantService.Object, this.replyService.Object);
+            this.viewModel = new CommentsViewModel(this.reviewItemService.Object, this.annotationService.Object, this.replyService.Object);
             this.context.Services.AddSingleton(this.viewModel);
         }
 
@@ -92,7 +86,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
             try
             {
                 var renderer = this.context.RenderComponent<Comments>();
-                await renderer.Instance.InitializesProperties(Guid.NewGuid(), Guid.NewGuid(), View.RequirementBreakdownStructureView);
+                await renderer.Instance.InitializesProperties(Guid.NewGuid(), Guid.NewGuid(), View.RequirementBreakdownStructureView, this.participant);
                 var commentsCard = renderer.FindComponents<CommentCard>();
 
                 Assert.That(commentsCard, Has.Count.EqualTo(0));

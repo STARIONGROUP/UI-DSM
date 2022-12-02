@@ -67,6 +67,11 @@ namespace UI_DSM.Serializer.Json
                 }
             }
 
+            if (jsonElement.TryGetProperty("participantName", out var participantNameProperty))
+            {
+                dto.ParticipantName = participantNameProperty.GetString();
+            }
+
             if (jsonElement.TryGetProperty("role", out var roleProperty))
             {
                 var propertyValue = roleProperty.GetString();

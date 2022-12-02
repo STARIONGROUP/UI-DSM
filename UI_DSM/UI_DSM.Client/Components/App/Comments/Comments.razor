@@ -1,5 +1,4 @@
-﻿@using UI_DSM.Shared.Enumerator
-<!--------------------------------------------------------------------------------------------------------
+﻿<!--------------------------------------------------------------------------------------------------------
 // Comments.razor
 // Copyright (c) 2022 RHEA System S.A.
 //
@@ -10,9 +9,11 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Shared.Enumerator
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
 <AppAccordion Label="Comments">
 	<div class="comments__header">
-		@if (this.ViewModel.Participant != null && this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask))
+		@if (this.ViewModel.SelectedItem is IHaveThingRowViewModel && this.ViewModel.Participant != null && this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask))
 		{
 			<button class="comments__add-button" @onclick="@this.ViewModel.OpenCommentCreationPopup">
 				<FeatherMessageCircle Size="24" Color="currentColor" StrokeWidth="1.5f"/> Leave a comment

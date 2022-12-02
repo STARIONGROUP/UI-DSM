@@ -94,8 +94,15 @@ namespace UI_DSM.Server.Managers.ReviewItemManager
         /// <returns>A <see cref="Task" /> with the result of the update</returns>
         public override async Task<EntityOperationResult<ReviewItem>> UpdateEntity(ReviewItem entity)
         {
-            await Task.CompletedTask;
-            return EntityOperationResult<ReviewItem>.Failed("Not allowed");
+            if (!this.ValidateCurrentEntity(entity, out var entityOperationResult))
+            {
+                return entityOperationResult;
+            }
+
+            var foundEntity = await this.FindEntity(entity.Id);
+            entity.ThingId = foundEntity.ThingId;
+
+            return await this.UpdateEntityIntoContext(entity);
         }
 
         /// <summary>

@@ -14,9 +14,10 @@
 @using UI_DSM.Client.Extensions
 @inherits ElementBreakdownStructureView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IProductBreakdownStructureViewViewModel>
 
+<LoadingComponent IsLoading="this.IsLoading">
 @if (!this.ViewModel.TopElement.Any())
 {
-	<p>TopElement of the Model is not set, can not compute the Product Breakdown</p>
+		<p>TopElement of the Model is not set, can not compute the Product Breakdown</p>
 }
 else
 {
@@ -39,10 +40,7 @@ else
 			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(ElementBaseRowViewModel.Name)" Pickable="false" Title="Name">
 				<Template Context="data">
 					<div>
-						@if (data.HasComment())
-						{
-							<FeatherMessageCircle Size="20" Color="green"/>
-						}
+						<HaveThingRowIcons Row="data"/>
 						@data.Name
 					</div>
 				</Template>
@@ -68,3 +66,4 @@ else
 		</Columns>
 	</RadzenDataGrid>
 }
+</LoadingComponent>

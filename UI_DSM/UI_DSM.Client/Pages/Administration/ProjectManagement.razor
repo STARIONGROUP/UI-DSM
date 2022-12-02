@@ -12,6 +12,7 @@
 @page "/Administration/ProjectManagement"
 @layout DefaultLayout
 @attribute [Authorize]
+<LoadingComponent IsLoading="this.IsLoading">
 <AuthorizeView Roles="Administrator">
 	<NotAuthorized>
 		@if (!this.ViewModel.IsAuthorized)
@@ -60,3 +61,4 @@
 		</div>
 	}
 }
+</LoadingComponent>

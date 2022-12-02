@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.ViewModels.App.SelectedItemCard
 {
+    using UI_DSM.Shared.Models;
+
     /// <summary>
     ///     Interface definition for <see cref="SelectedItemCardViewModel" />
     /// </summary>
@@ -32,5 +34,16 @@ namespace UI_DSM.Client.ViewModels.App.SelectedItemCard
         ///     The <see cref="Type" /> of the component
         /// </summary>
         Type ComponentType { get; }
+
+        /// <summary>
+        ///     The current <see cref="Participant" />
+        /// </summary>
+        Participant Participant { get; }
+
+        /// <summary>
+        ///     Initializes this view model
+        /// </summary>
+        /// <param name="participant">The <see cref="Participant" /></param>
+        void InitializeViewModel(Participant participant);
     }
 }

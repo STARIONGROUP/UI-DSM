@@ -62,5 +62,13 @@ namespace UI_DSM.Client.Services.AnnotationService
         /// <param name="annotation">The <see cref="Annotation" /> to delete</param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /></returns>
         Task<RequestResponseDto> DeleteAnnotation(Guid projectId, Annotation annotation);
+
+        /// <summary>
+        ///     Gets a collection of <see cref="Annotation" /> that are linked to a <see cref="AnnotatableItem" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="annotatableItemId">The <see cref="Guid" /> of the <see cref="AnnotatableItem" /></param>
+        /// <returns>A <see cref="Task" /> with the collection of <see cref="Annotation" /></returns>
+        Task<List<Annotation>> GetAnnotationsOfAnnotatableItem(Guid projectId, Guid annotatableItemId);
     }
 }

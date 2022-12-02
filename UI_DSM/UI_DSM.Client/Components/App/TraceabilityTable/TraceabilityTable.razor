@@ -10,8 +10,7 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
-@if (this.ViewModel != null)
-{
+<LoadingComponent IsLoading="this.IsLoading">
 	<div class="app-traceability-table">
 		<div>
 			<table>
@@ -22,10 +21,7 @@
 					{
 						<th @onclick="() => this.ViewModel.SelectElement(column)">
 							<span class="@this.GetHeaderClass(column)">
-								@if (column.HasComment())
-								{
-									<FeatherMessageCircle Size="20" Color="green"/>
-								}
+								<HaveThingRowIcons Row="column"/>
 								@column.Id
 							</span>
 						</th>
@@ -38,10 +34,7 @@
 					<tr class="@this.GetTrClass(currentRow)">
 						<th @onclick="() => this.ViewModel.SelectElement(currentRow)">
 							<span class="@this.GetHeaderClass(currentRow)">
-								@if (currentRow.HasComment())
-								{
-									<FeatherMessageCircle Size="20" Color="green"/>
-								}
+								<HaveThingRowIcons Row="currentRow"/>
 								@currentRow.Id
 							</span>
 						</th>
@@ -60,4 +53,4 @@
 			</table>
 		</div>
 	</div>
-}
+</LoadingComponent>

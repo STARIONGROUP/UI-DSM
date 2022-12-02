@@ -36,6 +36,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
         private MockHttpMessageHandler httpMessageHandler;
         private List<EntityDto> entitiesDto;
         private IJsonService jsonService;
+        private Guid annotatableItemId;
 
         [SetUp]
         public void Setup()
@@ -48,7 +49,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
             var participantId = Guid.NewGuid();
             var roleId = Guid.NewGuid();
             var userId = Guid.NewGuid();
-            var annotatableItemId = Guid.NewGuid();
+            this.annotatableItemId = Guid.NewGuid();
             var commentId = Guid.NewGuid();
             var feedbackId = Guid.NewGuid();
             var noteId = Guid.NewGuid();
@@ -62,7 +63,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
                     Content = "Comment content",
                     AnnotatableItems = new List<Guid>
                     {
-                        annotatableItemId
+                        this.annotatableItemId
                     }
                 },
                 new FeedbackDto(feedbackId)
@@ -72,7 +73,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
                     Content = "Comment content",
                     AnnotatableItems = new List<Guid>
                     {
-                        annotatableItemId
+                        this.annotatableItemId
                     }
                 }, 
                 new NoteDto(noteId)
@@ -82,7 +83,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
                     Content = "Comment content",
                     AnnotatableItems = new List<Guid>
                     {
-                        annotatableItemId
+                        this.annotatableItemId
                     }
                 },
                 new ParticipantDto(participantId)
@@ -102,7 +103,7 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
                         AccessRight.ReviewTask
                     }
                 },
-                new ReviewObjectiveDto(annotatableItemId)
+                new ReviewObjectiveDto(this.annotatableItemId)
                 {
                     Annotations = new List<Guid>
                     {
@@ -271,6 +272,29 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
             Assert.That(requestResult.IsRequestSuccessful, Is.True);
             httpResponse.Content = new StringContent(string.Empty);
             Assert.That(async () => await this.service.UpdateAnnotation(project.Id, annotation), Throws.Exception);
+        }
+
+        [Test]
+        public async Task VerifyGetAnnotationOfAnnotatableItem()
+        {
+            var projectId = Guid.NewGuid();
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.NotFound;
+
+            var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Project/{projectId}/Annotation/AnnotatableItem/{this.annotatableItemId}");
+            request.Respond(_ => httpResponse);
+            var annotations = await this.service.GetAnnotationsOfAnnotatableItem(projectId, this.annotatableItemId);
+
+            Assert.That(annotations, Is.Empty);
+
+            httpResponse.StatusCode = HttpStatusCode.OK;
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(this.entitiesDto));
+            annotations = await this.service.GetAnnotationsOfAnnotatableItem(projectId, this.annotatableItemId);
+            Assert.That(annotations, Is.Not.Empty);
+
+            httpResponse.Content = new StringContent(string.Empty);
+            Assert.That(async () => await this.service.GetAnnotationsOfAnnotatableItem(projectId, this.annotatableItemId), Throws.Exception);
         }
     }
 }

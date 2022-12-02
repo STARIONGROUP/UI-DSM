@@ -13,6 +13,8 @@
 @using DataGridSelectionMode = Radzen.DataGridSelectionMode
 @inherits ElementBreakdownStructureView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IFunctionalBreakdownStructureViewViewModel>
 
+<LoadingComponent IsLoading="this.IsLoading">
+
 @if (!this.ViewModel.TopElement.Any())
 {
 	<p>TopElement of the Model is not set, can not compute the Functional Breakdown</p>
@@ -38,10 +40,7 @@ else
 			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(ElementBaseRowViewModel.Name)" Pickable="false" Title="Name">
 				<Template Context="data">
 					<div>
-						@if (data.HasComment())
-						{
-							<FeatherMessageCircle Size="20" Color="green"/>
-						}
+						<HaveThingRowIcons Row="data"/>
 						@data.Name
 					</div>
 				</Template>
@@ -84,3 +83,4 @@ else
 		</Columns>
 	</RadzenDataGrid>
 }
+</LoadingComponent>

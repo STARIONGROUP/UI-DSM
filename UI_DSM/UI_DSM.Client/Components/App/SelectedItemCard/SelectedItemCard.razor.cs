@@ -17,8 +17,9 @@ namespace UI_DSM.Client.Components.App.SelectedItemCard
 
     using ReactiveUI;
 
-    using UI_DSM.Client.ViewModels.App;
     using UI_DSM.Client.ViewModels.App.SelectedItemCard;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     Component that will provided related information for a selected item
@@ -41,10 +42,25 @@ namespace UI_DSM.Client.Components.App.SelectedItemCard
         [Inject]
         public ISelectedItemCardViewModel ViewModel { get; set; }
 
+        /// <summary>
+        ///     The <see cref="EventCallback{TValue}" /> to mark an <see cref="IHaveThingRowViewModel" /> as reviewed
+        /// </summary>
+        [Parameter]
+        public EventCallback<IHaveThingRowViewModel> MarkAsReviewed { get; set; }
+
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
         public void Dispose()
         {
             this.disposables.ForEach(x => x.Dispose());
+        }
+
+        /// <summary>
+        ///     Initializes the <see cref="ISelectedItemCardViewModel" />
+        /// </summary>
+        /// <param name="participant">The current <see cref="Participant" /></param>
+        public void InitializeViewModel(Participant participant)
+        {
+            this.ViewModel.InitializeViewModel(participant);
         }
 
         /// <summary>

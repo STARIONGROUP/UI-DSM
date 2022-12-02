@@ -27,17 +27,23 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Pages.NormalUser.ReviewTaskPage;
     using UI_DSM.Client.Services.Administration.ParticipantService;
+    using UI_DSM.Client.Services.AnnotationService;
+    using UI_DSM.Client.Services.ReplyService;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Services.ViewProviderService;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Client.ViewModels.App.Comments;
     using UI_DSM.Client.ViewModels.App.Filter;
+    using UI_DSM.Client.ViewModels.App.OptionChooser;
     using UI_DSM.Client.ViewModels.App.SelectedItemCard;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
+    using UI_DSM.Shared.Types;
 
     using TestContext = Bunit.TestContext;
 
@@ -47,6 +53,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
         private TestContext context;
         private IReviewTaskPageViewModel viewModel;
         private Mock<IReviewService> reviewService;
+        private Mock<IReviewItemService> reviewItemService;
         private Mock<IThingService> thingService;
         private Mock<IParticipantService> participantService;
         private IViewProviderService viewProviderService;
@@ -55,13 +62,18 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
         private Guid reviewId;
         private Guid reviewObjectiveId;
         private Guid reviewTaskId;
+        private Mock<IAnnotationService> annotationService;
+        private Mock<IReplyService> replyService;
 
         [SetUp]
         public void Setup()
         {
             this.reviewService = new Mock<IReviewService>();
+            this.reviewItemService = new Mock<IReviewItemService>();
             this.thingService = new Mock<IThingService>();
             this.participantService = new Mock<IParticipantService>();
+            this.annotationService = new Mock<IAnnotationService>();
+            this.replyService = new Mock<IReplyService>();
 
             this.participantService.Setup(x => x.GetCurrentParticipant(It.IsAny<Guid>()))
                 .ReturnsAsync(new Participant(Guid.NewGuid())
@@ -74,7 +86,10 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
 
             this.viewProviderService = new ViewProviderService();
             this.context = new TestContext();
-            this.viewModel = new ReviewTaskPageViewModel(this.thingService.Object, this.reviewService.Object, this.viewProviderService, this.participantService.Object);
+
+            this.viewModel = new ReviewTaskPageViewModel(this.thingService.Object, this.reviewService.Object, this.viewProviderService,
+                this.participantService.Object, this.reviewItemService.Object);
+
             this.selectedItemCard = new SelectedItemCardViewModel();
             this.projectId = Guid.NewGuid();
             this.reviewId = Guid.NewGuid();
@@ -82,14 +97,23 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             this.reviewTaskId = Guid.NewGuid();
             this.context.Services.AddSingleton(this.viewModel);
             this.context.Services.AddSingleton(this.selectedItemCard);
-            
+            this.context.Services.AddSingleton(this.reviewItemService.Object);
+            this.context.Services.AddSingleton(this.annotationService.Object);
+            this.context.Services.AddSingleton(this.replyService.Object);
+            this.context.Services.AddTransient<ICommentsViewModel, CommentsViewModel>();
+            this.context.Services.AddTransient<ISelectedItemCardViewModel, SelectedItemCardViewModel>();
+
             IRequirementBreakdownStructureViewViewModel breakdown = 
                 new RequirementBreakdownStructureViewViewModel(new Mock<IReviewItemService>().Object, new FilterViewModel());
+
+            IProductBreakdownStructureViewViewModel productBreakdown =
+                new ProductBreakdownStructureViewViewModel(new Mock<IReviewItemService>().Object, new FilterViewModel(), new OptionChooserViewModel());
 
             IInterfaceViewViewModel interfaceView =
                 new InterfaceViewViewModel(new Mock<IReviewItemService>().Object, new FilterViewModel());
 
             this.context.Services.AddSingleton(breakdown);
+            this.context.Services.AddSingleton(productBreakdown);
             this.context.Services.AddSingleton(interfaceView);
             this.context.ConfigureDevExpressBlazor();
             ViewProviderService.RegisterViews();
@@ -184,8 +208,6 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             await renderer.InvokeAsync(async () => await relatedViews.Instance.OnViewSelect.InvokeAsync(relatedViews.Instance.MainRelatedView));
 
             Assert.That(renderer.Instance.BaseView.Type, Is.EqualTo(typeof(ProductBreakdownStructureView)));
-            await renderer.InvokeAsync(async () => await relatedViews.Instance.OnViewSelect.InvokeAsync(relatedViews.Instance.OtherRelatedViews[0]));
-            Assert.That(this.viewModel.CurrentBaseView, Is.EqualTo(typeof(InterfaceView)));
 
             this.viewModel.ModelSelectorVisible = true;
             Assert.That(this.viewModel.CurrentModel, Is.EqualTo(review.Artifacts[1]));
@@ -198,7 +220,44 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             Assert.Multiple(() =>
             {
                 Assert.That(this.viewModel.ModelSelectorVisible, Is.False);
-                Assert.That(this.viewModel.CurrentModel, Is.EqualTo(review.Artifacts[0]));
+                Assert.That(this.viewModel.CurrentModel, Is.EqualTo(this.viewModel.AvailableModels[0]));
+            });
+
+            var reviewItem = new ReviewItem(Guid.NewGuid());
+
+            var thing = new HyperLink()
+            {
+                Iid = Guid.NewGuid()
+            };
+
+            var hyperLink = new HyperLinkRowViewModel(thing, null);
+
+            renderer.Instance.SelectedItem = hyperLink;
+            await renderer.InvokeAsync(() => renderer.Instance.SelectedItemCard.MarkAsReviewed.InvokeAsync(hyperLink));
+            Assert.That(this.viewModel.ConfirmCancelDialog.IsVisible, Is.True);
+            await renderer.InvokeAsync(this.viewModel.ConfirmCancelDialog.OnCancel.InvokeAsync);
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.ConfirmCancelDialog.IsVisible, Is.False);
+                Assert.That(hyperLink.ReviewItem, Is.Null);
+            });
+
+            await renderer.InvokeAsync(() => renderer.Instance.SelectedItemCard.MarkAsReviewed.InvokeAsync(hyperLink));
+
+            this.reviewItemService.Setup(x => x.CreateReviewItem(this.projectId, this.reviewId, thing.Iid))
+                .ReturnsAsync(EntityRequestResponse<ReviewItem>.Success(reviewItem));
+
+            this.reviewItemService.Setup(x => x.UpdateReviewItem(this.projectId, this.reviewId, reviewItem))
+                .ReturnsAsync(EntityRequestResponse<ReviewItem>.Success(new ReviewItem(reviewItem.Id) { IsReviewed = true, ThingId = thing.Iid}));
+
+            await renderer.InvokeAsync(this.viewModel.ConfirmCancelDialog.OnConfirm.InvokeAsync);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.ConfirmCancelDialog.IsVisible, Is.False);
+                Assert.That(hyperLink.ReviewItem, Is.Not.Null);
+                Assert.That(hyperLink.ReviewItem.IsReviewed, Is.True);
             });
         }
     }
