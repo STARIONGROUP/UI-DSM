@@ -14,11 +14,10 @@
 @using UI_DSM.Client.Extensions
 @inherits ElementBreakdownStructureView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IProductBreakdownStructureViewViewModel>
 
+<LoadingComponent IsLoading="this.IsLoading">
 @if (!this.ViewModel.TopElement.Any())
 {
-	<LoadingComponent IsLoading="this.IsLoading">
 	<p>TopElement of the Model is not set, can not compute the TRL View</p>
-	</LoadingComponent>
 }
 else
 {
@@ -37,7 +36,6 @@ else
 	                AllowFiltering="true" FilterMode="FilterMode.SimpleWithMenu" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
 	                LogicalFilterOperator="LogicalFilterOperator.Or">
 		<Columns>
-			<LoadingComponent IsLoading="this.IsLoading">
 			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(ElementBaseRowViewModel.Name)" Title="Name">
 				<Template Context="data">
 					<div>
@@ -54,7 +52,7 @@ else
 					}
 				</Template>
 			</RadzenDataGridColumn>
-			</LoadingComponent>
 		</Columns>
 	</RadzenDataGrid>
 }
+</LoadingComponent>

@@ -13,11 +13,11 @@
 @using DataGridSelectionMode = Radzen.DataGridSelectionMode
 @inherits ElementBreakdownStructureView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IFunctionalBreakdownStructureViewViewModel>
 
+<LoadingComponent IsLoading="this.IsLoading">
+
 @if (!this.ViewModel.TopElement.Any())
 {
-	<LoadingComponent IsLoading="this.IsLoading">
 	<p>TopElement of the Model is not set, can not compute the Functional Breakdown</p>
-	</LoadingComponent>
 }
 else
 {
@@ -37,7 +37,6 @@ else
 	                AllowFiltering="true" FilterMode="FilterMode.SimpleWithMenu" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
 	                LogicalFilterOperator="LogicalFilterOperator.Or">
 		<Columns>
-			<LoadingComponent IsLoading="this.IsLoading">
 			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(ElementBaseRowViewModel.Name)" Pickable="false" Title="Name">
 				<Template Context="data">
 					<div>
@@ -81,7 +80,7 @@ else
 					}
 				</Template>
 			</RadzenDataGridColumn>
-			</LoadingComponent>
 		</Columns>
 	</RadzenDataGrid>
 }
+</LoadingComponent>

@@ -13,14 +13,12 @@
 
 namespace UI_DSM.Client.Components.NormalUser.Views
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-
     using Blazor.Diagrams.Core;
     using Blazor.Diagrams.Core.Models;
     using Blazor.Diagrams.Core.Models.Base;
+
     using CDP4Common.CommonData;
-    using Microsoft.AspNetCore.Components;
+
     using Microsoft.AspNetCore.Components.Web;
 
     using UI_DSM.Client.Components.Widgets;
@@ -29,78 +27,48 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using UI_DSM.Shared.Enumerator;
 
     /// <summary>
-    /// Component for the <see cref="View.PhysicalFlowView"/>
+    ///     Component for the <see cref="View.PhysicalFlowView" />
     /// </summary>
     public partial class PhysicalFlowView : GenericBaseView<IInterfaceViewViewModel>, IReusableView, IDisposable
     {
         /// <summary>
-        /// Gets or sets the diagram component.
+        ///     Gets or sets the diagram component.
         /// </summary>
         public Diagram Diagram { get; set; }
 
         /// <summary>
-        /// Backing field for the <see cref="IsLoading"/> property
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        private bool isLoading;
-
-        /// <summary>
-        /// Gets or sets if the view is loading
-        /// </summary>
-        [Parameter]
-        public bool IsLoading
+        public void Dispose()
         {
-            get => this.isLoading;
-            set
-            {
-                this.isLoading = value;
-                this.InvokeAsync(this.HasChanged);
-            }
+            this.Diagram.MouseUp -= this.Diagram_MouseUp;
+            this.Diagram.MouseDoubleClick -= this.Diagram_MouseDoubleClick;
+            this.ViewModel.OnCentralNodeChanged -= this.RefreshDiagram;
         }
 
         /// <summary>
-        /// Method invoked when the component is ready to start, having received its
-        /// initial parameters from its parent in the render tree.
+        ///     Tries to copy components from another <see cref="BaseView" />
         /// </summary>
-        protected override void OnInitialized()
+        /// <param name="otherView">The other <see cref="BaseView" /></param>
+        /// <returns>Value indicating if it could copy components</returns>
+        public async Task<bool> CopyComponents(BaseView otherView)
         {
-            this.isLoading = true;
-            base.OnInitialized();
+            this.ViewModel.OnCentralNodeChanged -= this.RefreshDiagram;
 
-            this.Diagram = new Diagram();
-            this.Diagram.Options.AllowMultiSelection = false;
-            this.Diagram.Options.DefaultNodeComponent = typeof(DiagramNodeWidget);
-            this.Diagram.RegisterModelComponent<DiagramLink, DiagramLinkWidget>();
-
-            this.Diagram.MouseUp += Diagram_MouseUp;
-            this.Diagram.MouseDoubleClick += Diagram_MouseDoubleClick;
-        }
-                
-        /// <summary>
-        /// MouseUp event for the diagram component
-        /// </summary>
-        /// <param name="model">the model clicked (NodeModel,PortModel or LinkModel)</param>
-        /// <param name="args">the args of the event</param>
-        private void Diagram_MouseUp(Model model, MouseEventArgs args)
-        {
-            //Right button
-            if (args.Button == 0)
+            if (otherView is not GenericBaseView<IInterfaceViewViewModel> interfaceView)
             {
-                this.ViewModel.SetSelectedModel(model);
+                return false;
             }
-        }
 
-        /// <summary>
-        /// MouseDoubleClick event for the diagram component
-        /// </summary>
-        /// <param name="model">the model clicked (NodeModel,PortModel or LinkModel)</param>
-        /// <param name="args">the args of the event</param>
-        private void Diagram_MouseDoubleClick(Model model, MouseEventArgs args)
-        {
-            //Right button
-            if (args.Button == 0 && model is NodeModel nodeModel)
-            {
-                this.ViewModel.SetCentralNodeModel(nodeModel);
-            }
+            this.ViewModel = interfaceView.ViewModel;
+            await this.HasChanged();
+
+            this.ViewModel.InitializeDiagram();
+            this.RefreshDiagram();
+
+            this.ViewModel.OnCentralNodeChanged += this.RefreshDiagram;
+            this.IsLoading = false;
+            return true;
         }
 
         /// <summary>
@@ -119,31 +87,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Tries to copy components from another <see cref="BaseView" />
-        /// </summary>
-        /// <param name="otherView">The other <see cref="BaseView" /></param>
-        /// <returns>Value indicating if it could copy components</returns>
-        public async Task<bool> CopyComponents(BaseView otherView)
-        {
-            this.ViewModel.OnCentralNodeChanged -= this.RefreshDiagram;
-            if (otherView is not GenericBaseView<IInterfaceViewViewModel> interfaceView)
-            {
-                return false;
-            }
-
-            this.ViewModel = interfaceView.ViewModel;
-            await this.HasChanged();
-
-            this.ViewModel.InitializeDiagram();
-            this.RefreshDiagram();
-
-            this.ViewModel.OnCentralNodeChanged += this.RefreshDiagram;
-            this.IsLoading = false;
-            return true;
-        }
-
-        /// <summary>
-        /// The comments of the selected object have changed
+        ///     The comments of the selected object have changed
         /// </summary>
         /// <param name="updatedObject">the object that the objects have changed</param>
         /// <param name="hasComments">if have comments or not</param>
@@ -154,7 +98,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         }
 
         /// <summary>
-        /// Method that handles the on central node changed event.
+        ///     Method that handles the on central node changed event.
         /// </summary>
         public void RefreshDiagram()
         {
@@ -167,13 +111,55 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        ///     Method invoked when the component is ready to start, having received its
+        ///     initial parameters from its parent in the render tree.
         /// </summary>
-        public void Dispose()
+        protected override void OnInitialized()
         {
-            this.Diagram.MouseUp -= this.Diagram_MouseUp;
-            this.Diagram.MouseDoubleClick -= this.Diagram_MouseDoubleClick;
-            this.ViewModel.OnCentralNodeChanged -= this.RefreshDiagram;
+            this.IsLoading = true;
+            base.OnInitialized();
+
+            this.Diagram = new Diagram
+            {
+                Options =
+                {
+                    AllowMultiSelection = false,
+                    DefaultNodeComponent = typeof(DiagramNodeWidget)
+                }
+            };
+
+            this.Diagram.RegisterModelComponent<DiagramLink, DiagramLinkWidget>();
+
+            this.Diagram.MouseUp += this.Diagram_MouseUp;
+            this.Diagram.MouseDoubleClick += this.Diagram_MouseDoubleClick;
+        }
+
+        /// <summary>
+        ///     MouseUp event for the diagram component
+        /// </summary>
+        /// <param name="model">the model clicked (NodeModel,PortModel or LinkModel)</param>
+        /// <param name="args">the args of the event</param>
+        private void Diagram_MouseUp(Model model, MouseEventArgs args)
+        {
+            //Right button
+            if (args.Button == 0)
+            {
+                this.ViewModel.SetSelectedModel(model);
+            }
+        }
+
+        /// <summary>
+        ///     MouseDoubleClick event for the diagram component
+        /// </summary>
+        /// <param name="model">the model clicked (NodeModel,PortModel or LinkModel)</param>
+        /// <param name="args">the args of the event</param>
+        private void Diagram_MouseDoubleClick(Model model, MouseEventArgs args)
+        {
+            //Right button
+            if (args.Button == 0 && model is NodeModel nodeModel)
+            {
+                this.ViewModel.SetCentralNodeModel(nodeModel);
+            }
         }
     }
 }

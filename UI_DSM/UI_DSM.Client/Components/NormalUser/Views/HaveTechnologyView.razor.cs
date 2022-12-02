@@ -36,6 +36,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
         {
             await base.InitializeViewModel(things, projectId, reviewId);
+            this.IsLoading = false;
 
             this.Disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnTechnologyView)
                 .Subscribe(async _ => await this.SwitchView()));

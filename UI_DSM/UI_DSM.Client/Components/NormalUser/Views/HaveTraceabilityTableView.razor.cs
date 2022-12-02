@@ -88,7 +88,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                 .Where(x => !x)
                 .Subscribe(_ => this.InvokeAsync(this.OnRowFilteringClose)));
 
-            await this.InvokeAsync(this.StateHasChanged);
+            this.IsLoading = false;
         }
 
         /// <summary>

@@ -87,15 +87,18 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
                 ProjectName = "Project"
             };
 
-            this.projectService.Setup(x => x.GetProject(projectGuid, 1)).ReturnsAsync(project);
-
-            this.participantService.Setup(x => x.GetCurrentParticipant(projectGuid)).ReturnsAsync(new Participant()
+            var participant = new Participant(Guid.NewGuid())
             {
                 Role = new Role(Guid.NewGuid())
                 {
                     AccessRights = { AccessRight.ProjectManagement }
                 }
-            });
+            };
+
+            this.projectService.Setup(x => x.GetProject(projectGuid, 0)).ReturnsAsync(project);
+            this.participantService.Setup(x => x.GetParticipantsOfProject(projectGuid, 0)).ReturnsAsync(new List<Participant> { participant });
+            this.participantService.Setup(x => x.GetCurrentParticipant(projectGuid)).ReturnsAsync(participant);
+            this.artifactService.Setup(x => x.GetArtifactsOfProject(projectGuid, 0)).ReturnsAsync(new List<Artifact>());
 
             await this.viewModel.OnInitializedAsync(projectGuid);
             renderer.Render();
@@ -136,7 +139,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
             Assert.Multiple(() =>
             {
                 Assert.That(this.viewModel.IsOnCreationMode, Is.False);
-                Assert.That(project.Participants, Has.Count.EqualTo(1));
+                Assert.That(project.Participants, Has.Count.EqualTo(2));
             });
         }
     }

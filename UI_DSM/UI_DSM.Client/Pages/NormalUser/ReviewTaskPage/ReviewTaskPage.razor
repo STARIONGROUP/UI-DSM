@@ -45,8 +45,6 @@
 		}
 
 		<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.IsLoading">
-			if (this.ViewModel.CurrentBaseView != null)
-			{
 			<main class="task-page__body">
 				<div class="task-page__header">
 					<h1 class="h3">@(this.ViewModel.ReviewTask.Description)</h1>
@@ -96,7 +94,6 @@
 				</div>
 			</main>
 
-			}
 			<aside class="task-page__sidebar task-page__sidebar__right">
 				<ConfirmCancelPopup ViewModel="this.ViewModel.ConfirmCancelDialog"/>
 				<SelectedItemCard @ref="this.SelectedItemCard" MarkAsReviewed="this.ViewModel.OpenConfirmDialog"/>

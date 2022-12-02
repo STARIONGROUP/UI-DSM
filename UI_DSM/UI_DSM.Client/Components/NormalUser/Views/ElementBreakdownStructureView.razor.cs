@@ -109,7 +109,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             await base.OnAfterRenderAsync(firstRender);
 
-            if (!this.hasAlreadyExpandOnce && this.ViewModel.TopElement.Any())
+            if (!this.IsLoading && !this.hasAlreadyExpandOnce && this.ViewModel.TopElement.Any() && this.Grid != null)
             {
                 var topElement = this.ViewModel.TopElement.First();
                 await this.Grid.ExpandRow(topElement);

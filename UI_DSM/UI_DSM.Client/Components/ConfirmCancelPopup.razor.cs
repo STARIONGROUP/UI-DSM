@@ -65,10 +65,11 @@ namespace UI_DSM.Client.Components
         ///     Performs the OnConfirm <see cref="EventHandler" /> when the Confirm button has been pressed
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>
-        private Task OnConfirmClicked()
+        private async Task OnConfirmClicked()
         {
             this.buttonsEnabled = false;
-            return this.ViewModel.OnConfirm.InvokeAsync();
+            await this.ViewModel.OnConfirm.InvokeAsync();
+            this.buttonsEnabled = true;
         }
     }
 }

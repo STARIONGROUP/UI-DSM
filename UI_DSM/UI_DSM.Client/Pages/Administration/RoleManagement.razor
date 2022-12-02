@@ -12,6 +12,7 @@
 @page "/Administration/RoleManagement"
 @layout DefaultLayout
 @attribute [Authorize(Roles = "Administrator")]
+<LoadingComponent IsLoading="this.IsLoading">
 <div>
 	<div class="page-header">
 		<h1>Role management</h1>
@@ -44,3 +45,4 @@ else
 		No role found...
 	</div>
 }
+</LoadingComponent>

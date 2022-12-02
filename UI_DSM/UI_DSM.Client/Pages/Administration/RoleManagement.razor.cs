@@ -37,6 +37,11 @@ namespace UI_DSM.Client.Pages.Administration
         public IRoleManagementViewModel ViewModel { get; set; }
 
         /// <summary>
+        ///     Value indicating if the current page is loading
+        /// </summary>
+        public bool IsLoading { get; set; } = true;
+
+        /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
@@ -61,6 +66,7 @@ namespace UI_DSM.Client.Pages.Administration
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
             await this.ViewModel.OnInitializedAsync();
+            this.IsLoading = false;
         }
     }
 }

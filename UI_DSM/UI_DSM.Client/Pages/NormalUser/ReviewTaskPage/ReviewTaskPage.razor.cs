@@ -175,7 +175,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         /// </remarks>
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            if (this.BaseView?.Instance is BaseView baseView && this.ViewModel.ShouldInitializeBaseView)
+            if (this.BaseView?.Instance is BaseView baseView && this.ViewModel.ShouldInitializeBaseView && baseView.GetType() == this.ViewModel.CurrentBaseView)
             {
                 this.ViewModel.ShouldInitializeBaseView = false;
                 this.DisposeViewDisposables();

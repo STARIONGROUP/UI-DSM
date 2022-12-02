@@ -13,56 +13,19 @@
 
 namespace UI_DSM.Client.Components.NormalUser.Views
 {
-    using Microsoft.AspNetCore.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Shared.Enumerator;
 
     /// <summary>
     ///     Component for the <see cref="View.TrlView" />
     /// </summary>
-    public partial class TrlView: ElementBreakdownStructureView<IProductBreakdownStructureViewViewModel>, IReusableView
+    public partial class TrlView : ElementBreakdownStructureView<IProductBreakdownStructureViewViewModel>, IReusableView
     {
-        /// <summary>
-        ///     Hides columns on start
-        /// </summary>
-        protected override void HideColumnsAtStart()
-        {
-        }
-
-        /// <summary>
-        /// Backing field for the <see cref="IsLoading"/> property
-        /// </summary>
-        private bool isLoading;
-
-        /// <summary>
-        /// Gets or sets if the view is loading
-        /// </summary>
-        [Parameter]
-        public bool IsLoading
-        {
-            get => this.isLoading;
-            set
-            {
-                this.isLoading = value;
-                this.InvokeAsync(this.HasChanged);
-            }
-        }
-
-        /// <summary>
-        /// Method invoked when the component is ready to start, having received its
-        /// initial parameters from its parent in the render tree.
-        /// </summary>
-        protected override void OnInitialized()
-        {
-            this.IsLoading = true;
-            base.OnInitialized();
-        }
-
         /// <summary>
         ///     Tries to copy components from another <see cref="BaseView" />
         /// </summary>
         /// <param name="otherView">The other <see cref="BaseView" /></param>
-        /// <returns>A <see cref="Task"/> with the value indicating if it could copy components</returns>
+        /// <returns>A <see cref="Task" /> with the value indicating if it could copy components</returns>
         public async Task<bool> CopyComponents(BaseView otherView)
         {
             if (otherView is not ProductBreakdownStructureView productBreakdown)
@@ -71,8 +34,26 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             }
 
             this.ViewModel = productBreakdown.ViewModel;
-            await this.HasChanged();
+            this.IsLoading = false;
+            await Task.CompletedTask;
             return true;
+        }
+
+        /// <summary>
+        ///     Hides columns on start
+        /// </summary>
+        protected override void HideColumnsAtStart()
+        {
+        }
+
+        /// <summary>
+        ///     Method invoked when the component is ready to start, having received its
+        ///     initial parameters from its parent in the render tree.
+        /// </summary>
+        protected override void OnInitialized()
+        {
+            this.IsLoading = true;
+            base.OnInitialized();
         }
     }
 }

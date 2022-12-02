@@ -36,6 +36,11 @@ namespace UI_DSM.Client.Pages.Administration
         public IUserManagementViewModel ViewModel { get; set; }
 
         /// <summary>
+        ///     Value indicating if the current page is loading
+        /// </summary>
+        public bool IsLoading { get; set; } = true;
+
+        /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
         ///     Override this method if you will perform an asynchronous operation and
@@ -45,6 +50,7 @@ namespace UI_DSM.Client.Pages.Administration
         protected override async Task OnInitializedAsync()
         {
             await this.ViewModel.OnInitializedAsync();
+            this.IsLoading = false;
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCreationMode)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));

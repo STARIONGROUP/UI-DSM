@@ -108,6 +108,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         IConfirmCancelPopupViewModel ConfirmCancelDialog { get; set; }
 
         /// <summary>
+        ///     Value indicating if the view has to refresh
+        /// </summary>
+        bool ShouldRefresh { get; set; }
+
+        /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
         ///     Override this method if you will perform an asynchronous operation and

@@ -144,6 +144,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         public IConfirmCancelPopupViewModel ConfirmCancelDialog { get; set; }
 
         /// <summary>
+        ///     Value indicating if the view has to refresh
+        /// </summary>
+        public bool ShouldRefresh { get; set; }
+
+        /// <summary>
         ///     The current <see cref="Model" />
         /// </summary>
         public Model CurrentModel { get; private set; }
@@ -262,7 +267,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
             this.AvailableViews.Clear();
             this.projectId = projectGuid;
             this.reviewId = reviewGuid;
-            var review = await this.reviewService.GetReviewOfProject(this.projectId, reviewGuid, 3);
+            var review = await this.reviewService.GetReviewOfProject(this.projectId, reviewGuid, 2);
             var reviewObjectiveInsideReview = review?.ReviewObjectives.FirstOrDefault(x => x.Id == reviewObjectiveId);
 
             var reviewTaskInsideObjective = reviewObjectiveInsideReview?.ReviewTasks.FirstOrDefault(x => x.Id == reviewTaskId);

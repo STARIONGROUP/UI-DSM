@@ -45,7 +45,8 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             }
 
             this.ViewModel = trlView.ViewModel;
-            await this.HasChanged();
+            this.IsLoading = false;
+            await Task.CompletedTask;
             return true;
         }
 
