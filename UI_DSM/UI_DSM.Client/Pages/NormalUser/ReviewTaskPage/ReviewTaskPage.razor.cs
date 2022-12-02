@@ -136,6 +136,9 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ConfirmCancelDialog.IsVisible)
                 .Where(x => !x).Subscribe(async _ => await this.OnConfirmClosed()));
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.DoneConfirmCancelPopup.IsVisible)
+               .Where(x => !x).Subscribe(async _ => await this.OnConfirmClosed()));
         }
 
         /// <summary>

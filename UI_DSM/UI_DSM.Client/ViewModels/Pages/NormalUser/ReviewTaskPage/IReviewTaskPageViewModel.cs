@@ -163,5 +163,15 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         /// </summary>
         /// <param name="row">The <see cref="IHaveThingRowViewModel" /></param>
         void OpenConfirmDialog(IHaveThingRowViewModel row);
+
+        /// <summary>
+        ///     The <see cref="IConfirmCancelPopupViewModel" />
+        /// </summary>
+        IConfirmCancelPopupViewModel DoneConfirmCancelPopup { get; }
+
+        /// <summary>
+        ///     Opens a popup to mark a <see cref="ReviewTask"/> as done or undone
+        /// </summary>
+        void AskConfirmMarkTaskAsDoneOrUndone();
     }
 }
