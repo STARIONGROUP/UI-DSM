@@ -66,13 +66,6 @@ namespace UI_DSM.Shared.Models
         public List<string> AdditionnalColumnsVisibleAtStart { get; set; }
 
         /// <summary>
-        ///     Gets or sets the author of the <see cref="AnnotatableItem" />
-        /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [DeepLevel(0)]
-        public Participant Author { get; set; }
-
-        /// <summary>
         ///     Gets or sets the <see cref="DateTime" /> for the creation of the <see cref="AnnotatableItem" />
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -143,7 +136,6 @@ namespace UI_DSM.Shared.Models
                 Status = this.Status,
                 RelatedViews = this.RelatedViews,
                 ReviewObjectiveKind = this.ReviewObjectiveKind,
-                Author = this.Author?.Id ?? Guid.Empty,
                 CreatedOn = this.CreatedOn,
                 ReviewObjectiveKindNumber = this.ReviewObjectiveKindNumber,
                 ReviewTasks = this.ReviewTasks.Select(x => x.Id).ToList(),
@@ -176,7 +168,6 @@ namespace UI_DSM.Shared.Models
             this.RelatedViews = reviewObjectiveDto.RelatedViews;
             this.ReviewObjectiveKind = reviewObjectiveDto.ReviewObjectiveKind;
             this.ReviewObjectiveKindNumber = reviewObjectiveDto.ReviewObjectiveKindNumber;
-            this.Author = this.GetEntity<Participant>(reviewObjectiveDto.Author, resolvedEntity);
             this.CreatedOn = reviewObjectiveDto.CreatedOn;
             this.ReviewCategories.ResolveList(reviewObjectiveDto.ReviewCategories, resolvedEntity);
             this.AdditionnalColumnsVisibleAtStart = reviewObjectiveDto.AdditionnalColumnsVisibleAtStart;

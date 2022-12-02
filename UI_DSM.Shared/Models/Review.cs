@@ -52,13 +52,6 @@ namespace UI_DSM.Shared.Models
         public DateTime CreatedOn { get; set; }
 
         /// <summary>
-        ///     The author of the <see cref="Review" />
-        /// </summary>
-        [DeepLevel(0)]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Participant Author { get; set; }
-
-        /// <summary>
         ///     The number of the <see cref="Review" /> inside the <see cref="Project" />
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -108,7 +101,6 @@ namespace UI_DSM.Shared.Models
             return new ReviewDto(this.Id)
             {
                 CreatedOn = this.CreatedOn,
-                Author = this.Author?.Id ?? Guid.Empty,
                 ReviewNumber = this.ReviewNumber,
                 Title = this.Title,
                 Description = this.Description,
@@ -132,7 +124,6 @@ namespace UI_DSM.Shared.Models
             }
 
             this.CreatedOn = reviewDto.CreatedOn;
-            this.Author = this.GetEntity<Participant>(reviewDto.Author, resolvedEntity);
             this.ReviewNumber = reviewDto.ReviewNumber;
             this.Title = reviewDto.Title;
             this.Description = reviewDto.Description;

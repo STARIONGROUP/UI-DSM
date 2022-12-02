@@ -55,7 +55,6 @@ namespace UI_DSM.Server.Tests.Managers
             {
                 new (Guid.NewGuid())
                 {
-                    Author = this.participant,
                     Annotations =
                     {
                         new Comment(Guid.NewGuid())
@@ -66,7 +65,6 @@ namespace UI_DSM.Server.Tests.Managers
                 },
                 new (Guid.NewGuid())
                 {
-                    Author = this.participant,
                     Annotations =
                     {
                         new Comment(Guid.NewGuid())

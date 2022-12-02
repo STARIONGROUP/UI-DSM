@@ -64,9 +64,6 @@ namespace UI_DSM.Server.Tests.Managers
             this.annotatableItems = new List<AnnotatableItem>
             {
                 new ReviewObjective(Guid.NewGuid())
-                {
-                    Author = this.participant
-                }
             };
 
             Program.RegisterEntities();

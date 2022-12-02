@@ -52,9 +52,6 @@ namespace UI_DSM.Serializer.Json
 
             writer.WriteEndArray();
 
-            writer.WritePropertyName("author");
-            writer.WriteStringValue(dto.Author);
-
             writer.WritePropertyName("createdOn");
             writer.WriteStringValue(dto.CreatedOn);
 

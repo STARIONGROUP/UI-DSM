@@ -87,14 +87,12 @@ namespace UI_DSM.Server.Tests.Modules
             {
                 new(Guid.NewGuid())
                 {
-                    Author = participant,
                     Description = "A review",
                     Title = "Title review",
                     ReviewNumber = 1
                 },
                 new(Guid.NewGuid())
                 {
-                    Author = participant,
                     Description = "An other review",
                     Title = "Title review 2 ",
                     ReviewNumber = 2
@@ -121,16 +119,15 @@ namespace UI_DSM.Server.Tests.Modules
         [Test]
         public async Task VerifyGetEntity()
         {
+            var participant = new Participant(Guid.NewGuid())
+            {
+                Role = new Role(Guid.NewGuid()),
+                User = new UserEntity(Guid.NewGuid())
+            };
+            
             var project = new Project(Guid.NewGuid());
 
-            var review = new Review(Guid.NewGuid())
-            {
-                Author = new Participant(Guid.NewGuid())
-                {
-                    Role = new Role(Guid.NewGuid()),
-                    User = new UserEntity(Guid.NewGuid())
-                }
-            };
+            var review = new Review(Guid.NewGuid());
 
             this.routeValues["projectId"] = Guid.NewGuid().ToString();
 
@@ -139,7 +136,7 @@ namespace UI_DSM.Server.Tests.Modules
             await this.module.GetEntities(this.reviewManager.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
 
-            this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(review.Author);
+            this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(participant);
 
             this.reviewManager.As<IContainedEntityManager<Review>>()
                 .Setup(x => x.FindEntityWithContainer(review.Id)).ReturnsAsync((Review)null);
@@ -197,7 +194,6 @@ namespace UI_DSM.Server.Tests.Modules
             await this.module.CreateEntity(this.reviewManager.Object, dto, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 422, Times.Once);
 
-            dto.Author = participant.Id;
             dto.Description = "A description";
             dto.Title = "a title";
             dto.Artifacts = new List<Guid> { Guid.NewGuid() };
@@ -214,17 +210,17 @@ namespace UI_DSM.Server.Tests.Modules
         [Test]
         public async Task VerifyDeleteEntity()
         {
-            var review = new Review(Guid.NewGuid())
-            {
-                Author = new Participant(Guid.NewGuid())
-                {
-                    Role = new Role(Guid.NewGuid())
-                }
-            };
+            var review = new Review(Guid.NewGuid());
 
             var project = new Project(Guid.NewGuid())
             {
                 Reviews = { review }
+            };
+
+            var participant = new Participant(Guid.NewGuid())
+            {
+                Role = new Role(Guid.NewGuid()),
+                User = new UserEntity(Guid.NewGuid())
             };
 
             this.routeValues["projectId"] = project.Id.ToString();
@@ -234,12 +230,12 @@ namespace UI_DSM.Server.Tests.Modules
             await this.module.DeleteEntity(this.reviewManager.Object, review.Id, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
 
-            this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(review.Author);
+            this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(participant);
 
             await this.module.DeleteEntity(this.reviewManager.Object, review.Id, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 403, Times.Once);
-            review.Author.Role.AccessRights.Add(AccessRight.DeleteReview);
-            this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(review.Author);
+            participant.Role.AccessRights.Add(AccessRight.DeleteReview);
+            this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(participant);
 
             this.reviewManager.As<IContainedEntityManager<Review>>().Setup(x => x.FindEntityWithContainer(review.Id)).ReturnsAsync(review);
             this.reviewManager.Setup(x => x.DeleteEntity(review)).ReturnsAsync(EntityOperationResult<Review>.Success(null));
@@ -258,7 +254,6 @@ namespace UI_DSM.Server.Tests.Modules
 
             var review = new Review(Guid.NewGuid())
             {
-                Author = participant,
                 Description = "Description",
                 Title = "Title",
                 Artifacts = { new Model(Guid.NewGuid()) }
@@ -266,7 +261,6 @@ namespace UI_DSM.Server.Tests.Modules
 
             var reviewDto = new ReviewDto()
             {
-                Author = participant.Id,
                 Description = "Description",
                 Title = "Title",
                 Status = StatusKind.Closed,
@@ -286,7 +280,7 @@ namespace UI_DSM.Server.Tests.Modules
             await this.module.UpdateEntity(this.reviewManager.Object, review.Id, reviewDto, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
 
-            this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(review.Author);
+            this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(participant);
 
             this.reviewManager.As<IContainedEntityManager<Review>>().Setup(x => x.FindEntityWithContainer(review.Id)).ReturnsAsync(review);
             this.reviewManager.Setup(x => x.UpdateEntity(It.IsAny<Review>())).ReturnsAsync(EntityOperationResult<Review>.Success(review));

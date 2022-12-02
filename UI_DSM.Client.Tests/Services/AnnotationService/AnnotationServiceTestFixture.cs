@@ -109,7 +109,6 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
                     {
                         noteId, commentId, feedbackId
                     },
-                    Author = participantId,
                     Description = "A description"
                 }
             };

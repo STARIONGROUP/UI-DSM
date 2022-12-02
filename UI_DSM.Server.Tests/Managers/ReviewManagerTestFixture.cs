@@ -72,7 +72,6 @@ namespace UI_DSM.Server.Tests.Managers
             {
                 new(Guid.NewGuid())
                 {
-                    Author = participant,
                     CreatedOn = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1)),
                     Description = "A review",
                     ReviewNumber = 1, 
@@ -82,7 +81,6 @@ namespace UI_DSM.Server.Tests.Managers
                 },
                 new(Guid.NewGuid())
                 {
-                    Author = participant,
                     CreatedOn = DateTime.UtcNow,
                     Description = "Another review",
                     ReviewNumber = 2,
@@ -94,7 +92,7 @@ namespace UI_DSM.Server.Tests.Managers
             this.reviewDbSet.UpdateDbSetCollection(reviews);
 
             var allEntities = await this.manager.GetEntities(1);
-            Assert.That(allEntities.ToList(), Has.Count.EqualTo(6));
+            Assert.That(allEntities.ToList(), Has.Count.EqualTo(3));
 
             var invalidGuid = Guid.NewGuid();
             var foundReview = await this.manager.FindEntity(invalidGuid);
@@ -104,7 +102,7 @@ namespace UI_DSM.Server.Tests.Managers
             Assert.That(foundEntities.ToList(), Has.Count.EqualTo(2));
 
             var deepEntity = await this.manager.GetEntity(reviews.First().Id, 1);
-            Assert.That(deepEntity.ToList(), Has.Count.EqualTo(5));
+            Assert.That(deepEntity.ToList(), Has.Count.EqualTo(2));
 
             var project = new Project(Guid.NewGuid())
             {
@@ -112,7 +110,7 @@ namespace UI_DSM.Server.Tests.Managers
             };
 
             var containedEntities = await this.manager.GetContainedEntities(project.Id);
-            Assert.That(containedEntities.ToList(), Has.Count.EqualTo(4));
+            Assert.That(containedEntities.ToList(), Has.Count.EqualTo(1));
         }
 
         [Test]
@@ -121,7 +119,6 @@ namespace UI_DSM.Server.Tests.Managers
             var review = new Review()
             {
                 Title = "Review Title",
-                Author = new Participant(Guid.NewGuid())
             };
 
             var operationResult = await this.manager.CreateEntity(review);
@@ -158,7 +155,6 @@ namespace UI_DSM.Server.Tests.Managers
             var review = new Review(Guid.NewGuid())
             {
                 Title = "Review Title",
-                Author = new Participant(Guid.NewGuid())
             };
 
             var operationResult = await this.manager.UpdateEntity(review);
@@ -229,11 +225,9 @@ namespace UI_DSM.Server.Tests.Managers
 
             var review = new Review();
             await this.manager.ResolveProperties(review, new UserEntityDto());
-            Assert.That(review.Author, Is.Null);
 
             var reviewDto = new ReviewDto()
             {
-                Author = participant.Id,
                 ReviewObjectives = new List<Guid>()
                 {
                     reviewObjective.Id
@@ -244,7 +238,6 @@ namespace UI_DSM.Server.Tests.Managers
 
             Assert.Multiple(() =>
             {
-                Assert.That(review.Author, Is.EqualTo(participant));
                 Assert.That(review.ReviewObjectives, Has.Count.EqualTo(1));
             });
         }

@@ -70,9 +70,6 @@ namespace UI_DSM.Serializer.Json
             writer.WritePropertyName("createdOn");
             writer.WriteStringValue(dto.CreatedOn);
 
-            writer.WritePropertyName("author");
-            writer.WriteStringValue(dto.Author);
-
             writer.WriteStartArray("isAssignedTo");
 
             foreach (var item in dto.IsAssignedTo)

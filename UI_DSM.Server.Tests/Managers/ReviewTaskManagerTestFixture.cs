@@ -67,7 +67,6 @@ namespace UI_DSM.Server.Tests.Managers
             {
                 new(Guid.NewGuid())
                 {
-                    Author = participant,
                     CreatedOn = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1)),
                     Description = "A review objective",
                     TaskNumber = 1,
@@ -77,7 +76,6 @@ namespace UI_DSM.Server.Tests.Managers
                 },
                 new(Guid.NewGuid())
                 {
-                    Author = participant,
                     CreatedOn = DateTime.UtcNow,
                     Description = "Another review objective",
                     TaskNumber = 1,
@@ -116,7 +114,6 @@ namespace UI_DSM.Server.Tests.Managers
             var reviewTask = new ReviewTask()
             {
                 Title = "Reveiw Task Title",
-                Author = new Participant(Guid.NewGuid())
             };
 
             var operationResult = await this.manager.CreateEntity(reviewTask);
@@ -153,7 +150,6 @@ namespace UI_DSM.Server.Tests.Managers
             var reviewTask = new ReviewTask(Guid.NewGuid())
             {
                 Title = "Review Title",
-                Author = new Participant(Guid.NewGuid())
             };
 
             var operationResult = await this.manager.UpdateEntity(reviewTask);
@@ -236,11 +232,9 @@ namespace UI_DSM.Server.Tests.Managers
 
             var reviewTask = new ReviewTask();
             await this.manager.ResolveProperties(reviewTask, new UserEntityDto());
-            Assert.That(reviewTask.Author, Is.Null);
 
             var reviewDto = new ReviewTaskDto()
             {
-                Author = participant.Id,
                 IsAssignedTo = assignedParticipants
             };
 
@@ -248,7 +242,6 @@ namespace UI_DSM.Server.Tests.Managers
 
             Assert.Multiple(() =>
             {
-                Assert.That(reviewTask.Author, Is.EqualTo(participant));
                 Assert.That(reviewTask.IsAssignedTo, Does.Contain(assignedParticipant));
             });
         }

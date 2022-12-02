@@ -35,7 +35,7 @@ namespace UI_DSM.Server.Context
         /// <param name="options">The options to be used by a <see cref="DbContext" />.</param>
         public DatabaseContext(DbContextOptions options) : base(options)
         {
-            this.EnsureCreated();
+            //this.EnsureCreated();
         }
 
         /// <summary>
@@ -211,8 +211,16 @@ namespace UI_DSM.Server.Context
             builder.Entity<Participant>().HasMany(x => x.AssignedTasks)
                 .WithMany(x => x.IsAssignedTo);
 
-            builder.Entity<ReviewTask>().HasOne(x => x.Author);
-                
+            builder.Entity<Participant>().HasMany(x => x.Annotations)
+                .WithOne(a => (Participant)a.Author)
+                .HasForeignKey("AuthorId")
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.Entity<Participant>().HasMany(x => x.Replies)
+                .WithOne(r => (Participant)r.Author)
+                .HasForeignKey("AuthorId")
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.Entity<ReviewTask>().HasMany(x => x.IsAssignedTo)
                 .WithMany(x => x.AssignedTasks);
 

@@ -113,7 +113,6 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            dto.Author = participant.Id;
             await base.CreateEntity(manager, dto, context, deepLevel);
         }
 

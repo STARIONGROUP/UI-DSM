@@ -72,7 +72,6 @@ namespace UI_DSM.Server.Tests.Managers
             {
                 new(Guid.NewGuid())
                 {
-                    Author = participant,
                     CreatedOn = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1)),
                     Description = "A review objective",
                     ReviewObjectiveNumber = 1,
@@ -80,7 +79,6 @@ namespace UI_DSM.Server.Tests.Managers
                 },
                 new(Guid.NewGuid())
                 {
-                    Author = participant,
                     CreatedOn = DateTime.UtcNow,
                     Description = "Another review objective",
                     ReviewObjectiveNumber = 1,
@@ -91,7 +89,7 @@ namespace UI_DSM.Server.Tests.Managers
             this.reviewObjectiveDbSet.UpdateDbSetCollection(reviewObjectives);
 
             var allEntities = await this.manager.GetEntities(1);
-            Assert.That(allEntities.ToList(), Has.Count.EqualTo(5));
+            Assert.That(allEntities.ToList(), Has.Count.EqualTo(2));
 
             var invalidGuid = Guid.NewGuid();
             var foundReview = await this.manager.FindEntity(invalidGuid);
@@ -101,7 +99,7 @@ namespace UI_DSM.Server.Tests.Managers
             Assert.That(foundEntities.ToList(), Has.Count.EqualTo(2));
 
             var deepEntity = await this.manager.GetEntity(reviewObjectives.First().Id, 1);
-            Assert.That(deepEntity.ToList(), Has.Count.EqualTo(4));
+            Assert.That(deepEntity.ToList(), Has.Count.EqualTo(1));
 
             var review = new Review(Guid.NewGuid())
             {
@@ -109,16 +107,13 @@ namespace UI_DSM.Server.Tests.Managers
             };
 
             var containedEntities = await this.manager.GetContainedEntities(review.Id);
-            Assert.That(containedEntities.ToList(), Has.Count.EqualTo(4));
+            Assert.That(containedEntities.ToList(), Has.Count.EqualTo(1));
         }
 
         [Test]
         public async Task VerifyCreateEntity()
         {
-            var reviewObjective = new ReviewObjective()
-            {
-                Author = new Participant(Guid.NewGuid())
-            };
+            var reviewObjective = new ReviewObjective();
 
             var operationResult = await this.manager.CreateEntity(reviewObjective);
             Assert.That(operationResult.Succeeded, Is.False);
@@ -151,10 +146,7 @@ namespace UI_DSM.Server.Tests.Managers
         [Test]
         public async Task VerifyUpdateEntity()
         {
-            var reviewObjective = new ReviewObjective(Guid.NewGuid())
-            {
-                Author = new Participant(Guid.NewGuid())
-            };
+            var reviewObjective = new ReviewObjective(Guid.NewGuid());
 
             var operationResult = await this.manager.UpdateEntity(reviewObjective);
             Assert.That(operationResult.Succeeded, Is.False);
@@ -253,11 +245,9 @@ namespace UI_DSM.Server.Tests.Managers
 
             var reviewObjective = new ReviewObjective();
             await this.manager.ResolveProperties(reviewObjective, new UserEntityDto());
-            Assert.That(reviewObjective.Author, Is.Null);
 
             var reviewDto = new ReviewObjectiveDto()
             {
-                Author = participant.Id,
                 ReviewTasks = tasks.Select(x => x.Id).ToList(),
                 Annotations = annotations.Select(x => x.Id).ToList()
             };
@@ -266,7 +256,6 @@ namespace UI_DSM.Server.Tests.Managers
            
             Assert.Multiple(() =>
             {
-                Assert.That(reviewObjective.Author, Is.EqualTo(participant));
                 Assert.That(reviewObjective.ReviewTasks, Has.Count.EqualTo(3));
                 Assert.That(reviewObjective.Annotations, Has.Count.EqualTo(3));
             });
@@ -282,7 +271,6 @@ namespace UI_DSM.Server.Tests.Managers
                 new(Guid.NewGuid())
                 {
                     Title = "Review Title",
-                    Author = new Participant(Guid.NewGuid()),
                     EntityContainer = project,
                 }
             };
@@ -295,10 +283,9 @@ namespace UI_DSM.Server.Tests.Managers
                 ReviewObjectiveKind = ReviewObjectiveKind.Prr,
                 ReviewObjectiveKindNumber = 1,
                 Description = "Review Objective Description",
-                Author = reviews[0].Author
             };
 
-            var operationResult = await this.manager.CreateEntityBasedOnTemplate(template, reviews[0], reviews[0].Author);
+            var operationResult = await this.manager.CreateEntityBasedOnTemplate(template, reviews[0]);
             Assert.That(operationResult.Succeeded, Is.False);
         }
 
@@ -312,7 +299,6 @@ namespace UI_DSM.Server.Tests.Managers
                 new(Guid.NewGuid())
                 {
                     Title = "Review Title",
-                    Author = new Participant(Guid.NewGuid()),
                     EntityContainer = project,
                 }
             };
@@ -327,11 +313,10 @@ namespace UI_DSM.Server.Tests.Managers
                     ReviewObjectiveKind = ReviewObjectiveKind.Prr,
                     ReviewObjectiveKindNumber = 1,
                     Description = "Review Objective Description",
-                    Author = reviews[0].Author
                 }
             };
 
-            var operationResult = await this.manager.CreateEntityBasedOnTemplates(templates, reviews[0], reviews[0].Author);
+            var operationResult = await this.manager.CreateEntityBasedOnTemplates(templates, reviews[0]);
             Assert.That(operationResult.Succeeded, Is.False);
         }
 

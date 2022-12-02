@@ -90,11 +90,6 @@ namespace UI_DSM.Shared.DTO.Models
         public DateTime CreatedOn { get; set; }
 
         /// <summary>
-        ///    Gets or sets the Author of the ReviewTask
-        /// </summary>
-        public Guid Author { get; set; }
-
-        /// <summary>
         ///    Gets or sets the IsAssignedTo of the ReviewTask
         /// </summary>
         public List<Guid> IsAssignedTo { get; set; }

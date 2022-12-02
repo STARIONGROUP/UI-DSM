@@ -33,7 +33,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "product_assurance",
@@ -54,7 +53,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "pa",
@@ -75,7 +73,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "61950dd4-5301-4028-858b-383fc5f7ec3e"
@@ -114,7 +111,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "f43f5eb3-2ef4-4b55-9ae2-596ad4bf8e5d"
@@ -130,7 +126,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "5da29f72-ced6-43a1-ac50-6223cb057263"
@@ -146,7 +141,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "5635e044-87a6-4054-a596-a57f39de198c"
@@ -190,7 +184,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "4e0ff0de-51c8-4dc0-b7db-e585d5a94082"
@@ -206,7 +199,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "672da97f-eeff-49d0-b2a6-a47c6f9c0460"
@@ -222,7 +214,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "b6b3b7fd-c532-4df2-9656-da2836ba063b"
@@ -238,7 +229,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "d5e546fe-eb96-4fe5-8f9b-f0bd7938a391"
@@ -254,7 +244,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "a7cb4652-90c5-4234-93f6-d32c84878c78"
@@ -291,7 +280,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "a3ebed63-495b-4732-94d2-3f6cf5a401b6"
@@ -307,7 +295,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "b7e5e9a6-3848-4c53-8b03-b84cc3685436"
@@ -323,7 +310,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "107d0b62-51b4-4900-a944-1fa7e8e779a0"
@@ -363,7 +349,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "cost"
@@ -408,7 +393,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "edb594cc-61cf-4d82-9e19-0872e9feab41"
@@ -424,7 +408,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "0f9c2d0c-bdfb-44a2-9186-8c10db9ee382"
@@ -440,7 +423,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "technical_risks"
@@ -458,7 +440,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "pre-development_activities"
@@ -476,7 +457,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "823370af-9679-4616-ae09-9ae9a40d04ff"
@@ -515,7 +495,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "product_assurance"
@@ -555,7 +534,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "space_debris"
@@ -573,7 +551,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "space_debris"
@@ -610,7 +587,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "lessons_learned"
@@ -654,7 +630,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "fc999295-0964-4d1b-ab2d-fefca812a314"
@@ -670,7 +645,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "94c6ab54-03f0-4bbc-ac41-5f6539a16277"
@@ -686,7 +660,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "00804c2a-a283-4ee7-a4f7-b0d5696fb953"
@@ -702,7 +675,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "7f73a225-f724-482b-9b67-b78778fde86d"
@@ -718,7 +690,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "e9c60d7d-2706-4f9a-af71-bcc6360f3529"
@@ -734,7 +705,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "justifications"
@@ -781,7 +751,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "0410f123-343a-4620-a76b-1f3e4a5d1499"
@@ -797,7 +766,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "e5432e76-9810-402a-874b-f52546c1ec80"
@@ -813,7 +781,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "99bf39ac-903c-4adb-9adb-9a3735c37bc3"
@@ -829,7 +796,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "41e89db7-191a-4187-b7c6-9523cc7ded9b"
@@ -845,7 +811,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "fca79fdb-40b5-4a4f-ba43-46cf722339e2"
@@ -902,7 +867,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "mission_analysis"
@@ -920,7 +884,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "b3adb22a-9496-4eb9-b6ce-edf54a98e5ab"
@@ -936,7 +899,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "f050a96d-c36f-46ef-8016-c464bb0e1753"
@@ -972,7 +934,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "product_assurance",
@@ -993,7 +954,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "pa",
@@ -1037,7 +997,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "product_assurance"
@@ -1076,7 +1035,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "98d6b970-d655-4635-9a9a-74549ce58471"
@@ -1092,7 +1050,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "d01afde9-9059-499e-9689-f918459cd4d8"
@@ -1108,7 +1065,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "f8ec89ab-3093-4bd5-85bb-9c281262a6db"
@@ -1148,7 +1104,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "cost"
@@ -1193,7 +1148,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "5f7de66f-2dad-43b1-878c-25fc0ad2dd4e"
@@ -1209,7 +1163,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "0c60cc6f-9269-45b7-bf20-52482cfaf59d"
@@ -1225,7 +1178,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "technical_risks"
@@ -1243,7 +1195,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "pre-development_activities"
@@ -1261,7 +1212,6 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [],
     "id": "4cca1002-1760-4f47-8427-1b4d5a946576"
@@ -1299,7 +1249,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "space_debris"
@@ -1336,7 +1285,6 @@
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "lessons_learned"

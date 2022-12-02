@@ -110,7 +110,6 @@ namespace UI_DSM.Server.Tests.Modules
             {
                 new(Guid.NewGuid())
                 {
-                    Author = participant,
                     Description = "A review",
                     Title = "Title review",
                     IsAssignedTo = participants,
@@ -119,7 +118,6 @@ namespace UI_DSM.Server.Tests.Modules
                 },
                 new(Guid.NewGuid())
                 {
-                    Author = participant,
                     Description = "An other review",
                     Title = "Title review 2 ",
                     TaskNumber = 2,
@@ -173,25 +171,24 @@ namespace UI_DSM.Server.Tests.Modules
         [Test]
         public async Task VerifyGetEntity()
         {
-            var reviewTask = new ReviewTask(Guid.NewGuid())
-            {
-                Author = new Participant(Guid.NewGuid())
-                {
-                    Role = new Role(Guid.NewGuid()),
-                    User = new UserEntity(Guid.NewGuid())
-                }
-            };
+            var reviewTask = new ReviewTask(Guid.NewGuid());
 
             _ = new ReviewObjective(this.reviewId)
             {
                 ReviewTasks = {  reviewTask }
             };
 
+            var participant = new Participant(Guid.NewGuid())
+            {
+                Role = new Role(Guid.NewGuid()),
+                User = new UserEntity(Guid.NewGuid())
+            };
+
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
 
             await this.module.GetEntity(this.reviewTaskManager.Object, reviewTask.Id, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
-            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(reviewTask.Author);
+            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(participant);
 
             this.reviewObjectiveManager.As<IContainedEntityManager<ReviewObjective>>()
                 .Setup(x => x.EntityIsContainedBy(this.reviewObjectiveId, this.reviewId)).ReturnsAsync(false);
@@ -280,20 +277,21 @@ namespace UI_DSM.Server.Tests.Modules
         {
             var reviewTask = new ReviewTask(Guid.NewGuid())
             {
-                Author = new Participant(Guid.NewGuid())
-                {
-                    Role = new Role(Guid.NewGuid()),
-                    User = new UserEntity(Guid.NewGuid())
-                },
                 Description = "Description",
                 Title = "Title",
+            };
+
+            var participant = new Participant(Guid.NewGuid())
+            {
+                Role = new Role(Guid.NewGuid()),
+                User = new UserEntity(Guid.NewGuid())
             };
 
             _ = new ReviewObjective(this.reviewObjectiveId)
             {
                 ReviewTasks = { reviewTask }
             };
-
+            
             var dto = reviewTask.ToDto() as ReviewTaskDto;
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
@@ -301,7 +299,7 @@ namespace UI_DSM.Server.Tests.Modules
             await this.module.UpdateEntity(this.reviewTaskManager.Object, reviewTask.Id, dto, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
 
-            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(reviewTask.Author);
+            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(participant);
             
             this.reviewObjectiveManager.As<IContainedEntityManager<ReviewObjective>>()
                 .Setup(x => x.EntityIsContainedBy(this.reviewObjectiveId, this.reviewId)).ReturnsAsync(true);

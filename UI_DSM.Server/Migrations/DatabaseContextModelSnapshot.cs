@@ -37,7 +37,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("AnnotationsId");
 
-                    b.ToTable("AnnotatableItemAnnotation");
+                    b.ToTable("AnnotatableItemAnnotation", (string)null);
                 });
 
             modelBuilder.Entity("ArtifactReview", b =>
@@ -52,7 +52,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("ReviewsId");
 
-                    b.ToTable("ArtifactReview");
+                    b.ToTable("ArtifactReview", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -215,7 +215,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("IsAssignedToId");
 
-                    b.ToTable("ParticipantReviewTask");
+                    b.ToTable("ParticipantReviewTask", (string)null);
                 });
 
             modelBuilder.Entity("ProjectReviewCategory", b =>
@@ -230,7 +230,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("ReviewCategoriesId");
 
-                    b.ToTable("ProjectReviewCategory");
+                    b.ToTable("ProjectReviewCategory", (string)null);
                 });
 
             modelBuilder.Entity("ReviewCategoryReviewItem", b =>
@@ -245,7 +245,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("ReviewItemsId");
 
-                    b.ToTable("ReviewCategoryReviewItem");
+                    b.ToTable("ReviewCategoryReviewItem", (string)null);
                 });
 
             modelBuilder.Entity("ReviewCategoryReviewObjective", b =>
@@ -260,7 +260,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("ReviewObjectivesId");
 
-                    b.ToTable("ReviewCategoryReviewObjective");
+                    b.ToTable("ReviewCategoryReviewObjective", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Entity", b =>
@@ -271,7 +271,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Entity");
+                    b.ToTable("Entity", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.User", b =>
@@ -362,7 +362,7 @@ namespace UI_DSM.Server.Migrations
                 {
                     b.HasBaseType("UI_DSM.Shared.Models.Entity");
 
-                    b.ToTable("AnnotatableItem");
+                    b.ToTable("AnnotatableItem", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Annotation", b =>
@@ -387,7 +387,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("EntityContainerId");
 
-                    b.ToTable("Annotation");
+                    b.ToTable("Annotation", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Artifact", b =>
@@ -403,7 +403,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("EntityContainerId");
 
-                    b.ToTable("Artifact");
+                    b.ToTable("Artifact", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Participant", b =>
@@ -425,7 +425,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Participant");
+                    b.ToTable("Participant", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Project", b =>
@@ -448,7 +448,7 @@ namespace UI_DSM.Server.Migrations
                     b.HasIndex("ProjectName")
                         .IsUnique();
 
-                    b.ToTable("Project");
+                    b.ToTable("Project", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Reply", b =>
@@ -473,7 +473,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("EntityContainerId");
 
-                    b.ToTable("Reply");
+                    b.ToTable("Reply", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Review", b =>
@@ -511,7 +511,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("EntityContainerId");
 
-                    b.ToTable("Review");
+                    b.ToTable("Review", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.ReviewCategory", b =>
@@ -538,7 +538,7 @@ namespace UI_DSM.Server.Migrations
                     b.HasIndex("ReviewCategoryName")
                         .IsUnique();
 
-                    b.ToTable("ReviewCategory");
+                    b.ToTable("ReviewCategory", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.ReviewTask", b =>
@@ -591,7 +591,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("EntityContainerId");
 
-                    b.ToTable("ReviewTask");
+                    b.ToTable("ReviewTask", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Role", b =>
@@ -614,7 +614,7 @@ namespace UI_DSM.Server.Migrations
                     b.HasIndex("RoleName")
                         .IsUnique();
 
-                    b.ToTable("Role");
+                    b.ToTable("Role", (string)null);
 
                     b.HasData(
                         new
@@ -651,7 +651,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserEntity");
+                    b.ToTable("UserEntity", (string)null);
 
                     b.HasData(
                         new
@@ -673,14 +673,14 @@ namespace UI_DSM.Server.Migrations
                     b.Property<int>("View")
                         .HasColumnType("integer");
 
-                    b.ToTable("Comment");
+                    b.ToTable("Comment", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Feedback", b =>
                 {
                     b.HasBaseType("UI_DSM.Shared.Models.Annotation");
 
-                    b.ToTable("Feedback");
+                    b.ToTable("Feedback", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Model", b =>
@@ -698,14 +698,14 @@ namespace UI_DSM.Server.Migrations
                     b.HasIndex("FileName")
                         .IsUnique();
 
-                    b.ToTable("Model");
+                    b.ToTable("Model", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Note", b =>
                 {
                     b.HasBaseType("UI_DSM.Shared.Models.Annotation");
 
-                    b.ToTable("Note");
+                    b.ToTable("Note", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.ReviewItem", b =>
@@ -723,7 +723,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("EntityContainerId");
 
-                    b.ToTable("ReviewItem");
+                    b.ToTable("ReviewItem", (string)null);
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.ReviewObjective", b =>
@@ -773,7 +773,7 @@ namespace UI_DSM.Server.Migrations
 
                     b.HasIndex("EntityContainerId");
 
-                    b.ToTable("ReviewObjective");
+                    b.ToTable("ReviewObjective", (string)null);
                 });
 
             modelBuilder.Entity("AnnotatableItemAnnotation", b =>

@@ -110,13 +110,6 @@ namespace UI_DSM.Shared.Models
         public DateTime CreatedOn { get; set; }
 
         /// <summary>
-        ///     The author of this <see cref="ReviewTask" />
-        /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [DeepLevel(0)]
-        public Participant Author { get; set; }
-
-        /// <summary>
         ///     A collection of <see cref="Participant" />s that have to complete this <see cref="ReviewTask" />
         /// </summary>
         [DeepLevel(0)]
@@ -135,7 +128,6 @@ namespace UI_DSM.Shared.Models
         {
             return new ReviewTaskDto(this.Id)
             {
-                Author = this.Author?.Id ?? Guid.Empty,
                 CreatedOn = this.CreatedOn,
                 Description = this.Description,
                 Status = this.Status,
@@ -162,7 +154,6 @@ namespace UI_DSM.Shared.Models
                 throw new InvalidOperationException($"The DTO {entityDto.GetType()} does not match with the current ReviewTask POCO");
             }
 
-            this.Author = this.GetEntity<Participant>(reviewTaskDto.Author, resolvedEntity);
             this.Title = reviewTaskDto.Title;
             this.Description = reviewTaskDto.Description;
             this.Status = reviewTaskDto.Status;

@@ -216,7 +216,7 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            var identityResult = await manager.CreateEntityBasedOnTemplate(template, review, participant);
+            var identityResult = await manager.CreateEntityBasedOnTemplate(template, review);
             this.HandleOperationResult(requestResponse, context.Response, identityResult, 201, deepLevel);
             await context.Response.Negotiate(requestResponse);
         }
@@ -285,7 +285,7 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            var identityResults = await manager.CreateEntityBasedOnTemplates(templates, review, participant);
+            var identityResults = await manager.CreateEntityBasedOnTemplates(templates, review);
             this.HandleOperationResult(requestResponse, context.Response, identityResults, 201, deepLevel);
             await context.Response.Negotiate(requestResponse);
         }

@@ -95,7 +95,6 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
             }
 
             var relatedEntities = new Dictionary<Guid, Entity>();
-            relatedEntities.InsertEntity(await this.participantManager.FindEntity(reviewTaskDto.Author));
             relatedEntities.InsertEntityCollection(await this.participantManager.FindEntities(reviewTaskDto.IsAssignedTo));
             entity.ResolveProperties(reviewTaskDto, relatedEntities);
         }
@@ -105,15 +104,11 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
         /// </summary>
         /// <param name="container">The <see cref="ReviewObjective" /> container</param>
         /// <param name="templateReviewTasks">A collection of <see cref="ReviewTask" /></param>
-        /// <param name="author">The <see cref="Participant" /> author</param>
-        public void CreateEntitiesBasedOnTemplate(ReviewObjective container, List<ReviewTask> templateReviewTasks, Participant author)
+        public void CreateEntitiesBasedOnTemplate(ReviewObjective container, List<ReviewTask> templateReviewTasks)
         {
             foreach (var templateReviewTask in templateReviewTasks)
             {
-                var reviewTask = new ReviewTask(templateReviewTask)
-                {
-                    Author = author
-                };
+                var reviewTask = new ReviewTask(templateReviewTask);
 
                 this.SetSpecificPropertiesBeforeCreate(reviewTask);
 

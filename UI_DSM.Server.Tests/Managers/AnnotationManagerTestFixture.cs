@@ -49,9 +49,6 @@ namespace UI_DSM.Server.Tests.Managers
             this.annotatableItems = new List<AnnotatableItem>()
             {
                 new ReviewObjective(Guid.NewGuid())
-                {
-                    Author = this.participant
-                }
             };
 
             this.commentManager = new Mock<ICommentManager>();
