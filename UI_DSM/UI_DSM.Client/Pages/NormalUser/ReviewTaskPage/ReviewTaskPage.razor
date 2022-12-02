@@ -16,6 +16,8 @@
 @using UI_DSM.Shared.Enumerator
 
 <PageTitle>Task | UI-DSM</PageTitle>
+
+<ConfirmCancelPopup ViewModel="@this.ViewModel.DoneConfirmCancelPopup" />
 <div class="task-page">
 
 	@if (!this.IsLoading && this.ViewModel.ReviewTask is null)
@@ -82,9 +84,18 @@
 						@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask))
 
 						{
-							<AppButton Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success">
-								<FeatherCheckCircle Size="20" Color="currentColor" StrokeWidth="2"/> <span>Done</span>
-							</AppButton>
+							@if (this.ViewModel.ReviewTask.Status == StatusKind.Open)
+							{
+								<AppButton Id="doneButton" Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success" Click="() => this.ViewModel.AskConfirmMarkTaskAsDoneOrUndone()">
+									<FeatherCheckCircle Size="20" Color="CurrentColor" StrokeWidth="2" /> <span>Done</span>
+								</AppButton>
+							}
+							else
+							{
+								<AppButton Id="undoneButton" Label="Mark as undone" Type="button" Variant="AppButton.VariantValue.Danger" Click="() => this.ViewModel.AskConfirmMarkTaskAsDoneOrUndone()">
+									<FeatherXCircle Size="20" Color="#f44336" StrokeWidth="2" /> <span>Undone</span>
+								</AppButton>
+							}
 						}
 
 					</div>

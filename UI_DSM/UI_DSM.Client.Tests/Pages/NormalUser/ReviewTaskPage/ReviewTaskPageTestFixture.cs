@@ -13,6 +13,7 @@
 
 namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
 {
+    using AppComponents;
     using Bunit;
 
     using CDP4Common.CommonData;
@@ -31,6 +32,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Services.ReplyService;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Services.ReviewService;
+    using UI_DSM.Client.Services.ReviewTaskService;
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Services.ViewProviderService;
     using UI_DSM.Client.Tests.Helpers;
@@ -56,6 +58,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
         private Mock<IReviewItemService> reviewItemService;
         private Mock<IThingService> thingService;
         private Mock<IParticipantService> participantService;
+        private Mock<IReviewTaskService> reviewTaskService;
         private IViewProviderService viewProviderService;
         private ISelectedItemCardViewModel selectedItemCard;
         private Guid projectId;
@@ -73,6 +76,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             this.thingService = new Mock<IThingService>();
             this.participantService = new Mock<IParticipantService>();
             this.annotationService = new Mock<IAnnotationService>();
+            this.reviewTaskService = new Mock<IReviewTaskService>();
             this.replyService = new Mock<IReplyService>();
 
             this.participantService.Setup(x => x.GetCurrentParticipant(It.IsAny<Guid>()))
@@ -88,7 +92,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             this.context = new TestContext();
 
             this.viewModel = new ReviewTaskPageViewModel(this.thingService.Object, this.reviewService.Object, this.viewProviderService,
-                this.participantService.Object, this.reviewItemService.Object);
+                this.participantService.Object, this.reviewItemService.Object, this.reviewTaskService.Object);
 
             this.selectedItemCard = new SelectedItemCardViewModel();
             this.projectId = Guid.NewGuid();
@@ -259,6 +263,31 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
                 Assert.That(hyperLink.ReviewItem, Is.Not.Null);
                 Assert.That(hyperLink.ReviewItem.IsReviewed, Is.True);
             });
+
+            var doneButton = renderer.Find("#doneButton");
+            doneButton.Click();
+
+            Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.True);
+
+            await renderer.InvokeAsync(() => this.viewModel.DoneConfirmCancelPopup.OnConfirm.InvokeAsync()); 
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.ReviewTask.Status, Is.EqualTo(StatusKind.Done));
+                Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.False);
+            });
+
+            var undoneButton = renderer.Find("#undoneButton");
+            undoneButton.Click();
+
+            Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.True);
+
+            await renderer.InvokeAsync(() => this.viewModel.DoneConfirmCancelPopup.OnConfirm.InvokeAsync());
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.ReviewTask.Status, Is.EqualTo(StatusKind.Open));
+                Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.False);
+            });
+
         }
     }
 }

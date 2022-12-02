@@ -14,7 +14,7 @@
 namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
 {
     using CDP4Common.CommonData;
-
+    using DevExpress.Blazor;
     using Microsoft.AspNetCore.Components;
 
     using ReactiveUI;
@@ -24,6 +24,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Services.ReviewService;
+    using UI_DSM.Client.Services.ReviewTaskService;
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Services.ViewProviderService;
     using UI_DSM.Client.ViewModels.Components;
@@ -61,6 +62,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         ///     The <see cref="IViewProviderService" />
         /// </summary>
         private readonly IViewProviderService viewProviderService;
+
+        /// <summary>
+        ///     The <see cref="IReviewObjectiveService" />
+        /// </summary>
+        private readonly IReviewTaskService reviewTaskService;
 
         /// <summary>
         ///     Backing field for <see cref="CurrentBaseView" />
@@ -120,14 +126,16 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         /// <param name="viewProviderService">The <see cref="IViewProviderService" /></param>
         /// <param name="participantService">The <see cref="IParticipantService" /></param>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
+        /// <param name="reviewTaskService">The <see cref="IReviewTaskService" /></param>
         public ReviewTaskPageViewModel(IThingService thingService, IReviewService reviewService,
-            IViewProviderService viewProviderService, IParticipantService participantService, IReviewItemService reviewItemService)
+            IViewProviderService viewProviderService, IParticipantService participantService, IReviewItemService reviewItemService, IReviewTaskService reviewTaskService)
         {
             this.thingService = thingService;
             this.reviewService = reviewService;
             this.viewProviderService = viewProviderService;
             this.participantService = participantService;
             this.reviewItemService = reviewItemService;
+            this.reviewTaskService = reviewTaskService;
 
             this.ConfirmCancelDialog = new ConfirmCancelPopupViewModel
             {
@@ -135,6 +143,15 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
                 HeaderText = "Mark as Reviewed",
                 OnCancel = new EventCallbackFactory().Create(this, this.OnMarkAsReviewedCanceled),
                 OnConfirm = new EventCallbackFactory().Create(this, this.MarkAsReviewed)
+            };
+
+            this.DoneConfirmCancelPopup = new ConfirmCancelPopupViewModel
+            {
+                ConfirmRenderStyle = ButtonRenderStyle.Danger,
+                OnCancel = new EventCallbackFactory().Create(this, this.OnCancel),
+                OnConfirm = new EventCallbackFactory().Create(this, this.OnConfirmMarkAsDone),
+                ContentText = "Are you sure to mark this task as done ?",
+                HeaderText = "Are you sure ?"
             };
         }
 
@@ -451,6 +468,54 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
             }
 
             this.SelectedView = this.AvailableViews[0];
+        }
+
+        /// <summary>
+        ///     Callback used when the confirmation dialog has confirmed to mark a task as done
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task OnConfirmMarkAsDone()
+        {
+            if (this.ReviewTask.Status == StatusKind.Open)
+            {
+                this.ReviewTask.Status = StatusKind.Done;
+            }
+            else
+            {
+                this.ReviewTask.Status = StatusKind.Open;
+            }
+            await this.reviewTaskService.UpdateReviewTask(this.projectId, this.ReviewObjective.EntityContainer.Id, this.ReviewTask);
+            this.OnCancel();
+        }
+
+        /// <summary>
+        ///     Callback used when the confirmation dialog has canceled to mark a task as done
+        /// </summary>
+        private void OnCancel()
+        {
+            this.DoneConfirmCancelPopup.IsVisible = false;
+        }
+
+        /// <summary>
+        ///     The <see cref="IConfirmCancelPopupViewModel" />
+        /// </summary>
+        public IConfirmCancelPopupViewModel DoneConfirmCancelPopup { get; private set; }
+
+        /// <summary>
+        ///     Opens a popup to confirm to mark task as done
+        /// </summary>
+        public void AskConfirmMarkTaskAsDoneOrUndone()
+        {
+            if (this.ReviewTask.Status == StatusKind.Open)
+            {
+                this.DoneConfirmCancelPopup.ContentText = $"You are about to mark this task as done.\nAre you sure?";
+            }
+            else
+            {
+                this.DoneConfirmCancelPopup.ContentText = $"You are about to mark this task as undone.\nAre you sure?";
+
+            }
+            this.DoneConfirmCancelPopup.IsVisible = true;
         }
     }
 }
