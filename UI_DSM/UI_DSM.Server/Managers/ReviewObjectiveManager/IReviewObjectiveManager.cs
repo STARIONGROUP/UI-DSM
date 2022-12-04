@@ -47,5 +47,15 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// <param name="reviewId">The id of the <see cref="Review" /></param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="ReviewObjective" /></returns>
         IEnumerable<ReviewObjectiveCreationDto> GetReviewObjectiveCreationForReview(Guid reviewId);
+
+        /// <summary>
+        ///     Gets the number of open <see cref="ReviewTask" /> where the logged user is assigned to
+        ///     and <see cref="Comment" /> for each <see cref="Review" />
+        /// </summary>
+        /// <param name="reviewObjectivesId">A collection of <see cref="Guid" /> for <see cref="ReviewObjective" />s</param>
+        /// <param name="projectId">A <see cref="Guid" /> of <see cref="Project" />s</param>
+        /// <param name="userName">The name of the current logged user</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
+        Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewObjectivesId, Guid projectId, string userName);
     }
 }

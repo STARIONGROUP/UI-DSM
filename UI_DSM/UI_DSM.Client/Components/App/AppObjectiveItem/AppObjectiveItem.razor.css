@@ -4,3 +4,22 @@
   padding: var(--spacing-6);
   display: block;
 }
+
+
+.app-project-card__footer {
+    display: flex;
+    gap: var(--spacing-6);
+}
+
+.app-project-card__stat {
+    display: grid;
+    gap: var(--spacing-2);
+    grid-template-columns: auto 1fr;
+    align-items: center;
+}
+
+.app-project-card__icon {
+    padding: var(--spacing-2);
+    background: var(--colors-primary-50);
+    border-radius: var(--radius-1);
+}

@@ -21,7 +21,7 @@
 		{
 			@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.AssignTask))
 			{
-				<AppButton Click="@this.ViewModel.OpenTaskAssignmentPopup" Type="button">
+				<AppButton Click="() => this.ViewModel.OpenTaskAssignmentPopup(this.ReviewTask)" Type="button">
 					<FeatherPlusCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Assign to</span>
 				</AppButton>
 			}

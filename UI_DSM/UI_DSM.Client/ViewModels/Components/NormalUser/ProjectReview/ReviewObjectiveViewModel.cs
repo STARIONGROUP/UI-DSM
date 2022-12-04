@@ -85,6 +85,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         }
 
         /// <summary>
+        ///     A collection of comments and tasks of a <see cref="ReviewObjective" /> for the user
+        /// </summary>
+        public Dictionary<Guid, ComputedProjectProperties> CommentsAndTasks { get; set; } = new();
+
+        /// <summary>
         ///     Value indicating the user is currently creating a new <see cref="Review" />
         /// </summary>
         public bool IsOnCreationMode
@@ -159,6 +164,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
                 {
                     this.Review.ReviewObjectives.Add(creationResult.Entities);
                     this.ReviewObjectiveCreationViewModel.ReviewObjectivesCreationStatus = CreationStatus.Done;
+                    foreach(var reviewObjective in creationResult.Entities)
+                    {
+                        this.CommentsAndTasks[reviewObjective.Id] = new ComputedProjectProperties();
+                    }
                 }
 
                 this.IsOnCreationMode = !creationResult.IsRequestSuccessful;

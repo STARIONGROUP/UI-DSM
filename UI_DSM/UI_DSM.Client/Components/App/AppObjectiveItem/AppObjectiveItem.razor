@@ -16,6 +16,33 @@
   <article class="app-objective-item">
     <h2 class="h4">@Title</h2>
     <span>@Description</span>
+    <div class="app-project-card__footer">
+    @if (Tasks >= 0)
+    {
+      <div class="app-project-card__stat">
+        <div class="app-project-card__icon">
+          <FeatherCheckCircle Color="currentColor" Size="24" />
+        </div>
+        <div class="stat__body">
+          <span class="stat__label">Tasks</span>
+          <span class="stat__amount h4">@Tasks</span>
+        </div>
+      </div>
+    }
+
+    @if (Comments >= 0)
+    {
+      <div class="app-project-card__stat">
+        <div class="app-project-card__icon">
+          <FeatherMessageCircle Color="currentColor" Size="24" />
+        </div>
+        <div class="stat__body">
+          <span class="stat__label">Comments</span>
+          <span class="stat__amount">@Comments</span>
+        </div>
+      </div>
+    }
+  </div>
   </article>
 </NavLink>
 
@@ -35,4 +62,14 @@
   /// Objective link
   /// </summary>
   [Parameter] public string Link { get; set; }
+
+    /// <summary>
+    /// Amount of Tasks
+    /// </summary>
+    [Parameter] public int Tasks { get; set; }
+
+    /// <summary>
+    /// Amount of comments
+    /// </summary>
+    [Parameter] public int Comments { get; set; }
 }

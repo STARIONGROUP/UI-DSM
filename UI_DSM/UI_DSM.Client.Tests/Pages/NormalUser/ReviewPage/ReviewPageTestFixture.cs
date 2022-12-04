@@ -24,6 +24,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewPage
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.Pages.NormalUser.ReviewPage;
     using UI_DSM.Client.Services.Administration.ParticipantService;
+    using UI_DSM.Client.Services.ReviewObjectiveService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
@@ -40,7 +41,8 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewPage
         private IReviewObjectiveViewModel reviewObjectiveViewModel;
         private Mock<IReviewService> reviewService;
         private Mock<IParticipantService> participantService;
-        
+        private Mock<IReviewObjectiveService> reviewObjectiveService;
+
         [SetUp]
         public void Setup()
         {
@@ -48,10 +50,11 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewPage
             this.context.ConfigureDevExpressBlazor();
             this.reviewObjectiveViewModel = new ReviewObjectiveViewModel(null, null);
             this.reviewService = new Mock<IReviewService>();
+            this.reviewObjectiveService = new Mock<IReviewObjectiveService>();
             this.participantService = new Mock<IParticipantService>();
             
             this.viewModel = new ReviewPageViewModel(this.reviewService.Object, this.reviewObjectiveViewModel, 
-                null, this.participantService.Object);
+                null, this.participantService.Object, this.reviewObjectiveService.Object);
 
             this.context.Services.AddSingleton(this.viewModel);
         }

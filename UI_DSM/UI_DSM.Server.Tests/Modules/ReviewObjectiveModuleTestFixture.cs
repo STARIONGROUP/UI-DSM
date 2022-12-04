@@ -459,5 +459,31 @@ namespace UI_DSM.Server.Tests.Modules
             await this.module.GetAvailableTemplates(this.reviewObjectiveManager.As<IReviewObjectiveManager>().Object, this.context.Object);
             this.reviewObjectiveManager.As<IReviewObjectiveManager>().Verify(x => x.GetReviewObjectiveCreationForReview(review.Id), Times.Once);
         }
+
+        [Test]
+        public async Task VerifyGetOpenTasksAndComments()
+        {
+            var reviews = new List<Review>
+            {
+                new(Guid.NewGuid())
+            };
+
+            Project project = new(Guid.NewGuid());
+            project.Reviews.AddRange(reviews);
+
+
+            var guids = reviews.Select(x => x.Id).ToList();
+            var result = new Dictionary<Guid, ComputedProjectProperties>
+            {
+                [guids[0]] = new()
+                {
+                    CommentCount = 15,
+                    TaskCount = 12
+                }
+            };
+            this.reviewObjectiveManager.As<IReviewObjectiveManager>().Setup(x => x.GetOpenTasksAndComments(It.IsAny<IEnumerable<Guid>>(), project.Id, "user")).ReturnsAsync(result);
+            await this.module.GetOpenTasksAndComments(this.reviewObjectiveManager.As<IReviewObjectiveManager>().Object, reviews.First().Id, project.Id, this.context.Object);
+            this.reviewObjectiveManager.As<IReviewObjectiveManager>().Verify(x => x.GetOpenTasksAndComments(It.IsAny<IEnumerable<Guid>>(), project.Id, "user"), Times.Once);
+        }
     }
 }

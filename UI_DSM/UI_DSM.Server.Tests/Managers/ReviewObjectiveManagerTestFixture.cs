@@ -26,6 +26,7 @@ namespace UI_DSM.Server.Tests.Managers
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
     using UI_DSM.Server.Managers.ReviewTaskManager;
     using UI_DSM.Server.Tests.Helpers;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
@@ -359,6 +360,72 @@ namespace UI_DSM.Server.Tests.Managers
             {
                 Assert.That(reviewObjectivesFirstReview.ToList(), Has.Count.EqualTo(3));
             });
+        }
+
+        [Test]
+        public async Task VerifyGetOpenTasksAndComments()
+        {
+            var participant = new Participant(Guid.NewGuid())
+            {
+                User = new UserEntity()
+                {
+                    UserName = "user"
+                }
+            };
+
+            var projects = new List<Project>();
+            var project = new Project(Guid.NewGuid());
+            var review = new Review(Guid.NewGuid());
+            project.Reviews.Add(review);
+            project.Reviews[0].ReviewObjectives.AddRange(CreateEntity<ReviewObjective>(3));
+            project.Reviews[0].ReviewItems.AddRange(CreateEntity<ReviewItem>(3));
+
+            this.participantManager.Setup(x => x.GetParticipantForProject(project.Id, participant.User.UserName))
+                .ReturnsAsync(participant);
+
+            foreach (var reviewReviewObjective in project.Reviews.SelectMany(x => x.ReviewObjectives))
+            {
+                reviewReviewObjective.ReviewTasks.AddRange(CreateEntity<ReviewTask>(4));
+
+                reviewReviewObjective.ReviewTasks[0].IsAssignedTo = participant;
+            }
+
+            project.Reviews[0].ReviewItems[0].Annotations.AddRange(CreateEntity<Comment>(8));
+
+            projects.Add(project);
+
+            this.reviewDbSet.UpdateDbSetCollection(project.Reviews);
+            this.reviewObjectiveDbSet.UpdateDbSetCollection(project.Reviews.First().ReviewObjectives);
+
+            var guids = project.Reviews.First().ReviewObjectives.Select(x => x.Id).ToList();
+            var computedProjectProperties = await this.manager.GetOpenTasksAndComments(guids, project.Id, participant.User.UserName);
+
+            var expectedComputed = new ComputedProjectProperties
+            {
+                CommentCount = 0,
+                TaskCount = 1
+            };
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(computedProjectProperties[review.ReviewObjectives.First().Id], Is.EqualTo(expectedComputed)); ;
+                Assert.That(computedProjectProperties.Keys, Has.Count.EqualTo(3));
+            });
+        }
+
+        private static IEnumerable<TEntity> CreateEntity<TEntity>(int amountOfEntities) where TEntity : Entity, new()
+        {
+            var entities = new List<TEntity>();
+
+            for (var entityCount = 0; entityCount < amountOfEntities; entityCount++)
+            {
+                entities.Add(new TEntity()
+                {
+                    Id = Guid.NewGuid()
+                });
+            }
+
+            return entities;
         }
     }
 }

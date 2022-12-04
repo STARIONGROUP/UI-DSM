@@ -16,6 +16,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewPage
     using ReactiveUI;
 
     using UI_DSM.Client.Services.Administration.ParticipantService;
+    using UI_DSM.Client.Services.ReviewObjectiveService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
@@ -37,17 +38,24 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewPage
         private readonly IReviewService reviewService;
 
         /// <summary>
+        ///     The <see cref="IReviewObjectiveService" />
+        /// </summary>
+        private readonly IReviewObjectiveService reviewObjectiveService;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ReviewPageViewModel" /> class.
         /// </summary>
         /// <param name="reviewService">The <see cref="IReviewService" /></param>
         /// <param name="reviewObjectiveViewModel"></param>
         /// <param name="reviewObjectiveCreationViewMode"></param>
         /// <param name="participantService">The <see cref="IParticipantService" /></param>
+        /// <param name="reviewObjectiveService">The <see cref="IReviewObjectiveService" /></param>
         public ReviewPageViewModel(IReviewService reviewService, IReviewObjectiveViewModel reviewObjectiveViewModel,
-            IReviewObjectiveCreationViewModel reviewObjectiveCreationViewMode, IParticipantService participantService)
+            IReviewObjectiveCreationViewModel reviewObjectiveCreationViewMode, IParticipantService participantService, IReviewObjectiveService reviewObjectiveService)
         {
             this.reviewService = reviewService;
             this.participantService = participantService;
+            this.reviewObjectiveService = reviewObjectiveService;
             this.ReviewObjectiveViewModel = reviewObjectiveViewModel;
             this.ReviewObjectiveCreationViewModel = reviewObjectiveCreationViewMode;
         }
@@ -85,6 +93,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewPage
                 this.ReviewObjectiveViewModel.Participant = await this.participantService.GetCurrentParticipant(projectGuid);
                 this.ReviewObjectiveViewModel.Review = reviewResponse;
                 this.ReviewObjectiveViewModel.Project = new Project { Id = projectGuid };
+                this.ReviewObjectiveViewModel.CommentsAndTasks = await this.reviewObjectiveService.GetOpenTasksAndComments(projectGuid, reviewGuid);
             }
         }
     }
