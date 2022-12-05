@@ -119,12 +119,13 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         public Participant Participant { get; set; }
 
         /// <summary>
-        ///     Navigate to the page dedicated to the given <see cref="ReviewObjective" />
+        ///     Gets the navLink link to navigate to the <see cref="ReviewObjective"/> page
         /// </summary>
         /// <param name="reviewObjective">The <see cref="ReviewObjective" /></param>
-        public void GoToReviewObjectivePage(ReviewObjective reviewObjective)
+        /// <returns>The navigation link</returns>
+        public string GetNavLink(ReviewObjective reviewObjective)
         {
-            this.NavigationManager.NavigateTo($"{this.NavigationManager.Uri}/ReviewObjective/{reviewObjective.Id}");
+            return $"{this.NavigationManager.Uri}/ReviewObjective/{reviewObjective.Id}";
         }
 
         /// <summary>

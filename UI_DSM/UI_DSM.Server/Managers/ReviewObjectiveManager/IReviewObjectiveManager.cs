@@ -15,7 +15,6 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
 {
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Common;
-    using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -57,5 +56,11 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// <param name="userName">The name of the current logged user</param>
         /// <returns>A <see cref="Task" /> with the <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
         Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewObjectivesId, Guid projectId, string userName);
+
+        /// <summary>
+        ///     Update the status of the <see cref="ReviewObjective" /> if necessary
+        /// </summary>
+        /// <param name="reviewObjectiveId">The <see cref="Guid" /> of the <see cref="ReviewObjective" /></param>
+        Task UpdateStatus(Guid reviewObjectiveId);
     }
 }

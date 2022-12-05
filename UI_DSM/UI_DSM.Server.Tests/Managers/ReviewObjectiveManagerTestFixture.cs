@@ -179,6 +179,25 @@ namespace UI_DSM.Server.Tests.Managers
             this.context.Setup(x => x.SaveChangesAsync(default)).ThrowsAsync(new InvalidOperationException());
             operationResult = await this.manager.UpdateEntity(reviewObjective);
             Assert.That(operationResult.Succeeded, Is.False);
+
+            reviewObjective.ReviewTasks.Add(new ReviewTask(Guid.NewGuid())
+            {
+                Status = StatusKind.Done
+            });
+
+            await this.manager.UpdateStatus(reviewObjective.Id);
+            Assert.That(reviewObjective.Status, Is.EqualTo(StatusKind.Done));
+
+            reviewObjective.ReviewTasks.Add(new ReviewTask(Guid.NewGuid())
+            {
+                Status = StatusKind.Open
+            });
+
+            await this.manager.UpdateStatus(reviewObjective.Id);
+            Assert.That(reviewObjective.Status, Is.EqualTo(StatusKind.Open));
+
+            await this.manager.UpdateStatus(reviewObjective.Id);
+            Assert.That(reviewObjective.Status, Is.EqualTo(StatusKind.Open));
         }
 
         [Test]
@@ -257,6 +276,7 @@ namespace UI_DSM.Server.Tests.Managers
         public async Task VerifyCreateEntityBasedOnTemplate()
         {
             Project project = new(Guid.NewGuid());
+            
             var reviews = new List<Review>()
             {
                 new(Guid.NewGuid())
@@ -269,7 +289,7 @@ namespace UI_DSM.Server.Tests.Managers
 
             this.reviewDbSet.UpdateDbSetCollection(reviews);
 
-            ReviewObjective template = new ReviewObjective()
+            var template = new ReviewObjective()
             {
                 Id = Guid.NewGuid(),
                 ReviewObjectiveKind = ReviewObjectiveKind.Prr,
@@ -286,6 +306,7 @@ namespace UI_DSM.Server.Tests.Managers
         public async Task VerifyCreateEntityBasedOnTemplates()
         {
             Project project = new(Guid.NewGuid());
+            
             var reviews = new List<Review>()
             {
                 new(Guid.NewGuid())
@@ -300,7 +321,7 @@ namespace UI_DSM.Server.Tests.Managers
 
             IEnumerable<ReviewObjective> templates = new List<ReviewObjective>()
             {
-                new ReviewObjective()
+                new ()
                 {
                     Id = Guid.NewGuid(),
                     ReviewObjectiveKind = ReviewObjectiveKind.Prr,
@@ -338,7 +359,7 @@ namespace UI_DSM.Server.Tests.Managers
                 ReviewObjectiveKindNumber = 2
             };
 
-            List<Review> reviews = new List<Review>()
+            var reviews = new List<Review>()
             {
                 new(Guid.NewGuid())
                 {
@@ -373,7 +394,6 @@ namespace UI_DSM.Server.Tests.Managers
                 }
             };
 
-            var projects = new List<Project>();
             var project = new Project(Guid.NewGuid());
             var review = new Review(Guid.NewGuid());
             project.Reviews.Add(review);
@@ -392,8 +412,6 @@ namespace UI_DSM.Server.Tests.Managers
 
             project.Reviews[0].ReviewItems[0].Annotations.AddRange(CreateEntity<Comment>(8));
 
-            projects.Add(project);
-
             this.reviewDbSet.UpdateDbSetCollection(project.Reviews);
             this.reviewObjectiveDbSet.UpdateDbSetCollection(project.Reviews.First().ReviewObjectives);
 
@@ -408,7 +426,7 @@ namespace UI_DSM.Server.Tests.Managers
 
             Assert.Multiple(() =>
             {
-                Assert.That(computedProjectProperties[review.ReviewObjectives.First().Id], Is.EqualTo(expectedComputed)); ;
+                Assert.That(computedProjectProperties[review.ReviewObjectives.First().Id], Is.EqualTo(expectedComputed));
                 Assert.That(computedProjectProperties.Keys, Has.Count.EqualTo(3));
             });
         }

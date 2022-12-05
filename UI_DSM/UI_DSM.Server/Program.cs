@@ -35,6 +35,7 @@ namespace UI_DSM.Server
     using UI_DSM.Server.Modules;
     using UI_DSM.Server.Services.CometService;
     using UI_DSM.Server.Services.FileService;
+    using UI_DSM.Server.Services.RouteParserService;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -69,7 +70,10 @@ namespace UI_DSM.Server
                     .AllowAnyMethod());
             });
 
-            builder.Services.AddDbContext<DatabaseContext>(opt => { opt.UseNpgsql(builder.Configuration["DataBaseConnection"]); });
+            builder.Services.AddDbContext<DatabaseContext>(opt =>
+            {
+                opt.UseNpgsql(builder.Configuration["DataBaseConnection"]);
+            });
 
             builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DatabaseContext>();
             builder.Services.AddSingleton<IJsonSerializer, JsonSerializer>();
@@ -77,6 +81,7 @@ namespace UI_DSM.Server
             builder.Services.AddSingleton<ICdp4JsonSerializer, Cdp4JsonSerializer>();
             builder.Services.AddSingleton<IJsonService, JsonService>();
             builder.Services.AddSingleton<ICometService, CometService>();
+            builder.Services.AddScoped<IRouteParserService, RouteParserService>();
             builder.Services.AddSingleton<IFileService, FileService>(_ => new FileService(builder.Configuration["StoragePath"]));
 
             builder.Services.AddRouting(options =>

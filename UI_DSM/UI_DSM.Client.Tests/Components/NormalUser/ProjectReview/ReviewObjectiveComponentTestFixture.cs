@@ -19,11 +19,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
     using Bunit.TestDoubles;
 
     using Microsoft.Extensions.DependencyInjection;
-   
+
     using Moq;
-    
+
     using NUnit.Framework;
 
+    using UI_DSM.Client.Components.App.AppObjectiveItem;
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.Services.ReviewObjectiveService;
     using UI_DSM.Client.Tests.Helpers;
@@ -76,27 +77,35 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
         [Test]
         public void VerifyComponent()
         {
-            try
-            {
-                var renderer = this.context.RenderComponent<ReviewObjectiveComponent>(parameters =>
-                {
-                    parameters.Add(p => p.ViewModel, this.viewModel);
-                    parameters.AddCascadingValue(this.errorMessage);
-                });
-
-                var reviewObjectiveItem = renderer.FindComponents<AppObjectiveItem>();
-                Assert.That(reviewObjectiveItem, Has.Count.EqualTo(0));
-
-                this.viewModel.Review.Title = "Review1";
-                this.viewModel.Review.ReviewObjectives.Add(new ReviewObjective(Guid.NewGuid()));
-
-                renderer.Render();
-                var reviewObjectiveItem1 = renderer.FindComponents<AppObjectiveItem>();
-                Assert.That(reviewObjectiveItem1, Has.Count.EqualTo(1));
-            }
-            catch
-            {
-                // On GitHub, exception is thrown even if the JSRuntime has been configured
+            try
+            {
+                var renderer = this.context.RenderComponent<ReviewObjectiveComponent>(parameters =>
+
+                {
+                    parameters.Add(p => p.ViewModel, this.viewModel);
+
+                    parameters.AddCascadingValue(this.errorMessage);
+                });
+
+                var reviewObjectiveItem = renderer.FindComponents<AppObjectiveItem>();
+
+                Assert.That(reviewObjectiveItem, Has.Count.EqualTo(0));
+
+                this.viewModel.Review.Title = "Review1";
+
+                this.viewModel.Review.ReviewObjectives.Add(new ReviewObjective(Guid.NewGuid()));
+
+                renderer.Render();
+
+                var reviewObjectiveItem1 = renderer.FindComponents<AppObjectiveItem>();
+
+                Assert.That(reviewObjectiveItem1, Has.Count.EqualTo(1));
+            }
+
+            catch
+
+            {
+                // On GitHub, exception is thrown even if the JSRuntime has been configured
             }
         }
 
@@ -135,10 +144,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
                 this.viewModel.ReviewObjectiveCreationViewModel.SelectedReviewObjectivesPrr = new List<ReviewObjectiveCreationDto>();
                 this.viewModel.ReviewObjectiveCreationViewModel.SelectedReviewObjectives = new List<ReviewObjectiveCreationDto>();
 
-                this.viewModel.ReviewObjectiveCreationViewModel.SelectedReviewObjectives.ToList().Add(new ReviewObjectiveCreationDto()
+                this.viewModel.ReviewObjectiveCreationViewModel.SelectedReviewObjectives.ToList().Add(new ReviewObjectiveCreationDto
                 {
                     Kind = ReviewObjectiveKind.Prr,
-                    KindNumber = 1,
+                    KindNumber = 1
                 });
 
                 this.reviewObjectiveService.Setup(x => x.CreateReviewObjectives(projectGuid, this.viewModel.Review.Id, this.viewModel.ReviewObjectiveCreationViewModel.SelectedReviewObjectives))
@@ -158,7 +167,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
                 this.reviewObjectiveService.Setup(x => x.CreateReviewObjectives(projectGuid, this.viewModel.Review.Id, this.viewModel.ReviewObjectiveCreationViewModel.SelectedReviewObjectives))
                     .ReturnsAsync(EntitiesRequestResponses<ReviewObjective>.Success(new List<ReviewObjective>
                     {
-                        new (Guid.NewGuid())
+                        new(Guid.NewGuid())
                     }));
 
                 await this.viewModel.ReviewObjectiveCreationViewModel.OnValidSubmit.InvokeAsync();

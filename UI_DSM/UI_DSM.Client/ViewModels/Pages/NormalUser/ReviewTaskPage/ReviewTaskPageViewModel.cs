@@ -14,7 +14,7 @@
 namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
 {
     using CDP4Common.CommonData;
-    using DevExpress.Blazor;
+
     using Microsoft.AspNetCore.Components;
 
     using ReactiveUI;
@@ -54,6 +54,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         private readonly IReviewService reviewService;
 
         /// <summary>
+        ///     The <see cref="IReviewTaskService" />
+        /// </summary>
+        private readonly IReviewTaskService reviewTaskService;
+
+        /// <summary>
         ///     The <see cref="ICometService" />
         /// </summary>
         private readonly IThingService thingService;
@@ -62,11 +67,6 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         ///     The <see cref="IViewProviderService" />
         /// </summary>
         private readonly IViewProviderService viewProviderService;
-
-        /// <summary>
-        ///     The <see cref="IReviewObjectiveService" />
-        /// </summary>
-        private readonly IReviewTaskService reviewTaskService;
 
         /// <summary>
         ///     Backing field for <see cref="CurrentBaseView" />
@@ -147,7 +147,6 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
 
             this.DoneConfirmCancelPopup = new ConfirmCancelPopupViewModel
             {
-                ConfirmRenderStyle = ButtonRenderStyle.Danger,
                 OnCancel = new EventCallbackFactory().Create(this, this.OnCancel),
                 OnConfirm = new EventCallbackFactory().Create(this, this.OnConfirmMarkAsDone),
                 ContentText = "Are you sure to mark this task as done ?",
@@ -396,6 +395,23 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         }
 
         /// <summary>
+        ///     The <see cref="IConfirmCancelPopupViewModel" />
+        /// </summary>
+        public IConfirmCancelPopupViewModel DoneConfirmCancelPopup { get; private set; }
+
+        /// <summary>
+        ///     Opens a popup to confirm to mark task as done
+        /// </summary>
+        public void AskConfirmMarkTaskAsDoneOrUndone()
+        {
+            this.DoneConfirmCancelPopup.ContentText = this.ReviewTask.Status == StatusKind.Open
+                ? "You are about to mark this task as done.\nAre you sure?"
+                : "You are about to mark this task as undone.\nAre you sure?";
+
+            this.DoneConfirmCancelPopup.IsVisible = true;
+        }
+
+        /// <summary>
         ///     Marks the currently selected <see cref="IHaveThingRowViewModel" /> has reviewed
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>
@@ -476,14 +492,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         /// <returns>A <see cref="Task" /></returns>
         private async Task OnConfirmMarkAsDone()
         {
-            if (this.ReviewTask.Status == StatusKind.Open)
-            {
-                this.ReviewTask.Status = StatusKind.Done;
-            }
-            else
-            {
-                this.ReviewTask.Status = StatusKind.Open;
-            }
+            this.ReviewTask.Status = this.ReviewTask.Status == StatusKind.Open ? StatusKind.Done : StatusKind.Open;
             await this.reviewTaskService.UpdateReviewTask(this.projectId, this.ReviewObjective.EntityContainer.Id, this.ReviewTask);
             this.OnCancel();
         }
@@ -494,28 +503,6 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         private void OnCancel()
         {
             this.DoneConfirmCancelPopup.IsVisible = false;
-        }
-
-        /// <summary>
-        ///     The <see cref="IConfirmCancelPopupViewModel" />
-        /// </summary>
-        public IConfirmCancelPopupViewModel DoneConfirmCancelPopup { get; private set; }
-
-        /// <summary>
-        ///     Opens a popup to confirm to mark task as done
-        /// </summary>
-        public void AskConfirmMarkTaskAsDoneOrUndone()
-        {
-            if (this.ReviewTask.Status == StatusKind.Open)
-            {
-                this.DoneConfirmCancelPopup.ContentText = $"You are about to mark this task as done.\nAre you sure?";
-            }
-            else
-            {
-                this.DoneConfirmCancelPopup.ContentText = $"You are about to mark this task as undone.\nAre you sure?";
-
-            }
-            this.DoneConfirmCancelPopup.IsVisible = true;
         }
     }
 }

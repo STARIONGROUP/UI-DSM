@@ -65,14 +65,15 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         Participant Participant { get; set; }
 
         /// <summary>
-        ///     Navigate to the page dedicated to the given <see cref="ReviewObjective" />
-        /// </summary>
-        /// <param name="reviewObjective">The <see cref="ReviewObjective" /></param>
-        void GoToReviewObjectivePage(ReviewObjective reviewObjective);
-
-        /// <summary>
         ///     Opens the <see cref="ReviewObjectiveCreation" /> as a popup
         /// </summary>
         void OpenCreatePopup();
+
+        /// <summary>
+        ///     Gets the navLink link to navigate to the <see cref="ReviewObjective"/> page
+        /// </summary>
+        /// <param name="reviewObjective">The <see cref="ReviewObjective" /></param>
+        /// <returns>The navigation link</returns>
+        string GetNavLink(ReviewObjective reviewObjective);
     }
 }

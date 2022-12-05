@@ -14,7 +14,6 @@
 namespace UI_DSM.Client.Services
 {
     using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.WebUtilities;
 
     using UI_DSM.Client.Services.JsonService;
 
