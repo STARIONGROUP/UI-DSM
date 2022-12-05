@@ -65,8 +65,12 @@ namespace UI_DSM.Client.Tests.Services.RouteParserService
 
             httpResponse.Content = new StringContent(this.jsonService.Serialize(parsedUrl));
             response = await this.service.ParseUrl("/Project");
-            Assert.That(response, Has.Count.EqualTo(1));
-            Assert.That(async () => await this.service.ParseUrl("/"), Throws.Exception);
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(response, Has.Count.EqualTo(1));
+                Assert.That(async () => await this.service.ParseUrl("/"), Throws.Exception);
+            });
         }
     }
 }
