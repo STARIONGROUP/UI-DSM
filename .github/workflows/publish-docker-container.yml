@@ -20,7 +20,7 @@ jobs:
       run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
       
     - name: Build the Docker image and tag
-      run: docker build -f UI_DSM/Dockerfile -t rheagroup/ui-dsm:latest -t rheagroup/ui-dsm:${{ steps.vars.outputs.tag }} .
+      run: DOCKER_BUILDKIT=1 docker build -f UI_DSM/Dockerfile -t rheagroup/ui-dsm:latest -t rheagroup/ui-dsm:${{ steps.vars.outputs.tag }} .
       
     - name: push $RELEASE_VERSION tag
       run: docker push rheagroup/ui-dsm:${{ steps.vars.outputs.tag }}
