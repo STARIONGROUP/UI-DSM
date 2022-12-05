@@ -13,6 +13,7 @@
 
 namespace UI_DSM.Server.Managers.ReviewTaskManager
 {
+    using UI_DSM.Server.Managers.ReviewObjectiveManager;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -27,5 +28,11 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
         /// <param name="templateReviewTasks">A collection of <see cref="ReviewTask" /></param>
         /// <param name="author">The <see cref="Participant" /> author</param>
         void CreateEntitiesBasedOnTemplate(ReviewObjective container, List<ReviewTask> templateReviewTasks, Participant author);
+
+        /// <summary>
+        ///     Injects the <see cref="IReviewObjectiveManager" /> to avoid circular dependency
+        /// </summary>
+        /// <param name="manager">The <see cref="IReviewObjectiveManager" /></param>
+        void InjectManager(IReviewObjectiveManager manager);
     }
 }

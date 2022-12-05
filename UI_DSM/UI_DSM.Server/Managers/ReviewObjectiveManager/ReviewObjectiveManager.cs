@@ -15,9 +15,7 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
-    using Newtonsoft.Json;
-    using Radzen;
-    using System.Collections.Generic;
+
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.AnnotationManager;
@@ -62,7 +60,7 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
         /// <param name="reviewTaskManager">The <see cref="IReviewTaskManager" /></param>
         /// <param name="annotationManager">The <see cref="IAnnotationManager" /></param>
-        /// <param name="reviewCategoryManager">The <see cref="IReviewCategoryManager"/></param>
+        /// <param name="reviewCategoryManager">The <see cref="IReviewCategoryManager" /></param>
         public ReviewObjectiveManager(DatabaseContext context, IParticipantManager participantManager, IReviewTaskManager reviewTaskManager,
             IAnnotationManager annotationManager, IReviewCategoryManager reviewCategoryManager) : base(context)
         {
@@ -161,14 +159,14 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// <returns>A <see cref="Task" /> with the <see cref="EntityOperationResult{TEntity}" /></returns>
         public async Task<EntityOperationResult<ReviewObjective>> CreateEntityBasedOnTemplates(IEnumerable<ReviewObjective> templates, Review container, Participant author)
         {
-            List<ReviewObjective> reviewObjectives = new List<ReviewObjective>();
-            List<EntityEntry<ReviewObjective>> entityEntries = new List<EntityEntry<ReviewObjective>>();
-            Dictionary<Guid, List<ReviewTask>> reviewTaskForReviewObjectiveTemplate = new Dictionary<Guid, List<ReviewTask>>();
-            
-            foreach (ReviewObjective template in templates)
+            var reviewObjectives = new List<ReviewObjective>();
+            var entityEntries = new List<EntityEntry<ReviewObjective>>();
+            var reviewTaskForReviewObjectiveTemplate = new Dictionary<Guid, List<ReviewTask>>();
+
+            foreach (var template in templates)
             {
                 if (container.ReviewObjectives.Any(x => x.ReviewObjectiveKind == template.ReviewObjectiveKind
-                                                    && x.ReviewObjectiveKindNumber == template.ReviewObjectiveKindNumber))
+                                                        && x.ReviewObjectiveKindNumber == template.ReviewObjectiveKindNumber))
                 {
                     return EntityOperationResult<ReviewObjective>.Failed($"A ReviewObjective {template.Title} already exists inside the Review");
                 }
@@ -186,16 +184,16 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
                 reviewTaskForReviewObjectiveTemplate.Add(reviewObjective.Id, template.ReviewTasks);
             }
 
-            foreach(var reviewObjective in reviewObjectives)
+            foreach (var reviewObjective in reviewObjectives)
             {
                 entityEntries.Add(this.Context.Add(reviewObjective));
             }
-            
+
             var operationResult = new EntityOperationResult<ReviewObjective>(entityEntries, EntityState.Added);
 
             if (operationResult.Entities != null || !operationResult.Entities.Any())
             {
-                foreach(var reviewObjective in operationResult.Entities)
+                foreach (var reviewObjective in operationResult.Entities)
                 {
                     this.reviewTaskManager.CreateEntitiesBasedOnTemplate(reviewObjective, reviewTaskForReviewObjectiveTemplate[reviewObjective.Id], author);
                 }
@@ -214,26 +212,13 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         }
 
         /// <summary>
-        ///     Sets specific properties before the creation of the <see cref="ReviewObjective" />
-        /// </summary>
-        /// <param name="entity">The <see cref="ReviewObjective" /></param>
-        protected override void SetSpecificPropertiesBeforeCreate(ReviewObjective entity)
-        {
-            var review = entity.EntityContainer as Review;
-            entity.ReviewObjectiveNumber = 0;
-            entity.ReviewObjectiveNumber = review!.ReviewObjectives.Max(x => x.ReviewObjectiveNumber) + 1;
-            entity.CreatedOn = DateTime.UtcNow;
-            entity.Status = StatusKind.Open;
-        }
-
-        /// <summary>
         ///     Get a collection of existing <see cref="ReviewObjectiveCreationDto" /> of a <see cref="Review" />
         /// </summary>
         /// <param name="reviewId">The id of the <see cref="Review" /></param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="ReviewObjective" /></returns>
         public IEnumerable<ReviewObjectiveCreationDto> GetReviewObjectiveCreationForReview(Guid reviewId)
         {
-            var reviewObjectives = this.EntityDbSet.Where(x => x.EntityContainer.Id == reviewId).Select(x => new ReviewObjectiveCreationDto() { Kind = x.ReviewObjectiveKind, KindNumber = x.ReviewObjectiveKindNumber });
+            var reviewObjectives = this.EntityDbSet.Where(x => x.EntityContainer.Id == reviewId).Select(x => new ReviewObjectiveCreationDto { Kind = x.ReviewObjectiveKind, KindNumber = x.ReviewObjectiveKindNumber });
             return reviewObjectives;
         }
 
@@ -260,6 +245,41 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
             }
 
             return dictionary;
+        }
+
+        /// <summary>
+        ///     Update the status of the <see cref="ReviewObjective" /> if necessary.
+        /// </summary>
+        /// <param name="reviewObjectiveId">The <see cref="Guid" /> of the <see cref="ReviewObjective" /></param>
+        public async Task UpdateStatus(Guid reviewObjectiveId)
+        {
+            var reviewObjective = await this.FindEntity(reviewObjectiveId);
+
+            if (reviewObjective == null)
+            {
+                return;
+            }
+
+            var currentStatus = reviewObjective.ReviewTasks.All(x => x.Status == StatusKind.Done) ? StatusKind.Done : StatusKind.Open;
+
+            if (reviewObjective.Status != currentStatus)
+            {
+                reviewObjective.Status = currentStatus;
+                await this.UpdateEntity(reviewObjective);
+            }
+        }
+
+        /// <summary>
+        ///     Sets specific properties before the creation of the <see cref="ReviewObjective" />
+        /// </summary>
+        /// <param name="entity">The <see cref="ReviewObjective" /></param>
+        protected override void SetSpecificPropertiesBeforeCreate(ReviewObjective entity)
+        {
+            var review = entity.EntityContainer as Review;
+            entity.ReviewObjectiveNumber = 0;
+            entity.ReviewObjectiveNumber = review!.ReviewObjectives.Max(x => x.ReviewObjectiveNumber) + 1;
+            entity.CreatedOn = DateTime.UtcNow;
+            entity.Status = StatusKind.Open;
         }
 
         /// <summary>

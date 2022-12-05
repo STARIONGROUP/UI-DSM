@@ -67,6 +67,19 @@ namespace UI_DSM.Client.Components.App.ReviewTaskCard
         public IReviewObjectivePageViewModel ViewModel { get; set; }
 
         /// <summary>
+        ///     Method invoked when the component is ready to start, having received its
+        ///     initial parameters from its parent in the render tree.
+        /// </summary>
+        protected override void OnInitialized()
+        {
+            if (this.ViewModel != null)
+            {
+                this.ViewModel.ProjectId = new Guid(this.ProjectId);
+                this.ViewModel.ReviewId = new Guid(this.ReviewId);
+            }
+        }
+
+        /// <summary>
         ///     Navigate to the correct uri
         /// </summary>
         private void Navigate()
@@ -76,14 +89,6 @@ namespace UI_DSM.Client.Components.App.ReviewTaskCard
                 this.NavigationManager.NavigateTo($"Project/{this.ProjectId}/Review/{this.ReviewId}/ReviewObjective/{this.ReviewObjectiveId}" +
                                                   $"/ReviewTask/{this.ReviewTask.Id}");
             }
-        }
-        protected override void OnInitialized()
-        {
-            if (this.ViewModel != null)
-            {
-                this.ViewModel.ProjectId = new Guid(this.ProjectId);
-                this.ViewModel.ReviewId = new Guid(this.ReviewId);
-            } 
         }
     }
 }

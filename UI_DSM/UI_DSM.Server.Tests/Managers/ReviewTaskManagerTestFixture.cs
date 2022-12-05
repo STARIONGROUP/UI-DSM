@@ -21,6 +21,7 @@ namespace UI_DSM.Server.Tests.Managers
     
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Managers.ParticipantManager;
+    using UI_DSM.Server.Managers.ReviewObjectiveManager;
     using UI_DSM.Server.Managers.ReviewTaskManager;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Shared.DTO.Models;
@@ -35,6 +36,7 @@ namespace UI_DSM.Server.Tests.Managers
         private Mock<IParticipantManager> participantManager;
         private Mock<DbSet<ReviewTask>> reviewTaskDbSet;
         private Mock<DbSet<ReviewObjective>> reviewObjectiveDbSet;
+        private Mock<IReviewObjectiveManager> reviewObjectiveManager;
 
         [SetUp]
         public void Setup()
@@ -42,6 +44,7 @@ namespace UI_DSM.Server.Tests.Managers
             this.context = new Mock<DatabaseContext>();
             this.context.CreateDbSetForContext(out this.reviewTaskDbSet, out this.reviewObjectiveDbSet);
             this.participantManager = new Mock<IParticipantManager>();
+            this.reviewObjectiveManager = new Mock<IReviewObjectiveManager>();
             this.manager = new ReviewTaskManager(this.context.Object, this.participantManager.Object);
             Program.RegisterEntities();
         }
@@ -169,6 +172,11 @@ namespace UI_DSM.Server.Tests.Managers
 
             await this.manager.UpdateEntity(reviewTask);
             this.context.Verify(x => x.Update(reviewTask), Times.Once);
+            this.reviewObjectiveManager.Verify(x => x.UpdateStatus(It.IsAny<Guid>()), Times.Never);
+
+            this.manager.InjectManager(this.reviewObjectiveManager.Object);
+            await this.manager.UpdateEntity(reviewTask);
+            this.reviewObjectiveManager.Verify(x => x.UpdateStatus(It.IsAny<Guid>()), Times.Once);
 
             this.context.Setup(x => x.SaveChangesAsync(default)).ThrowsAsync(new InvalidOperationException());
             operationResult = await this.manager.UpdateEntity(reviewTask);

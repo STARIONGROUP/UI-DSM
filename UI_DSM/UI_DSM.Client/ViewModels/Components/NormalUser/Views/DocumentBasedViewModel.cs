@@ -49,15 +49,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         {
             await base.InitializeProperties(things, projectId, reviewId);
 
-            var filteredThings = this.Things.OfType<ElementDefinition>()
+            var hyperlinks= this.Things.OfType<ElementDefinition>()
                 .Where(x => x.HyperLink.Any())
                 .SelectMany(x => x.HyperLink)
                 .ToList();
 
-            var reviewItems = await this.ReviewItemService.GetReviewItemsForThings(this.ProjectId, this.ReviewId,
-                filteredThings.Select(x => x.Iid));
+            hyperlinks.AddRange(this.Things.OfType<Requirement>()
+                .Where(x => x.HyperLink.Any())
+                .SelectMany(x => x.HyperLink));
 
-            this.Rows = new List<HyperLinkRowViewModel>(filteredThings.Select(x =>
+            var reviewItems = await this.ReviewItemService.GetReviewItemsForThings(this.ProjectId, this.ReviewId,
+                hyperlinks.Select(x => x.Iid));
+
+            this.Rows = new List<HyperLinkRowViewModel>(hyperlinks.Select(x =>
                 new HyperLinkRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));
         }
 

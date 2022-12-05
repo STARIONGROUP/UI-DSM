@@ -17,6 +17,8 @@ namespace UI_DSM.Server.Modules
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Server.Managers;
+    using UI_DSM.Server.Managers.ReviewObjectiveManager;
+    using UI_DSM.Server.Managers.ReviewTaskManager;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -133,6 +135,9 @@ namespace UI_DSM.Server.Modules
             {
                 return;
             }
+
+            var objectiveManager = context.RequestServices.GetService<IReviewObjectiveManager>();
+            ((IReviewTaskManager)manager).InjectManager(objectiveManager);
 
             await base.UpdateEntity(manager, entityId, dto, context, deepLevel);
         }

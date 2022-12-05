@@ -12,7 +12,7 @@
 @using UI_DSM.Shared.Enumerator
 
 <div class="task-item">
-	<button class="task-item__button"  @onclick="() => this.Navigate()">
+	<button class="task-item__button"  @onclick="this.Navigate">
 		<span class="h4">@(this.ReviewTask.Description)</span>
 	</button>
 

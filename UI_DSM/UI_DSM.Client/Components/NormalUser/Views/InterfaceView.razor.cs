@@ -95,6 +95,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
         {
             await base.InitializeViewModel(things, projectId, reviewId);
+            this.IsLoading = false;
 
             this.ViewModel.PortVisibilityState = this.ConnectionVisibilitySelectorPort.ViewModel;
             this.ViewModel.ProductVisibilityState = this.ConnectionVisibilitySelectorProduct.ViewModel;
@@ -118,7 +119,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
             this.HideColumnsAtStart();
-            this.IsLoading = false;
         }
 
         /// <summary>

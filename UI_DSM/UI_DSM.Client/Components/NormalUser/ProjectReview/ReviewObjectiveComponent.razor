@@ -32,16 +32,16 @@
   <div class="objective-overview">
 		@foreach (var reviewObjective in this.ViewModel.Review.ReviewObjectives.OrderBy(x => x.ReviewObjectiveKind).ThenBy(x => x.ReviewObjectiveKindNumber))
 		{
-			<div div @onclick="@(() => this.ViewModel.GoToReviewObjectivePage(reviewObjective))">
+			<NavLink href="@this.ViewModel.GetNavLink(reviewObjective)">
 				@if (this.ViewModel.CommentsAndTasks.ContainsKey(reviewObjective.Id))
 				{
-					<AppObjectiveItem Title="@reviewObjective.Title" Description="@reviewObjective.Description" Link=@(this.ViewModel.NavigationManager.Uri+"/ReviewObjective/"+reviewObjective.Id) Tasks="@this.ViewModel.CommentsAndTasks[reviewObjective.Id].TaskCount" Comments="@this.ViewModel.CommentsAndTasks[reviewObjective.Id].CommentCount" />
+					<AppObjectiveItem Tasks="@this.ViewModel.CommentsAndTasks[reviewObjective.Id].TaskCount" ReviewObjective="@reviewObjective"/>
 				}
 				else
 				{
-					<AppObjectiveItem Title="@reviewObjective.Title" Description="@reviewObjective.Description" Link=@(this.ViewModel.NavigationManager.Uri+"/ReviewObjective/"+reviewObjective.Id) Tasks="-1" Comments="-1" />
+					<AppObjectiveItem Tasks="-1" ReviewObjective="@reviewObjective"/>
 				}
-			</div>
+			</NavLink>
 		}
   </div>
 </div>

@@ -24,6 +24,7 @@ namespace UI_DSM.Server.Tests.Modules
 
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Managers.ParticipantManager;
+    using UI_DSM.Server.Managers.ReviewObjectiveManager;
     using UI_DSM.Server.Managers.ReviewTaskManager;
     using UI_DSM.Server.Modules;
     using UI_DSM.Server.Tests.Helpers;
@@ -58,6 +59,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.reviewTaskManager.As<IContainedEntityManager<ReviewTask>>();
             this.reviewObjectiveManager = new Mock<IEntityManager<ReviewObjective>>();
             this.reviewObjectiveManager.As<IContainedEntityManager<ReviewObjective>>();
+            this.reviewObjectiveManager.As<IReviewObjectiveManager>();
             this.reviewManager = new Mock<IEntityManager<Review>>();
             this.reviewManager.As<IContainedEntityManager<Review>>();
             this.participantManager = new Mock<IParticipantManager>();
@@ -76,6 +78,7 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.serviceProvider.Setup(x => x.GetService(typeof(IContainedEntityManager<Review>))).Returns(this.reviewManager.Object);
             this.serviceProvider.Setup(x => x.GetService(typeof(IContainedEntityManager<ReviewObjective>))).Returns(this.reviewObjectiveManager.Object);
+            this.serviceProvider.Setup(x => x.GetService(typeof(IReviewObjectiveManager))).Returns(this.reviewObjectiveManager.Object);
             this.serviceProvider.Setup(x => x.GetService(typeof(IEntityManager<Review>))).Returns(this.reviewManager.Object);
             this.serviceProvider.Setup(x => x.GetService(typeof(IEntityManager<ReviewObjective>))).Returns(this.reviewObjectiveManager.Object);
             this.serviceProvider.Setup(x => x.GetService(typeof(IParticipantManager))).Returns(this.participantManager.Object);

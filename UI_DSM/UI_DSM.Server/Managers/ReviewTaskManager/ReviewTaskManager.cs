@@ -16,6 +16,7 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.ParticipantManager;
+    using UI_DSM.Server.Managers.ReviewObjectiveManager;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
@@ -30,6 +31,11 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
         ///     The <see cref="IParticipantManager" />
         /// </summary>
         private readonly IParticipantManager participantManager;
+
+        /// <summary>
+        ///     The <see cref="IReviewObjectiveManager" />
+        /// </summary>
+        private IReviewObjectiveManager reviewObjectiveManager;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ReviewTaskManager" /> class.
@@ -53,14 +59,21 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
                 return entityOperationResult;
             }
 
-            var foundEntity = await this.FindEntity(entity.Id);
+            var foundEntity = await this.FindEntityWithContainer(entity.Id);
             entity.AdditionalView = foundEntity.AdditionalView;
             entity.MainView = foundEntity.MainView;
             entity.OptionalView = foundEntity.OptionalView;
             entity.HasPrimaryView = foundEntity.HasPrimaryView;
             entity.CreatedOn = foundEntity.CreatedOn.ToUniversalTime();
 
-            return await this.UpdateEntityIntoContext(entity);
+            var operation = await this.UpdateEntityIntoContext(entity);
+
+            if (this.reviewObjectiveManager != null)
+            {
+                await this.reviewObjectiveManager.UpdateStatus(foundEntity.EntityContainer.Id);
+            }
+
+            return operation;
         }
 
         /// <summary>
@@ -102,6 +115,15 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
                 container.ReviewTasks.Add(reviewTask);
                 this.Context.Add(reviewTask);
             }
+        }
+
+        /// <summary>
+        ///     Injects the <see cref="IReviewObjectiveManager" /> to avoid circular dependency
+        /// </summary>
+        /// <param name="manager">The <see cref="IReviewObjectiveManager" /></param>
+        public void InjectManager(IReviewObjectiveManager manager)
+        {
+            this.reviewObjectiveManager = manager;
         }
 
         /// <summary>
