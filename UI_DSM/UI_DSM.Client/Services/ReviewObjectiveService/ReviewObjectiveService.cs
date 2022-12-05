@@ -190,5 +190,23 @@ namespace UI_DSM.Client.Services.ReviewObjectiveService
             var content = this.jsonService.Deserialize<List<ReviewObjectiveCreationDto>>(await response.Content.ReadAsStreamAsync());
             return content;
         }
+
+        /// <summary>
+        ///     Gets, for all <see cref="ReviewObjective" />, the number of open <see cref="ReviewTask" /> and <see cref="Comment" />
+        ///     related to the <see cref="ReviewObjective" />
+        /// </summary>
+        /// <returns>A <see cref="Task" /> with a <see cref="Dictionary{Guid, ComputedProjectProperties}" /></returns>
+        public async Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(Guid projectId, Guid reviewId)
+        {
+            this.ComputeMainRoute(projectId, reviewId);
+            var response = await this.HttpClient.GetAsync($"{this.MainRoute}/OpenTasksAndComments");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(response.ReasonPhrase);
+            }
+
+            return this.jsonService.Deserialize<Dictionary<Guid, ComputedProjectProperties>>(await response.Content.ReadAsStreamAsync());
+        }
     }
 }

@@ -113,11 +113,12 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         /// <summary>
         ///     Opens the <see cref="TaskAssignment" /> as a popup
         /// </summary>
-        public void OpenTaskAssignmentPopup()
+        public void OpenTaskAssignmentPopup(ReviewTask selectedReviewTask)
         {
             this.TaskAssignmentViewModel.SelectedParticipant = new Participant();
             this.ErrorMessageViewModel.Errors.Clear();
             this.IsOnAssignmentMode = true;
+            this.SelectedReviewTask = selectedReviewTask;
         }
 
         /// <summary>

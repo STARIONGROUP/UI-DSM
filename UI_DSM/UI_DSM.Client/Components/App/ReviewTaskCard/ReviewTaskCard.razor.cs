@@ -83,7 +83,6 @@ namespace UI_DSM.Client.Components.App.ReviewTaskCard
             {
                 this.ViewModel.ProjectId = new Guid(this.ProjectId);
                 this.ViewModel.ReviewId = new Guid(this.ReviewId);
-                this.ViewModel.SelectedReviewTask = this.ReviewTask;
             } 
         }
     }

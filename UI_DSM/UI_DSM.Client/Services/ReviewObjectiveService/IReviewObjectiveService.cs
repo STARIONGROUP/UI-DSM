@@ -84,5 +84,12 @@ namespace UI_DSM.Client.Services.ReviewObjectiveService
         /// </summary>
         /// <returns>A <see cref="Task" /> with the <see cref="List{ReviewObjectiveCreationDto}" /></returns>
         Task<List<ReviewObjectiveCreationDto>> GetAvailableTemplates(Guid projectId, Guid reviewId);
+
+        /// <summary>
+        ///     Gets, for a <see cref="ReviewObjective" />, the number of open <see cref="ReviewTask" /> and <see cref="Comment" />
+        ///     related to the <see cref="ReviewObjective" />
+        /// </summary>
+        /// <returns>A <see cref="Task" /> with a <see cref="Dictionary{Guid, ComputedProjectProperties}" /></returns>
+        Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(Guid projectId, Guid reviewId);
     }
 }

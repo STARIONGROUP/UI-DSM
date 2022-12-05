@@ -89,6 +89,11 @@ namespace UI_DSM.Server.Modules
                 .Produces<EntityRequestResponseDto>(500)
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/CreateTemplates");
+
+            app.MapGet($"{this.MainRoute}/OpenTasksAndComments", this.GetOpenTasksAndComments)
+                .Produces<Dictionary<Guid, ComputedProjectProperties>>()
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/GetOpenTasksAndComments");
         }
 
         /// <summary>
@@ -389,6 +394,24 @@ namespace UI_DSM.Server.Modules
             }
 
             return true;
+        }
+
+        /// <summary>
+        ///     Gets, for all <see cref="Review" />, the number of open <see cref="ReviewTask" /> and <see cref="Comment" />
+        ///     related to the <see cref="Review" />
+        /// </summary>
+        /// <param name="reviewObjectiveManager">The <see cref="IReviewManager"/></param>
+        /// <param name="reviewId"> The <see cref="Guid"/> of the <see cref="Review" /></param>
+        /// <param name="projectId"> The <see cref="Guid"/> of the <see cref="Project" /></param>
+        /// <param name="context">The <see cref="HttpContext"/></param>
+        /// <returns>A <see cref="Task"/></returns>
+        [Authorize]
+        public async Task GetOpenTasksAndComments(IReviewObjectiveManager reviewObjectiveManager, Guid reviewId, Guid projectId, HttpContext context)
+        {
+            var reviewObjectivesId = (await reviewObjectiveManager.GetContainedEntities(reviewId)).Select(x => x.Id);
+
+            var computedProperties = await reviewObjectiveManager.GetOpenTasksAndComments(reviewObjectivesId, projectId, context.User.Identity?.Name);
+            await context.Response.Negotiate(computedProperties);
         }
     }
 }

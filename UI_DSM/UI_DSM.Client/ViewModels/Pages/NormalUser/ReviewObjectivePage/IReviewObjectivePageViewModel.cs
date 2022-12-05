@@ -61,7 +61,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         /// <summary>
         ///     Opens the <see cref="TaskAssignment" /> as a popup
         /// </summary>
-        void OpenTaskAssignmentPopup();
+        void OpenTaskAssignmentPopup(ReviewTask selectedReviewTask);
 
         /// <summary>
         ///     The current <see cref="Participant" />
