@@ -8,8 +8,10 @@ COPY ["UI_DSM/UI_DSM.Serializer.Json/UI_DSM.Serializer.Json.csproj", "UI_DSM.Ser
 COPY ["UI_DSM/UI_DSM.Shared/UI_DSM.Shared.csproj", "UI_DSM.Shared/"]
 
 RUN --mount=type=secret,id=DEVEXPRESS_NUGET_KEY export DEVEXPRESS_NUGET_KEY=$(cat /run/secrets/DEVEXPRESS_NUGET_KEY) \
- && dotnet nuget add source https://nuget.devexpress.com/api -n DXFeed -u DevExpress -p ${DEVEXPRESS_NUGET_KEY} --store-password-in-clear-text \ 
- && dotnet restore UI_DSM/UI_DSM.sln
+&& export DEVEXPRESS_NUGET_KEY \
+&& dotnet nuget add source https://nuget.devexpress.com/api --name DXFeed --username DevExpress --password ${DEVEXPRESS_NUGET_KEY} --store-password-in-clear-text 
+
+RUN dotnet restore UI_DSM/UI_DSM.sln
  
 WORKDIR "/src/UI_DSM.Server"
 RUN dotnet build --no-restore "UI_DSM.Server.csproj" -c Release -o /app/build

@@ -2,8 +2,6 @@ name: Publish UI-DSM Docker Container
 
 on:
   push:
-    tags:
-      - '*'
 
 jobs:
   build:
