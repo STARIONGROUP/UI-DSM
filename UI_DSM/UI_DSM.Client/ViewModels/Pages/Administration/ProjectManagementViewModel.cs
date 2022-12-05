@@ -44,6 +44,11 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         private readonly IUserService userService;
 
         /// <summary>
+        ///     Backing fielf for <see cref="IsAuthorized" />
+        /// </summary>
+        private bool isAuthorized;
+
+        /// <summary>
         ///     Backing field for <see cref="IsOnCreationMode" />
         /// </summary>
         private bool isOnCreationMode;
@@ -69,7 +74,11 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         /// <summary>
         ///     Indicates if the current user is allowed to manage project even if he is not the site admin
         /// </summary>
-        public bool IsAuthorized { get; set; }
+        public bool IsAuthorized
+        {
+            get => this.isAuthorized;
+            set => this.RaiseAndSetIfChanged(ref this.isAuthorized, value);
+        }
 
         /// <summary>
         ///     Gets or sets the <see cref="NavigationManager" />
