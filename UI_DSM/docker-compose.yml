@@ -28,7 +28,7 @@ services:
             - uidsm_server
       depends_on:
         - postgres
-      port:
+      ports:
         - "8080:80"
       volumes:
         - artifacts:/app/storage
