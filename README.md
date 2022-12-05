@@ -14,35 +14,37 @@ The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=RHEAGROUP_UI-DSM&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=RHEAGROUP_UI-DSM)
 
 
-## Installation
+## Build and deploy
 
 The web application is distributed using docker containers and docker-compose.
 
 In the first stage the application is built using the private DevExpress nuget feed. In order to access this nuget feed, it is required to EXPORT the API-KEY to an environment variable.
 
-A script is available to run docker commands
+### Build
 
-### Linux
+#### Linux
 ```
 $ ./solutionFolder# export DEVEXPRESS_NUGET_KEY=<YOUR-API-KEY>
-$ ./solutionFolder# ./compose.sh <option>
+$ ./solutionFolder# export BUILDKIT=1
+$ ./solutionFolder# docker build --secret id=DEVEXPRESS_NUGET_KEY,env=DEVEXPRESS_NUGET_KEY -f Dockerfile -t rheagroup/ui-dsm:latest -t rheagroup/ui-dsm:<version> .
 ```
 
-### Windows
+#### Windows
 ```
 $ ./solutionFolder# set DEVEXPRESS_NUGET_KEY=<YOUR-API-KEY>
-$ ./solutionFolder# ./compose.bat <option>
+$ ./solutionFolder# set BUILDKIT=1
+$ ./solutionFolder# docker build --secret id=DEVEXPRESS_NUGET_KEY,env=DEVEXPRESS_NUGET_KEY -f Dockerfile -t rheagroup/ui-dsm:latest -t rheagroup/ui-dsm:<version> .
 ```
 
-Available options : 
+### Deploy
 
-- `build` - (default) builds the solution, creates the images and runs the containers.
-- `strt` - starts the containers if they already have been run and stopped.
-- `stp` - stops the running containers without removing them.
-- `up` - runs containers without rebuilding them.
-- `down` - stops and removes the containers. Volume information is not lost.
-- `dev` - creates database containers. Does not required to set the DEVEXPRESS_NUGET_KEY.
-- `devtest` - creates database and server containers. 
+```
+$ ./solutionFolder# docker push rheagroup/ui-dsm:lastest
+$ ./solutionFolder# docker push rheagroup/ui-dsm:<version>
+```
+
+### Development Environment
+Under a development environment, running the 'docker-composer-dev.yml' compose file is enough
 
 ## Build Status
 
