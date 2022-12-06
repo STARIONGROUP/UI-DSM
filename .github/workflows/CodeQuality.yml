@@ -37,7 +37,7 @@ jobs:
         run: dotnet build UI_DSM.sln --no-restore /p:ContinuousIntegrationBuild=true
 
       - name: Test with the dotnet CLI
-        run: dotnet test UI_DSM.sln --no-build --verbosity normal --filter FullyQualifiedName!~IntegrationTests /p:CollectCoverage=true /p:CoverletOutput="../../CoverageResults/" /p:MergeWith="../../CoverageResults/coverage.json" /p:CoverletOutputFormat=\"opencover,json\" -m:1
+        run: dotnet test UI_DSM.sln --no-build --verbosity normal --filter FullyQualifiedName!~IntegrationTests /p:CollectCoverage=true /p:CoverletOutput="../CoverageResults/" /p:MergeWith="../CoverageResults/coverage.json" /p:CoverletOutputFormat=\"opencover,json\" -m:1
         
       - name: Sonarqube end
         run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
