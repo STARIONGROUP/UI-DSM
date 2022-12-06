@@ -39,10 +39,10 @@ jobs:
       run: dotnet nuget add source https://nuget.devexpress.com/api -n DXFeed -u DevExpress -p ${{ secrets.DEVEXPRESS_NUGET_KEY }} --store-password-in-clear-text
 
     - name: Install dependencies
-      run: dotnet restore UI_DSM/UI_DSM.sln
+      run: dotnet restore UI_DSM.sln
 
     - name: Build
-      run: dotnet build UI_DSM/UI_DSM.sln --no-restore
+      run: dotnet build UI_DSM.sln --no-restore
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2

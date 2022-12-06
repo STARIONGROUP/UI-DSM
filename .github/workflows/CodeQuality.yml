@@ -23,7 +23,7 @@ jobs:
         run: dotnet nuget add source https://nuget.devexpress.com/api -n DXFeed -u DevExpress -p ${{ secrets.DEVEXPRESS_NUGET_KEY }} --store-password-in-clear-text
 
       - name: Restore dependencies
-        run: dotnet restore UI_DSM/UI_DSM.sln
+        run: dotnet restore UI_DSM.sln
         
       - name: Sonarqube Begin
         env:
@@ -34,10 +34,10 @@ jobs:
           dotnet sonarscanner begin /k:"RHEAGROUP_UI-DSM" /o:"rheagroup" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="./CoverageResults/coverage.opencover.xml"
 
       - name: Build
-        run: dotnet build UI_DSM/UI_DSM.sln --no-restore /p:ContinuousIntegrationBuild=true
+        run: dotnet build UI_DSM.sln --no-restore /p:ContinuousIntegrationBuild=true
 
       - name: Test with the dotnet CLI
-        run: dotnet test UI_DSM/UI_DSM.sln --no-build --verbosity normal --filter FullyQualifiedName!~IntegrationTests /p:CollectCoverage=true /p:CoverletOutput="../../CoverageResults/" /p:MergeWith="../../CoverageResults/coverage.json" /p:CoverletOutputFormat=\"opencover,json\" -m:1
+        run: dotnet test UI_DSM.sln --no-build --verbosity normal --filter FullyQualifiedName!~IntegrationTests /p:CollectCoverage=true /p:CoverletOutput="../../CoverageResults/" /p:MergeWith="../../CoverageResults/coverage.json" /p:CoverletOutputFormat=\"opencover,json\" -m:1
         
       - name: Sonarqube end
         run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
