@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Carter" Version="6.1.1" />
     <PackageReference Include="Feather.Blazor" Version="1.0.1" />
+    <PackageReference Include="CDP4JsonFileDal-CE" Version="8.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.7" />
@@ -25,5 +26,4 @@
     <ProjectReference Include="..\UI_DSM.Serializer.Json\UI_DSM.Serializer.Json.csproj" />
     <ProjectReference Include="..\UI_DSM.Shared\UI_DSM.Shared.csproj" />
   </ItemGroup>
-
 </Project>

@@ -33,10 +33,13 @@ namespace UI_DSM.Server
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Modules;
+    using UI_DSM.Server.Services.AboutService;
     using UI_DSM.Server.Services.CometService;
     using UI_DSM.Server.Services.FileService;
     using UI_DSM.Server.Services.RouteParserService;
     using UI_DSM.Shared.Models;
+
+    using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
     /// <summary>
     ///     Entry class of the <see cref="UI_DSM.Server" /> project
@@ -73,6 +76,7 @@ namespace UI_DSM.Server
             builder.Services.AddDbContext<DatabaseContext>(opt =>
             {
                 opt.UseNpgsql(builder.Configuration["DataBaseConnection"]);
+                opt.LogTo(Console.WriteLine, LogLevel.Trace);
             });
 
             builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DatabaseContext>();
@@ -81,6 +85,8 @@ namespace UI_DSM.Server
             builder.Services.AddSingleton<ICdp4JsonSerializer, Cdp4JsonSerializer>();
             builder.Services.AddSingleton<IJsonService, JsonService>();
             builder.Services.AddSingleton<ICometService, CometService>();
+            var dateTime = DateTime.Now;
+            builder.Services.AddSingleton<IAboutService, AboutService>( _ => new AboutService(dateTime));
             builder.Services.AddScoped<IRouteParserService, RouteParserService>();
             builder.Services.AddSingleton<IFileService, FileService>(_ => new FileService(builder.Configuration["StoragePath"]));
 

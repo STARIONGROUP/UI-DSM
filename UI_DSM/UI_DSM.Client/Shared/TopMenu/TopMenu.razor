@@ -67,6 +67,11 @@
 										<FeatherUsers Size="24" Color="currentColor" StrokeWidth="1.5f"/> Roles
 									</NavLink>
 								</li>
+								<li>
+									<NavLink href="/About" Match="NavLinkMatch.All" @onclick="() => this.IsUserMenuOpen = !this.IsUserMenuOpen">
+										<FeatherInfo Size="24" Color="currentColor" StrokeWidth="1.5f"/> About
+									</NavLink>
+								</li>
 							</Authorized>
 							<NotAuthorized>
 								@if (this.ViewModel.HasAccessToProjectManagement())
