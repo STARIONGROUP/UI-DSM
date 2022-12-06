@@ -16,8 +16,6 @@ namespace UI_DSM.Client.Services.Administration.CometService
     using CDP4Common.EngineeringModelData;
     using CDP4Common.SiteDirectoryData;
 
-    using CDP4Dal;
-
     using Microsoft.AspNetCore.Components.Forms;
 
     using UI_DSM.Shared.DTO.CometData;

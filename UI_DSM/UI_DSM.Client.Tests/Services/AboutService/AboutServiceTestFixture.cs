@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="RouteParserServiceTestFixture.cs" company="RHEA System S.A.">
+// <copyright file="AboutServiceTestFixture.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,26 +11,26 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Tests.Services.RouteParserService
+namespace UI_DSM.Client.Tests.Services.AboutService
 {
     using System.Net;
 
     using CDP4JsonSerializer;
-  
+    
     using NUnit.Framework;
-    
+
     using RichardSzalay.MockHttp;
-    
-    using UI_DSM.Client.Services.JsonService;
+
     using UI_DSM.Client.Services;
-    using UI_DSM.Client.Services.RouteParserService;
+    using UI_DSM.Client.Services.AboutService;
+    using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
 
     [TestFixture]
-    public class RouteParserServiceTestFixture
+    public class AboutServiceTestFixture
     {
-        private RouteParserService service;
+        private IAboutService service;
         private MockHttpMessageHandler httpMessageHandler;
         private IJsonService jsonService;
 
@@ -41,36 +41,32 @@ namespace UI_DSM.Client.Tests.Services.RouteParserService
             var httpClient = this.httpMessageHandler.ToHttpClient();
             httpClient.BaseAddress = new Uri("http://localhost/api");
 
-            ServiceBase.RegisterService<RouteParserService>();
+            ServiceBase.RegisterService<AboutService>();
             this.jsonService = new JsonService(new JsonDeserializer(), new JsonSerializer(), new Cdp4JsonSerializer());
-            this.service = new RouteParserService(httpClient, this.jsonService);
+            this.service = new AboutService(httpClient, this.jsonService);
         }
 
         [Test]
-        public async Task VerifyParse()
+        public async Task VerifyGetSystemInformation()
         {
             var httpResponse = new HttpResponseMessage();
             httpResponse.StatusCode = HttpStatusCode.BadRequest;
-            var request = this.httpMessageHandler.When(HttpMethod.Get, "/RouteParser");
+            var request = this.httpMessageHandler.When(HttpMethod.Get, "/About");
+            request.Respond(_ => httpResponse);
+            var response = await this.service.GetSystemInformation();
+            Assert.That(response.IsAlive, Is.False);
 
-            var parsedUrl = new List<ParsedUrlDto>()
+            var systemInformation = new SystemInformationDto()
             {
-                new ("Home", "/")
+                IsAlive = true
             };
 
-            request.Respond(_ => httpResponse);
-            var response = await this.service.ParseUrl("/Project");
-            Assert.That(response, Is.Empty);
             httpResponse.StatusCode = HttpStatusCode.OK;
-
-            httpResponse.Content = new StringContent(this.jsonService.Serialize(parsedUrl));
-            response = await this.service.ParseUrl("/Project");
-            
-            Assert.Multiple(() =>
-            {
-                Assert.That(response, Has.Count.EqualTo(1));
-                Assert.That(async () => await this.service.ParseUrl("/"), Throws.Exception);
-            });
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(systemInformation));
+            response = await this.service.GetSystemInformation();
+            Assert.That(response.IsAlive, Is.True);
+            response = await this.service.GetSystemInformation();
+            Assert.That(response.IsAlive, Is.False);
         }
     }
 }

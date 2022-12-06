@@ -20,6 +20,7 @@ namespace UI_DSM.Server.Context
     using Microsoft.EntityFrameworkCore;
 
     using UI_DSM.Server.Context.Configuration;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -129,14 +130,34 @@ namespace UI_DSM.Server.Context
         }
 
         /// <summary>
-        ///     Ensures that the database is fully created
+        ///     Retrieves information related to the database
         /// </summary>
-        private void EnsureCreated()
+        /// <returns>The <see cref="DatabaseInformationDto" /></returns>
+        public virtual DatabaseInformationDto GetDatabaseInformation()
         {
-            if (this.Database.GetPendingMigrations().Any())
+            var connection = this.Database.GetDbConnection();
+            var startTime = DateTime.MinValue;
+
+            using (var command = connection.CreateCommand())
             {
-                this.Database.Migrate();
+                command.CommandText = "SELECT pg_postmaster_start_time()";
+                this.Database.OpenConnection();
+                var result = command.ExecuteScalar();
+
+                if (result is DateTime retrievedDateTime)
+                {
+                    startTime = retrievedDateTime;
+                }
             }
+
+            var information = new DatabaseInformationDto
+            {
+                State = connection.State,
+                DatabaseVersion = connection.ServerVersion,
+                StartTime = startTime
+            };
+
+            return information;
         }
 
         /// <summary>
@@ -152,7 +173,7 @@ namespace UI_DSM.Server.Context
             builder.Entity<Project>().HasIndex(x => x.ProjectName).IsUnique();
             builder.Entity<Role>().HasIndex(x => x.RoleName).IsUnique();
             builder.Entity<Model>().HasIndex(x => x.FileName).IsUnique();
-            builder.Entity<ReviewCategory>().HasIndex(x => x.ReviewCategoryName).IsUnique();  
+            builder.Entity<ReviewCategory>().HasIndex(x => x.ReviewCategoryName).IsUnique();
 
             builder.Entity<Project>().HasMany(p => p.Participants)
                 .WithOne(p => (Project)p.EntityContainer)
@@ -206,6 +227,17 @@ namespace UI_DSM.Server.Context
             builder.ApplyConfiguration(new RoleConfiguration());
             builder.ApplyConfiguration(new UserRoleConfiguration());
             builder.ApplyConfiguration(new UiDsmRoleConfiguration());
+        }
+
+        /// <summary>
+        ///     Ensures that the database is fully created
+        /// </summary>
+        private void EnsureCreated()
+        {
+            if (this.Database.GetPendingMigrations().Any())
+            {
+                this.Database.Migrate();
+            }
         }
     }
 }
