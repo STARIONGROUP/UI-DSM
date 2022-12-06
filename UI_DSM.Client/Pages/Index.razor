@@ -1,0 +1,41 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// Index.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@page "/"
+@layout DefaultLayout
+
+<PageTitle>Dashboard | UI-DSM</PageTitle>
+
+
+<div class="projects-page">
+    <div class="page-header">
+        <h1 class="h3">Projects</h1>
+    </div>
+    <div class="projects-overview">
+
+        <LoadingComponent IsLoading="this.IsLoading">
+            @foreach (var project in this.ViewModel.AvailableProject.Items.OrderBy(x => x.CreatedOn))
+            {
+                <NavLink href=@("/Project/"+project.Id)>
+                    @if (this.ViewModel.CommentsAndTasks.ContainsKey(project.Id))
+                    {
+                        <AppProjectCard Title="@project.ProjectName" Created="@project.CreatedOn.ToString()" Tasks="@this.ViewModel.CommentsAndTasks[project.Id].TaskCount" Comments="@this.ViewModel.CommentsAndTasks[project.Id].CommentCount" />
+                    }
+                    else
+                    {
+                        <AppProjectCard Title="@project.ProjectName" Created="@project.CreatedOn.ToString()" Tasks="-1" Comments="-1" />
+                    }
+                </NavLink>
+            }
+        </LoadingComponent>
+
+    </div>
+</div>
