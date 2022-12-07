@@ -17,6 +17,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
+    using CDP4Common.SiteDirectoryData;
 
     using Microsoft.Extensions.DependencyInjection;
 
@@ -63,6 +64,13 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             try
             {
                 var renderer = this.context.RenderComponent<RequirementBreakdownStructureView>();
+                
+                var spaceDebrisCategory = new Category()
+                {
+                    Iid = Guid.NewGuid(),
+                    ShortName = "space_debris",
+                    Name = "space debris"
+                };
 
                 var things = new List<Thing>();
                 var requirementsSpecificiation = new RequirementsSpecification();
@@ -73,12 +81,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 {
                     Group = group,
                     Definition =
-                {
-                    new Definition()
                     {
-                        Content = "A definition"
-                    }
-                }
+                        new Definition()
+                        {
+                            Content = "A definition"
+                        }
+                    }, Category = {spaceDebrisCategory}
                 });
 
                 requirementsSpecificiation.Requirement.Add(new Requirement(Guid.NewGuid(), null, null));
@@ -96,7 +104,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 this.reviewItemService.Setup(x => x.GetReviewItemsForThings(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IEnumerable<Guid>>(), It.IsAny<int>()))
                     .ReturnsAsync(reviewItems);
 
-                await renderer.InvokeAsync(() => renderer.Instance.InitializeViewModel(things, Guid.NewGuid(), Guid.NewGuid()));
+                await renderer.InvokeAsync(() => renderer.Instance.InitializeViewModel(things, Guid.NewGuid(), Guid.NewGuid(), 
+                    new List<string>{"space_debris"}, new List<string>()));
 
                 Assert.Multiple(() =>
                 {

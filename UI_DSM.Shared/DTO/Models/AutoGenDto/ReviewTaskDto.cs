@@ -98,6 +98,11 @@ namespace UI_DSM.Shared.DTO.Models
         public List<Guid> IsAssignedTo { get; set; }
 
         /// <summary>
+        ///    Gets or sets the Prefilters of the ReviewTask
+        /// </summary>
+        public List<string> Prefilters { get; set; }
+
+        /// <summary>
         ///    Instantiate a <see cref="Entity" /> from a <see cref="EntityDto" />
         /// </summary>
         public override Entity InstantiatePoco()

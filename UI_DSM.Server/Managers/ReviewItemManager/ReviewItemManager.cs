@@ -99,10 +99,10 @@ namespace UI_DSM.Server.Managers.ReviewItemManager
                 return entityOperationResult;
             }
 
-            var foundEntity = await this.FindEntity(entity.Id);
-            entity.ThingId = foundEntity.ThingId;
+            var reviewItem = (await this.GetEntity(entity.Id)).OfType<ReviewItem>().First();
+            reviewItem.IsReviewed = entity.IsReviewed;
 
-            return await this.UpdateEntityIntoContext(entity);
+            return await this.UpdateEntityIntoContext(reviewItem);
         }
 
         /// <summary>

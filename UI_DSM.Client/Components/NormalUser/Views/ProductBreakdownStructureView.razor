@@ -63,6 +63,14 @@ else
 					}
 				</Template>
 			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(ProductRowViewModel.CostValue)" Title="Cost">
+				<Template Context="data">
+					@if (data is ProductRowViewModel product)
+					{
+						<p>@product.CostValue</p>
+					}
+				</Template>
+			</RadzenDataGridColumn>
 		</Columns>
 	</RadzenDataGrid>
 }

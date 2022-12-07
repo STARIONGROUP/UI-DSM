@@ -17,6 +17,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
+    using CDP4Common.SiteDirectoryData;
+    using CDP4Common.Types;
 
     using Feather.Blazor.Icons;
 
@@ -64,29 +66,119 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         {
             try
             {
+                var parameterType = new EnumerationParameterType()
+                {
+                    Iid = Guid.NewGuid(),
+                    Name = "review external content",
+                    AllowMultiSelect = true,
+                    ValueDefinition = 
+                    {
+                        new EnumerationValueDefinition()
+                        {
+                            Iid = Guid.NewGuid(),
+                            Name = "space debris", 
+                        },
+                        new EnumerationValueDefinition()
+                        {
+                            Iid = Guid.NewGuid(),
+                            Name = "aiv",
+                        }
+                    }
+                };
+
                 var elementDefinition = new ElementDefinition()
                 {
                     Iid = Guid.NewGuid(),
                     HyperLink =
-                {
-                    new HyperLink()
                     {
-                        Iid = Guid.NewGuid(),
-                        Content = "A first content",
-                        Uri = "https://google.com"
-                    },
-                    new HyperLink()
+                        new HyperLink()
+                        {
+                            Iid = Guid.NewGuid(),
+                            Content = "A first content",
+                            Uri = "https://google.com"
+                        },
+                        new HyperLink()
+                        {
+                            Iid = Guid.NewGuid(),
+                            Content = "A second content",
+                            Uri = "https://google.be"
+                        }
+                    }, 
+                    Parameter =
                     {
-                        Iid = Guid.NewGuid(),
-                        Content = "A second content",
-                        Uri = "https://google.be"
+                        new Parameter()
+                        {
+                            Iid = Guid.NewGuid(),
+                            ParameterType = parameterType,
+                            ValueSet =
+                            {
+                                new ParameterValueSet()
+                                {
+                                    ActualValue = new ValueArray<string>(new List<string>(){"aiv"})
+                                }
+                            }
+                        }
                     }
-                }
                 };
 
                 var otherElement = new ElementDefinition()
                 {
-                    Iid = Guid.NewGuid()
+                    Iid = Guid.NewGuid(),
+                    HyperLink = 
+                    {
+                        new HyperLink()
+                        {
+                            Iid = Guid.NewGuid(),
+                            Content = "A third content",
+                            Uri = "https://google.nl"
+                        }
+                    }
+                };
+
+                var requirement = new Requirement()
+                {
+                    Iid = Guid.NewGuid(),
+                    HyperLink = 
+                    {
+                        new HyperLink()
+                        {
+                            Iid = Guid.NewGuid(),
+                            Content = "A third content",
+                            Uri = "https://google.nl"
+                        }
+                    }, 
+                    ParameterValue = 
+                    { 
+                        new SimpleParameterValue()
+                        {
+                            Iid = Guid.NewGuid(),
+                            ParameterType = parameterType,
+                            Value = new ValueArray<string>(new List<string>{"aiv"})
+                        }
+                    }
+                };
+
+                var requirement2 = new Requirement()
+                {
+                    Iid = Guid.NewGuid(),
+                    HyperLink =
+                    {
+                        new HyperLink()
+                        {
+                            Iid = Guid.NewGuid(),
+                            Content = "Another content",
+                            Uri = "https://google.fr"
+                        }
+                    },
+                    ParameterValue =
+                    {
+                        new SimpleParameterValue()
+                        {
+                            Iid = Guid.NewGuid(),
+                            ParameterType = parameterType,
+                            Value = new ValueArray<string>(new List<string>{"space debris"})
+                        }
+                    }
                 };
 
                 var projectId = Guid.NewGuid();
@@ -105,13 +197,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 var renderer = this.context.RenderComponent<DocumentBased>();
 
-                await renderer.Instance.InitializeViewModel(new List<Thing> { elementDefinition, otherElement }, projectId, reviewId);
+                await renderer.Instance.InitializeViewModel(new List<Thing> { elementDefinition, otherElement, requirement, requirement2 }, projectId, reviewId, 
+                    new List<string>{"aiv"}, new List<string>());
 
                 Assert.Multiple(() =>
                 {
                     Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
                     Assert.That(renderer.FindComponents<FeatherCheckCircle>(), Has.Count.EqualTo(1));
-                    Assert.That(renderer.FindComponents<HyperLinkCard>(), Has.Count.EqualTo(2));
+                    Assert.That(renderer.FindComponents<HyperLinkCard>(), Has.Count.EqualTo(3));
                 });
 
                 var hyperlink = renderer.FindComponents<HyperLinkCard>()[0];

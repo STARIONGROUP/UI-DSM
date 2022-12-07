@@ -17,24 +17,19 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using Blazor.Diagrams.Core.Models;
     using Blazor.Diagrams.Core.Models.Base;
     using Bunit;
-    using Castle.Components.DictionaryAdapter;
+
     using CDP4Common.DTO;
     using CDP4Common.EngineeringModelData;
-    using CDP4Common.Types;
+
     using CDP4Dal;
-    using DevExpress.Blazor.Popup.Internal;
-    using Feather.Blazor.Icons;
-    using Microsoft.AspNetCore.Components.Web;
+
     using Microsoft.Extensions.DependencyInjection;
    
     using Moq;
    
     using NUnit.Framework;
-    using Radzen.Blazor;
-    using System.Collections.Concurrent;
+
     using UI_DSM.Client.Components.NormalUser.Views;
-    using UI_DSM.Client.Components.Widgets;
-    using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
@@ -212,7 +207,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 var reviewItem = new ReviewItem(Guid.NewGuid());
 
-                renderer.Instance.InitializeViewModel(pocos, projectId, reviewId).RunSynchronously();
+                this.renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, new List<string>(), new List<string>()).RunSynchronously();
             }
             catch
             {

@@ -43,6 +43,15 @@ namespace UI_DSM.Serializer.Json
             writer.WritePropertyName("@type");
             writer.WriteStringValue("ReviewObjectiveDto");
 
+            writer.WriteStartArray("additionnalColumnsVisibleAtStart");
+
+            foreach (var item in dto.AdditionnalColumnsVisibleAtStart)
+            {
+                writer.WriteStringValue(item);
+            }
+
+            writer.WriteEndArray();
+
             writer.WritePropertyName("author");
             writer.WriteStringValue(dto.Author);
 

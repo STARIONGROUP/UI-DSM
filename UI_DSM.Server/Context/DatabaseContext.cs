@@ -221,9 +221,11 @@ namespace UI_DSM.Server.Context
                 .HasForeignKey("EntityContainerId")
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<AnnotatableItem>().HasMany(x => x.Annotations);
+            builder.Entity<Annotation>().HasMany(a => a.AnnotatableItems)
+                .WithMany(x => x.Annotations);
 
-            builder.Entity<Annotation>().HasMany(a => a.AnnotatableItems);
+            builder.Entity<AnnotatableItem>().HasMany(a => a.Annotations)
+                .WithMany(x => x.AnnotatableItems);
 
             builder.Entity<Comment>().HasMany(x => x.Replies)
                 .WithOne(reply => (Comment)reply.EntityContainer)

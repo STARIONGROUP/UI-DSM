@@ -19,6 +19,10 @@
 			{
 				<HyperLinkCard Row="row" OnClick="@this.HandleOnClick" />
 			}
+			@if (!this.ViewModel.Rows.Any())
+			{
+				<p>No available documents</p>
+			}
 		</div>
 	</div>
 </LoadingComponent>

@@ -13,20 +13,22 @@
 @page "/login"
 @layout CleanLayout
 
-
 <PageTitle>Login | UI-DSM</PageTitle>
 
 <AuthorizeView>
-  <NotAuthorized>
-    <div class="login-page">
-      <div class="login-page__container">
-        <div class="login-page__right">
-          <header>
-            <h1 class="h2">Hello,<br /> login to get started 🚀</h1>
-          </header>
-          <Login />
-        </div>
-      </div>
-    </div>
-  </NotAuthorized>
+	<NotAuthorized>
+		<div class="login-page">
+			<div class="login-page__container">
+				<div class="login-page__right">
+					<header>
+						<h1 class="h2">Hello,<br/> login to get started 🚀</h1>
+					</header>
+					<Login/>
+				</div>
+			</div>
+			<div class="footer">
+				<p>Web app Version @Version.ToString()</p>
+			</div>
+		</div>
+	</NotAuthorized>
 </AuthorizeView>

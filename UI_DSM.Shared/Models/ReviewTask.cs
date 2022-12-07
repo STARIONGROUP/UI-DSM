@@ -57,6 +57,7 @@ namespace UI_DSM.Shared.Models
             this.OptionalView = toCopy.OptionalView;
             this.AdditionalView = toCopy.AdditionalView;
             this.HasPrimaryView = toCopy.HasPrimaryView;
+            this.Prefilters = toCopy.Prefilters;
         }
 
         /// <summary>
@@ -123,6 +124,11 @@ namespace UI_DSM.Shared.Models
         public List<Participant> IsAssignedTo { get; set; } = new();
 
         /// <summary>
+        ///     A collection of <see cref="string" /> for prefiltering the data set
+        /// </summary>
+        public List<string> Prefilters { get; set; }
+
+        /// <summary>
         ///     Instantiate a <see cref="EntityDto" /> from a <see cref="ReviewTask" />
         /// </summary>
         /// <returns>A new <see cref="EntityDto" /></returns>
@@ -141,6 +147,7 @@ namespace UI_DSM.Shared.Models
                 MainView = this.MainView,
                 OptionalView = this.OptionalView,
                 IsAssignedTo = new List<Guid>(this.IsAssignedTo.Select(x => x.Id))
+                Prefilters = this.Prefilters ?? new List<string>()
             };
         }
 
@@ -167,6 +174,7 @@ namespace UI_DSM.Shared.Models
             this.MainView = reviewTaskDto.MainView;
             this.OptionalView = reviewTaskDto.OptionalView;
             this.IsAssignedTo.ResolveList(reviewTaskDto.IsAssignedTo, resolvedEntity);
+            this.Prefilters = reviewTaskDto.Prefilters;
         }
 
         /// <summary>
@@ -176,5 +184,6 @@ namespace UI_DSM.Shared.Models
         {
             this.IsAssignedTo = new List<Participant>();
         }
+            this.Prefilters = new List<string>();
     }
 }

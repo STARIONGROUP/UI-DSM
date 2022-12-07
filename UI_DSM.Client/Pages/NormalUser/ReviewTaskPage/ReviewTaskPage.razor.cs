@@ -189,7 +189,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
                 if (baseView is not IReusableView reusableView || !await reusableView.CopyComponents(this.ViewModel.CurrentBaseViewInstance))
                 {
-                    await baseView.InitializeViewModel(this.ViewModel.Things, projectId, reviewId);
+                    await baseView.InitializeViewModel(this.ViewModel.Things, projectId, reviewId, this.ViewModel.GetPrefilters(), this.ViewModel.ReviewObjective.AdditionnalColumnsVisibleAtStart);
                     baseView.TrySetSelectedItem(this.SelectedItem);
                 }
 
@@ -262,7 +262,9 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
                 if (this.ViewModel.CurrentBaseViewInstance != null)
                 {
-                    await this.ViewModel.CurrentBaseViewInstance.InitializeViewModel(this.ViewModel.Things, projectId, reviewId);
+                    await this.ViewModel.CurrentBaseViewInstance.InitializeViewModel(this.ViewModel.Things, projectId, reviewId, this.ViewModel.GetPrefilters(),
+                        this.ViewModel.ReviewObjective.AdditionnalColumnsVisibleAtStart); 
+
                     this.ViewModel.CurrentBaseViewInstance.TrySetSelectedItem(this.SelectedItem);
                 }
 

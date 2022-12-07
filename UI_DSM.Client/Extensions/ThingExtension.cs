@@ -86,6 +86,57 @@ namespace UI_DSM.Client.Extensions
         }
 
         /// <summary>
+        ///     Verifies that an <see cref="ICategorizableThing" /> has valid Categories based on the prefilters
+        /// </summary>
+        /// <param name="categorizable">The <see cref="ICategorizableThing" /></param>
+        /// <param name="prefilters">The collection of prefilters</param>
+        /// <returns>True if is valid</returns>
+        public static bool IsValidForPrefilter(this ICategorizableThing categorizable, List<string> prefilters)
+        {
+            return !prefilters.Any() || categorizable.IsCategorizedBy(prefilters);
+        }
+
+        /// <summary>
+        ///     Verifies that an <see cref="ElementDefinition" /> has valid Review External Content parameter value based on the prefilters
+        /// </summary>
+        /// <param name="elementDefinition">The <see cref="ElementDefinition" /></param>
+        /// <param name="prefilters">The collection of prefilters</param>
+        /// <returns>True if is valid</returns>
+        public static bool HasValidReviewExternalContent(this ElementDefinition elementDefinition, List<string> prefilters)
+        {
+            var parameter = elementDefinition.Parameter
+                .FirstOrDefault(x => string.Equals(x.ParameterType.Name, "review external content", StringComparison.InvariantCultureIgnoreCase));
+
+            if (parameter == null)
+            {
+                return false;
+            }
+
+            var values = parameter.QueryParameterBaseValueSet(null, null);
+            return values.ActualValue.Any(x => prefilters.Any(prefilter => prefilter == x));
+        }
+
+        /// <summary>
+        ///     Verifies that an <see cref="Requirement" /> has valid Review External Content parameter value based on the prefilters
+        /// </summary>
+        /// <param name="requirement">The <see cref="Requirement" /></param>
+        /// <param name="prefilters">The collection of prefilters</param>
+        /// <returns>True if is valid</returns>
+        public static bool HasValidReviewExternalContent(this Requirement requirement, List<string> prefilters)
+        {
+            var parameter = requirement.ParameterValue
+                .FirstOrDefault(x => string.Equals(x.ParameterType.Name, "review external content", StringComparison.InvariantCultureIgnoreCase));
+
+            if (parameter == null)
+            {
+                return false;
+            }
+
+            var values = parameter.Value;
+            return values.Any(x => prefilters.Any(prefilter => prefilter == x));
+        }
+
+        /// <summary>
         ///     Gets all <see cref="ParametricConstraint" /> contained into a <see cref="Requirement" />
         /// </summary>
         /// <param name="thing">The <see cref="Requirement" /></param>
@@ -513,7 +564,8 @@ namespace UI_DSM.Client.Extensions
         private static bool IsCategorizedBy(this ICategorizableThing thing, IReadOnlyCollection<string> categories)
         {
             return thing.GetAllCategories().Any(x => !x.IsDeprecated &&
-                                                     categories.Any(cat => string.Equals(x.Name, cat, StringComparison.InvariantCultureIgnoreCase)));
+                                                     categories.Any(cat => string.Equals(x.Name, cat, StringComparison.InvariantCultureIgnoreCase)
+                                                     || string.Equals(x.ShortName, cat, StringComparison.InvariantCultureIgnoreCase)));
         }
 
         /// <summary>

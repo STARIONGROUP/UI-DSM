@@ -310,6 +310,15 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         }
 
         /// <summary>
+        ///     Gets the prefilters collection for the current view
+        /// </summary>
+        /// <returns>A collection of prefilters</returns>
+        public List<string> GetPrefilters()
+        {
+            return this.CurrentView == this.ReviewTask.MainView ? this.ReviewTask.Prefilters : new List<string>();
+        }
+
+        /// <summary>
         ///     Updates the current view
         /// </summary>
         /// <param name="newView">The new view</param>

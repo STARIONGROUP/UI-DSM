@@ -1,6 +1,7 @@
 [
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 1",
@@ -68,6 +69,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 2",
@@ -82,7 +84,6 @@
       "1ab57bf5-74ea-4601-a0ce-42b6de38acb2"
     ],
     "relatedViews": [
-      "REQUIREMENTTRACEABILITYTOPRODUCTVIEW",
       "PRODUCTBREAKDOWNSTRUCTUREVIEW"
     ],
     "reviewCategories": [],
@@ -136,6 +137,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 3",
@@ -211,7 +213,7 @@
     "title": null,
     "description": "Check requirements verification.",
     "taskNumber": 4,
-    "mainView": "REQUIREMENTTRACEABILITYTOPRODUCTVIEW",
+    "mainView": "REQUIREMENTVERIFICATIONCONTROLVIEW",
     "optionalView": "NONE",
     "additionalView": "NONE",
     "hasPrimaryView": false,
@@ -238,6 +240,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 4",
@@ -303,6 +306,9 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [
+      "cost"
+    ],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 5",
@@ -339,6 +345,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 6",
@@ -440,6 +447,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 7",
@@ -451,7 +459,11 @@
     "reviewTasks": [
       "e8b382b8-cc44-4e11-bec2-18f78df91dc3"
     ],
-    "relatedViews": [],
+    "relatedViews": [
+      "REQUIREMENTVERIFICATIONCONTROLVIEW",
+      "FUNCTIONALBREAKDOWNSTRUCTUREVIEW",
+      "PRODUCTBREAKDOWNSTRUCTUREVIEW"
+    ],
     "reviewCategories": [],
     "annotations": [],
     "id": "a7858cf8-abd0-43ed-be42-3662a2ee065c"
@@ -473,6 +485,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 8",
@@ -524,6 +537,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 9",
@@ -557,6 +571,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 1",
@@ -672,6 +687,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 2",
@@ -773,7 +789,26 @@
     "id": "0954067f-24e5-4b23-bf5b-99945499d512"
   },
   {
+    "@type": "ReviewTaskDto",
+    "title": null,
+    "description": "Review available/linked documentation.",
+    "taskNumber": 6,
+    "mainView": "DOCUMENTBASED",
+    "optionalView": "NONE",
+    "additionalView": "NONE",
+    "hasPrimaryView": false,
+    "status": "OPEN",
+    "createdOn": "0001-01-01T00:00:00",
+    "author": "00000000-0000-0000-0000-000000000000",
+    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
+    "prefilters": [
+      "design_development"
+    ],
+    "id": "88e143db-5f2e-4133-9ab7-660b1950041e"
+  },
+  {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 3",
@@ -815,8 +850,8 @@
     "description": "Check system design.",
     "taskNumber": 2,
     "mainView": "FUNCTIONALBREAKDOWNSTRUCTUREVIEW",
-    "optionalView": "NONE",
-    "additionalView": "NONE",
+    "optionalView": "FUNCTIONALTRACEABILITYTOPRODUCTVIEW",
+    "additionalView": "PRODUCTBREAKDOWNSTRUCTUREVIEW",
     "hasPrimaryView": true,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
@@ -841,6 +876,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 4",
@@ -876,7 +912,7 @@
   {
     "@type": "ReviewTaskDto",
     "title": null,
-    "description": "Check requirement verification/",
+    "description": "Check requirement verification.",
     "taskNumber": 2,
     "mainView": "REQUIREMENTVERIFICATIONCONTROLVIEW",
     "optionalView": "NONE",
@@ -890,6 +926,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 5",
@@ -901,7 +938,11 @@
     "reviewTasks": [
       "b4896fc5-c851-4676-9f86-7f5074abbc62"
     ],
-    "relatedViews": [],
+    "relatedViews": [
+      "REQUIREMENTVERIFICATIONCONTROLVIEW",
+      "FUNCTIONALBREAKDOWNSTRUCTUREVIEW",
+      "PRODUCTBREAKDOWNSTRUCTUREVIEW"
+    ],
     "reviewCategories": [],
     "annotations": [],
     "id": "5b49f3e1-bbd3-4483-a608-2f3fe46dcd85"
@@ -923,6 +964,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 6",
@@ -988,6 +1030,9 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [
+      "cost"
+    ],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 7",
@@ -1024,6 +1069,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 8",
@@ -1125,6 +1171,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 9",
@@ -1161,6 +1208,7 @@
   },
   {
     "@type": "ReviewObjectiveDto",
+    "additionnalColumnsVisibleAtStart": [],
     "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 10",

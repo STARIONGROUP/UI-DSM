@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IFunctionalTraceabilityToProductViewViewModel.cs" company="RHEA System S.A.">
+// <copyright file="LoginPage.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,12 +11,18 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
+namespace UI_DSM.Client.Pages.LoginPage
 {
+    using System.Reflection;
+
     /// <summary>
-    ///     Interface definition for <see cref="FunctionalTraceabilityToProductViewViewModel" />
+    ///     The page to login
     /// </summary>
-    public interface IFunctionalTraceabilityToProductViewViewModel : IHaveTechnologyViewViewModel
+    public partial class LoginPage
     {
+        /// <summary>
+        ///     The current <see cref="Version" />
+        /// </summary>
+        private static Version Version => Assembly.GetExecutingAssembly().GetName().Version;
     }
 }

@@ -82,6 +82,15 @@ namespace UI_DSM.Serializer.Json
 
             writer.WriteEndArray();
 
+            writer.WriteStartArray("prefilters");
+
+            foreach (var item in dto.Prefilters)
+            {
+                writer.WriteStringValue(item);
+            }
+
+            writer.WriteEndArray();
+
             writer.WritePropertyName("id");
             writer.WriteStringValue(dto.Id);
 

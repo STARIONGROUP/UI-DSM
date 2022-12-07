@@ -34,7 +34,7 @@ namespace UI_DSM.Client.Pages.Administration
         public bool IsLoading { get; set; } = true;
 
         /// <summary>
-        /// The <see cref="IAboutService"/>
+        ///     The <see cref="IAboutService" />
         /// </summary>
         [Inject]
         public IAboutService AboutService { get; set; }

@@ -46,10 +46,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="things">A collection of <see cref="Thing" /></param>
         /// <param name="projectId">The <see cref="Project" /> id</param>
         /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="prefilters">A collection of prefilters</param>
+        /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
+        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
         {
-            await base.InitializeProperties(things, projectId, reviewId);
+            await base.InitializeProperties(things, projectId, reviewId, prefilters, additionnalColumnsVisibleAtStart);
 
             var topElement = this.Things.OfType<Iteration>()
                 .SingleOrDefault()?.TopElement;
@@ -103,6 +105,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                                      row.Thing.GetAppliedCategories().Any(thingCat => thingCat.Iid == cat.DefinedThing.Iid)));
 
                 row.IsVisible &= !row.HasOptionExcluded(selectedOption);
+
+                if (row is ProductRowViewModel product)
+                {
+                    product.UpdateCostValue(selectedOption);
+                }
             }
         }
     }
