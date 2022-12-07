@@ -265,3 +265,16 @@ div.invisible {
   display: grid;
   gap: var(--spacing-4);
 }
+
+.column-chooser__panel {
+  display: grid;
+}
+
+.column-chooser__panel label {
+display: grid;
+padding: var(--spacing-2);
+grid-template-columns: auto 1fr;
+gap: var(--spacing-2);
+border-bottom: 1px solid var(--colors-gray-100);
+}
+

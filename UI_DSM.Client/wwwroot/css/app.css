@@ -96,3 +96,15 @@ a, .btn-link {
     align-items: center;
     background-color: #0071c1
 }
+
+
+.column-chooser__panel {
+    display: grid;
+}
+
+.column-chooser__panel label {
+display: grid;
+padding: var(--spacing-2);
+grid-template-columns: auto 1fr;
+gap: var(--spacing-2);
+}

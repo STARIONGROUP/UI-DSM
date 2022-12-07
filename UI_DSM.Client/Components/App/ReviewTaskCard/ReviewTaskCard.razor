@@ -17,6 +17,11 @@
 	</button>
 
 	<div class="task-item__actions">
+		@if (this.ReviewTask.Status == StatusKind.Done)
+		{
+			<FeatherCheckCircle Size="24" Color="#1FAB77" StrokeWidth="2"/>
+		}
+
 		@if(this.ViewModel != null)
 		{
 			@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.AssignTask))
@@ -25,11 +30,6 @@
 					<FeatherPlusCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Assign to</span>
 				</AppButton>
 			}
-		}
-
-		@if (this.ReviewTask.Status == StatusKind.Done)
-		{
-			<FeatherCheckCircle Size="24" Color="#1FAB77" StrokeWidth="2"/>
 		}
 	</div>
 </div>
