@@ -101,6 +101,11 @@ namespace UI_DSM.Server.Tests.Modules
                 User = new UserEntity(Guid.NewGuid())
             };
 
+            List<Participant> participants = new()
+            {
+                participant,
+            };
+
             var reviewTasks = new List<ReviewTask>()
             {
                 new(Guid.NewGuid())
@@ -108,7 +113,7 @@ namespace UI_DSM.Server.Tests.Modules
                     Author = participant,
                     Description = "A review",
                     Title = "Title review",
-                    IsAssignedTo = participant,
+                    IsAssignedTo = participants,
                     TaskNumber = 1,
                     Status = StatusKind.Closed
                 },

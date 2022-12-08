@@ -19,6 +19,8 @@ namespace UI_DSM.Shared.Models
     using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Extensions;
+    using UI_DSM.Shared.Types;
 
     /// <summary>
     ///     A <see cref="ReviewTask" /> is a task to be fulfilled as part of the review objective.
@@ -31,6 +33,7 @@ namespace UI_DSM.Shared.Models
         /// </summary>
         public ReviewTask()
         {
+            this.InitializeCollections();
         }
 
         /// <summary>
@@ -39,6 +42,7 @@ namespace UI_DSM.Shared.Models
         /// <param name="id">The <see cref="Guid" /> of the <see cref="ReviewTask" /></param>
         public ReviewTask(Guid id) : base(id)
         {
+            this.InitializeCollections();
         }
 
         /// <summary>
@@ -113,10 +117,10 @@ namespace UI_DSM.Shared.Models
         public Participant Author { get; set; }
 
         /// <summary>
-        ///     The <see cref="Participant" /> that have to complete this <see cref="ReviewTask" />
+        ///     A collection of <see cref="Participant" />s that have to complete this <see cref="ReviewTask" />
         /// </summary>
         [DeepLevel(0)]
-        public Participant IsAssignedTo { get; set; }
+        public List<Participant> IsAssignedTo { get; set; } = new();
 
         /// <summary>
         ///     Instantiate a <see cref="EntityDto" /> from a <see cref="ReviewTask" />
@@ -129,14 +133,14 @@ namespace UI_DSM.Shared.Models
                 Author = this.Author?.Id ?? Guid.Empty,
                 CreatedOn = this.CreatedOn,
                 Description = this.Description,
-                IsAssignedTo = this.IsAssignedTo?.Id ?? Guid.Empty,
                 Status = this.Status,
                 TaskNumber = this.TaskNumber,
                 Title = this.Title,
                 AdditionalView = this.AdditionalView,
                 HasPrimaryView = this.HasPrimaryView,
                 MainView = this.MainView,
-                OptionalView = this.OptionalView
+                OptionalView = this.OptionalView,
+                IsAssignedTo = new List<Guid>(this.IsAssignedTo.Select(x => x.Id))
             };
         }
 
@@ -153,7 +157,6 @@ namespace UI_DSM.Shared.Models
             }
 
             this.Author = this.GetEntity<Participant>(reviewTaskDto.Author, resolvedEntity);
-            this.IsAssignedTo = this.GetEntity<Participant>(reviewTaskDto.IsAssignedTo, resolvedEntity);
             this.Title = reviewTaskDto.Title;
             this.Description = reviewTaskDto.Description;
             this.Status = reviewTaskDto.Status;
@@ -163,6 +166,15 @@ namespace UI_DSM.Shared.Models
             this.HasPrimaryView = reviewTaskDto.HasPrimaryView;
             this.MainView = reviewTaskDto.MainView;
             this.OptionalView = reviewTaskDto.OptionalView;
+            this.IsAssignedTo.ResolveList(reviewTaskDto.IsAssignedTo, resolvedEntity);
+        }
+
+        /// <summary>
+        ///     Initializes all collections for this <see cref="Entity" />
+        /// </summary>
+        private void InitializeCollections()
+        {
+            this.IsAssignedTo = new List<Participant>();
         }
     }
 }

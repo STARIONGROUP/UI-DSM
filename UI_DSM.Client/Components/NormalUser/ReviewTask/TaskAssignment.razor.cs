@@ -33,7 +33,7 @@ namespace UI_DSM.Client.Components.NormalUser.ReviewTask
         /// <summary>
         ///     The <see cref="Participant" /> of the project
         /// </summary>
-        public Participant Participant { get; set; }
+        public Participant Participant { get; set; } = new Participant();
 
         /// <summary>
         ///     The <see cref="IReviewCreationViewModel" /> for the component

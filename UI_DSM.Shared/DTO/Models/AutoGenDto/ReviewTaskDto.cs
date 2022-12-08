@@ -30,6 +30,7 @@ namespace UI_DSM.Shared.DTO.Models
         /// </summary>
         public ReviewTaskDto()
         {
+            this.IsAssignedTo = new List<Guid>();
         }
 
         /// <summary>
@@ -38,6 +39,7 @@ namespace UI_DSM.Shared.DTO.Models
         /// <param name="id">The <see cref="Guid" /> of the represented <see cref="Entity" /></param>
         public ReviewTaskDto(Guid id) : base(id)
         {
+            this.IsAssignedTo = new List<Guid>();
         }
 
         /// <summary>
@@ -93,7 +95,7 @@ namespace UI_DSM.Shared.DTO.Models
         /// <summary>
         ///    Gets or sets the IsAssignedTo of the ReviewTask
         /// </summary>
-        public Guid IsAssignedTo { get; set; }
+        public List<Guid> IsAssignedTo { get; set; }
 
         /// <summary>
         ///    Instantiate a <see cref="Entity" /> from a <see cref="EntityDto" />

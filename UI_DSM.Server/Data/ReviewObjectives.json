@@ -10,16 +10,16 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "f2053f4a-72e8-4485-b0d0-130f3842f0ea",
-      "3119d088-be5b-4f1b-904a-2c4eb36a4ec9",
-      "77ee66de-f759-4b68-a1fc-43bde1b6bad3"
+      "c2c54ebc-2b4b-4cff-93fc-b8518455e4bb",
+      "c3bd5c1b-bd42-457f-b7ad-1f36504e983b",
+      "5bb316b9-be54-4876-a0b1-e2d33054967e"
     ],
     "relatedViews": [
       "PRODUCTBREAKDOWNSTRUCTUREVIEW"
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "e4a92f17-db5f-4bf8-a8f6-ffcfc635d0f6"
+    "id": "a8a4ad9a-7cd0-482c-834f-e060af5f85dd"
   },
   {
     "@type": "ReviewTaskDto",
@@ -33,8 +33,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "f2053f4a-72e8-4485-b0d0-130f3842f0ea"
+    "isAssignedTo": [],
+    "id": "c2c54ebc-2b4b-4cff-93fc-b8518455e4bb"
   },
   {
     "@type": "ReviewTaskDto",
@@ -48,8 +48,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "3119d088-be5b-4f1b-904a-2c4eb36a4ec9"
+    "isAssignedTo": [],
+    "id": "c3bd5c1b-bd42-457f-b7ad-1f36504e983b"
   },
   {
     "@type": "ReviewTaskDto",
@@ -63,8 +63,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "77ee66de-f759-4b68-a1fc-43bde1b6bad3"
+    "isAssignedTo": [],
+    "id": "5bb316b9-be54-4876-a0b1-e2d33054967e"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -77,9 +77,9 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "71196201-a37c-4eb4-8003-61a356bd21d2",
-      "3f5552c4-2002-41fc-90a1-b202958df829",
-      "745da30e-588b-491e-b3b9-45b0480e22f8"
+      "058cee0a-47bd-4a0c-897f-1f18993c1fd9",
+      "20601979-1994-4d86-a5ae-10bef45b914c",
+      "1ab57bf5-74ea-4601-a0ce-42b6de38acb2"
     ],
     "relatedViews": [
       "REQUIREMENTTRACEABILITYTOPRODUCTVIEW",
@@ -87,7 +87,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "4bb8e8f4-49de-4dfb-96c1-a16b87c0cf67"
+    "id": "073e30fa-e0ba-475a-bde3-05b097adb917"
   },
   {
     "@type": "ReviewTaskDto",
@@ -101,8 +101,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "71196201-a37c-4eb4-8003-61a356bd21d2"
+    "isAssignedTo": [],
+    "id": "058cee0a-47bd-4a0c-897f-1f18993c1fd9"
   },
   {
     "@type": "ReviewTaskDto",
@@ -116,8 +116,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "3f5552c4-2002-41fc-90a1-b202958df829"
+    "isAssignedTo": [],
+    "id": "20601979-1994-4d86-a5ae-10bef45b914c"
   },
   {
     "@type": "ReviewTaskDto",
@@ -131,8 +131,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "745da30e-588b-491e-b3b9-45b0480e22f8"
+    "isAssignedTo": [],
+    "id": "1ab57bf5-74ea-4601-a0ce-42b6de38acb2"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -145,11 +145,11 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "4bb1dd17-8b41-48c9-ac1e-a4fc843243b7",
-      "8ca9a7f0-4d96-490d-81aa-a99d08b8ec3c",
-      "fd270b3a-d729-4458-b1b1-7a1427c938c5",
-      "8e599f84-38a5-45f2-b1f6-aa1eb4686c14",
-      "af28f59e-cc13-44e8-b8bb-6b7965bc53a6"
+      "474be36e-eef8-4d12-9672-d2389bd35d6f",
+      "aedb0137-bdce-468d-83f9-2750301eaa9e",
+      "ad688ebe-00c4-4394-8607-6763ff4fccdc",
+      "ae874a9d-30e7-4e30-a8c8-f85f9a46d297",
+      "b0ce9c29-ad27-4452-8350-c49d2ef2f1e7"
     ],
     "relatedViews": [
       "REQUIREMENTBREAKDOWNSTRUCTUREVIEW",
@@ -159,7 +159,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "c44b2c05-b2f6-4acf-91c0-4396743562f3"
+    "id": "0c5ca265-10d0-439e-9884-d380174a6fc5"
   },
   {
     "@type": "ReviewTaskDto",
@@ -173,8 +173,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "4bb1dd17-8b41-48c9-ac1e-a4fc843243b7"
+    "isAssignedTo": [],
+    "id": "474be36e-eef8-4d12-9672-d2389bd35d6f"
   },
   {
     "@type": "ReviewTaskDto",
@@ -188,8 +188,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "8ca9a7f0-4d96-490d-81aa-a99d08b8ec3c"
+    "isAssignedTo": [],
+    "id": "aedb0137-bdce-468d-83f9-2750301eaa9e"
   },
   {
     "@type": "ReviewTaskDto",
@@ -203,8 +203,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "fd270b3a-d729-4458-b1b1-7a1427c938c5"
+    "isAssignedTo": [],
+    "id": "ad688ebe-00c4-4394-8607-6763ff4fccdc"
   },
   {
     "@type": "ReviewTaskDto",
@@ -218,8 +218,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "8e599f84-38a5-45f2-b1f6-aa1eb4686c14"
+    "isAssignedTo": [],
+    "id": "ae874a9d-30e7-4e30-a8c8-f85f9a46d297"
   },
   {
     "@type": "ReviewTaskDto",
@@ -233,8 +233,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "af28f59e-cc13-44e8-b8bb-6b7965bc53a6"
+    "isAssignedTo": [],
+    "id": "b0ce9c29-ad27-4452-8350-c49d2ef2f1e7"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -247,14 +247,14 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "f3a0a61f-293e-4148-a25d-4ff44ab67dcf",
-      "d60ada4f-5d3a-4e74-aa1f-c1e47bdfa64e",
-      "1384400b-474c-495d-b527-a34200170974"
+      "ab9a75bd-7a6c-4590-8e95-4cf4b2c41141",
+      "892dcc95-6348-4f73-b380-46267334005f",
+      "bb8389fb-b201-4f00-a4f7-c9ec092eafac"
     ],
     "relatedViews": [],
     "reviewCategories": [],
     "annotations": [],
-    "id": "b52dbc15-f3ae-4649-bdeb-f90517e15a20"
+    "id": "12cad173-b6a9-40ff-836b-c9b721b53420"
   },
   {
     "@type": "ReviewTaskDto",
@@ -268,8 +268,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "f3a0a61f-293e-4148-a25d-4ff44ab67dcf"
+    "isAssignedTo": [],
+    "id": "ab9a75bd-7a6c-4590-8e95-4cf4b2c41141"
   },
   {
     "@type": "ReviewTaskDto",
@@ -283,8 +283,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "d60ada4f-5d3a-4e74-aa1f-c1e47bdfa64e"
+    "isAssignedTo": [],
+    "id": "892dcc95-6348-4f73-b380-46267334005f"
   },
   {
     "@type": "ReviewTaskDto",
@@ -298,8 +298,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "1384400b-474c-495d-b527-a34200170974"
+    "isAssignedTo": [],
+    "id": "bb8389fb-b201-4f00-a4f7-c9ec092eafac"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -312,7 +312,7 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "734b9a7f-6f4d-491b-82eb-bc40a23dfb28"
+      "82d4b963-cd4d-4aff-a46e-b3f7f0042d5d"
     ],
     "relatedViews": [
       "PRODUCTBREAKDOWNSTRUCTUREVIEW",
@@ -320,7 +320,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "7c3287b1-1e8d-452d-b755-e0cce7b80c5b"
+    "id": "aa6ee219-840b-459c-9c70-07a245b1815f"
   },
   {
     "@type": "ReviewTaskDto",
@@ -334,8 +334,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "734b9a7f-6f4d-491b-82eb-bc40a23dfb28"
+    "isAssignedTo": [],
+    "id": "82d4b963-cd4d-4aff-a46e-b3f7f0042d5d"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -348,11 +348,11 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "54970c21-6f9c-4611-b833-6025feabf539",
-      "c03a75e3-536f-4aea-b37e-76ce666e43f7",
-      "f53b9b63-9263-4f5f-b469-5eaa99d5d010",
-      "8a8544f2-4c44-4a0a-bfb9-f55eaf154955",
-      "ae56cbcd-33c5-4d47-9799-81194d710314"
+      "cc14fc5c-da0a-4c0c-b6db-1a7b92be97eb",
+      "b575ad7b-6754-41ca-be23-aa1d986039ec",
+      "309c42cb-e36d-46d6-97e6-f14a7b68f328",
+      "4c383f6e-25ac-4acc-a5db-e447d2e43c82",
+      "d60a3d7a-4ece-4945-bc86-87a81afe0fbd"
     ],
     "relatedViews": [
       "FUNCTIONALBREAKDOWNSTRUCTUREVIEW",
@@ -361,7 +361,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "ddb75868-32fa-4922-a01a-a0ef6f8ba824"
+    "id": "e98bc349-6ad7-435a-bbc5-ecc6b6106bdd"
   },
   {
     "@type": "ReviewTaskDto",
@@ -375,8 +375,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "54970c21-6f9c-4611-b833-6025feabf539"
+    "isAssignedTo": [],
+    "id": "cc14fc5c-da0a-4c0c-b6db-1a7b92be97eb"
   },
   {
     "@type": "ReviewTaskDto",
@@ -390,8 +390,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "c03a75e3-536f-4aea-b37e-76ce666e43f7"
+    "isAssignedTo": [],
+    "id": "b575ad7b-6754-41ca-be23-aa1d986039ec"
   },
   {
     "@type": "ReviewTaskDto",
@@ -405,8 +405,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "f53b9b63-9263-4f5f-b469-5eaa99d5d010"
+    "isAssignedTo": [],
+    "id": "309c42cb-e36d-46d6-97e6-f14a7b68f328"
   },
   {
     "@type": "ReviewTaskDto",
@@ -420,8 +420,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "8a8544f2-4c44-4a0a-bfb9-f55eaf154955"
+    "isAssignedTo": [],
+    "id": "4c383f6e-25ac-4acc-a5db-e447d2e43c82"
   },
   {
     "@type": "ReviewTaskDto",
@@ -435,8 +435,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "ae56cbcd-33c5-4d47-9799-81194d710314"
+    "isAssignedTo": [],
+    "id": "d60a3d7a-4ece-4945-bc86-87a81afe0fbd"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -449,12 +449,12 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "8a6235a4-8e19-45a4-9fde-d81cb0b021df"
+      "e8b382b8-cc44-4e11-bec2-18f78df91dc3"
     ],
     "relatedViews": [],
     "reviewCategories": [],
     "annotations": [],
-    "id": "d2037e4e-631c-4d1f-87b5-0a786ad150b0"
+    "id": "a7858cf8-abd0-43ed-be42-3662a2ee065c"
   },
   {
     "@type": "ReviewTaskDto",
@@ -468,8 +468,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "8a6235a4-8e19-45a4-9fde-d81cb0b021df"
+    "isAssignedTo": [],
+    "id": "e8b382b8-cc44-4e11-bec2-18f78df91dc3"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -482,15 +482,15 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "a0407f30-3171-49e2-8a08-600a60cf3e61",
-      "9cb5257c-018f-43fa-9dac-edf4858c93c5"
+      "be1683e0-113e-45e9-88c5-9c9b4355feb7",
+      "8dac05a3-8365-4df6-ab49-5d689737cbc2"
     ],
     "relatedViews": [
       "PRODUCTBREAKDOWNSTRUCTUREVIEW"
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "02eca6e3-54d5-4513-85f3-10e843158cca"
+    "id": "45e93d35-937a-4763-baec-d31aadbd4b9e"
   },
   {
     "@type": "ReviewTaskDto",
@@ -504,8 +504,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "a0407f30-3171-49e2-8a08-600a60cf3e61"
+    "isAssignedTo": [],
+    "id": "be1683e0-113e-45e9-88c5-9c9b4355feb7"
   },
   {
     "@type": "ReviewTaskDto",
@@ -519,8 +519,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "9cb5257c-018f-43fa-9dac-edf4858c93c5"
+    "isAssignedTo": [],
+    "id": "8dac05a3-8365-4df6-ab49-5d689737cbc2"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -533,12 +533,12 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "498bb9c1-595f-48b2-b43f-6decf2863d04"
+      "a3786d46-a680-4f4f-a9b1-0c1a2cdc2ed8"
     ],
     "relatedViews": [],
     "reviewCategories": [],
     "annotations": [],
-    "id": "04d9b62c-c06a-4419-808a-c4a18deacae2"
+    "id": "7cda7cc3-bbf0-4159-902e-78e0ec2ab348"
   },
   {
     "@type": "ReviewTaskDto",
@@ -552,8 +552,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "498bb9c1-595f-48b2-b43f-6decf2863d04"
+    "isAssignedTo": [],
+    "id": "a3786d46-a680-4f4f-a9b1-0c1a2cdc2ed8"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -566,19 +566,19 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "436b12b6-5fe6-4c78-b198-0bf4d5861f92",
-      "bb59d83d-4b7b-43ba-90fe-d0c23f3acd1a",
-      "5b8a0821-2e60-4f7e-903a-c586f78f8b39",
-      "0cc2c4fa-99e5-49ca-a247-37eccff23f99",
-      "70c8b443-8d4e-4689-a46d-87be18b1e82f",
-      "2a8167b6-6e2d-41d7-bbd9-b893c6cd34b1"
+      "ceef4f6c-2405-4cd1-820c-880d6904aa67",
+      "a4707c8e-71bd-430c-ac52-a7ca6bd3fee7",
+      "61cdb35a-ba9d-4a47-a7b5-300aa9871d2f",
+      "575f0f36-dcbe-4f03-8b75-afdd5f1b32c2",
+      "509b10aa-0604-4800-85b3-390bc13720c8",
+      "e0e5b00d-9ebc-46c1-9452-de442ca27a08"
     ],
     "relatedViews": [
       "PRODUCTBREAKDOWNSTRUCTUREVIEW"
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "ebe64389-23b1-4f65-acd0-be58545c984f"
+    "id": "cbd54a31-6850-4059-b40c-edd09209bf6a"
   },
   {
     "@type": "ReviewTaskDto",
@@ -592,8 +592,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "436b12b6-5fe6-4c78-b198-0bf4d5861f92"
+    "isAssignedTo": [],
+    "id": "ceef4f6c-2405-4cd1-820c-880d6904aa67"
   },
   {
     "@type": "ReviewTaskDto",
@@ -607,8 +607,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "bb59d83d-4b7b-43ba-90fe-d0c23f3acd1a"
+    "isAssignedTo": [],
+    "id": "a4707c8e-71bd-430c-ac52-a7ca6bd3fee7"
   },
   {
     "@type": "ReviewTaskDto",
@@ -622,8 +622,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "5b8a0821-2e60-4f7e-903a-c586f78f8b39"
+    "isAssignedTo": [],
+    "id": "61cdb35a-ba9d-4a47-a7b5-300aa9871d2f"
   },
   {
     "@type": "ReviewTaskDto",
@@ -637,8 +637,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "0cc2c4fa-99e5-49ca-a247-37eccff23f99"
+    "isAssignedTo": [],
+    "id": "575f0f36-dcbe-4f03-8b75-afdd5f1b32c2"
   },
   {
     "@type": "ReviewTaskDto",
@@ -652,8 +652,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "70c8b443-8d4e-4689-a46d-87be18b1e82f"
+    "isAssignedTo": [],
+    "id": "509b10aa-0604-4800-85b3-390bc13720c8"
   },
   {
     "@type": "ReviewTaskDto",
@@ -667,8 +667,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "2a8167b6-6e2d-41d7-bbd9-b893c6cd34b1"
+    "isAssignedTo": [],
+    "id": "e0e5b00d-9ebc-46c1-9452-de442ca27a08"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -681,11 +681,11 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "29e48976-0d9b-4529-9dc5-b4bdf1f1140d",
-      "3cb392f3-d7e4-42b7-916f-b07a3d09e87f",
-      "99467a90-cbac-4a2e-a7e8-ea02503e3bb3",
-      "45faf5bc-25b7-4a4b-813f-81f6e6bd815c",
-      "064e423a-60e7-40de-afa5-bfdfcd12a8b9"
+      "dd48fec6-faf6-413e-b1fd-a2744d7262a3",
+      "82ad2464-396e-4581-93e0-6bb108428858",
+      "fe16832a-c1c1-402b-94c9-d5d405f6658f",
+      "635ed538-5484-4f1f-bf2e-b4ad7572c287",
+      "0954067f-24e5-4b23-bf5b-99945499d512"
     ],
     "relatedViews": [
       "REQUIREMENTBREAKDOWNSTRUCTUREVIEW",
@@ -695,7 +695,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "9302c1bc-ce75-4418-a3d5-0deccc5877f4"
+    "id": "e753e9a3-97ce-46ff-97d2-787c946751a3"
   },
   {
     "@type": "ReviewTaskDto",
@@ -709,8 +709,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "29e48976-0d9b-4529-9dc5-b4bdf1f1140d"
+    "isAssignedTo": [],
+    "id": "dd48fec6-faf6-413e-b1fd-a2744d7262a3"
   },
   {
     "@type": "ReviewTaskDto",
@@ -724,8 +724,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "3cb392f3-d7e4-42b7-916f-b07a3d09e87f"
+    "isAssignedTo": [],
+    "id": "82ad2464-396e-4581-93e0-6bb108428858"
   },
   {
     "@type": "ReviewTaskDto",
@@ -739,8 +739,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "99467a90-cbac-4a2e-a7e8-ea02503e3bb3"
+    "isAssignedTo": [],
+    "id": "fe16832a-c1c1-402b-94c9-d5d405f6658f"
   },
   {
     "@type": "ReviewTaskDto",
@@ -754,8 +754,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "45faf5bc-25b7-4a4b-813f-81f6e6bd815c"
+    "isAssignedTo": [],
+    "id": "635ed538-5484-4f1f-bf2e-b4ad7572c287"
   },
   {
     "@type": "ReviewTaskDto",
@@ -769,8 +769,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "064e423a-60e7-40de-afa5-bfdfcd12a8b9"
+    "isAssignedTo": [],
+    "id": "0954067f-24e5-4b23-bf5b-99945499d512"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -783,16 +783,16 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "150b1b8c-8193-4fa6-a2ad-f472d1db9d2f",
-      "82b89e1a-a608-44a6-b2b5-559b88127eb7",
-      "5ac9c903-48d5-4fdf-a29e-3b2494de8462"
+      "ff2bd788-9119-4a84-a46d-3341bc269f64",
+      "a593b3ac-faea-4c0e-b539-ff12ca317c6d",
+      "bc5fbcda-43c6-4603-8060-b082d06eb867"
     ],
     "relatedViews": [
       "INTERFACEVIEW"
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "b457ed8c-c747-4f49-9a19-3667f555a9be"
+    "id": "3b725f71-2858-4fe3-9222-99e73dc3b67d"
   },
   {
     "@type": "ReviewTaskDto",
@@ -806,8 +806,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "150b1b8c-8193-4fa6-a2ad-f472d1db9d2f"
+    "isAssignedTo": [],
+    "id": "ff2bd788-9119-4a84-a46d-3341bc269f64"
   },
   {
     "@type": "ReviewTaskDto",
@@ -821,8 +821,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "82b89e1a-a608-44a6-b2b5-559b88127eb7"
+    "isAssignedTo": [],
+    "id": "a593b3ac-faea-4c0e-b539-ff12ca317c6d"
   },
   {
     "@type": "ReviewTaskDto",
@@ -836,8 +836,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "5ac9c903-48d5-4fdf-a29e-3b2494de8462"
+    "isAssignedTo": [],
+    "id": "bc5fbcda-43c6-4603-8060-b082d06eb867"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -850,13 +850,13 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "4a45973d-0dae-4fd1-88d4-de8ec8cffed7",
-      "f51f247a-f7b4-4127-8081-9007ad4ed074"
+      "83e73dcf-e152-4170-826b-55affdc12d52",
+      "de11a3c7-eb9f-4e41-9291-1549996524a4"
     ],
     "relatedViews": [],
     "reviewCategories": [],
     "annotations": [],
-    "id": "49c09c26-a0cb-4574-be6e-368d84106ab8"
+    "id": "7e1ae8f4-7ba7-4cb1-b4b6-f5246958c3d6"
   },
   {
     "@type": "ReviewTaskDto",
@@ -870,8 +870,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "4a45973d-0dae-4fd1-88d4-de8ec8cffed7"
+    "isAssignedTo": [],
+    "id": "83e73dcf-e152-4170-826b-55affdc12d52"
   },
   {
     "@type": "ReviewTaskDto",
@@ -885,8 +885,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "f51f247a-f7b4-4127-8081-9007ad4ed074"
+    "isAssignedTo": [],
+    "id": "de11a3c7-eb9f-4e41-9291-1549996524a4"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -899,12 +899,12 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "c74cc22b-b80f-44c1-b281-0d6cce1aee88"
+      "b4896fc5-c851-4676-9f86-7f5074abbc62"
     ],
     "relatedViews": [],
     "reviewCategories": [],
     "annotations": [],
-    "id": "12f108c5-8eae-483a-ac49-083a355b8599"
+    "id": "5b49f3e1-bbd3-4483-a608-2f3fe46dcd85"
   },
   {
     "@type": "ReviewTaskDto",
@@ -918,8 +918,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "c74cc22b-b80f-44c1-b281-0d6cce1aee88"
+    "isAssignedTo": [],
+    "id": "b4896fc5-c851-4676-9f86-7f5074abbc62"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -932,14 +932,14 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "2108e0f1-aaff-4452-850c-2a8f480b38cc",
-      "7302c0b5-08db-4f2f-8082-dc8b86074c86",
-      "6870df14-5073-4689-9b46-710a53ed05b5"
+      "49e6bc3f-ce91-4359-a3be-4f40d6fd83a8",
+      "e522561c-a64c-4c2f-be4c-218dcd18a0d3",
+      "504d4e1f-6080-4398-88b6-eaf1b84ada62"
     ],
     "relatedViews": [],
     "reviewCategories": [],
     "annotations": [],
-    "id": "9f51c987-871c-41b4-a8ee-57b39d534bde"
+    "id": "a4b253bd-1dd3-4dde-9a21-edefcd63e8d2"
   },
   {
     "@type": "ReviewTaskDto",
@@ -953,8 +953,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "2108e0f1-aaff-4452-850c-2a8f480b38cc"
+    "isAssignedTo": [],
+    "id": "49e6bc3f-ce91-4359-a3be-4f40d6fd83a8"
   },
   {
     "@type": "ReviewTaskDto",
@@ -968,8 +968,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "7302c0b5-08db-4f2f-8082-dc8b86074c86"
+    "isAssignedTo": [],
+    "id": "e522561c-a64c-4c2f-be4c-218dcd18a0d3"
   },
   {
     "@type": "ReviewTaskDto",
@@ -983,8 +983,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "6870df14-5073-4689-9b46-710a53ed05b5"
+    "isAssignedTo": [],
+    "id": "504d4e1f-6080-4398-88b6-eaf1b84ada62"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -997,7 +997,7 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "2462b288-39e0-4fd2-9437-07226ca59e1d"
+      "bac0cc4e-8101-4d13-9118-44bd8dee5597"
     ],
     "relatedViews": [
       "PRODUCTBREAKDOWNSTRUCTUREVIEW",
@@ -1005,7 +1005,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "2f00d77a-dd86-4df3-9f61-175d24ba000b"
+    "id": "301afa08-d548-426b-8f85-763607623fcf"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1019,8 +1019,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "2462b288-39e0-4fd2-9437-07226ca59e1d"
+    "isAssignedTo": [],
+    "id": "bac0cc4e-8101-4d13-9118-44bd8dee5597"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -1033,11 +1033,11 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "f38ac2e6-027d-4f22-9b9d-84cd85c7c018",
-      "b3e4ac3d-c6a1-4f75-abcc-cb361b5a82ce",
-      "19955060-5323-4315-b00c-636db2792643",
-      "d59f030b-c384-4caa-b6f3-ed2e62132a33",
-      "482b9f0b-9029-4256-81ce-b9c09c8a5538"
+      "14849dee-51f0-4b11-b1b8-1d65b782bbae",
+      "18694ada-e8b7-4476-9fc6-a7eea8944c11",
+      "13b09d4c-f8cc-4bdc-b8d1-839ba94dd8a6",
+      "d9eb805b-2849-4caa-8184-e29a55851151",
+      "5d1ee7fb-a44e-4c08-ad3d-3a7beae9d10c"
     ],
     "relatedViews": [
       "FUNCTIONALBREAKDOWNSTRUCTUREVIEW",
@@ -1046,7 +1046,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "9230a584-e89d-4404-a471-0900536ae862"
+    "id": "f67ec446-f5ed-4dae-af89-67cc9df24e3b"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1060,8 +1060,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "f38ac2e6-027d-4f22-9b9d-84cd85c7c018"
+    "isAssignedTo": [],
+    "id": "14849dee-51f0-4b11-b1b8-1d65b782bbae"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1075,8 +1075,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "b3e4ac3d-c6a1-4f75-abcc-cb361b5a82ce"
+    "isAssignedTo": [],
+    "id": "18694ada-e8b7-4476-9fc6-a7eea8944c11"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1090,8 +1090,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "19955060-5323-4315-b00c-636db2792643"
+    "isAssignedTo": [],
+    "id": "13b09d4c-f8cc-4bdc-b8d1-839ba94dd8a6"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1105,8 +1105,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "d59f030b-c384-4caa-b6f3-ed2e62132a33"
+    "isAssignedTo": [],
+    "id": "d9eb805b-2849-4caa-8184-e29a55851151"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1120,8 +1120,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "482b9f0b-9029-4256-81ce-b9c09c8a5538"
+    "isAssignedTo": [],
+    "id": "5d1ee7fb-a44e-4c08-ad3d-3a7beae9d10c"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -1134,7 +1134,7 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "9f0dd1d4-eabe-4163-95c5-26c58f3678a8"
+      "5a5cf7fe-ec4d-44f1-a5ec-d4c9658d1b98"
     ],
     "relatedViews": [
       "REQUIREMENTBREAKDOWNSTRUCTUREVIEW",
@@ -1142,7 +1142,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "4d16580c-0ab2-4fb4-98a2-24d4afa7be3c"
+    "id": "9d29ed62-5924-4024-9259-365e0573d21b"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1156,8 +1156,8 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "9f0dd1d4-eabe-4163-95c5-26c58f3678a8"
+    "isAssignedTo": [],
+    "id": "5a5cf7fe-ec4d-44f1-a5ec-d4c9658d1b98"
   },
   {
     "@type": "ReviewObjectiveDto",
@@ -1170,12 +1170,12 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "7331336a-a038-4f5e-ae90-dbd6e210e609"
+      "5928ab3e-dd17-4a0e-bd94-d47105f6e788"
     ],
     "relatedViews": [],
     "reviewCategories": [],
     "annotations": [],
-    "id": "da3ebeef-a37b-4bd2-92f4-4ee06e7524f8"
+    "id": "b396a9e2-d9b3-4025-adca-9d4c3a0b78e6"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1189,7 +1189,7 @@
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
     "author": "00000000-0000-0000-0000-000000000000",
-    "isAssignedTo": "00000000-0000-0000-0000-000000000000",
-    "id": "7331336a-a038-4f5e-ae90-dbd6e210e609"
+    "isAssignedTo": [],
+    "id": "5928ab3e-dd17-4a0e-bd94-d47105f6e788"
   }
 ]

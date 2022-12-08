@@ -58,6 +58,11 @@ namespace UI_DSM.Server.Tests.Managers
                 User = new UserEntity(Guid.NewGuid())
             };
 
+            List<Participant> participants = new List<Participant>()
+            {
+                participant
+            };
+
             var reviewTasks = new List<ReviewTask>()
             {
                 new(Guid.NewGuid())
@@ -67,7 +72,7 @@ namespace UI_DSM.Server.Tests.Managers
                     Description = "A review objective",
                     TaskNumber = 1,
                     Status = StatusKind.Closed,
-                    IsAssignedTo = participant,
+                    IsAssignedTo = participants,
                     Title = "Review objective 1"
                 },
                 new(Guid.NewGuid())
@@ -215,26 +220,36 @@ namespace UI_DSM.Server.Tests.Managers
         public async Task VerifyResolveProperties()
         {
             var participant = new Participant(Guid.NewGuid());
-            var assignedParticipant = new Participant(Guid.NewGuid());
-            this.participantManager.Setup(x => x.FindEntity(participant.Id)).ReturnsAsync(participant);
-            this.participantManager.Setup(x => x.FindEntity(assignedParticipant.Id)).ReturnsAsync(assignedParticipant);
+            var assignedParticipant = new Participant(Guid.NewGuid());  
+            List<Guid> participants = new()
+            {
+                participant.Id,
+                assignedParticipant.Id
+            };
+            List<Guid> assignedParticipants = new()
+            {
+                assignedParticipant.Id
+            };
 
-            var reviewObjective = new ReviewTask();
-            await this.manager.ResolveProperties(reviewObjective, new UserEntityDto());
-            Assert.That(reviewObjective.Author, Is.Null);
+            this.participantManager.Setup(x => x.FindEntity(participant.Id)).ReturnsAsync(participant);
+            this.participantManager.Setup(x => x.FindEntities(assignedParticipants)).ReturnsAsync(new List<Participant>() { assignedParticipant });
+
+            var reviewTask = new ReviewTask();
+            await this.manager.ResolveProperties(reviewTask, new UserEntityDto());
+            Assert.That(reviewTask.Author, Is.Null);
 
             var reviewDto = new ReviewTaskDto()
             {
                 Author = participant.Id,
-                IsAssignedTo = assignedParticipant.Id
+                IsAssignedTo = assignedParticipants
             };
 
-            await this.manager.ResolveProperties(reviewObjective, reviewDto);
+            await this.manager.ResolveProperties(reviewTask, reviewDto);
 
             Assert.Multiple(() =>
             {
-                Assert.That(reviewObjective.Author, Is.EqualTo(participant));
-                Assert.That(reviewObjective.IsAssignedTo, Is.EqualTo(assignedParticipant));
+                Assert.That(reviewTask.Author, Is.EqualTo(participant));
+                Assert.That(reviewTask.IsAssignedTo.Contains(assignedParticipant));
             });
         }
     }

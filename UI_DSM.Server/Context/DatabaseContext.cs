@@ -208,6 +208,14 @@ namespace UI_DSM.Server.Context
                 .HasForeignKey("EntityContainerId")
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<Participant>().HasMany(x => x.AssignedTasks)
+                .WithMany(x => x.IsAssignedTo);
+
+            builder.Entity<ReviewTask>().HasOne(x => x.Author);
+                
+            builder.Entity<ReviewTask>().HasMany(x => x.IsAssignedTo)
+                .WithMany(x => x.AssignedTasks);
+
             builder.Entity<ReviewObjective>().HasMany(x => x.ReviewTasks)
                 .WithOne(ro => (ReviewObjective)ro.EntityContainer)
                 .HasForeignKey("EntityContainerId")

@@ -273,8 +273,8 @@ namespace UI_DSM.Server.Tests.Managers
             foreach (var reviewReviewObjective in project.Reviews.SelectMany(x => x.ReviewObjectives))
             {
                 reviewReviewObjective.ReviewTasks.AddRange(CreateEntity<ReviewTask>(4));
-
-                reviewReviewObjective.ReviewTasks[0].IsAssignedTo = participant;
+                
+                reviewReviewObjective.ReviewTasks[0].IsAssignedTo.Add(participant);
             }
 
             project.Reviews[0].ReviewItems[0].Annotations.AddRange(CreateEntity<Comment>(8));

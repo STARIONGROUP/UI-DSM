@@ -307,7 +307,9 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
             var tasks = this.EntityDbSet
                 .Where(x => x.Id == reviewObjectiveId)
                 .SelectMany(x => x.ReviewTasks)
-                .Count(x => x.Status == StatusKind.Open && x.IsAssignedTo != null && x.IsAssignedTo.Id == participant.Id);
+                .Include(x => x.IsAssignedTo)
+                .AsEnumerable()
+                .Count(x => x.Status == StatusKind.Open && x.IsAssignedTo != null && x.IsAssignedTo.Any(p => p.Id == participant.Id));
 
             var comments = this.EntityDbSet
                 .Where(x => x.Id == reviewObjectiveId)
