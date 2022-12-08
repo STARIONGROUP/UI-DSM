@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace UI_DSM.Server.Migrations
 {
+    [ExcludeFromCodeCoverage]
     public partial class TaskAssignedToMultipleParticipants : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
