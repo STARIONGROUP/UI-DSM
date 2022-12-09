@@ -10,17 +10,15 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
-<EditForm Context="editFormContext" Model="@this.Participant" OnValidSubmit="@this.ViewModel.OnValidSubmit">
-	<DxFormLayout>
-		<DxFormLayoutItem Caption="Participants :" ColSpanMd="12">
-            <DxListBox Data="@this.ProjectParticipants"
-					   @bind-Values="@this.ViewModel.SelectedParticipants"
-					   ShowCheckboxes="true"
-					   TextFieldName="@nameof(Participant.ParticipantName)" 
-					   SelectionMode="ListBoxSelectionMode.Multiple" />
-		</DxFormLayoutItem>
-	</DxFormLayout>
-	<div class="modal-footer m-top-10px">
-		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Assign" SubmitFormOnClick="true" Enabled="@this.ViewModel.SelectedParticipants.Any()"/>
-	</div>
-</EditForm>
+<DxFormLayout>
+	<DxFormLayoutItem Caption="Participants :" ColSpanMd="12">
+           <DxListBox Data="@this.ProjectParticipants"
+				   @bind-Values="@this.ViewModel.SelectedParticipants"
+				   ShowCheckboxes="true"
+				   TextFieldName="@nameof(Participant.ParticipantName)" 
+				   SelectionMode="ListBoxSelectionMode.Multiple" />
+	</DxFormLayoutItem>
+</DxFormLayout>
+<div class="modal-footer m-top-10px">
+	<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Assign" Click="@this.ViewModel.OnValidSubmit" Enabled="@this.ViewModel.SelectedParticipants.Any()"/>
+</div>
