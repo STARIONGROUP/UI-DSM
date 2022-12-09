@@ -249,7 +249,7 @@ namespace UI_DSM.Server.Tests.Managers
             Assert.Multiple(() =>
             {
                 Assert.That(reviewTask.Author, Is.EqualTo(participant));
-                Assert.That(reviewTask.IsAssignedTo.Contains(assignedParticipant));
+                Assert.That(reviewTask.IsAssignedTo, Does.Contain(assignedParticipant));
             });
         }
     }
