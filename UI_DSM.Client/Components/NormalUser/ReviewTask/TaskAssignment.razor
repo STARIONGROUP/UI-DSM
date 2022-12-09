@@ -9,13 +9,14 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Shared.Models
 
 <DxFormLayout>
 	<DxFormLayoutItem Caption="Participants :" ColSpanMd="12">
            <DxListBox Data="@this.ProjectParticipants"
 				   @bind-Values="@this.ViewModel.SelectedParticipants"
-				   ShowCheckboxes="true"
-				   TextFieldName="@nameof(Participant.ParticipantName)" 
+				   TextFieldName="@nameof(Participant.ParticipantName)"
+				   ShowCheckboxes="true" 
 				   SelectionMode="ListBoxSelectionMode.Multiple" />
 	</DxFormLayoutItem>
 </DxFormLayout>
