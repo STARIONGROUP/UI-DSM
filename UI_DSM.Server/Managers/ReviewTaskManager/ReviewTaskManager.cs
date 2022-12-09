@@ -54,15 +54,15 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
         /// <returns>A <see cref="Task" /> with the result of the update</returns>
         public override async Task<EntityOperationResult<ReviewTask>> UpdateEntity(ReviewTask entity)
         {
-            var selectedParticipantsIds = entity.IsAssignedTo.Select(x => x.Id).ToList();
+            var selectedParticipants = entity.IsAssignedTo.ToList();
             if (!this.ValidateCurrentEntity(entity, out var entityOperationResult))
             {
                 return entityOperationResult;
             }
             var reviewTask = (await this.GetEntity(entity.Id)).OfType<ReviewTask>().First();
             reviewTask.Status = entity.Status;
-            var deletedParticipants = reviewTask.IsAssignedTo.Where(x => selectedParticipantsIds.All(p => p != x.Id));
-            var addedParticipants = entity.IsAssignedTo.Where(x => reviewTask.IsAssignedTo.All(p => p.Id != x.Id));
+            var deletedParticipants = reviewTask.IsAssignedTo.Where(x => selectedParticipants.All(p => p.Id != x.Id));
+            var addedParticipants = selectedParticipants.Where(x => reviewTask.IsAssignedTo.All(p => p.Id != x.Id));
             foreach (var participant in deletedParticipants.ToList())
             {
                 reviewTask.IsAssignedTo.Remove(participant);
