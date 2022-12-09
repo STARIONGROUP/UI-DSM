@@ -20,7 +20,6 @@ namespace UI_DSM.Shared.Models
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Extensions;
-    using UI_DSM.Shared.Types;
 
     /// <summary>
     ///     A <see cref="ReviewTask" /> is a task to be fulfilled as part of the review objective.
@@ -146,7 +145,7 @@ namespace UI_DSM.Shared.Models
                 HasPrimaryView = this.HasPrimaryView,
                 MainView = this.MainView,
                 OptionalView = this.OptionalView,
-                IsAssignedTo = new List<Guid>(this.IsAssignedTo.Select(x => x.Id))
+                IsAssignedTo = new List<Guid>(this.IsAssignedTo.Select(x => x.Id)),
                 Prefilters = this.Prefilters ?? new List<string>()
             };
         }
@@ -183,7 +182,7 @@ namespace UI_DSM.Shared.Models
         private void InitializeCollections()
         {
             this.IsAssignedTo = new List<Participant>();
-        }
             this.Prefilters = new List<string>();
+        }
     }
 }

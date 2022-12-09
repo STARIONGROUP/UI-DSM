@@ -13,8 +13,8 @@ using UI_DSM.Server.Context;
 namespace UI_DSM.Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20221206145255_filteringOnReviewTaskMigration")]
-    partial class filteringOnReviewTaskMigration
+    [Migration("20221209132945_FilteringOnReviewTaskMigration")]
+    partial class FilteringOnReviewTaskMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -84,7 +84,7 @@ namespace UI_DSM.Server.Migrations
                         new
                         {
                             Id = "AF8956F8-CA85-4DF2-8CB6-C46D0845B987",
-                            ConcurrencyStamp = "b0844859-6d3d-4b7b-ad79-3e92e4b6c107",
+                            ConcurrencyStamp = "0d8bf40b-45cb-4cfd-a1ce-dbdbf88219e8",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -201,6 +201,21 @@ namespace UI_DSM.Server.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("ParticipantReviewTask", b =>
+                {
+                    b.Property<Guid>("AssignedTasksId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("IsAssignedToId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("AssignedTasksId", "IsAssignedToId");
+
+                    b.HasIndex("IsAssignedToId");
+
+                    b.ToTable("ParticipantReviewTask");
                 });
 
             modelBuilder.Entity("ProjectReviewCategory", b =>
@@ -330,14 +345,14 @@ namespace UI_DSM.Server.Migrations
                         {
                             Id = "F3E3BACF-5F7C-4657-88E9-FA904EFB64D7",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2a9354bc-8f17-400d-adb8-08d97cb919eb",
+                            ConcurrencyStamp = "ff096a47-62f8-455b-b627-b23d297597a8",
                             EmailConfirmed = false,
                             IsAdmin = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAENG9gEaphBwUS55wBSSN7cw3TQEmN51Shj5xripByj8ROLxGRBPDlXFZRWZjjTaOnw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEM4a/HF5EWVer5aU1tG9ZKgwwwKQ+UFo/MFu5ILvB3VULQIdKEuOr92vFa4PuGxnoQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ab9e44d4-89e1-4c62-8014-2fe78423aded",
+                            SecurityStamp = "2ae248b3-7968-479a-9edc-c4fa8b322d38",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -551,9 +566,6 @@ namespace UI_DSM.Server.Migrations
                     b.Property<bool>("HasPrimaryView")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("IsAssignedToId")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("MainView")
                         .HasColumnType("integer");
 
@@ -578,8 +590,6 @@ namespace UI_DSM.Server.Migrations
                     b.HasIndex("AuthorId");
 
                     b.HasIndex("EntityContainerId");
-
-                    b.HasIndex("IsAssignedToId");
 
                     b.ToTable("ReviewTask");
                 });
@@ -847,6 +857,21 @@ namespace UI_DSM.Server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ParticipantReviewTask", b =>
+                {
+                    b.HasOne("UI_DSM.Shared.Models.ReviewTask", null)
+                        .WithMany()
+                        .HasForeignKey("AssignedTasksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UI_DSM.Shared.Models.Participant", null)
+                        .WithMany()
+                        .HasForeignKey("IsAssignedToId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ProjectReviewCategory", b =>
                 {
                     b.HasOne("UI_DSM.Shared.Models.Project", null)
@@ -1062,15 +1087,9 @@ namespace UI_DSM.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UI_DSM.Shared.Models.Participant", "IsAssignedTo")
-                        .WithMany()
-                        .HasForeignKey("IsAssignedToId");
-
                     b.Navigation("Author");
 
                     b.Navigation("EntityContainer");
-
-                    b.Navigation("IsAssignedTo");
                 });
 
             modelBuilder.Entity("UI_DSM.Shared.Models.Role", b =>

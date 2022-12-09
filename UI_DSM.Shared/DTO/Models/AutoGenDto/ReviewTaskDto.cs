@@ -31,6 +31,7 @@ namespace UI_DSM.Shared.DTO.Models
         public ReviewTaskDto()
         {
             this.IsAssignedTo = new List<Guid>();
+            this.Prefilters = new List<string>();
         }
 
         /// <summary>
@@ -40,6 +41,7 @@ namespace UI_DSM.Shared.DTO.Models
         public ReviewTaskDto(Guid id) : base(id)
         {
             this.IsAssignedTo = new List<Guid>();
+            this.Prefilters = new List<string>();
         }
 
         /// <summary>
