@@ -55,6 +55,11 @@ namespace UI_DSM.Client.Tests.Services.ReviewTaskService
             var roleId = Guid.NewGuid();
             var userId = Guid.NewGuid();
 
+            List<Guid> participants = new()
+            {
+                participantId,
+            };
+
             this.entitiesDto = new List<EntityDto>
             {
                 new ReviewTaskDto(Guid.NewGuid())
@@ -65,7 +70,7 @@ namespace UI_DSM.Client.Tests.Services.ReviewTaskService
                     Title = "Task Title",
                     TaskNumber = 1,
                     Status = StatusKind.Open,
-                    IsAssignedTo = participantId
+                    IsAssignedTo = participants
                 },
                 new ParticipantDto(participantId)
                 {

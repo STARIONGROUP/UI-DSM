@@ -139,11 +139,14 @@ namespace UI_DSM.Serializer.Json
 
             if (jsonElement.TryGetProperty("isAssignedTo", out var isAssignedToProperty))
             {
-                var propertyValue = isAssignedToProperty.GetString();
-
-                if (propertyValue != null)
+                foreach (var item in isAssignedToProperty.EnumerateArray())
                 {
-                    dto.IsAssignedTo = Guid.Parse(propertyValue);
+                    var propertyValue = item.GetString();
+
+                    if (propertyValue != null)
+                    {
+                        dto.IsAssignedTo.Add(Guid.Parse(propertyValue));
+                    }
                 }
             }
 

@@ -9,21 +9,17 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Shared.Models
 
-<EditForm Context="editFormContext" Model="@this.ViewModel.SelectedParticipant" OnValidSubmit="@this.ViewModel.OnValidSubmit">
-	<DataAnnotationsValidator />
-	<DxFormLayout>
-		<DxFormLayoutItem Caption="Participants :" ColSpanMd="12">
-            <DxListBox Data="@this.ProjectParticipants"
-					   @bind-Value="@this.ViewModel.SelectedParticipant"
-					   ShowCheckboxes="true"
-					   SelectionMode="ListBoxSelectionMode.Single"
-					   TextFieldName="@nameof(Participant.ParticipantName)" />
-		</DxFormLayoutItem>
-	</DxFormLayout>
-	<ValidationSummary/>
-	<ErrorMessage />
-	<div class="modal-footer m-top-10px">
-		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Assign" SubmitFormOnClick="true"/>
-	</div>
-</EditForm>
+<DxFormLayout>
+	<DxFormLayoutItem Caption="Participants :" ColSpanMd="12">
+           <DxListBox Data="@this.ProjectParticipants"
+				   @bind-Values="@this.ViewModel.SelectedParticipants"
+				   TextFieldName="@nameof(Participant.ParticipantName)"
+				   ShowCheckboxes="true" 
+				   SelectionMode="ListBoxSelectionMode.Multiple" />
+	</DxFormLayoutItem>
+</DxFormLayout>
+<div class="modal-footer m-top-10px">
+	<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Assign" Click="@this.ViewModel.OnValidSubmit" Enabled="@this.ViewModel.SelectedParticipants.Any()"/>
+</div>

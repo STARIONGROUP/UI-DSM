@@ -73,8 +73,14 @@ namespace UI_DSM.Serializer.Json
             writer.WritePropertyName("author");
             writer.WriteStringValue(dto.Author);
 
-            writer.WritePropertyName("isAssignedTo");
-            writer.WriteStringValue(dto.IsAssignedTo);
+            writer.WriteStartArray("isAssignedTo");
+
+            foreach (var item in dto.IsAssignedTo)
+            {
+                writer.WriteStringValue(item);
+            }
+
+            writer.WriteEndArray();
 
             writer.WritePropertyName("id");
             writer.WriteStringValue(dto.Id);

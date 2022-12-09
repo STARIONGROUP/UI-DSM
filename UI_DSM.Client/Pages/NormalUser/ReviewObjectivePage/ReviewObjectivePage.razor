@@ -14,7 +14,7 @@
 
 <PageTitle>Review Objective | UI-DSM</PageTitle>
 	  
-<DxPopup CloseOnOutsideClick="false" HeaderText="Assign Participant" @bind-Visible="@this.ViewModel.IsOnAssignmentMode">
+<DxPopup CloseOnOutsideClick="false" HeaderText="Assign Participants" @bind-Visible="@this.ViewModel.IsOnAssignmentMode">
 		<Content>
 			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
                 <UI_DSM.Client.Components.NormalUser.ReviewTask.TaskAssignment ProjectParticipants="@this.ViewModel.ProjectParticipants" ViewModel="@this.ViewModel.TaskAssignmentViewModel" />

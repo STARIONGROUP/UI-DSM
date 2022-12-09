@@ -59,6 +59,11 @@ namespace UI_DSM.Serializer.Json.Tests
                 Role = role.Id
             };
 
+            List<Guid> participants = new()
+            {
+                participant.Id
+            };
+
             var reviewTask = new ReviewTaskDto(Guid.NewGuid())
             {
                 Author = participant.Id,
@@ -66,7 +71,7 @@ namespace UI_DSM.Serializer.Json.Tests
                 Title = "review objective Title",
                 CreatedOn = DateTime.UtcNow,
                 TaskNumber = 2,
-                IsAssignedTo = participant.Id,
+                IsAssignedTo = participants,
                 Status = StatusKind.Open
             };
 

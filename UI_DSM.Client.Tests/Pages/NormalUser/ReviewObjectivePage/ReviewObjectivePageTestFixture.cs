@@ -136,17 +136,17 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewObjectivePage
                     });
 
                 var appButton = renderer.FindComponent<AppButton>();
-                var participantToAssign = this.viewModel.TaskAssignmentViewModel.SelectedParticipant;
+                var participantToAssign = this.viewModel.TaskAssignmentViewModel.SelectedParticipants.First();
                 Assert.That(this.viewModel.IsOnAssignmentMode, Is.False);
                 await renderer.InvokeAsync(appButton.Instance.Click.InvokeAsync);
 
                 Assert.Multiple(() =>
                 {
                     Assert.That(this.viewModel.IsOnAssignmentMode, Is.True);
-                    Assert.That(this.viewModel.TaskAssignmentViewModel.SelectedParticipant, Is.Not.EqualTo(participantToAssign));
+                    Assert.That(this.viewModel.TaskAssignmentViewModel.SelectedParticipants.First(), Is.Not.EqualTo(participantToAssign));
                 });
 
-                this.viewModel.TaskAssignmentViewModel.SelectedParticipant = new Participant(Guid.NewGuid())
+                var participantAssign = new Participant(Guid.NewGuid())
                 {
                     Role = new Role(Guid.NewGuid())
                     {
@@ -161,6 +161,8 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewObjectivePage
                         UserName = "user1"
                     }
                 };
+
+                this.viewModel.TaskAssignmentViewModel.SelectedParticipants.ToList().Add(participantAssign);
 
                 this.reviewTaskService.Setup(x => x.UpdateReviewTask(projectGuid, reviewGuid, this.viewModel.SelectedReviewTask))
                     .ReturnsAsync(EntityRequestResponse<ReviewTask>.Fail(new List<string>

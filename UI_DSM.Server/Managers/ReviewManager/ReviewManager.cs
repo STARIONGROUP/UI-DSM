@@ -13,6 +13,7 @@
 
 namespace UI_DSM.Server.Managers.ReviewManager
 {
+    using Microsoft.EntityFrameworkCore;
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.ArtifactManager;
@@ -151,7 +152,9 @@ namespace UI_DSM.Server.Managers.ReviewManager
                 .Where(x => x.Id == reviewId)
                 .SelectMany(x => x.ReviewObjectives)
                 .SelectMany(x => x.ReviewTasks)
-                .Count(x => x.Status == StatusKind.Open && x.IsAssignedTo != null && x.IsAssignedTo.Id == participant.Id);
+                .Include(x => x.IsAssignedTo)
+                .AsEnumerable()
+                .Count(x => x.Status == StatusKind.Open && x.IsAssignedTo != null && x.IsAssignedTo.Any(p => p.Id == participant.Id));
 
             var comments = this.EntityDbSet
                 .Where(x => x.Id == reviewId)

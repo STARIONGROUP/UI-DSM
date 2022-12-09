@@ -31,11 +31,6 @@ namespace UI_DSM.Client.Components.NormalUser.ReviewTask
         public IEnumerable<Participant> ProjectParticipants { get; set; } 
 
         /// <summary>
-        ///     The <see cref="Participant" /> of the project
-        /// </summary>
-        public Participant Participant { get; set; }
-
-        /// <summary>
         ///     The <see cref="IReviewCreationViewModel" /> for the component
         /// </summary>
         [Parameter]

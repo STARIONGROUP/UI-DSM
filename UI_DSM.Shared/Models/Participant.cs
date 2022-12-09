@@ -31,6 +31,7 @@ namespace UI_DSM.Shared.Models
         /// </summary>
         public Participant()
         {
+            this.InitializeCollections();
         }
 
         /// <summary>
@@ -39,6 +40,7 @@ namespace UI_DSM.Shared.Models
         /// <param name="id">The <see cref="Guid" /> of the <see cref="Participant" /></param>
         public Participant(Guid id) : base(id)
         {
+            this.InitializeCollections();
         }
 
         /// <summary>
@@ -60,6 +62,11 @@ namespace UI_DSM.Shared.Models
         [Required]
         [DeepLevel(0)]
         public Role Role { get; set; }
+
+        /// <summary>
+        ///     A collection of <see cref="ReviewTask" /> where this <see cref="Participant" /> is assigned
+        /// </summary>
+        public List<ReviewTask> AssignedTasks { get; set; }
 
         /// <summary>
         ///     Instantiate a <see cref="ParticipantDto" /> from a <see cref="Participant" />
@@ -100,6 +107,14 @@ namespace UI_DSM.Shared.Models
         public bool IsAllowedTo(AccessRight requestedAccessRight)
         {
             return this.Role != null && this.Role.AccessRights.Any(x => x == requestedAccessRight);
+        }
+
+        /// <summary>
+        ///     Initializes all collections for this <see cref="Participant" />
+        /// </summary>
+        private void InitializeCollections()
+        {
+            this.AssignedTasks = new List<ReviewTask>();
         }
     }
 }

@@ -54,25 +54,30 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
         /// <returns>A <see cref="Task" /> with the result of the update</returns>
         public override async Task<EntityOperationResult<ReviewTask>> UpdateEntity(ReviewTask entity)
         {
+            var selectedParticipants = entity.IsAssignedTo.ToList();
             if (!this.ValidateCurrentEntity(entity, out var entityOperationResult))
             {
                 return entityOperationResult;
             }
-
-            var foundEntity = await this.FindEntityWithContainer(entity.Id);
-            entity.AdditionalView = foundEntity.AdditionalView;
-            entity.MainView = foundEntity.MainView;
-            entity.OptionalView = foundEntity.OptionalView;
-            entity.HasPrimaryView = foundEntity.HasPrimaryView;
-            entity.CreatedOn = foundEntity.CreatedOn.ToUniversalTime();
-
-            var operation = await this.UpdateEntityIntoContext(entity);
-
+            var reviewTask = (await this.GetEntity(entity.Id)).OfType<ReviewTask>().First();
+            reviewTask.Status = entity.Status;
+            var deletedParticipants = reviewTask.IsAssignedTo.Where(x => selectedParticipants.All(p => p.Id != x.Id));
+            var addedParticipants = selectedParticipants.Where(x => reviewTask.IsAssignedTo.All(p => p.Id != x.Id));
+            foreach (var participant in deletedParticipants.ToList())
+            {
+                reviewTask.IsAssignedTo.Remove(participant);
+            }
+            foreach (var addedParticipant in addedParticipants.ToList())
+            {
+                reviewTask.IsAssignedTo.Add(addedParticipant);
+            }
+            entity.CreatedOn = entity.CreatedOn.ToUniversalTime();
+            var operation = await this.UpdateEntityIntoContext(reviewTask);
             if (this.reviewObjectiveManager != null)
             {
+                var foundEntity = await this.FindEntityWithContainer(entity.Id);
                 await this.reviewObjectiveManager.UpdateStatus(foundEntity.EntityContainer.Id);
             }
-
             return operation;
         }
 
@@ -91,7 +96,7 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
 
             var relatedEntities = new Dictionary<Guid, Entity>();
             relatedEntities.InsertEntity(await this.participantManager.FindEntity(reviewTaskDto.Author));
-            relatedEntities.InsertEntity(await this.participantManager.FindEntity(reviewTaskDto.IsAssignedTo));
+            relatedEntities.InsertEntityCollection(await this.participantManager.FindEntities(reviewTaskDto.IsAssignedTo));
             entity.ResolveProperties(reviewTaskDto, relatedEntities);
         }
 

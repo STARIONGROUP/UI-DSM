@@ -24,8 +24,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
     using UI_DSM.Shared.Models;
     using UI_DSM.Client.Services.Administration.ParticipantService;
     using Microsoft.AspNetCore.Components;
-    using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
-    using UI_DSM.Shared.DTO.Common;
+
     using UI_DSM.Shared.Enumerator;
 
     /// <summary>
@@ -115,7 +114,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         /// </summary>
         public void OpenTaskAssignmentPopup(ReviewTask selectedReviewTask)
         {
-            this.TaskAssignmentViewModel.SelectedParticipant = new Participant();
+            this.TaskAssignmentViewModel.SelectedParticipants = selectedReviewTask.IsAssignedTo;
             this.ErrorMessageViewModel.Errors.Clear();
             this.IsOnAssignmentMode = true;
             this.SelectedReviewTask = selectedReviewTask;
@@ -132,14 +131,14 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         public ReviewTask SelectedReviewTask { get; set; } = new ReviewTask();
 
         /// <summary>
-        ///     Tries to assign a <see cref="Participant" /> to a task
+        ///     Tries to assign a <see cref="Participant" />s to a task
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>
         private async Task AssignParticipant()
         {
             try
             {
-                this.SelectedReviewTask.IsAssignedTo = this.TaskAssignmentViewModel.SelectedParticipant;
+                this.SelectedReviewTask.IsAssignedTo = this.TaskAssignmentViewModel.SelectedParticipants.ToList();
                 var reviewTaskResult = await this.reviewTaskService.UpdateReviewTask(this.ProjectId, this.ReviewId, this.SelectedReviewTask);
                 this.ErrorMessageViewModel.Errors.Clear();
 
@@ -150,7 +149,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
 
                 if (reviewTaskResult.IsRequestSuccessful)
                 {
-                    this.TaskAssignmentViewModel.SelectedParticipant = new Participant();
+                    this.TaskAssignmentViewModel.SelectedParticipants = new List<Participant>();
                 }
 
                 this.IsOnAssignmentMode = !reviewTaskResult.IsRequestSuccessful;

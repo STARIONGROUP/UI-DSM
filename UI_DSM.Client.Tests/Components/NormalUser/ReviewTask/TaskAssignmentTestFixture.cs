@@ -47,8 +47,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ReviewTask
 
             this.taskAssignmentViewModel = new TaskAssignmentViewModel()
             {
-                SelectedParticipant = new Participant(),
-                OnValidSubmit = new EventCallbackFactory().Create(this, () => this.taskAssignmentViewModel.SelectedParticipant = new Participant())
+                SelectedParticipants = new List<Participant>(),
+                OnValidSubmit = new EventCallbackFactory().Create(this, () => this.taskAssignmentViewModel.SelectedParticipants = new List<Participant>())
             };
         }
 
@@ -75,8 +75,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ReviewTask
 
                 Assert.That(listBox.Instance.Values, Is.Empty);
 
-
-                this.taskAssignmentViewModel.SelectedParticipant = new Participant(Guid.NewGuid())
+                var participant = new Participant(Guid.NewGuid())
                 {
                     User = new UserEntity(Guid.NewGuid())
                     {
@@ -84,12 +83,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ReviewTask
                     }
                 };
 
+                this.taskAssignmentViewModel.SelectedParticipants.ToList().Add(participant);
+
                 renderer.Render();
 
                 var dxButton = renderer.FindComponent<EditForm>();
                 await renderer.InvokeAsync(dxButton.Instance.OnValidSubmit.InvokeAsync);
 
-                Assert.That(this.taskAssignmentViewModel.SelectedParticipant.User, Is.Null);
+                Assert.That(this.taskAssignmentViewModel.SelectedParticipants.First().User, Is.Null);
             }
             catch
             {

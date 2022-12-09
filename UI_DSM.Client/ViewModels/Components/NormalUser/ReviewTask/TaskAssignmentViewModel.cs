@@ -24,9 +24,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ReviewTask
     public class TaskAssignmentViewModel : ITaskAssignmentViewModel
     {
         /// <summary>
-        ///     The <see cref="Participant" /> to assign
+        ///     The <see cref="Participant" />s to assign
         /// </summary>
-        public Participant SelectedParticipant { get; set; }
+        public IEnumerable<Participant> SelectedParticipants { get; set; }
 
         /// <summary>
         ///     The <see cref="EventCallback" /> to call for data submit
