@@ -21,6 +21,6 @@
 		</DxFormLayoutItem>
 	</DxFormLayout>
 	<div class="modal-footer m-top-10px">
-		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Assign" SubmitFormOnClick="true"/>
+		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Assign" SubmitFormOnClick="true" Enabled="@this.ViewModel.SelectedParticipants.Any()"/>
 	</div>
 </EditForm>
