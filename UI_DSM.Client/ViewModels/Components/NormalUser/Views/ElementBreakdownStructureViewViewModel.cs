@@ -135,6 +135,28 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     Gets a collection of all availables <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <returns>The collection of <see cref="IHaveAnnotatableItemRowViewModel" /></returns>
+        public override List<IHaveAnnotatableItemRowViewModel> GetAvailablesRows()
+        {
+            var collection = new List<IHaveAnnotatableItemRowViewModel>(this.TopElement);
+            collection.AddRange(this.AllRows);
+            return collection;
+        }
+
+        /// <summary>
+        ///     Updates all <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <param name="annotatableItems">A collection of <see cref="AnnotatableItem" /></param>
+        public override void UpdateAnnotatableRows(List<AnnotatableItem> annotatableItems)
+        {
+            var reviewItems = annotatableItems.OfType<ReviewItem>();
+            this.TopElement.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
+            this.AllRows.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
+        }
+
+        /// <summary>
         ///     Initializes the filters criteria for rows
         /// </summary>
         protected void InitializesFilter<T>(string categoryNameFiltering) where T : ElementBaseRowViewModel
@@ -144,8 +166,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             var owners = new List<DefinedThing>(this.AllRows.OfType<T>()
                     .Select(x => x.Thing.Owner)
                     .DistinctBy(x => x.Iid))
-                .OrderBy(x => x.Name)
-                .ToList();
+                    .OrderBy(x => x.Name)
+                    .ToList();
 
             availableRowFilters.Add(new FilterModel
             {

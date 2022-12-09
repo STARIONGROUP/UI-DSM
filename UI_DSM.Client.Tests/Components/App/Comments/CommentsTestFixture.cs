@@ -21,6 +21,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
 
     using DynamicData;
 
+    using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -86,7 +87,9 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
             try
             {
                 var renderer = this.context.RenderComponent<Comments>();
-                await renderer.Instance.InitializesProperties(Guid.NewGuid(), Guid.NewGuid(), View.RequirementBreakdownStructureView, this.participant);
+                await renderer.Instance.InitializesProperties(Guid.NewGuid(), Guid.NewGuid(), View.RequirementBreakdownStructureView, 
+                    this.participant, EventCallback<Comment>.Empty);
+
                 var commentsCard = renderer.FindComponents<CommentCard>();
 
                 Assert.That(commentsCard, Has.Count.EqualTo(0));

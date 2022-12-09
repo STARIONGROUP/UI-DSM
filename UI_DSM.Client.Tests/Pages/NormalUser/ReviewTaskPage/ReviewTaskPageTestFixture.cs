@@ -13,7 +13,6 @@
 
 namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
 {
-    using AppComponents;
     using Bunit;
 
     using CDP4Common.CommonData;
@@ -36,6 +35,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Services.ViewProviderService;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Client.ViewModels.App.AnnotationLinker;
     using UI_DSM.Client.ViewModels.App.Comments;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.App.OptionChooser;
@@ -59,6 +59,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
         private Mock<IThingService> thingService;
         private Mock<IParticipantService> participantService;
         private Mock<IReviewTaskService> reviewTaskService;
+        private IAnnotationLinkerViewModel annotationLinker;
         private IViewProviderService viewProviderService;
         private ISelectedItemCardViewModel selectedItemCard;
         private Guid projectId;
@@ -90,9 +91,10 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
 
             this.viewProviderService = new ViewProviderService();
             this.context = new TestContext();
+            this.annotationLinker = new AnnotationLinkerViewModel();
 
             this.viewModel = new ReviewTaskPageViewModel(this.thingService.Object, this.reviewService.Object, this.viewProviderService,
-                this.participantService.Object, this.reviewItemService.Object, this.reviewTaskService.Object);
+                this.participantService.Object, this.reviewItemService.Object, this.reviewTaskService.Object, this.annotationLinker);
 
             this.selectedItemCard = new SelectedItemCardViewModel();
             this.projectId = Guid.NewGuid();
@@ -194,7 +196,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             
             renderer.Render();
 
-            Assert.That(renderer.Instance.BaseView.Instance, Is.Null);
+            Assert.That(renderer.Instance.BaseView!.Instance, Is.Null);
 
             reviewTask.MainView = View.RequirementBreakdownStructureView;
             reviewTask.AdditionalView = View.RequirementVerificationControlView;
@@ -270,9 +272,10 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.True);
 
             await renderer.InvokeAsync(() => this.viewModel.DoneConfirmCancelPopup.OnConfirm.InvokeAsync()); 
+            
             Assert.Multiple(() =>
             {
-                Assert.That(this.viewModel.ReviewTask.Status, Is.EqualTo(StatusKind.Done));
+                Assert.That(this.viewModel.ReviewTask!.Status, Is.EqualTo(StatusKind.Done));
                 Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.False);
             });
 
@@ -282,12 +285,28 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.True);
 
             await renderer.InvokeAsync(() => this.viewModel.DoneConfirmCancelPopup.OnConfirm.InvokeAsync());
+            
             Assert.Multiple(() =>
             {
-                Assert.That(this.viewModel.ReviewTask.Status, Is.EqualTo(StatusKind.Open));
+                Assert.That(this.viewModel.ReviewTask!.Status, Is.EqualTo(StatusKind.Open));
                 Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.False);
             });
 
+            var comment = new Comment(Guid.NewGuid());
+            await renderer.InvokeAsync(() => this.viewModel.OnLinkCallback.InvokeAsync(comment));
+            Assert.That(this.viewModel.IsLinkerVisible, Is.True);
+
+            this.reviewItemService.Setup(x => x.LinkItemsToAnnotation(this.projectId, this.reviewId, comment.Id, It.IsAny<IEnumerable<Guid>>()))
+                .ReturnsAsync(EntitiesRequestResponses<ReviewItem>.Fail(new List<string>()));
+
+            await renderer.InvokeAsync(this.viewModel.AnnotationLinkerViewModel.OnSubmit.InvokeAsync);
+            Assert.That(this.viewModel.IsLinkerVisible, Is.True);
+
+            this.reviewItemService.Setup(x => x.LinkItemsToAnnotation(this.projectId, this.reviewId, comment.Id, It.IsAny<IEnumerable<Guid>>()))
+                .ReturnsAsync(EntitiesRequestResponses<ReviewItem>.Success(new List<ReviewItem>()));
+
+            await renderer.InvokeAsync(this.viewModel.AnnotationLinkerViewModel.OnSubmit.InvokeAsync);
+            Assert.That(this.viewModel.IsLinkerVisible, Is.False);
         }
     }
 }

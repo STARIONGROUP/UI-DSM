@@ -143,6 +143,22 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Assert.That(async () => await verificationRenderer.Instance.CopyComponents(otherRenderer.Instance), Is.False);
                     Assert.That(async () => await renderer.Instance.CopyComponents(verificationRenderer.Instance), Is.True);
                 });
+
+                var rows = this.viewModel.GetAvailablesRows();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(rows, Is.Not.Empty);
+                    Assert.That(this.viewModel.Rows.First().ReviewItem, Is.Null);
+                });
+
+                var reviewItem = new ReviewItem(Guid.NewGuid())
+                {
+                    ThingId = this.viewModel.Rows.First().ThingId
+                };
+
+                this.viewModel.UpdateAnnotatableRows(new List<AnnotatableItem> { reviewItem });
+                Assert.That(this.viewModel.Rows.First().ReviewItem, Is.Not.Null);
             }
             catch
             {

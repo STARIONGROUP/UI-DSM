@@ -216,6 +216,16 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         public IConfirmCancelPopupViewModel ReplyConfirmCancelPopupViewModel { get; set; }
 
         /// <summary>
+        ///     Event callback when a user wants to link a <see cref="Comment"/> to another element
+        /// </summary>
+        public EventCallback<Comment> OnLinkCallback { get; private set; }
+
+        /// <summary>
+        ///     A collection of <see cref="ICommentsViewModel.AvailableRows" />
+        /// </summary>
+        public List<IHaveAnnotatableItemRowViewModel> AvailableRows { get; set; }
+
+        /// <summary>
         ///     The current <see cref="Participant" />
         /// </summary>
         public Participant Participant { get; private set; }
@@ -278,12 +288,14 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
         /// <param name="currentView">The <see cref="View" /></param>
         /// <param name="currentParticipant">The current <see cref="Participant"/></param>
-        public void InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant currentParticipant)
+        /// <param name="onLinkCallback">The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element</param>
+        public void InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant currentParticipant, EventCallback<Comment> onLinkCallback)
         {
             this.ProjectId = projectId;
             this.ReviewId = reviewId;
             this.CurrentView = currentView;
             this.Participant = currentParticipant;
+            this.OnLinkCallback = onLinkCallback;
         }
 
         /// <summary>
@@ -544,9 +556,10 @@ namespace UI_DSM.Client.ViewModels.App.Comments
                 return;
             }
 
-            if (this.SelectedItem is IHaveThingRowViewModel thingRowViewModel)
+            foreach (var row in this.AvailableRows.OfType<IHaveThingRowViewModel>()
+                         .Where(x => x.ReviewItem != null && x.ReviewItem.Annotations.Any(annotation => annotation.Id == this.selectedComment.Id)))
             {
-                thingRowViewModel.ReviewItem.Annotations.RemoveAll(x => x.Id == this.selectedComment.Id);
+                row.ReviewItem.Annotations.RemoveAll(x => x.Id == this.selectedComment.Id);
             }
         }
 
@@ -578,9 +591,11 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         {
             this.Comments.Clear();
 
-            if (this.SelectedItem is IHaveThingRowViewModel { ReviewItem: { } } thingRowViewModel)
+            if (this.SelectedItem is IHaveAnnotatableItemRowViewModel { AnnotatableItemId: { } } annotatableItemRowViewModel)
             {
-                var annotations = await this.annotationService.GetAnnotationsOfAnnotatableItem(this.ProjectId, thingRowViewModel.ReviewItem.Id);
+                var annotations = await this.annotationService.GetAnnotationsOfAnnotatableItem(this.ProjectId, 
+                    annotatableItemRowViewModel.AnnotatableItemId.Value);
+
                 this.Comments.AddRange(annotations.OfType<Comment>());
             }
         }

@@ -36,7 +36,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     Gets the Id of the current <see cref="RelationshipRowViewModel" />
         /// </summary>
-        public override string Id => this.ThingId.ToString();
+        public override string Id => $"{this.Thing.Source.GetShortName()} -> {this.Thing.Target.GetShortName()}";
 
         /// <summary>
         ///     The <see cref="Guid" /> of the Source <see cref="Thing" />

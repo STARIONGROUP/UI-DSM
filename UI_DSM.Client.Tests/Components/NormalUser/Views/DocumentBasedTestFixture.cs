@@ -114,7 +114,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                             {
                                 new ParameterValueSet()
                                 {
-                                    ActualValue = new ValueArray<string>(new List<string>(){"aiv"})
+                                    Manual = new ValueArray<string>(new List<string>(){"aiv"}),
+                                    ValueSwitch = ParameterSwitchKind.MANUAL
                                 }
                             }
                         }
@@ -220,6 +221,24 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 this.viewModel.TrySetSelectedItem(hyperlink.Instance.Row);
                 Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+
+                var allRows = this.viewModel.GetAvailablesRows();
+                
+                Assert.Multiple(() =>
+                {
+                    Assert.That(allRows, Is.Not.Empty);
+                    Assert.That(this.viewModel.Rows.Last().ReviewItem, Is.Null);
+                });
+
+                this.viewModel.UpdateAnnotatableRows(new List<AnnotatableItem>
+                {
+                    new ReviewItem(Guid.NewGuid())
+                    {
+                        ThingId = this.viewModel.Rows.Last().ThingId
+                    }
+                });
+
+                Assert.That(this.viewModel.Rows.Last().ReviewItem, Is.Not.Null);
             }
             catch
             {

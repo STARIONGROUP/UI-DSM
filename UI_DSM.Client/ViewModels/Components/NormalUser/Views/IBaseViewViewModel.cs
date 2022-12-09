@@ -15,6 +15,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
     using CDP4Common.CommonData;
 
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -53,5 +54,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         /// <param name="selectedItem">The previously selectedItem</param>
         void TrySetSelectedItem(object selectedItem);
+
+        /// <summary>
+        ///     Gets a collection of all availables <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <returns>The collection of <see cref="IHaveAnnotatableItemRowViewModel" /></returns>
+        List<IHaveAnnotatableItemRowViewModel> GetAvailablesRows();
+
+        /// <summary>
+        ///     Updates all <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <param name="annotatableItems">A collection of <see cref="AnnotatableItem" /></param>
+        void UpdateAnnotatableRows(List<AnnotatableItem> annotatableItems);
     }
 }

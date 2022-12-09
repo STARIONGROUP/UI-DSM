@@ -19,6 +19,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
     using ReactiveUI;
 
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
@@ -27,6 +28,26 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     /// </summary>
     public abstract partial class GenericBaseView<TViewModel>
     {
+        /// <summary>
+        ///     Gets a collection of all availables <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <returns>The collection of <see cref="IHaveThingRowViewModel" /></returns>
+        public override List<IHaveAnnotatableItemRowViewModel> GetAvailablesRows()
+        {
+            return this.ViewModel.GetAvailablesRows();
+        }
+
+        /// <summary>
+        ///     Updates all <see cref="IHaveAnnotatableItemRowViewModel" /> rows
+        /// </summary>
+        /// <param name="annotatableItems">A collection of <see cref="AnnotatableItem"/></param>
+        /// <returns>A <see cref="Task"/></returns>
+        public override Task UpdateAnnotatableRows(List<AnnotatableItem> annotatableItems)
+        {
+            this.ViewModel.UpdateAnnotatableRows(annotatableItems);
+            return this.HasChanged();
+        }
+
         /// <summary>
         ///     The <see cref="TViewModel" />
         /// </summary>

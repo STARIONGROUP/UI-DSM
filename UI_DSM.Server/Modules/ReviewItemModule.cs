@@ -23,7 +23,9 @@ namespace UI_DSM.Server.Modules
     using Microsoft.AspNetCore.Mvc;
 
     using UI_DSM.Server.Managers;
+    using UI_DSM.Server.Managers.AnnotationManager;
     using UI_DSM.Server.Managers.ReviewItemManager;
+    using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Extensions;
@@ -61,6 +63,12 @@ namespace UI_DSM.Server.Modules
                 .Produces<IEnumerable<Entity>>()
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/GetEntitiesForThings");
+
+            app.MapPut(this.MainRoute + "/LinkItems", this.LinkItems)
+                .Accepts<AnnotationLinkDto>("application/json")
+                .Produces<RequestResponseDto>()
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/LinkItems");
         }
 
         /// <summary>
@@ -237,7 +245,7 @@ namespace UI_DSM.Server.Modules
             {
                 return;
             }
-            
+
             await base.UpdateEntity(manager, entityId, dto, context, deepLevel);
         }
 
@@ -276,6 +284,57 @@ namespace UI_DSM.Server.Modules
             }
 
             return true;
+        }
+
+        /// <summary>
+        ///     Links multiple <see cref="ReviewItem" /> to an <see cref="Annotation" />
+        /// </summary>
+        /// <param name="annotationManager">The <see cref="IAnnotationManager" /></param>
+        /// <param name="reviewManager">The <see cref="IReviewManager"/></param>
+        /// <param name="reviewItemManager">The <see cref="IReviewItemManager" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="dto">The <see cref="AnnotationLinkDto" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        [Authorize]
+        public async Task LinkItems(IAnnotationManager annotationManager, IReviewManager reviewManager,IReviewItemManager reviewItemManager, 
+            HttpContext context, [FromBody] AnnotationLinkDto dto)
+        {
+            var requestResponse = new EntityRequestResponseDto();
+            var participant = await this.GetParticipantBasedOnRequest(context, ProjectKey);
+
+            if (participant == null)
+            {
+                requestResponse.Errors = new List<string> { "Unknown participant" };
+                await context.Response.Negotiate(requestResponse);
+                return;
+            }
+
+            if (!await this.AdditionalRouteValidation(context))
+            {
+                requestResponse.Errors = new List<string>
+                {
+                    "Route validation failure"
+                };
+
+                await context.Response.Negotiate(requestResponse);
+                return;
+            }
+
+            var annotation = await annotationManager.FindEntity(dto.AnnotationId);
+
+            if (annotation == null)
+            {
+                context.Response.StatusCode = 404;
+                requestResponse.Errors = new List<string> { "Annotation not found" };
+                await context.Response.Negotiate(requestResponse);
+                return;
+            }
+
+            var review = await reviewManager.FindEntity(this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey));
+
+            var idendityResult = await reviewItemManager.LinkAnnotationToItems(review, annotation, dto.ThingsId);
+            this.HandleOperationResult(requestResponse, context.Response, idendityResult, 201);
+            await context.Response.Negotiate(requestResponse);
         }
     }
 }

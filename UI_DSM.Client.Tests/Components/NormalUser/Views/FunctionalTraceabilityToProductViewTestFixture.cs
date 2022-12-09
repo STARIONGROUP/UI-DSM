@@ -174,17 +174,17 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var assembler = new Assembler(new Uri("http://localhost"));
 
                 var things = new List<Thing>(categories)
-            {
-                relationShip,
-                anotherFuction,
-                functionUsage,
-                function,
-                productUsage,
-                product,
-                elementDefinitionForFunction,
-                elementDefinitionForProduct,
-                owner
-            };
+                {
+                    relationShip,
+                    anotherFuction,
+                    functionUsage,
+                    function,
+                    productUsage,
+                    product,
+                    elementDefinitionForFunction,
+                    elementDefinitionForProduct,
+                    owner
+                };
 
                 await assembler.Synchronize(things);
                 _ = assembler.Cache.Select(x => x.Value.Value);
@@ -220,6 +220,22 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var cell = renderer.FindComponent<TraceabilityCell>();
                 await renderer.InvokeAsync(() => cell.Instance.OnClick.InvokeAsync(cell.Instance.RelationshipRow));
                 Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+
+                var rows = this.viewModel.GetAvailablesRows();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(rows, Is.Not.Empty);
+                    Assert.That(this.viewModel.TraceabilityTableViewModel.Rows.First().ReviewItem, Is.Null);
+                });
+
+                var reviewItem = new ReviewItem(Guid.NewGuid())
+                {
+                    ThingId = this.viewModel.TraceabilityTableViewModel.Rows.First().ThingId
+                };
+
+                this.viewModel.UpdateAnnotatableRows(new List<AnnotatableItem> { reviewItem });
+                Assert.That(this.viewModel.TraceabilityTableViewModel.Rows.First().ReviewItem, Is.Not.Null);
             }
             catch
             {

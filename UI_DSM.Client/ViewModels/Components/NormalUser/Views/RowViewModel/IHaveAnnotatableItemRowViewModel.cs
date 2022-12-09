@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="HaveThingRowViewModel.cs" company="RHEA System S.A.">
+// <copyright file="IHaveAnnotatableItemRowViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -13,30 +13,32 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
 {
-    using CDP4Common.CommonData;
-
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     Interface that defines that a row view model is linked to a <see cref="Thing" />
+    ///     Interface that defines that a row view model has an <see cref="AnnotatableItem" />
     /// </summary>
-    public interface IHaveThingRowViewModel: IHaveAnnotatableItemRowViewModel
+    public interface IHaveAnnotatableItemRowViewModel
     {
         /// <summary>
-        ///     The <see cref="UI_DSM.Shared.Models.ReviewItem" /> Id
+        ///     The <see cref="Guid" /> of the <see cref="AnnotatableItem" /> if exists
         /// </summary>
-        ReviewItem ReviewItem { get; }
+        public Guid? AnnotatableItemId { get; }
 
         /// <summary>
-        ///     Gets the <see cref="Thing" /> Id
+        ///     Gets the Id of the current <see cref="IHaveThingRowViewModel" />
         /// </summary>
-        /// <returns>The <see cref="Guid" /></returns>
-        Guid ThingId { get; }
+        public string Id { get; }
 
         /// <summary>
-        ///     Updates the current <see cref="ReviewItem" />
+        ///     A value indicating if the row is visible or not
         /// </summary>
-        /// <param name="item">The new <see cref="ReviewItem" /></param>
-        void UpdateReviewItem(ReviewItem item);
+        bool IsVisible { get; set; }
+
+        /// <summary>
+        ///     Indicates if the current associated <see cref="AnnotatableItem" /> has some <see cref="Comment" />
+        /// </summary>
+        /// <returns>The assert</returns>
+        bool HasComment();
     }
 }

@@ -43,7 +43,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public TThing Thing { get; private set; }
 
         /// <summary>
-        ///     The <see cref="Shared.Models.ReviewItem" /> Id
+        ///     The <see cref="UI_DSM.Shared.Models.ReviewItem" /> Id
         /// </summary>
         public ReviewItem ReviewItem { get; private set; }
 
@@ -66,6 +66,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         }
 
         /// <summary>
+        ///     The <see cref="Guid" /> of the <see cref="AnnotatableItem" /> if exists
+        /// </summary>
+        public Guid? AnnotatableItemId => this.ReviewItem?.Id;
+
+        /// <summary>
         ///     Gets the Id of the current <see cref="IHaveThingRowViewModel" />
         /// </summary>
         public abstract string Id { get; }
@@ -74,6 +79,15 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         ///     A value indicating if the row is visible or not
         /// </summary>
         public bool IsVisible { get; set; }
+
+        /// <summary>
+        ///     Indicates if the current associated <see cref="ReviewItem" /> has some <see cref="Comment" />
+        /// </summary>
+        /// <returns>The assert</returns>
+        public bool HasComment()
+        {
+            return this.ReviewItem != null && this.ReviewItem.Annotations.OfType<Comment>().Any();
+        }
 
         /// <summary>Determines whether the specified object is equal to the current object.</summary>
         /// <param name="obj">The object to compare with the current object.</param>
@@ -89,15 +103,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
             }
 
             return false;
-        }
-
-        /// <summary>
-        ///     Indicates if the current associated <see cref="ReviewItem" /> has some <see cref="Comment" />
-        /// </summary>
-        /// <returns>The assert</returns>
-        public bool HasComment()
-        {
-            return this.ReviewItem != null && this.ReviewItem.Annotations.OfType<Comment>().Any();
         }
 
         /// <summary>Serves as the default hash function.</summary>

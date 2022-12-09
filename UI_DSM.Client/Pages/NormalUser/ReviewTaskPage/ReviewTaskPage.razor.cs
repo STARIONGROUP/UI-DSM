@@ -20,6 +20,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
     using ReactiveUI;
 
     using UI_DSM.Client.Components;
+    using UI_DSM.Client.Components.App.AnnotationLinker;
     using UI_DSM.Client.Components.App.Comments;
     using UI_DSM.Client.Components.App.SelectedItemCard;
     using UI_DSM.Client.Components.NormalUser.Views;
@@ -139,6 +140,24 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.DoneConfirmCancelPopup.IsVisible)
                .Where(x => !x).Subscribe(async _ => await this.OnConfirmClosed()));
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsLinkerVisible)
+                .Subscribe(async x => await this.OnLinkerVisibilityChanged(x)));
+        }
+
+        /// <summary>
+        /// Handle the change of visible of the <see cref="AnnotationLinker"/> component
+        /// </summary>
+        /// <param name="value">The new visibility</param>
+        /// <returns>A <see cref="Task"/></returns>
+        private async Task OnLinkerVisibilityChanged(bool value)
+        {
+            if (!value && this.ViewModel.CurrentBaseViewInstance != null)
+            {
+                await this.ViewModel.CurrentBaseViewInstance.HasChanged();
+            }
+
+            await this.InvokeAsync(this.StateHasChanged);
         }
 
         /// <summary>
@@ -184,7 +203,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 this.DisposeViewDisposables();
                 var projectId = new Guid(this.ProjectId);
                 var reviewId = new Guid(this.ReviewId);
-                await this.Comments.InitializesProperties(projectId, reviewId, this.ViewModel.CurrentView, this.ViewModel.Participant);
+                await this.Comments.InitializesProperties(projectId, reviewId, this.ViewModel.CurrentView, this.ViewModel.Participant, this.ViewModel.OnLinkCallback);
                 this.SelectedItemCard.InitializeViewModel(this.ViewModel.Participant);
 
                 if (baseView is not IReusableView reusableView || !await reusableView.CopyComponents(this.ViewModel.CurrentBaseViewInstance))
@@ -325,6 +344,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
             this.SelectedItem = newSelectedItem;
             this.SelectedItemCard.ViewModel.SelectedItem = this.SelectedItem;
             this.Comments.ViewModel.SelectedItem = this.SelectedItem;
+            this.Comments.ViewModel.AvailableRows = this.ViewModel?.CurrentBaseViewInstance.GetAvailablesRows();
             await this.InvokeAsync(this.StateHasChanged);
         }
 

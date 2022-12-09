@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="HaveThingRowViewModel.cs" company="RHEA System S.A.">
+// <copyright file="AnnotationLinkDto.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,32 +11,25 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+namespace UI_DSM.Shared.DTO.Common
 {
     using CDP4Common.CommonData;
 
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     Interface that defines that a row view model is linked to a <see cref="Thing" />
+    ///     Data Transfer Object that represents the link of a <see cref="Annotation" /> to multiple <see cref="ReviewItem" />
     /// </summary>
-    public interface IHaveThingRowViewModel: IHaveAnnotatableItemRowViewModel
+    public class AnnotationLinkDto
     {
         /// <summary>
-        ///     The <see cref="UI_DSM.Shared.Models.ReviewItem" /> Id
+        ///     The <see cref="Guid" /> of the exisitng <see cref="Annotation" />
         /// </summary>
-        ReviewItem ReviewItem { get; }
+        public Guid AnnotationId { get; set; }
 
         /// <summary>
-        ///     Gets the <see cref="Thing" /> Id
+        ///     The collection of <see cref="Guid" /> of <see cref="Thing" />s
         /// </summary>
-        /// <returns>The <see cref="Guid" /></returns>
-        Guid ThingId { get; }
-
-        /// <summary>
-        ///     Updates the current <see cref="ReviewItem" />
-        /// </summary>
-        /// <param name="item">The new <see cref="ReviewItem" /></param>
-        void UpdateReviewItem(ReviewItem item);
+        public IEnumerable<Guid> ThingsId { get; set; }
     }
 }

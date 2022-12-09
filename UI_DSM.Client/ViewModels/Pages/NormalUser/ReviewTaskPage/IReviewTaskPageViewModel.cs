@@ -15,7 +15,10 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
 {
     using CDP4Common.CommonData;
 
+    using Microsoft.AspNetCore.Components;
+
     using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Client.ViewModels.App.AnnotationLinker;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
@@ -116,6 +119,21 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         ///     The <see cref="IConfirmCancelPopupViewModel" />
         /// </summary>
         IConfirmCancelPopupViewModel DoneConfirmCancelPopup { get; }
+
+        /// <summary>
+        ///     The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element
+        /// </summary>
+        EventCallback<Comment> OnLinkCallback { get; }
+
+        /// <summary>
+        ///     Value indicating if the <see cref="CommentLinker" /> is visible
+        /// </summary>
+        bool IsLinkerVisible { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IAnnotationLinkerViewModel" />
+        /// </summary>
+        IAnnotationLinkerViewModel AnnotationLinkerViewModel { get; }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its

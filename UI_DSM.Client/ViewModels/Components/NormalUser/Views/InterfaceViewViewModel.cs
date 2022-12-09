@@ -14,7 +14,6 @@
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
     using Blazor.Diagrams.Core.Models;
-    using Blazor.Diagrams.Core.Models.Base;
 
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
@@ -28,6 +27,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
+    using UI_DSM.Shared.Models;
+
+    using Model = Blazor.Diagrams.Core.Models.Base.Model;
 
     /// <summary>
     ///     View model for the <see cref="Client.Components.NormalUser.Views.InterfaceView" /> component
@@ -239,6 +241,31 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 existingRow ??= this.allPorts.FirstOrDefault(x => x.ThingId == row.ThingId);
                 this.SelectedElement = existingRow;
             }
+        }
+
+        /// <summary>
+        ///     Gets a collection of all availables <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <returns>The collection of <see cref="IHaveAnnotatableItemRowViewModel" /></returns>
+        public override List<IHaveAnnotatableItemRowViewModel> GetAvailablesRows()
+        {
+            var rows = new List<IHaveAnnotatableItemRowViewModel>();
+            rows.AddRange(this.Interfaces);
+            rows.AddRange(this.Products);
+            rows.AddRange(this.allPorts);
+            return rows;
+        }
+
+        /// <summary>
+        ///     Updates all <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <param name="annotatableItems">A collection of <see cref="AnnotatableItem" /></param>
+        public override void UpdateAnnotatableRows(List<AnnotatableItem> annotatableItems)
+        {
+            var reviewItems = annotatableItems.OfType<ReviewItem>();
+            this.Interfaces.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
+            this.Products.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
+            this.allPorts.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
         }
 
         /// <summary>

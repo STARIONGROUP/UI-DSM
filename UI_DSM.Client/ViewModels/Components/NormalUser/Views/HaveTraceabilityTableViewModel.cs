@@ -115,6 +115,44 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     Gets a collection of all availables <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <returns>The collection of <see cref="IHaveThingRowViewModel" /></returns>
+        public override List<IHaveAnnotatableItemRowViewModel> GetAvailablesRows()
+        {
+            var rows = new List<IHaveAnnotatableItemRowViewModel>();
+            rows.AddRange(this.TraceabilityTableViewModel.Rows);
+            rows.AddRange(this.TraceabilityTableViewModel.Columns);
+
+            foreach (var availableRelationship in this.AvailableRelationships)
+            {
+                rows.AddRange(availableRelationship.Value
+                    .Select(relationshipRowViewModel => relationshipRowViewModel.Value));
+            }
+
+            return rows;
+        }
+
+        /// <summary>
+        ///     Updates all <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <param name="annotatableItems">A collection of <see cref="AnnotatableItem" /></param>
+        public override void UpdateAnnotatableRows(List<AnnotatableItem> annotatableItems)
+        {
+            var reviewItems = annotatableItems.OfType<ReviewItem>();
+            this.TraceabilityTableViewModel.Rows.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
+            this.TraceabilityTableViewModel.Columns.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
+
+            foreach (var availableRelationship in this.AvailableRelationships)
+            {
+                var rows = availableRelationship.Value
+                    .Select(relationshipRowViewModel => relationshipRowViewModel.Value).ToList();
+
+                rows.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
+            }
+        }
+
+        /// <summary>
         ///     Populates the <see cref="AvailableRelationships" />
         /// </summary>
         /// <param name="rows">All possible <see cref="IHaveThingRowViewModel" /> rows</param>

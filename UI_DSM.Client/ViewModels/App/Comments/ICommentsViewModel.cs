@@ -20,6 +20,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
     using UI_DSM.Client.ViewModels.App.CommentCreation;
     using UI_DSM.Client.ViewModels.App.ReplyCreation;
     using UI_DSM.Client.ViewModels.Components;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
@@ -129,13 +130,24 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         IConfirmCancelPopupViewModel ReplyConfirmCancelPopupViewModel { get; set; }
 
         /// <summary>
+        ///     Event callback when a user wants to link a <see cref="Comment" /> to another element
+        /// </summary>
+        EventCallback<Comment> OnLinkCallback { get; }
+
+        /// <summary>
+        ///     A collection of <see cref="AvailableRows" />
+        /// </summary>
+        List<IHaveAnnotatableItemRowViewModel> AvailableRows { get; set; }
+
+        /// <summary>
         ///     Initializes this viewModel properties
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
         /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
         /// <param name="currentView">The current <see cref="View" /></param>
         /// <param name="currentParticipant">The current <see cref="Participant" /></param>
-        void InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant currentParticipant);
+        /// <param name="onLinkCallback">The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element</param>
+        void InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant currentParticipant, EventCallback<Comment> onLinkCallback);
 
         /// <summary>
         ///     Opens the creation popup

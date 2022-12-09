@@ -15,6 +15,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 {
     using CDP4Common.CommonData;
 
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
@@ -24,7 +25,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     public abstract partial class BaseView
     {
         /// <summary>
-        ///     Backing field for the <see cref="IsLoading"/> property
+        ///     Backing field for the <see cref="IsLoading" /> property
         /// </summary>
         private bool isLoading;
 
@@ -72,5 +73,18 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// </summary>
         /// <param name="selectedItem">The previous selected <see cref="object" /></param>
         public abstract void TrySetSelectedItem(object selectedItem);
+
+        /// <summary>
+        ///     Gets a collection of all availables <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <returns>The collection of <see cref="IHaveAnnotatableItemRowViewModel" /></returns>
+        public abstract List<IHaveAnnotatableItemRowViewModel> GetAvailablesRows();
+
+        /// <summary>
+        ///     Updates all <see cref="IHaveAnnotatableItemRowViewModel" /> rows
+        /// </summary>
+        /// <param name="annotatableItems">A collection of <see cref="AnnotatableItem"/></param>
+        /// <returns>A <see cref="Task"/></returns>
+        public abstract Task UpdateAnnotatableRows(List<AnnotatableItem> annotatableItems);
     }
 }

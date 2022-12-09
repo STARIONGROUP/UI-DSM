@@ -47,7 +47,7 @@ namespace UI_DSM.Client.Services.ReviewItemService
         /// </summary>
         /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
         /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
-        /// <param name="thingId">The <see cref="Guid" /> of the linked <see cref="Thing"/></param>
+        /// <param name="thingId">The <see cref="Guid" /> of the linked <see cref="Thing" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{ReviewItem}" /></returns>
         Task<EntityRequestResponse<ReviewItem>> CreateReviewItem(Guid projectId, Guid reviewId, Guid thingId);
 
@@ -79,5 +79,15 @@ namespace UI_DSM.Client.Services.ReviewItemService
         /// <param name="reviewItem">The <see cref="ReviewItem" /> to update</param>
         /// <returns>A <see cref="Task" /> with the updated <see cref="ReviewItem" /></returns>
         Task<EntityRequestResponse<ReviewItem>> UpdateReviewItem(Guid projectId, Guid reviewId, ReviewItem reviewItem);
+
+        /// <summary>
+        ///     Links multiple <see cref="ReviewItem" /> to <see cref="Annotation" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
+        /// <param name="annotationId">The <see cref="Guid" /> of the <see cref="Annotation" /></param>
+        /// <param name="thingIds">A collection of <see cref="Guid" /> of <see cref="Thing" />s that has to be linked</param>
+        /// <returns>A <see cref="Task" /> with the updated <see cref="ReviewItem" />s</returns>
+        Task<EntitiesRequestResponses<ReviewItem>> LinkItemsToAnnotation(Guid projectId, Guid reviewId, Guid annotationId, IEnumerable<Guid> thingIds);
     }
 }

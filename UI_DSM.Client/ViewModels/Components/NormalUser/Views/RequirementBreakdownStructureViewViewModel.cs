@@ -17,6 +17,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using CDP4Common.EngineeringModelData;
     using CDP4Common.SiteDirectoryData;
 
+    using DevExpress.Blazor.Internal;
+
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Model;
@@ -90,6 +92,25 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             {
                 this.SelectedElement = this.Rows.FirstOrDefault(x => x.ThingId == requirement.ThingId);
             }
+        }
+
+        /// <summary>
+        ///     Gets a collection of all availables <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <returns>The collection of <see cref="IHaveThingRowViewModel" /></returns>
+        public override List<IHaveAnnotatableItemRowViewModel> GetAvailablesRows()
+        {
+            return new List<IHaveAnnotatableItemRowViewModel>(this.Rows);
+        }
+
+        /// <summary>
+        ///     Updates all <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <param name="annotatableItems">A collection of <see cref="AnnotatableItem" /></param>
+        public override void UpdateAnnotatableRows(List<AnnotatableItem> annotatableItems)
+        {
+            var reviewItems = annotatableItems.OfType<ReviewItem>();
+            this.Rows.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
         }
 
         /// <summary>

@@ -19,28 +19,28 @@ namespace UI_DSM.Client.Components.Administration.ProjectManagement
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    /// Partial class for the component <see cref="ModelsDetails"/>
+    ///     Partial class for the component <see cref="ModelsDetails" />
     /// </summary>
     public partial class ModelsDetails
-	{
+    {
         /// <summary>
-        /// The <see cref="IProjectDetailsViewModel" /> for the component
+        ///     The <see cref="IProjectDetailsViewModel" /> for the component
         /// </summary>
         [Parameter]
         public IProjectDetailsViewModel ViewModel { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of models
+        ///     Gets or sets the list of models
         /// </summary>
-        public List<Model> ProjectModels { get; set; }
+        public List<Model> ProjectModels => this.GetProjectModels();
 
         /// <summary>
-        /// Method invoked when the component is ready to start, having received its
-        /// initial parameters from its parent in the render tree.
+        ///     Gets the collection of models
         /// </summary>
-        protected override void OnInitialized()
+        /// <returns>The collection of model</returns>
+        private List<Model> GetProjectModels()
         {
-            this.ProjectModels = this.ViewModel.Project.Artifacts.OfType<Model>().ToList();
+            return this.ViewModel.Project.Artifacts.OfType<Model>().ToList();
         }
     }
 }
