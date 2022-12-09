@@ -149,7 +149,7 @@ namespace UI_DSM.Server.Tests.Managers
             });
 
             await this.manager.LinkAnnotationToItems(review,annotation, thingIds);
-            Assert.That(review.ReviewItems.Count, Is.EqualTo(3));
+            Assert.That(review.ReviewItems, Has.Count.EqualTo(3));
 
             this.context.Setup(x => x.SaveChangesAsync(default)).ThrowsAsync(new InvalidOperationException());
             var result = await this.manager.LinkAnnotationToItems(review, annotation, thingIds);
