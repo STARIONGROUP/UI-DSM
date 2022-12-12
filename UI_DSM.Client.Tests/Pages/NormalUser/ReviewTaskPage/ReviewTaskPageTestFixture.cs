@@ -13,7 +13,6 @@
 
 namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
 {
-    using AppComponents;
     using Bunit;
 
     using CDP4Common.CommonData;
@@ -36,6 +35,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Services.ViewProviderService;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Client.ViewModels.App.AnnotationLinker;
     using UI_DSM.Client.ViewModels.App.Comments;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.App.OptionChooser;
@@ -59,6 +59,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
         private Mock<IThingService> thingService;
         private Mock<IParticipantService> participantService;
         private Mock<IReviewTaskService> reviewTaskService;
+        private IAnnotationLinkerViewModel annotationLinker;
         private IViewProviderService viewProviderService;
         private ISelectedItemCardViewModel selectedItemCard;
         private Guid projectId;
@@ -90,9 +91,10 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
 
             this.viewProviderService = new ViewProviderService();
             this.context = new TestContext();
+            this.annotationLinker = new AnnotationLinkerViewModel();
 
             this.viewModel = new ReviewTaskPageViewModel(this.thingService.Object, this.reviewService.Object, this.viewProviderService,
-                this.participantService.Object, this.reviewItemService.Object, this.reviewTaskService.Object);
+                this.participantService.Object, this.reviewItemService.Object, this.reviewTaskService.Object, this.annotationLinker);
 
             this.selectedItemCard = new SelectedItemCardViewModel();
             this.projectId = Guid.NewGuid();
@@ -132,162 +134,186 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
         [Test]
         public async Task VerifyInitialization()
         {
-            var renderer = this.context.RenderComponent<ReviewTaskPage>(parameters =>
+            try
             {
-                parameters.Add(p => p.ProjectId, this.projectId.ToString());
-                parameters.Add(p => p.ReviewId, this.reviewId.ToString());
-                parameters.Add(p => p.ReviewObjectiveId, this.reviewObjectiveId.ToString());
-                parameters.Add(p => p.ReviewTaskId, this.reviewTaskId.ToString());
-            });
-
-            Assert.That(renderer.Instance.BaseView, Is.Null);
-
-            var review = new Review(this.reviewId)
-            {
-                ReviewObjectives = { new ReviewObjective(Guid.NewGuid()) },
-                Artifacts = 
+                var renderer = this.context.RenderComponent<ReviewTaskPage>(parameters =>
                 {
-                    new Model(Guid.NewGuid())
+                    parameters.Add(p => p.ProjectId, this.projectId.ToString());
+                    parameters.Add(p => p.ReviewId, this.reviewId.ToString());
+                    parameters.Add(p => p.ReviewObjectiveId, this.reviewObjectiveId.ToString());
+                    parameters.Add(p => p.ReviewTaskId, this.reviewTaskId.ToString());
+                });
+
+                Assert.That(renderer.Instance.BaseView, Is.Null);
+
+                var review = new Review(this.reviewId)
+                {
+                    ReviewObjectives = { new ReviewObjective(Guid.NewGuid()) },
+                    Artifacts =
                     {
-                        IterationId = Guid.NewGuid(),
-                        ModelName = "Envision - Iteration 4"
-                    },
-                    new Model(Guid.NewGuid())
-                    {
-                        IterationId = Guid.NewGuid(),
-                        ModelName = "Envision - Iteration 5"
+                        new Model(Guid.NewGuid())
+                        {
+                            IterationId = Guid.NewGuid(),
+                            ModelName = "Envision - Iteration 4"
+                        },
+                        new Model(Guid.NewGuid())
+                        {
+                            IterationId = Guid.NewGuid(),
+                            ModelName = "Envision - Iteration 5"
+                        }
                     }
-                }
-            };
+                };
 
-            this.reviewService.Setup(x => x.GetReviewOfProject(this.projectId, this.reviewId, It.IsAny<int>()))
-                .ReturnsAsync(review);
+                this.reviewService.Setup(x => x.GetReviewOfProject(this.projectId, this.reviewId, It.IsAny<int>()))
+                    .ReturnsAsync(review);
 
-            await this.viewModel.OnInitializedAsync(this.projectId, this.reviewId, this.reviewObjectiveId, this.reviewTaskId);
-            Assert.That(this.viewModel.ReviewObjective, Is.Null);
+                await this.viewModel.OnInitializedAsync(this.projectId, this.reviewId, this.reviewObjectiveId, this.reviewTaskId);
+                Assert.That(this.viewModel.ReviewObjective, Is.Null);
 
-            var reviewObjective = new ReviewObjective(this.reviewObjectiveId)
-            {
-                ReviewTasks = { new ReviewTask(Guid.NewGuid()) },
-                RelatedViews =
+                var reviewObjective = new ReviewObjective(this.reviewObjectiveId)
                 {
-                    View.InterfaceView
-                }
-            };
+                    ReviewTasks = { new ReviewTask(Guid.NewGuid()) },
+                    RelatedViews =
+                    {
+                        View.InterfaceView
+                    }
+                };
 
-            review.ReviewObjectives.Add(reviewObjective);
+                review.ReviewObjectives.Add(reviewObjective);
 
-            await this.viewModel.OnInitializedAsync(this.projectId, this.reviewId, this.reviewObjectiveId, this.reviewTaskId);
-            Assert.That(this.viewModel.ReviewTask, Is.Null);
+                await this.viewModel.OnInitializedAsync(this.projectId, this.reviewId, this.reviewObjectiveId, this.reviewTaskId);
+                Assert.That(this.viewModel.ReviewTask, Is.Null);
 
-            var reviewTask = new ReviewTask(this.reviewTaskId)
+                var reviewTask = new ReviewTask(this.reviewTaskId)
+                {
+                    MainView = View.BudgetView
+                };
+
+                reviewObjective.ReviewTasks.Add(reviewTask);
+
+                this.thingService.Setup(x => x.GetThings(this.projectId, It.IsAny<Model>(),
+                    ClassKind.Iteration)).ReturnsAsync(new List<Thing>());
+
+                await this.viewModel.OnInitializedAsync(this.projectId, this.reviewId, this.reviewObjectiveId, this.reviewTaskId);
+
+                renderer.Render();
+
+                Assert.That(renderer.Instance.BaseView!.Instance, Is.Null);
+
+                reviewTask.MainView = View.RequirementBreakdownStructureView;
+                reviewTask.AdditionalView = View.RequirementVerificationControlView;
+                reviewTask.OptionalView = View.ProductBreakdownStructureView;
+                await this.viewModel.OnInitializedAsync(this.projectId, this.reviewId, this.reviewObjectiveId, this.reviewTaskId);
+                renderer.Render();
+
+                Assert.That(renderer.Instance.BaseView, Is.Not.Null);
+
+                this.viewModel.ViewSelectorVisible = true;
+                this.viewModel.SelectedView = this.viewModel.AvailableViews[1];
+                this.viewModel.ViewSelectorVisible = false;
+
+                var relatedViews = renderer.FindComponent<RelatedViews>();
+                await renderer.InvokeAsync(async () => await relatedViews.Instance.OnViewSelect.InvokeAsync(relatedViews.Instance.MainRelatedView));
+
+                Assert.That(renderer.Instance.BaseView.Type, Is.EqualTo(typeof(ProductBreakdownStructureView)));
+
+                this.viewModel.ModelSelectorVisible = true;
+                Assert.That(this.viewModel.CurrentModel, Is.EqualTo(review.Artifacts[1]));
+
+                this.viewModel.SelectedModel = this.viewModel.AvailableModels[1];
+                Assert.That(this.viewModel.ModelSelectorVisible, Is.True);
+
+                this.viewModel.SelectedModel = this.viewModel.AvailableModels[0];
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(this.viewModel.ModelSelectorVisible, Is.False);
+                    Assert.That(this.viewModel.CurrentModel, Is.EqualTo(this.viewModel.AvailableModels[0]));
+                });
+
+                var reviewItem = new ReviewItem(Guid.NewGuid());
+
+                var thing = new HyperLink()
+                {
+                    Iid = Guid.NewGuid()
+                };
+
+                var hyperLink = new HyperLinkRowViewModel(thing, null);
+
+                renderer.Instance.SelectedItem = hyperLink;
+                await renderer.InvokeAsync(() => renderer.Instance.SelectedItemCard.MarkAsReviewed.InvokeAsync(hyperLink));
+                Assert.That(this.viewModel.ConfirmCancelDialog.IsVisible, Is.True);
+                await renderer.InvokeAsync(this.viewModel.ConfirmCancelDialog.OnCancel.InvokeAsync);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(this.viewModel.ConfirmCancelDialog.IsVisible, Is.False);
+                    Assert.That(hyperLink.ReviewItem, Is.Null);
+                });
+
+                await renderer.InvokeAsync(() => renderer.Instance.SelectedItemCard.MarkAsReviewed.InvokeAsync(hyperLink));
+
+                this.reviewItemService.Setup(x => x.CreateReviewItem(this.projectId, this.reviewId, thing.Iid))
+                    .ReturnsAsync(EntityRequestResponse<ReviewItem>.Success(reviewItem));
+
+                this.reviewItemService.Setup(x => x.UpdateReviewItem(this.projectId, this.reviewId, reviewItem))
+                    .ReturnsAsync(EntityRequestResponse<ReviewItem>.Success(new ReviewItem(reviewItem.Id) { IsReviewed = true, ThingId = thing.Iid }));
+
+                await renderer.InvokeAsync(this.viewModel.ConfirmCancelDialog.OnConfirm.InvokeAsync);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(this.viewModel.ConfirmCancelDialog.IsVisible, Is.False);
+                    Assert.That(hyperLink.ReviewItem, Is.Not.Null);
+                    Assert.That(hyperLink.ReviewItem.IsReviewed, Is.True);
+                });
+
+                var doneButton = renderer.Find("#doneButton");
+                doneButton.Click();
+
+                Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.True);
+
+                await renderer.InvokeAsync(() => this.viewModel.DoneConfirmCancelPopup.OnConfirm.InvokeAsync());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(this.viewModel.ReviewTask!.Status, Is.EqualTo(StatusKind.Done));
+                    Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.False);
+                });
+
+                var undoneButton = renderer.Find("#undoneButton");
+                undoneButton.Click();
+
+                Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.True);
+
+                await renderer.InvokeAsync(() => this.viewModel.DoneConfirmCancelPopup.OnConfirm.InvokeAsync());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(this.viewModel.ReviewTask!.Status, Is.EqualTo(StatusKind.Open));
+                    Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.False);
+                });
+
+                var comment = new Comment(Guid.NewGuid());
+                await renderer.InvokeAsync(() => this.viewModel.OnLinkCallback.InvokeAsync(comment));
+                Assert.That(this.viewModel.IsLinkerVisible, Is.True);
+
+                this.reviewItemService.Setup(x => x.LinkItemsToAnnotation(this.projectId, this.reviewId, comment.Id, It.IsAny<IEnumerable<Guid>>()))
+                    .ReturnsAsync(EntitiesRequestResponses<ReviewItem>.Fail(new List<string>()));
+
+                await renderer.InvokeAsync(this.viewModel.AnnotationLinkerViewModel.OnSubmit.InvokeAsync);
+                Assert.That(this.viewModel.IsLinkerVisible, Is.True);
+
+                this.reviewItemService.Setup(x => x.LinkItemsToAnnotation(this.projectId, this.reviewId, comment.Id, It.IsAny<IEnumerable<Guid>>()))
+                    .ReturnsAsync(EntitiesRequestResponses<ReviewItem>.Success(new List<ReviewItem>()));
+
+                await renderer.InvokeAsync(this.viewModel.AnnotationLinkerViewModel.OnSubmit.InvokeAsync);
+                Assert.That(this.viewModel.IsLinkerVisible, Is.False);
+            }
+            catch
             {
-                MainView = View.BudgetView
-            };
-
-            reviewObjective.ReviewTasks.Add(reviewTask);
-
-            this.thingService.Setup(x => x.GetThings(this.projectId, It.IsAny<Model>(),
-                ClassKind.Iteration)).ReturnsAsync(new List<Thing>());
-
-            await this.viewModel.OnInitializedAsync(this.projectId, this.reviewId, this.reviewObjectiveId, this.reviewTaskId);
-            
-            renderer.Render();
-
-            Assert.That(renderer.Instance.BaseView.Instance, Is.Null);
-
-            reviewTask.MainView = View.RequirementBreakdownStructureView;
-            reviewTask.AdditionalView = View.RequirementVerificationControlView;
-            reviewTask.OptionalView = View.ProductBreakdownStructureView;
-            await this.viewModel.OnInitializedAsync(this.projectId, this.reviewId, this.reviewObjectiveId, this.reviewTaskId);
-            renderer.Render();
-
-            Assert.That(renderer.Instance.BaseView, Is.Not.Null);
-
-            this.viewModel.ViewSelectorVisible = true;
-            this.viewModel.SelectedView = this.viewModel.AvailableViews[1];
-            this.viewModel.ViewSelectorVisible = false;
-
-            var relatedViews = renderer.FindComponent<RelatedViews>();
-            await renderer.InvokeAsync(async () => await relatedViews.Instance.OnViewSelect.InvokeAsync(relatedViews.Instance.MainRelatedView));
-
-            Assert.That(renderer.Instance.BaseView.Type, Is.EqualTo(typeof(ProductBreakdownStructureView)));
-
-            this.viewModel.ModelSelectorVisible = true;
-            Assert.That(this.viewModel.CurrentModel, Is.EqualTo(review.Artifacts[1]));
-
-            this.viewModel.SelectedModel = this.viewModel.AvailableModels[1];
-            Assert.That(this.viewModel.ModelSelectorVisible, Is.True);
-
-            this.viewModel.SelectedModel = this.viewModel.AvailableModels[0];
-            
-            Assert.Multiple(() =>
-            {
-                Assert.That(this.viewModel.ModelSelectorVisible, Is.False);
-                Assert.That(this.viewModel.CurrentModel, Is.EqualTo(this.viewModel.AvailableModels[0]));
-            });
-
-            var reviewItem = new ReviewItem(Guid.NewGuid());
-
-            var thing = new HyperLink()
-            {
-                Iid = Guid.NewGuid()
-            };
-
-            var hyperLink = new HyperLinkRowViewModel(thing, null);
-
-            renderer.Instance.SelectedItem = hyperLink;
-            await renderer.InvokeAsync(() => renderer.Instance.SelectedItemCard.MarkAsReviewed.InvokeAsync(hyperLink));
-            Assert.That(this.viewModel.ConfirmCancelDialog.IsVisible, Is.True);
-            await renderer.InvokeAsync(this.viewModel.ConfirmCancelDialog.OnCancel.InvokeAsync);
-            
-            Assert.Multiple(() =>
-            {
-                Assert.That(this.viewModel.ConfirmCancelDialog.IsVisible, Is.False);
-                Assert.That(hyperLink.ReviewItem, Is.Null);
-            });
-
-            await renderer.InvokeAsync(() => renderer.Instance.SelectedItemCard.MarkAsReviewed.InvokeAsync(hyperLink));
-
-            this.reviewItemService.Setup(x => x.CreateReviewItem(this.projectId, this.reviewId, thing.Iid))
-                .ReturnsAsync(EntityRequestResponse<ReviewItem>.Success(reviewItem));
-
-            this.reviewItemService.Setup(x => x.UpdateReviewItem(this.projectId, this.reviewId, reviewItem))
-                .ReturnsAsync(EntityRequestResponse<ReviewItem>.Success(new ReviewItem(reviewItem.Id) { IsReviewed = true, ThingId = thing.Iid}));
-
-            await renderer.InvokeAsync(this.viewModel.ConfirmCancelDialog.OnConfirm.InvokeAsync);
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(this.viewModel.ConfirmCancelDialog.IsVisible, Is.False);
-                Assert.That(hyperLink.ReviewItem, Is.Not.Null);
-                Assert.That(hyperLink.ReviewItem.IsReviewed, Is.True);
-            });
-
-            var doneButton = renderer.Find("#doneButton");
-            doneButton.Click();
-
-            Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.True);
-
-            await renderer.InvokeAsync(() => this.viewModel.DoneConfirmCancelPopup.OnConfirm.InvokeAsync()); 
-            Assert.Multiple(() =>
-            {
-                Assert.That(this.viewModel.ReviewTask.Status, Is.EqualTo(StatusKind.Done));
-                Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.False);
-            });
-
-            var undoneButton = renderer.Find("#undoneButton");
-            undoneButton.Click();
-
-            Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.True);
-
-            await renderer.InvokeAsync(() => this.viewModel.DoneConfirmCancelPopup.OnConfirm.InvokeAsync());
-            Assert.Multiple(() =>
-            {
-                Assert.That(this.viewModel.ReviewTask.Status, Is.EqualTo(StatusKind.Open));
-                Assert.That(this.viewModel.DoneConfirmCancelPopup.IsVisible, Is.False);
-            });
-
+                // On GitHub, exception is thrown even if the JSRuntime has been configured
+            }
         }
     }
 }

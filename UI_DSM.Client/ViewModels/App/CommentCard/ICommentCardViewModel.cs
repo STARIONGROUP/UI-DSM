@@ -16,6 +16,7 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Client.Components.App.ReplyCard;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
@@ -68,6 +69,16 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
         ///     <see cref="EventCallback{TValue}" /> when we want to delete a <see cref="Reply" />
         /// </summary>
         EventCallback<Reply> OnDeleteReplyCallback { get; set; }
+
+        /// <summary>
+        ///     The <see cref="EventCallback" /> when the user wants to link other element to the <see cref="Comment" />
+        /// </summary>
+        EventCallback<Comment> OnLinkCallback { get; set; }
+
+        /// <summary>
+        ///     A collection of all <see cref="LinkedRows" />
+        /// </summary>
+        List<IHaveAnnotatableItemRowViewModel> LinkedRows { get; }
 
         /// <summary>
         ///     Update the status of the <see cref="Comment" />

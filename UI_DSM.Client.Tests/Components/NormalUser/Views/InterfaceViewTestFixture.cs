@@ -200,7 +200,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     .Select(x => x.Value)
                     .ToList();
 
-                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId);
+                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, new List<string>(), new List<string>());
                 Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
 
                 var button = renderer.FindComponent<RadzenCheckBox<bool>>();
@@ -254,6 +254,22 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Assert.That(async () => await renderer.Instance.CopyComponents(otherRenderer.Instance), Is.False);
                     Assert.That(async () => await renderer.Instance.CopyComponents(renderer.Instance), Is.True);
                 });
+
+                var rows = this.viewModel.GetAvailablesRows();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(rows, Is.Not.Empty);
+                    Assert.That(this.viewModel.Interfaces.First().ReviewItem, Is.Null);
+                });
+
+                var reviewItem = new ReviewItem(Guid.NewGuid())
+                {
+                    ThingId = this.viewModel.Interfaces.First().ThingId
+                };
+
+                this.viewModel.UpdateAnnotatableRows(new List<AnnotatableItem> { reviewItem });
+                Assert.That(this.viewModel.Interfaces.First().ReviewItem, Is.Not.Null);
             }
             catch
             {

@@ -21,6 +21,7 @@ namespace UI_DSM.Client.Services.ReviewItemService
 
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Shared.Assembler;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
     using UI_DSM.Shared.Types;
@@ -167,6 +168,33 @@ namespace UI_DSM.Client.Services.ReviewItemService
             {
                 this.ComputeMainRoute(projectId, reviewId);
                 return this.UpdateEntity(reviewItem, 0);
+            }
+            catch (Exception exception)
+            {
+                throw new HttpRequestException(exception.Message);
+            }
+        }
+
+        /// <summary>
+        ///     Links multiple <see cref="ReviewItem" /> to <see cref="Annotation" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
+        /// <param name="annotationId">The <see cref="Guid" /> of the <see cref="Annotation" /></param>
+        /// <param name="thingIds">A collection of <see cref="Guid" /> of <see cref="Thing" />s that has to be linked</param>
+        /// <returns>A <see cref="Task" /> with the updated <see cref="ReviewItem" />s</returns>
+        public async Task<EntitiesRequestResponses<ReviewItem>> LinkItemsToAnnotation(Guid projectId, Guid reviewId, Guid annotationId, IEnumerable<Guid> thingIds)
+        {
+            try
+            {
+                this.ComputeMainRoute(projectId, reviewId);
+
+                var dto = new AnnotationLinkDto { AnnotationId = annotationId, ThingsId = thingIds };
+                var content = new StringContent(this.jsonService.Serialize(dto), Encoding.UTF8, "application/json");
+                var response = await this.HttpClient.PutAsync($"{this.MainRoute}/LinkItems", content);
+                var result = this.jsonService.Deserialize<EntityRequestResponseDto>(await response.Content.ReadAsStreamAsync());
+
+                return HandleEntitiesRequestResponse(result);
             }
             catch (Exception exception)
             {

@@ -22,6 +22,7 @@ namespace UI_DSM.Client.Components.App.Comments
     using UI_DSM.Client.Components.App.CommentCard;
     using UI_DSM.Client.ViewModels.App.CommentCard;
     using UI_DSM.Client.ViewModels.App.Comments;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
@@ -77,9 +78,18 @@ namespace UI_DSM.Client.Components.App.Comments
         /// <returns>The initialized <see cref="ICommentCardViewModel" /></returns>
         private ICommentCardViewModel CreateCommentCardViewModel(Comment comment)
         {
-            return new CommentCardViewModel(comment, this.ViewModel.Participant, this.ViewModel.OnCommentEditCallback, this.ViewModel.OnDeleteCallback, 
+            var rows = new List<IHaveAnnotatableItemRowViewModel>();
+
+            if (this.ViewModel.SelectedItem is IHaveAnnotatableItemRowViewModel row)
+            {
+                rows.AddRange(this.ViewModel.AvailableRows
+                    .Where(x => comment.AnnotatableItems.Any(ai => ai.Id == x.AnnotatableItemId)
+                                && x.AnnotatableItemId != row.AnnotatableItemId));
+            }
+
+            return new CommentCardViewModel(comment, this.ViewModel.Participant, this.ViewModel.OnCommentEditCallback, this.ViewModel.OnDeleteCallback,
                 this.ViewModel.OnUpdateStatusCallback, this.ViewModel.OnReplyCallback, this.ViewModel.OnReplyEditContentCallback,
-                this.ViewModel.OnDeleteReplyCallback);
+                this.ViewModel.OnDeleteReplyCallback, this.ViewModel.OnLinkCallback, rows);
         }
 
         /// <summary>
@@ -89,10 +99,11 @@ namespace UI_DSM.Client.Components.App.Comments
         /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
         /// <param name="currentView">The current <see cref="View" /></param>
         /// <param name="participant">The <see cref="Participant"/></param>
-        /// <returns>A <see cref="Task" /></returns>
-        public Task InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant participant)
+        /// <param name="onLinkCallback">The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element</param>
+        /// <returns>A <see cref="Task" /></returns>        
+        public Task InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant participant, EventCallback<Comment> onLinkCallback)
         {
-            this.ViewModel.InitializesProperties(projectId, reviewId, currentView, participant);
+            this.ViewModel.InitializesProperties(projectId, reviewId, currentView, participant, onLinkCallback);
             return this.InvokeAsync(this.StateHasChanged);
         }
     }

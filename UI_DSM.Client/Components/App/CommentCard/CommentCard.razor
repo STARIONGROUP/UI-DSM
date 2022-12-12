@@ -17,8 +17,7 @@
 				@bind-IsOpen="@this.IsOnStatusUpdateMode"
 				Width="200"
 				PositionTarget="@this.PositionTarget"
-				PositionMode="DropDownPositionMode.Bottom"
-			>
+				PositionMode="DropDownPositionMode.Bottom">
 
 				<BodyTemplate>
 					@foreach (var status in AvailableStatus)
@@ -77,6 +76,10 @@
 					Delete
 				</button>
 			}
+			<button class="app-comment__button" @onclick="this.OnLinkCallback">
+				<FeatherLink2 Size="20" Color="currentColor" StrokeWidth="2"/>
+				Link
+			</button>
 		}
 	</div>
 
@@ -89,6 +92,18 @@
 				<ReplyCard ViewModel="@(this.CreateReplyCardViewModel(reply))"/>
 			}
 		</AppAccordion>
+		</div>
+	}
+	
+	@if (this.ViewModel.LinkedRows.Any())
+	{
+		<div class="app-comment__annotatableItems">
+			<AppAccordion Label="Linked Items" Variant="AppAccordion.VariantValue.Reply" PanelOpen="false">
+				@foreach (var linkedItem in this.ViewModel.LinkedRows.OrderBy(x => x.Id))
+				{
+					<p>@linkedItem.Id</p>
+				}
+			</AppAccordion>
 		</div>
 	}
 </div>

@@ -80,6 +80,19 @@ else
 					}
 				</Template>
 			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(FunctionRowViewModel.LinkedCostValues)" Title="Cost" Filterable="false">
+				<Template Context="data">
+					@if (data is FunctionRowViewModel function)
+					{
+						<ul>
+							@foreach (var costValue in function.LinkedCostValues)
+							{
+									<li>@costValue.Item1 (@costValue.Item2)</li>
+							}
+						</ul>
+					}
+				</Template>
+			</RadzenDataGridColumn>
 		</Columns>
 	</RadzenDataGrid>
 }

@@ -112,5 +112,48 @@ namespace UI_DSM.Server.Tests.Managers
             result = await this.manager.UpdateEntity(reviewItem);
             Assert.That(result.Succeeded, Is.False);
         }
+
+        [Test]
+        public async Task VerifyLinkAnnotationToItems()
+        {
+            var reviewItem = new ReviewItem(Guid.NewGuid())
+            {
+                ThingId = Guid.NewGuid()
+            };
+
+            var reviewItem2 = new ReviewItem(Guid.NewGuid())
+            {
+                ThingId = Guid.NewGuid()
+            };
+
+            var review = new Review(Guid.NewGuid())
+            {
+                ReviewItems = { reviewItem, reviewItem2 }
+            };
+
+            var annotation = new Comment(Guid.NewGuid());
+
+            var thingIds = new List<Guid>
+            {
+                reviewItem.ThingId,
+                Guid.NewGuid()
+            };
+
+            this.reviewDbSet.UpdateDbSetCollection(new List<Review>{review});
+
+            this.reviewItemDbSet.UpdateDbSetCollection(new List<ReviewItem>
+            {
+                reviewItem,
+                new (Guid.NewGuid()){EntityContainer = new Review(Guid.NewGuid())}, 
+                reviewItem2
+            });
+
+            await this.manager.LinkAnnotationToItems(review,annotation, thingIds);
+            Assert.That(review.ReviewItems, Has.Count.EqualTo(3));
+
+            this.context.Setup(x => x.SaveChangesAsync(default)).ThrowsAsync(new InvalidOperationException());
+            var result = await this.manager.LinkAnnotationToItems(review, annotation, thingIds);
+            Assert.That(result.Succeeded, Is.False);
+        }
     }
 }

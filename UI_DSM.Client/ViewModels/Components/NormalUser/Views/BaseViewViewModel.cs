@@ -19,6 +19,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -57,6 +58,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         protected Guid ReviewId { get; private set; }
 
         /// <summary>
+        ///     A collection of columns name that can be visible by default at start
+        /// </summary>
+        public List<string> AdditionnalColumnsVisibleAtStart { get; protected set; }
+
+        /// <summary>
+        ///     A collection of prefilters
+        /// </summary>
+        protected List<string> Prefilters { get; set; }
+
+        /// <summary>
         ///     A collection of <see cref="Thing" />
         /// </summary>
         public IEnumerable<Thing> Things { get; private set; }
@@ -76,12 +87,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="things">A collection of <see cref="Thing" /></param>
         /// <param name="projectId">The <see cref="Project" /> id</param>
         /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="prefilters">A collection of prefilters</param>
+        /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
         /// <returns>A <see cref="Task" /></returns>
-        public virtual Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
+        public virtual Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
         {
             this.Things = things;
             this.ProjectId = projectId;
             this.ReviewId = reviewId;
+            this.Prefilters = prefilters;
+            this.AdditionnalColumnsVisibleAtStart = additionnalColumnsVisibleAtStart;
             return Task.CompletedTask;
         }
 
@@ -90,5 +105,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         /// <param name="selectedItem">The previously selectedItem</param>
         public abstract void TrySetSelectedItem(object selectedItem);
+
+        /// <summary>
+        ///     Gets a collection of all availables <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <returns>The collection of <see cref="IHaveAnnotatableItemRowViewModel" /></returns>
+        public abstract List<IHaveAnnotatableItemRowViewModel> GetAvailablesRows();
+
+        /// <summary>
+        ///     Updates all <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <param name="annotatableItems">A collection of <see cref="AnnotatableItem" /></param>
+        public abstract void UpdateAnnotatableRows(List<AnnotatableItem> annotatableItems);
     }
 }

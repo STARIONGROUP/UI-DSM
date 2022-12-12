@@ -95,8 +95,12 @@ namespace UI_DSM.Server.Managers.CommentManager
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
         public async Task<IEnumerable<Entity>> GetCommentsOfAnnotatableItem(Guid projectId, Guid annotatableItemId)
         {
-            var comments = this.EntityDbSet.Where(x => x.EntityContainer.Id == projectId && x.AnnotatableItems.Any(item => item.Id == annotatableItemId))
-                .BuildIncludeEntityQueryable(1);
+            var comments = this.EntityDbSet.Where(x => x.EntityContainer.Id == projectId 
+                                                       && x.AnnotatableItems.Any(item => item.Id == annotatableItemId))
+                .Include(x => x.Author)
+                .Include(x => x.AnnotatableItems)
+                .Include(x => x.Replies)
+                .ThenInclude(x => x.Author);
 
             var list = await comments.ToListAsync();
 

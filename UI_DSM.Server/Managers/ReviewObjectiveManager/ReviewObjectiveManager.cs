@@ -253,7 +253,7 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// <param name="reviewObjectiveId">The <see cref="Guid" /> of the <see cref="ReviewObjective" /></param>
         public async Task UpdateStatus(Guid reviewObjectiveId)
         {
-            var reviewObjective = await this.FindEntity(reviewObjectiveId);
+            var reviewObjective = (await this.GetEntity(reviewObjectiveId)).OfType<ReviewObjective>().FirstOrDefault();
 
             if (reviewObjective == null)
             {

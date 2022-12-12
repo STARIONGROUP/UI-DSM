@@ -224,5 +224,36 @@ namespace UI_DSM.Client.Tests.Services.ReviewItemService
             httpResponse.Content = new StringContent(string.Empty);
             Assert.That(async () => await this.service.UpdateReviewItem(projectId, reviewId, reviewItem), Throws.Exception);
         }
+
+        [Test]
+        public async Task VerifyLinkItemsToAnnotation()
+        {
+            var projectId = Guid.NewGuid();
+            var reviewId = Guid.NewGuid();
+            var annotationId = Guid.NewGuid();
+            var thingIds = new List<Guid> { Guid.NewGuid() };
+
+            var httpResponse = new HttpResponseMessage();
+            var requestResponse = new EntityRequestResponseDto() { IsRequestSuccessful = false };
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
+
+            var request = this.httpMessageHandler.When(HttpMethod.Put, $"/Project/{projectId}/Review/{reviewId}/ReviewItem/LinkItems");
+            request.Respond(_ => httpResponse);
+
+            var result = await this.service.LinkItemsToAnnotation(projectId, reviewId, annotationId, thingIds);
+            Assert.That(result.IsRequestSuccessful, Is.False);
+
+            requestResponse.IsRequestSuccessful = true;
+            requestResponse.Entities = new ReviewItem(Guid.NewGuid()).GetAssociatedEntities().ToDtos();
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResponse));
+            result = await this.service.LinkItemsToAnnotation(projectId, reviewId, annotationId, thingIds);
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsRequestSuccessful, Is.True);
+                Assert.That(async () => await this.service.LinkItemsToAnnotation(projectId, reviewId, annotationId, thingIds), Throws.Exception);
+            });
+        }
     }
 }

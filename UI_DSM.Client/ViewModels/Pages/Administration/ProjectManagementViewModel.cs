@@ -119,7 +119,12 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration
         public async Task OnInitializedAsync()
         {
             var participants = await this.userService.GetParticipantsForUser();
-            this.IsAuthorized = participants.Any(x => x.IsAllowedTo(AccessRight.ProjectManagement));
+
+            if (!this.IsAuthorized)
+            {
+                this.IsAuthorized = participants.Any(x => x.IsAllowedTo(AccessRight.ProjectManagement));
+            }
+
             this.Projects.AddRange(await this.projectService.GetProjects());
         }
 

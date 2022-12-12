@@ -13,8 +13,6 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
-    using UI_DSM.Client.ViewModels.App.Filter;
-
     /// <summary>
     ///     Interface definition for <see cref="FunctionalTraceabilityToProductViewViewModel" />
     /// </summary>

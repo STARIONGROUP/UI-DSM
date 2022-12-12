@@ -31,6 +31,7 @@ namespace UI_DSM.Shared.DTO.Models
         public ReviewTaskDto()
         {
             this.IsAssignedTo = new List<Guid>();
+            this.Prefilters = new List<string>();
         }
 
         /// <summary>
@@ -40,6 +41,7 @@ namespace UI_DSM.Shared.DTO.Models
         public ReviewTaskDto(Guid id) : base(id)
         {
             this.IsAssignedTo = new List<Guid>();
+            this.Prefilters = new List<string>();
         }
 
         /// <summary>
@@ -96,6 +98,11 @@ namespace UI_DSM.Shared.DTO.Models
         ///    Gets or sets the IsAssignedTo of the ReviewTask
         /// </summary>
         public List<Guid> IsAssignedTo { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the Prefilters of the ReviewTask
+        /// </summary>
+        public List<string> Prefilters { get; set; }
 
         /// <summary>
         ///    Instantiate a <see cref="Entity" /> from a <see cref="EntityDto" />

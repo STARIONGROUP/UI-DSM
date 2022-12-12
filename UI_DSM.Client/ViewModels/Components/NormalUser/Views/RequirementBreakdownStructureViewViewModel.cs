@@ -17,7 +17,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using CDP4Common.EngineeringModelData;
     using CDP4Common.SiteDirectoryData;
 
+    using DevExpress.Blazor.Internal;
+
     using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.ViewModels.App.Filter;
@@ -53,16 +56,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     Initialize this view model properties
         /// </summary>
-        /// <param name="things">A collection of <see cref="BaseViewViewModel.Things" /></param>
+        /// <param name="things">A collection of <see cref="Thing" /></param>
         /// <param name="projectId">The <see cref="Project" /> id</param>
         /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="prefilters">A collection of prefilters</param>
+        /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
+        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
         {
-            await base.InitializeProperties(things, projectId, reviewId);
+            await base.InitializeProperties(things, projectId, reviewId, prefilters, additionnalColumnsVisibleAtStart);
 
             var filteredThings = this.Things.OfType<RequirementsSpecification>()
                 .SelectMany(x => x.Requirement)
+                .Where(x => x.IsValidForPrefilter(this.Prefilters))
                 .OrderBy(x => x.ShortName)
                 .ToList();
 
@@ -86,6 +92,25 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             {
                 this.SelectedElement = this.Rows.FirstOrDefault(x => x.ThingId == requirement.ThingId);
             }
+        }
+
+        /// <summary>
+        ///     Gets a collection of all availables <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <returns>The collection of <see cref="IHaveThingRowViewModel" /></returns>
+        public override List<IHaveAnnotatableItemRowViewModel> GetAvailablesRows()
+        {
+            return new List<IHaveAnnotatableItemRowViewModel>(this.Rows);
+        }
+
+        /// <summary>
+        ///     Updates all <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <param name="annotatableItems">A collection of <see cref="AnnotatableItem" /></param>
+        public override void UpdateAnnotatableRows(List<AnnotatableItem> annotatableItems)
+        {
+            var reviewItems = annotatableItems.OfType<ReviewItem>();
+            this.Rows.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
         }
 
         /// <summary>

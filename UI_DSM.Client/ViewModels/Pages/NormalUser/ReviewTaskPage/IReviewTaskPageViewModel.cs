@@ -15,7 +15,10 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
 {
     using CDP4Common.CommonData;
 
+    using Microsoft.AspNetCore.Components;
+
     using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Client.ViewModels.App.AnnotationLinker;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
@@ -113,6 +116,26 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         bool ShouldRefresh { get; set; }
 
         /// <summary>
+        ///     The <see cref="IConfirmCancelPopupViewModel" />
+        /// </summary>
+        IConfirmCancelPopupViewModel DoneConfirmCancelPopup { get; }
+
+        /// <summary>
+        ///     The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element
+        /// </summary>
+        EventCallback<Comment> OnLinkCallback { get; }
+
+        /// <summary>
+        ///     Value indicating if the <see cref="CommentLinker" /> is visible
+        /// </summary>
+        bool IsLinkerVisible { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IAnnotationLinkerViewModel" />
+        /// </summary>
+        IAnnotationLinkerViewModel AnnotationLinkerViewModel { get; }
+
+        /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
         ///     Override this method if you will perform an asynchronous operation and
@@ -165,13 +188,14 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         void OpenConfirmDialog(IHaveThingRowViewModel row);
 
         /// <summary>
-        ///     The <see cref="IConfirmCancelPopupViewModel" />
-        /// </summary>
-        IConfirmCancelPopupViewModel DoneConfirmCancelPopup { get; }
-
-        /// <summary>
-        ///     Opens a popup to mark a <see cref="ReviewTask"/> as done or undone
+        ///     Opens a popup to mark a <see cref="ReviewTask" /> as done or undone
         /// </summary>
         void AskConfirmMarkTaskAsDoneOrUndone();
+
+        /// <summary>
+        ///     Gets the prefilters collection for the current view
+        /// </summary>
+        /// <returns>A collection of prefilters</returns>
+        List<string> GetPrefilters();
     }
 }

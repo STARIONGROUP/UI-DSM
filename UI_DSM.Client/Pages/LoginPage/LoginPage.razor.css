@@ -29,3 +29,12 @@
 .login-page__subtitle {
   font-size: var(--text-xl);
 }
+
+.footer {
+    background: var(--colors-gray-50);
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+}

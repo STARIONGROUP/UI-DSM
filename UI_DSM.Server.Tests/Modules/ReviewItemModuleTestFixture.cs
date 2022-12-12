@@ -23,6 +23,7 @@ namespace UI_DSM.Server.Tests.Modules
     using NUnit.Framework;
 
     using UI_DSM.Server.Managers;
+    using UI_DSM.Server.Managers.AnnotationManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReviewItemManager;
     using UI_DSM.Server.Managers.ReviewManager;
@@ -30,6 +31,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Server.Types;
     using UI_DSM.Server.Validator;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
@@ -47,6 +49,7 @@ namespace UI_DSM.Server.Tests.Modules
         private Mock<IEntityManager<Review>> reviewManager;
         private Guid projectId;
         private Guid reviewId;
+        private Mock<IAnnotationManager> annotationManager;
 
         [SetUp]
         public void Setup()
@@ -58,6 +61,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.reviewManager.As<IContainedEntityManager<Review>>();
             this.reviewManager.As<IReviewManager>();
             this.participantManager = new Mock<IParticipantManager>();
+            this.annotationManager = new Mock<IAnnotationManager>();
 
             ModuleTestHelper.Setup<ReviewItemModule, ReviewItemDto>(new ReviewItemDtoValidator(), out this.context,
                 out this.response, out this.request, out this.serviceProvider);
@@ -285,6 +289,50 @@ namespace UI_DSM.Server.Tests.Modules
             await this.module.GetEntityForThing(this.reviewItemManager.As<IReviewItemManager>().Object, Guid.NewGuid(), this.context.Object);
             await this.module.GetEntitiesForThings(this.reviewItemManager.As<IReviewItemManager>().Object, new List<Guid>(), this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 400, Times.Exactly(2));
+        }
+
+        [Test]
+        public async Task VerifyLinkItems()
+        {
+            var dto = new AnnotationLinkDto()
+            {
+                AnnotationId = Guid.NewGuid(),
+                ThingsId = new List<Guid> { Guid.NewGuid() }
+            };
+
+            await this.module.LinkItems(this.annotationManager.Object, this.reviewManager.As<IReviewManager>().Object,
+                this.reviewItemManager.As<IReviewItemManager>().Object, this.context.Object, dto);
+
+            this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
+
+            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user"))
+                .ReturnsAsync(new Participant(Guid.NewGuid()));
+
+            this.reviewManager.As<IContainedEntityManager<Review>>()
+                .Setup(x => x.EntityIsContainedBy(this.reviewId, this.projectId)).ReturnsAsync(false);
+
+            await this.module.LinkItems(this.annotationManager.Object, this.reviewManager.As<IReviewManager>().Object,
+                this.reviewItemManager.As<IReviewItemManager>().Object, this.context.Object, dto);
+
+            this.response.VerifySet(x => x.StatusCode = 400, Times.Once);
+
+            this.reviewManager.As<IContainedEntityManager<Review>>()
+                .Setup(x => x.EntityIsContainedBy(this.reviewId, this.projectId)).ReturnsAsync(true);
+
+            await this.module.LinkItems(this.annotationManager.Object, this.reviewManager.As<IReviewManager>().Object,
+                this.reviewItemManager.As<IReviewItemManager>().Object, this.context.Object, dto);
+
+            this.response.VerifySet(x => x.StatusCode = 404, Times.Once);
+
+            this.annotationManager.Setup(x => x.FindEntity(dto.AnnotationId)).ReturnsAsync(new Comment(dto.AnnotationId));
+
+            this.reviewItemManager.As<IReviewItemManager>().Setup(x => x.LinkAnnotationToItems(It.IsAny<Review>(),
+                It.IsAny<Annotation>(), It.IsAny<IEnumerable<Guid>>())).ReturnsAsync(EntityOperationResult<ReviewItem>.AllSuccess(new List<ReviewItem>()));
+
+            await this.module.LinkItems(this.annotationManager.Object, this.reviewManager.As<IReviewManager>().Object,
+                this.reviewItemManager.As<IReviewItemManager>().Object, this.context.Object, dto);
+
+            this.response.VerifySet(x => x.StatusCode = 201, Times.Once);
         }
     }
 }

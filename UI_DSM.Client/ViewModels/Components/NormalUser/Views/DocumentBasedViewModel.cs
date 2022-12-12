@@ -16,6 +16,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
 
+    using DevExpress.Blazor.Internal;
+
+    using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
@@ -37,25 +40,27 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     A collection of <see cref="HyperLinkRowViewModel" />
         /// </summary>
         public IEnumerable<HyperLinkRowViewModel> Rows { get; private set; } = new List<HyperLinkRowViewModel>();
-
+        
         /// <summary>
         ///     Initialize this view model properties
         /// </summary>
         /// <param name="things">A collection of <see cref="Thing" /></param>
         /// <param name="projectId">The <see cref="Project" /> id</param>
         /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="prefilters">A collection of prefilters</param>
+        /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
+        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
         {
-            await base.InitializeProperties(things, projectId, reviewId);
+            await base.InitializeProperties(things, projectId, reviewId, prefilters, additionnalColumnsVisibleAtStart);
 
             var hyperlinks= this.Things.OfType<ElementDefinition>()
-                .Where(x => x.HyperLink.Any())
+                .Where(x => x.HyperLink.Any() && x.HasValidReviewExternalContent(this.Prefilters))
                 .SelectMany(x => x.HyperLink)
                 .ToList();
 
             hyperlinks.AddRange(this.Things.OfType<Requirement>()
-                .Where(x => x.HyperLink.Any())
+                .Where(x => x.HyperLink.Any() && x.HasValidReviewExternalContent(this.Prefilters))
                 .SelectMany(x => x.HyperLink));
 
             var reviewItems = await this.ReviewItemService.GetReviewItemsForThings(this.ProjectId, this.ReviewId,
@@ -75,6 +80,25 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             {
                 this.SelectedElement = this.Rows.FirstOrDefault(x => x.ThingId == hyperLinkRow.ThingId);
             }
+        }
+
+        /// <summary>
+        ///     Gets a collection of all availables <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <returns>The collection of <see cref="IHaveAnnotatableItemRowViewModel" /></returns>
+        public override List<IHaveAnnotatableItemRowViewModel> GetAvailablesRows()
+        {
+            return new List<IHaveAnnotatableItemRowViewModel>(this.Rows);
+        }
+
+        /// <summary>
+        ///     Updates all <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <param name="annotatableItems">A collection of <see cref="AnnotatableItem" /></param>
+        public override void UpdateAnnotatableRows(List<AnnotatableItem> annotatableItems)
+        {
+            var reviewItems = annotatableItems.OfType<ReviewItem>();
+            this.Rows.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
         }
     }
 }

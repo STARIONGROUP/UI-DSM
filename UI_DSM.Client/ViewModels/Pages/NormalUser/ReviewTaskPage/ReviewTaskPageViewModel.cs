@@ -19,6 +19,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
 
     using ReactiveUI;
 
+    using UI_DSM.Client.Components.App.AnnotationLinker;
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Services.Administration.CometService;
     using UI_DSM.Client.Services.Administration.ParticipantService;
@@ -27,6 +28,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Services.ReviewTaskService;
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Services.ViewProviderService;
+    using UI_DSM.Client.ViewModels.App.AnnotationLinker;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
@@ -79,6 +81,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         private IHaveThingRowViewModel currentSelectedRow;
 
         /// <summary>
+        ///     Backing field for <see cref="IsLinkerVisible" />
+        /// </summary>
+        private bool isLinkerVisible;
+
+        /// <summary>
         ///     Backing filed for <see cref="ModelSelectorVisible" />
         /// </summary>
         private bool modelSelectorVisible;
@@ -127,8 +134,10 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         /// <param name="participantService">The <see cref="IParticipantService" /></param>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
         /// <param name="reviewTaskService">The <see cref="IReviewTaskService" /></param>
+        /// <param name="annotationLinkerViewModel">The <see cref="IAnnotationLinkerViewModel" /></param>
         public ReviewTaskPageViewModel(IThingService thingService, IReviewService reviewService,
-            IViewProviderService viewProviderService, IParticipantService participantService, IReviewItemService reviewItemService, IReviewTaskService reviewTaskService)
+            IViewProviderService viewProviderService, IParticipantService participantService, IReviewItemService reviewItemService, IReviewTaskService reviewTaskService
+            , IAnnotationLinkerViewModel annotationLinkerViewModel)
         {
             this.thingService = thingService;
             this.reviewService = reviewService;
@@ -136,6 +145,8 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
             this.participantService = participantService;
             this.reviewItemService = reviewItemService;
             this.reviewTaskService = reviewTaskService;
+            this.AnnotationLinkerViewModel = annotationLinkerViewModel;
+            this.AnnotationLinkerViewModel.OnSubmit = new EventCallbackFactory().Create(this, this.LinkAnnotation);
 
             this.ConfirmCancelDialog = new ConfirmCancelPopupViewModel
             {
@@ -152,6 +163,22 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
                 ContentText = "Are you sure to mark this task as done ?",
                 HeaderText = "Are you sure ?"
             };
+
+            this.OnLinkCallback = new EventCallbackFactory().Create<Comment>(this, this.OpenLinkComponent);
+        }
+
+        /// <summary>
+        ///     The <see cref="IAnnotationLinkerViewModel" />
+        /// </summary>
+        public IAnnotationLinkerViewModel AnnotationLinkerViewModel { get; }
+
+        /// <summary>
+        ///     Value indicating if the <see cref="AnnotationLinker" /> is visible
+        /// </summary>
+        public bool IsLinkerVisible
+        {
+            get => this.isLinkerVisible;
+            set => this.RaiseAndSetIfChanged(ref this.isLinkerVisible, value);
         }
 
         /// <summary>
@@ -268,6 +295,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         }
 
         /// <summary>
+        ///     The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element
+        /// </summary>
+        public EventCallback<Comment> OnLinkCallback { get; }
+
+        /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
         ///     Override this method if you will perform an asynchronous operation and
@@ -307,6 +339,15 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
                 this.SelectedView = this.AvailableViews[0];
                 this.UpdateView(this.SelectedView.View);
             }
+        }
+
+        /// <summary>
+        ///     Gets the prefilters collection for the current view
+        /// </summary>
+        /// <returns>A collection of prefilters</returns>
+        public List<string> GetPrefilters()
+        {
+            return this.CurrentView == this.ReviewTask.MainView ? this.ReviewTask.Prefilters : new List<string>();
         }
 
         /// <summary>
@@ -409,6 +450,36 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
                 : "You are about to mark this task as undone.\nAre you sure?";
 
             this.DoneConfirmCancelPopup.IsVisible = true;
+        }
+
+        /// <summary>
+        ///     Links the <see cref="Annotation" /> to all selected items
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task LinkAnnotation()
+        {
+            var linkResult = await this.reviewItemService.LinkItemsToAnnotation(this.projectId, this.reviewId,
+                this.AnnotationLinkerViewModel.CurrentAnnotation.Id, 
+                this.AnnotationLinkerViewModel.SelectedItems.OfType<IHaveThingRowViewModel>().Select(x => x.ThingId));
+
+            if (linkResult.IsRequestSuccessful)
+            {
+                await this.CurrentBaseViewInstance.UpdateAnnotatableRows(linkResult.Entities.ToList<AnnotatableItem>());
+                this.IsLinkerVisible = false;
+            }
+        }
+
+        /// <summary>
+        ///     Opens the link component to link the current <see cref="Comment" /> to other element
+        /// </summary>
+        /// <param name="comment">The <see cref="Comment" /></param>
+        private void OpenLinkComponent(Comment comment)
+        {
+            if (this.CurrentBaseViewInstance != null)
+            {
+                this.AnnotationLinkerViewModel.InitializesViewModel(this.CurrentBaseViewInstance.GetAvailablesRows(), comment);
+                this.IsLinkerVisible = true;
+            }
         }
 
         /// <summary>

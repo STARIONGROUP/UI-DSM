@@ -30,6 +30,7 @@ namespace UI_DSM.Shared.DTO.Models
         /// </summary>
         public ReviewObjectiveDto()
         {
+            this.AdditionnalColumnsVisibleAtStart = new List<string>();
             this.ReviewTasks = new List<Guid>();
             this.RelatedViews = new List<View>();
             this.ReviewCategories = new List<Guid>();
@@ -41,10 +42,16 @@ namespace UI_DSM.Shared.DTO.Models
         /// <param name="id">The <see cref="Guid" /> of the represented <see cref="Entity" /></param>
         public ReviewObjectiveDto(Guid id) : base(id)
         {
+            this.AdditionnalColumnsVisibleAtStart = new List<string>();
             this.ReviewTasks = new List<Guid>();
             this.RelatedViews = new List<View>();
             this.ReviewCategories = new List<Guid>();
         }
+
+        /// <summary>
+        ///    Gets or sets the AdditionnalColumnsVisibleAtStart of the ReviewObjective
+        /// </summary>
+        public List<string> AdditionnalColumnsVisibleAtStart { get; set; }
 
         /// <summary>
         ///    Gets or sets the Author of the ReviewObjective

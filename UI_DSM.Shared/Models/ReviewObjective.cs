@@ -57,7 +57,13 @@ namespace UI_DSM.Shared.Models
             this.RelatedViews = toCopy.RelatedViews;
             this.ReviewObjectiveKind = toCopy.ReviewObjectiveKind;
             this.ReviewObjectiveKindNumber = toCopy.ReviewObjectiveKindNumber;
+            this.AdditionnalColumnsVisibleAtStart = toCopy.AdditionnalColumnsVisibleAtStart;
         }
+
+        /// <summary>
+        ///     A collection of <see cref="string" /> to specify if additionnal columns has to be visible at start
+        /// </summary>
+        public List<string> AdditionnalColumnsVisibleAtStart { get; set; }
 
         /// <summary>
         ///     Gets or sets the author of the <see cref="AnnotatableItem" />
@@ -141,7 +147,8 @@ namespace UI_DSM.Shared.Models
                 CreatedOn = this.CreatedOn,
                 ReviewObjectiveKindNumber = this.ReviewObjectiveKindNumber,
                 ReviewTasks = this.ReviewTasks.Select(x => x.Id).ToList(),
-                ReviewCategories = this.ReviewCategories.Select(x => x.Id).ToList()
+                ReviewCategories = this.ReviewCategories.Select(x => x.Id).ToList(),
+                AdditionnalColumnsVisibleAtStart = this.AdditionnalColumnsVisibleAtStart ?? new List<string>()
             };
 
             dto.IncludeCommonProperties(this);
@@ -172,6 +179,7 @@ namespace UI_DSM.Shared.Models
             this.Author = this.GetEntity<Participant>(reviewObjectiveDto.Author, resolvedEntity);
             this.CreatedOn = reviewObjectiveDto.CreatedOn;
             this.ReviewCategories.ResolveList(reviewObjectiveDto.ReviewCategories, resolvedEntity);
+            this.AdditionnalColumnsVisibleAtStart = reviewObjectiveDto.AdditionnalColumnsVisibleAtStart;
         }
 
         /// <summary>
@@ -182,6 +190,7 @@ namespace UI_DSM.Shared.Models
             this.ReviewTasks = new EntityContainerList<ReviewTask>(this);
             this.RelatedViews = new List<View>();
             this.ReviewCategories = new List<ReviewCategory>();
+            this.AdditionnalColumnsVisibleAtStart = new List<string>();
         }
     }
 }

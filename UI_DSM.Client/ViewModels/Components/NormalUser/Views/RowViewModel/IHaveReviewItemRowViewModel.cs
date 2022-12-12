@@ -20,10 +20,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
     /// <summary>
     ///     Interface that defines that a row view model is linked to a <see cref="Thing" />
     /// </summary>
-    public interface IHaveThingRowViewModel
+    public interface IHaveThingRowViewModel: IHaveAnnotatableItemRowViewModel
     {
         /// <summary>
-        ///     The <see cref="Shared.Models.ReviewItem" /> Id
+        ///     The <see cref="UI_DSM.Shared.Models.ReviewItem" /> Id
         /// </summary>
         ReviewItem ReviewItem { get; }
 
@@ -34,25 +34,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         Guid ThingId { get; }
 
         /// <summary>
-        ///     Gets the Id of the current <see cref="IHaveThingRowViewModel" />
-        /// </summary>
-        public string Id { get; }
-
-        /// <summary>
-        ///     A value indicating if the row is visible or not
-        /// </summary>
-        bool IsVisible { get; set; }
-
-        /// <summary>
         ///     Updates the current <see cref="ReviewItem" />
         /// </summary>
         /// <param name="item">The new <see cref="ReviewItem" /></param>
         void UpdateReviewItem(ReviewItem item);
-
-        /// <summary>
-        ///     Indicates if the current associated <see cref="Shared.Models.ReviewItem" /> has some <see cref="Comment" />
-        /// </summary>
-        /// <returns>The assert</returns>
-        bool HasComment();
     }
 }

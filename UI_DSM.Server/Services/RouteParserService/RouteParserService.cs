@@ -170,7 +170,7 @@ namespace UI_DSM.Server.Services.RouteParserService
         /// <returns>A <see cref="Task" /> with a collection of <see cref="ParsedUrlDto" /></returns>
         private async Task<List<ParsedUrlDto>> ParseAdministrationUrl(IReadOnlyList<string> splittedUrl)
         {
-            var parsedUrlDtos = new List<ParsedUrlDto>();
+            var parsedUrlDtos = new List<ParsedUrlDto>() { this.index };
             var managementIndex = splittedUrl[1].IndexOf(AdministrationPostfix, StringComparison.InvariantCultureIgnoreCase);
             var pageName = managementIndex == -1 ? splittedUrl[1] : splittedUrl[1].Remove(managementIndex, splittedUrl[1].Length - managementIndex);
             parsedUrlDtos.Add(new ParsedUrlDto($"{pageName} Management", $"{AdministrationPrefix}{pageName}{AdministrationPostfix}"));

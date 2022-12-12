@@ -34,7 +34,44 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         }
 
         /// <summary>
-        /// Initializes this row view model properties
+        ///     Gets the Id of the current <see cref="IHaveThingRowViewModel" />
+        /// </summary>
+        public override string Id => this.Thing.Name;
+
+        /// <summary>
+        ///     Gets the value of Technology of the linked product
+        /// </summary>
+        public List<(string, string)> LinkedTechnologyValues { get; private set; } = new();
+
+        /// <summary>
+        ///     Gets the value of Trl of the linked product
+        /// </summary>
+        public List<(string, int?)> LinkedTrlValues { get; private set; } = new();
+
+        /// <summary>
+        ///     Gets the value of Cost of the linked product
+        /// </summary>
+        public List<(string, string)> LinkedCostValues { get; private set; } = new();
+
+        /// <summary>
+        ///     Updates the collection of <see cref="LinkedCostValues" /> based on an option
+        /// </summary>
+        /// <param name="option">The <see cref="Option" /></param>
+        public void UpdateCostValues(Option option)
+        {
+            var linkedProducts = this.Thing.GetLinkedProducts();
+            this.LinkedCostValues.Clear();
+
+            foreach (var product in linkedProducts.OrderBy(x => x.Name))
+            {
+                this.LinkedCostValues.Add(product.TryGetParameterValue("cost", null, null, out var cost)
+                    ? (product.Name, cost)
+                    : (product.Name, "-"));
+            }
+        }
+
+        /// <summary>
+        ///     Initializes this row view model properties
         /// </summary>
         private void InitalizeProperties()
         {
@@ -44,8 +81,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
             {
                 if (linkedProduct.ShouldHaveTechnologyParameter())
                 {
-                    this.LinkedTechnologyValues.Add(linkedProduct.TryGetParameterValue("technology", null, null, out var technology) 
-                        ? (linkedProduct.Name, technology) 
+                    this.LinkedTechnologyValues.Add(linkedProduct.TryGetParameterValue("technology", null, null, out var technology)
+                        ? (linkedProduct.Name, technology)
                         : (linkedProduct.Name, "-"));
                 }
 
@@ -54,7 +91,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
                     if (linkedProduct.TryGetParameterValue("trl", null, null, out var trl)
                         && int.TryParse(trl, out var trlParsed))
                     {
-                        this.LinkedTrlValues.Add((linkedProduct.Name, trlParsed));   
+                        this.LinkedTrlValues.Add((linkedProduct.Name, trlParsed));
                     }
                     else
                     {
@@ -63,20 +100,5 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
                 }
             }
         }
-
-        /// <summary>
-        ///     Gets the Id of the current <see cref="IHaveThingRowViewModel" />
-        /// </summary>
-        public override string Id => this.Thing.Name;
-
-        /// <summary>
-        ///     Gets the value of Technology of the linked product
-        /// </summary>
-        public List<(string, string)> LinkedTechnologyValues { get; private set; } = new ();
-
-        /// <summary>
-        ///     Gets the value of Trl of the linked product
-        /// </summary>
-        public List<(string, int?)> LinkedTrlValues { get; private set; } = new ();
     }
 }

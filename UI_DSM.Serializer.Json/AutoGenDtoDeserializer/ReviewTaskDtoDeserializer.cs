@@ -150,6 +150,19 @@ namespace UI_DSM.Serializer.Json
                 }
             }
 
+            if (jsonElement.TryGetProperty("prefilters", out var prefiltersProperty))
+            {
+                foreach (var item in prefiltersProperty.EnumerateArray())
+                {
+                    var propertyValue = item.GetString();
+
+                    if (propertyValue != null)
+                    {
+                        dto.Prefilters.Add(propertyValue);
+                    }
+                }
+            }
+
             return dto;
         }
     }

@@ -57,6 +57,19 @@ namespace UI_DSM.Serializer.Json
                 dto.Id = Guid.Parse(propertyValue);
             }
 
+            if (jsonElement.TryGetProperty("additionnalColumnsVisibleAtStart", out var additionnalColumnsVisibleAtStartProperty))
+            {
+                foreach (var item in additionnalColumnsVisibleAtStartProperty.EnumerateArray())
+                {
+                    var propertyValue = item.GetString();
+
+                    if (propertyValue != null)
+                    {
+                        dto.AdditionnalColumnsVisibleAtStart.Add(propertyValue);
+                    }
+                }
+            }
+
             if (jsonElement.TryGetProperty("author", out var authorProperty))
             {
                 var propertyValue = authorProperty.GetString();

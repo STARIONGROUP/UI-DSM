@@ -75,12 +75,14 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     Initialize the correspondant ViewModel for this component
         /// </summary>
         /// <param name="things">The collection of <see cref="Thing" /></param>
-        /// <param name="projectId">The <see cref="Project" /> id</param>
-        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="projectId">The <see cref="UI_DSM.Shared.Models.Project" /> id</param>
+        /// <param name="reviewId">The <see cref="UI_DSM.Shared.Models.Review" /> id</param>
+        /// <param name="prefilters">A collection of prefilters</param>
+        /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
+        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
         {
-            await base.InitializeViewModel(things, projectId, reviewId);
+            await base.InitializeViewModel(things, projectId, reviewId, prefilters, additionnalColumnsVisibleAtStart);
             this.ViewModel.InitializeDiagram();
             this.RefreshDiagram();
             this.IsLoading = false;

@@ -74,7 +74,7 @@ namespace UI_DSM.Server.Managers.ReviewItemManager
         /// <summary>
         ///     Gets a <see cref="ReviewItem" /> that targets a <see cref="Thing" />
         /// </summary>
-        /// <param name="reviewId">The <see cref="Guid"/> of the container of the <see cref="ReviewItem"/></param>
+        /// <param name="reviewId">The <see cref="Guid" /> of the container of the <see cref="ReviewItem" /></param>
         /// <param name="thingId">The <see cref="Guid" /> of the <see cref="Thing" /></param>
         /// <param name="deepLevel">The deepLevel</param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
@@ -99,16 +99,16 @@ namespace UI_DSM.Server.Managers.ReviewItemManager
                 return entityOperationResult;
             }
 
-            var foundEntity = await this.FindEntity(entity.Id);
-            entity.ThingId = foundEntity.ThingId;
+            var reviewItem = (await this.GetEntity(entity.Id)).OfType<ReviewItem>().First();
+            reviewItem.IsReviewed = entity.IsReviewed;
 
-            return await this.UpdateEntityIntoContext(entity);
+            return await this.UpdateEntityIntoContext(reviewItem);
         }
 
         /// <summary>
         ///     Gets all <see cref="ReviewItem" /> that targets <see cref="Thing" />
         /// </summary>
-        /// <param name="reviewId">The <see cref="Guid"/> of the container of the <see cref="ReviewItem"/></param>
+        /// <param name="reviewId">The <see cref="Guid" /> of the container of the <see cref="ReviewItem" /></param>
         /// <param name="thingIds">A collection of <see cref="Guid" /> for <see cref="Thing" />s</param>
         /// <param name="deepLevel">The deepLevel</param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
@@ -122,6 +122,45 @@ namespace UI_DSM.Server.Managers.ReviewItemManager
             }
 
             return reviewItems.DistinctBy(x => x.Id).ToList();
+        }
+
+        /// <summary>
+        ///     Link the <see cref="Annotation" /> to all <see cref="ReviewItem" /> that are linked to a <see cref="Thing" /> id
+        /// </summary>
+        /// <param name="review">The <see cref="Review" /> container</param>
+        /// <param name="annotation">The <see cref="Annotation" /></param>
+        /// <param name="thingsId">A collection of <see cref="Guid" /> of <see cref="Thing" />s</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="EntityOperationResult{ReviewItem}" /></returns>
+        public async Task<EntityOperationResult<ReviewItem>> LinkAnnotationToItems(Review review, Annotation annotation, IEnumerable<Guid> thingsId)
+        {
+            var reviewItems = this.EntityDbSet.Where(x => x.EntityContainer.Id == review.Id && thingsId.Contains(x.ThingId))
+                .ToList();
+
+            var missingIds = thingsId.Where(x => reviewItems.All(ri => ri.ThingId != x));
+
+            var reviewItemsToCreate = missingIds.Select(missingId => new ReviewItem(Guid.NewGuid())
+            {
+                ThingId = missingId, 
+                Annotations = { annotation }
+            }).ToList();
+
+            review.ReviewItems.AddRange(reviewItemsToCreate);
+            var entityEntries = reviewItemsToCreate.Select(reviewItem => this.Context.Add(reviewItem)).ToList();
+            reviewItems.ForEach(x => x.Annotations.Add(annotation));
+            entityEntries.AddRange(reviewItems.Select(reviewItem => this.Context.Update(reviewItem)).ToList());
+
+            var operationResult = new EntityOperationResult<ReviewItem>(entityEntries, EntityState.Added, EntityState.Modified, EntityState.Unchanged);
+
+            try
+            {
+                await this.Context.SaveChangesAsync();
+            }
+            catch (Exception exception)
+            {
+                this.HandleException(exception, operationResult);
+            }
+
+            return operationResult;
         }
     }
 }

@@ -15,6 +15,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
     using CDP4Common.CommonData;
 
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -33,18 +34,37 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         object SelectedElement { get; set; }
 
         /// <summary>
+        ///     A collection of columns name that can be visible by default at start
+        /// </summary>
+        List<string> AdditionnalColumnsVisibleAtStart { get; }
+
+        /// <summary>
         ///     Initialize this view model properties
         /// </summary>
         /// <param name="things">A collection of <see cref="Thing" /></param>
         /// <param name="projectId">The <see cref="Project" /> id</param>
         /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="prefilters">A collection of prefilters</param>
+        /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
         /// <returns>A <see cref="Task" /></returns>
-        Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId);
+        Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart);
 
         /// <summary>
         ///     Tries to set the <see cref="SelectedElement" /> to the previous selected item
         /// </summary>
         /// <param name="selectedItem">The previously selectedItem</param>
         void TrySetSelectedItem(object selectedItem);
+
+        /// <summary>
+        ///     Gets a collection of all availables <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <returns>The collection of <see cref="IHaveAnnotatableItemRowViewModel" /></returns>
+        List<IHaveAnnotatableItemRowViewModel> GetAvailablesRows();
+
+        /// <summary>
+        ///     Updates all <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <param name="annotatableItems">A collection of <see cref="AnnotatableItem" /></param>
+        void UpdateAnnotatableRows(List<AnnotatableItem> annotatableItems);
     }
 }

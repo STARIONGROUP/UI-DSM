@@ -15,7 +15,6 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement
 {
     using UI_DSM.Client.ViewModels.Components.Administration.ParticipantManagement;
     using UI_DSM.Client.Components.Administration.ParticipantManagement;
-    using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
     /// <summary>

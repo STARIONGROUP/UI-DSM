@@ -18,6 +18,12 @@
 <PageTitle>Task | UI-DSM</PageTitle>
 
 <ConfirmCancelPopup ViewModel="@this.ViewModel.DoneConfirmCancelPopup" />
+
+<DxPopup CloseOnOutsideClick="false" HeaderText="Link comment" @bind-Visible="@this.ViewModel.IsLinkerVisible">
+	<Content>
+		<AnnotationLinker ViewModel="this.ViewModel.AnnotationLinkerViewModel"/> 
+	</Content>
+</DxPopup>
 <div class="task-page">
 
 	@if (!this.IsLoading && this.ViewModel.ReviewTask is null)

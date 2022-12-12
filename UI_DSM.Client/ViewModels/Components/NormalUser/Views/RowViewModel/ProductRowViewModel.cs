@@ -34,6 +34,36 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         }
 
         /// <summary>
+        ///     The computed Id
+        /// </summary>
+        public string ComputedId { get; private set; }
+
+        /// <summary>
+        ///     The value of the technology parameter
+        /// </summary>
+        public string TechnologyValue { get; private set; } = string.Empty;
+
+        /// <summary>
+        ///     The value of the TRL parameter
+        /// </summary>
+        public int? TrlValue { get; private set; }
+
+        /// <summary>
+        ///     If the <see cref="ProductRowViewModel" /> has a valid TRL parameter
+        /// </summary>
+        public bool HasValidTrl { get; private set; }
+
+        /// <summary>
+        ///     If the <see cref="ProductRowViewModel" /> has a valid technology parameter
+        /// </summary>
+        public bool HasValidTechnology { get; private set; }
+
+        /// <summary>
+        ///     The cost value
+        /// </summary>
+        public string CostValue { get; private set; } = string.Empty;
+
+        /// <summary>
         ///     Gets the Id of the current <see cref="IHaveThingRowViewModel" />
         /// </summary>
         public override string Id => this.ComputedId;
@@ -74,31 +104,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public string Nature => null;
 
         /// <summary>
-        ///     The computed Id
-        /// </summary>
-        public string ComputedId { get; private set; }
-
-        /// <summary>
-        ///     The value of the technology parameter
-        /// </summary>
-        public string TechnologyValue { get; private set; } = string.Empty;
-
-        /// <summary>
-        ///     The value of the TRL parameter
-        /// </summary>
-        public int? TrlValue { get; private set; }
-
-        /// <summary>
-        ///     If the <see cref="ProductRowViewModel" /> has a valid TRL parameter
-        /// </summary>
-        public bool HasValidTrl { get; private set; }
-
-        /// <summary>
-        ///     If the <see cref="ProductRowViewModel" /> has a valid technology parameter
-        /// </summary>
-        public bool HasValidTechnology { get; private set; }
-
-        /// <summary>
         ///     Compute the <see cref="ComputedId" />
         /// </summary>
         /// <param name="shouldShowTechnology">If should include the technology</param>
@@ -112,6 +117,15 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
             {
                 this.ComputedId = this.Thing.Name;
             }
+        }
+
+        /// <summary>
+        ///     Update the cost value based on an <see cref="Option" />
+        /// </summary>
+        /// <param name="option">The <see cref="Option" /></param>
+        public void UpdateCostValue(Option option)
+        {
+            this.CostValue = this.Thing.TryGetParameterValue("cost", option, null, out var retrievedValue) ? retrievedValue : "-";
         }
 
         /// <summary>

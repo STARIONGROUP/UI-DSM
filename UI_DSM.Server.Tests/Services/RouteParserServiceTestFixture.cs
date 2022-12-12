@@ -60,8 +60,8 @@ namespace UI_DSM.Server.Tests.Services
             
             Assert.Multiple(() =>
             {
-                Assert.That(result[0].DisplayName, Is.EqualTo($"{entityName} Management"));
-                Assert.That(result[0].Url, Is.EqualTo($"/Administration/{entityName}Management"));
+                Assert.That(result[1].DisplayName, Is.EqualTo($"{entityName} Management"));
+                Assert.That(result[1].Url, Is.EqualTo($"/Administration/{entityName}Management"));
             });
 
             entityName = nameof(User);
@@ -70,8 +70,8 @@ namespace UI_DSM.Server.Tests.Services
 
             Assert.Multiple(() =>
             {
-                Assert.That(result[0].DisplayName, Is.EqualTo($"{entityName} Management"));
-                Assert.That(result[0].Url, Is.EqualTo($"/Administration/{entityName}Management"));
+                Assert.That(result[1].DisplayName, Is.EqualTo($"{entityName} Management"));
+                Assert.That(result[1].Url, Is.EqualTo($"/Administration/{entityName}Management"));
             });
 
             var guid = Guid.NewGuid();
@@ -95,10 +95,10 @@ namespace UI_DSM.Server.Tests.Services
 
             Assert.Multiple(() =>
             {
-                Assert.That(result[0].DisplayName, Is.EqualTo($"{entityName} Management"));
-                Assert.That(result[0].Url, Is.EqualTo($"/Administration/{entityName}Management"));
-                Assert.That(result[1].DisplayName, Is.EqualTo("user"));
-                Assert.That(result[1].Url, Is.EqualTo($"/Administration/{entityName}/{guid}"));
+                Assert.That(result[1].DisplayName, Is.EqualTo($"{entityName} Management"));
+                Assert.That(result[1].Url, Is.EqualTo($"/Administration/{entityName}Management"));
+                Assert.That(result[2].DisplayName, Is.EqualTo("user"));
+                Assert.That(result[2].Url, Is.EqualTo($"/Administration/{entityName}/{guid}"));
             });
 
             entityName = nameof(Role);
@@ -107,8 +107,8 @@ namespace UI_DSM.Server.Tests.Services
 
             Assert.Multiple(() =>
             {
-                Assert.That(result[0].DisplayName, Is.EqualTo($"{entityName} Management"));
-                Assert.That(result[0].Url, Is.EqualTo($"/Administration/{entityName}Management"));
+                Assert.That(result[1].DisplayName, Is.EqualTo($"{entityName} Management"));
+                Assert.That(result[1].Url, Is.EqualTo($"/Administration/{entityName}Management"));
             });
 
             guid = Guid.NewGuid();
@@ -130,10 +130,10 @@ namespace UI_DSM.Server.Tests.Services
 
             Assert.Multiple(() =>
             {
-                Assert.That(result[0].DisplayName, Is.EqualTo($"{entityName} Management"));
-                Assert.That(result[0].Url, Is.EqualTo($"/Administration/{entityName}Management"));
-                Assert.That(result[1].DisplayName, Is.EqualTo("role"));
-                Assert.That(result[1].Url, Is.EqualTo($"/Administration/{entityName}/{guid}"));
+                Assert.That(result[1].DisplayName, Is.EqualTo($"{entityName} Management"));
+                Assert.That(result[1].Url, Is.EqualTo($"/Administration/{entityName}Management"));
+                Assert.That(result[2].DisplayName, Is.EqualTo("role"));
+                Assert.That(result[2].Url, Is.EqualTo($"/Administration/{entityName}/{guid}"));
             });
 
             url = $"/Administration/{entityName}/{guid}eruazh";

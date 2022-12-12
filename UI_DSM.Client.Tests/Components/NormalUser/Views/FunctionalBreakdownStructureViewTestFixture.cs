@@ -184,14 +184,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var assembler = new Assembler(new Uri("http://localhost"));
 
                 var things = new List<Thing>(categories)
-            {
-                iteration,
-                function,
-                groundSegment,
-                envision,
-                launchSegment,
-                relationShip
-            };
+                {
+                    iteration,
+                    function,
+                    groundSegment,
+                    envision,
+                    launchSegment,
+                    relationShip
+                };
 
                 things.AddRange(usages);
 
@@ -223,7 +223,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     .Select(x => x.Value)
                     .ToList();
 
-                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId);
+                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, new List<string>(), new List<string>());
 
                 Assert.Multiple(() =>
                 {
@@ -248,6 +248,22 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 this.viewModel.TrySetSelectedItem(null);
                 Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
+
+                var rows = this.viewModel.GetAvailablesRows();
+                
+                Assert.Multiple(() =>
+                {
+                    Assert.That(rows, Is.Not.Empty);
+                    Assert.That(this.viewModel.TopElement.First().ReviewItem, Is.Null);
+                });
+
+                var reviewItem = new ReviewItem(Guid.NewGuid())
+                {
+                    ThingId = this.viewModel.TopElement.First().ThingId
+                };
+
+                this.viewModel.UpdateAnnotatableRows(new List<AnnotatableItem>{reviewItem});
+                Assert.That(this.viewModel.TopElement.First().ReviewItem, Is.Not.Null);
             }
             catch
             {

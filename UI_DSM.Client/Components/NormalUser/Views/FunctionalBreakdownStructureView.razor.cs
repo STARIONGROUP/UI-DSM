@@ -28,16 +28,22 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         protected override void HideColumnsAtStart()
         {
             var trlColumn = this.Grid.ColumnsCollection.FirstOrDefault(x => x.Property == nameof(FunctionRowViewModel.LinkedTrlValues));
-            var techonologyColumn = this.Grid.ColumnsCollection.FirstOrDefault(x => x.Property == nameof(FunctionRowViewModel.LinkedTechnologyValues));
+            var technologyColumn = this.Grid.ColumnsCollection.FirstOrDefault(x => x.Property == nameof(FunctionRowViewModel.LinkedTechnologyValues));
+            var costColumn = this.Grid.ColumnsCollection.FirstOrDefault(x => x.Property == nameof(FunctionRowViewModel.LinkedCostValues));
 
-            if (trlColumn != null)
+            if (trlColumn != null && !this.ViewModel.AdditionnalColumnsVisibleAtStart.Any(x => trlColumn.Property.Contains(x, StringComparison.InvariantCultureIgnoreCase)))
             {
                 this.ColumnChooser.OnChangeValue(trlColumn);
             }
 
-            if (techonologyColumn != null)
+            if (technologyColumn != null && !this.ViewModel.AdditionnalColumnsVisibleAtStart.Any(x => technologyColumn.Property.Contains(x, StringComparison.InvariantCultureIgnoreCase)))
             {
-                this.ColumnChooser.OnChangeValue(techonologyColumn);
+                this.ColumnChooser.OnChangeValue(technologyColumn);
+            }
+
+            if (costColumn != null && !this.ViewModel.AdditionnalColumnsVisibleAtStart.Any(x => costColumn.Property.Contains(x, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                this.ColumnChooser.OnChangeValue(costColumn);
             }
         }
     }

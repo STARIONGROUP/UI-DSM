@@ -13,17 +13,10 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
-    using System.Linq;
-    using System.Reactive.Linq;
-
     using Blazor.Diagrams.Core.Models;
-    using Blazor.Diagrams.Core.Models.Base;
 
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
-
-    using DevExpress.Blazor.Internal;
-    using DynamicData;
 
     using ReactiveUI;
 
@@ -34,6 +27,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
+    using UI_DSM.Shared.Models;
+
+    using Model = Blazor.Diagrams.Core.Models.Base.Model;
 
     /// <summary>
     ///     View model for the <see cref="Client.Components.NormalUser.Views.InterfaceView" /> component
@@ -69,7 +65,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
-        /// <param name="filterViewModel">The <see cref="IFilterViewModel"/></param>
+        /// <param name="filterViewModel">The <see cref="IFilterViewModel" /></param>
         public InterfaceViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel) : base(reviewItemService)
         {
             this.FilterViewModel = filterViewModel;
@@ -115,42 +111,37 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public IConnectionVisibilitySelectorViewModel PortVisibilityState { get; set; }
 
         /// <summary>
-        ///     A collection of available <see cref="FilterModel" /> for rows
-        /// </summary>
-        public List<FilterModel> AvailableRowFilters { get; } = new();
-
-        /// <summary>
-        /// A list of the <see cref="NodeModel"/> in the <see cref="Blazor.Diagrams.Core.Diagram"/>
+        ///     A list of the <see cref="NodeModel" /> in the <see cref="Blazor.Diagrams.Core.Diagram" />
         /// </summary>
         public List<DiagramNode> ProductNodes { get; } = new();
 
         /// <summary>
-        /// A list of the <see cref="PortModel"/> in the <see cref="Blazor.Diagrams.Core.Diagram"/>
+        ///     A list of the <see cref="PortModel" /> in the <see cref="Blazor.Diagrams.Core.Diagram" />
         /// </summary>
         public List<DiagramPort> PortNodes { get; } = new();
 
         /// <summary>
-        /// A list of the <see cref="LinkModel"/> in the <see cref="Blazor.Diagrams.Core.Diagram"/>
+        ///     A list of the <see cref="LinkModel" /> in the <see cref="Blazor.Diagrams.Core.Diagram" />
         /// </summary>
         public List<DiagramLink> LinkNodes { get; } = new();
 
         /// <summary>
-        /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>
+        ///     The map collection from <see cref="NodeModel" /> ID to <see cref="ProductRowViewModel" />
         /// </summary>
         public Dictionary<string, ProductRowViewModel> ProductsMap { get; } = new();
 
         /// <summary>
-        /// The map collection from <see cref="PortModel"/> ID to <see cref="PortRowViewModel"/>
+        ///     The map collection from <see cref="PortModel" /> ID to <see cref="PortRowViewModel" />
         /// </summary>
         public Dictionary<string, PortRowViewModel> PortsMap { get; } = new();
 
         /// <summary>
-        /// The map collection from <see cref="LinkModel"/> ID to <see cref="InterfaceRowViewModel"/>
+        ///     The map collection from <see cref="LinkModel" /> ID to <see cref="InterfaceRowViewModel" />
         /// </summary>
         public Dictionary<string, InterfaceRowViewModel> InterfacesMap { get; } = new();
 
         /// <summary>
-        /// Event fired when the state of the component needs to change.
+        ///     Event fired when the state of the component needs to change.
         /// </summary>
         public Action OnCentralNodeChanged { get; set; }
 
@@ -191,12 +182,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Initialize this view model properties
         /// </summary>
         /// <param name="things">A collection of <see cref="Thing" /></param>
-        /// <param name="projectId">The <see cref="Project" /> id</param>
-        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="projectId">The <see cref="UI_DSM.Shared.Models.Project" /> id</param>
+        /// <param name="reviewId">The <see cref="UI_DSM.Shared.Models.Review" /> id</param>
+        /// <param name="prefilters">A collection of prefilters</param>
+        /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId)
+        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
         {
-            await base.InitializeProperties(things, projectId, reviewId);
+            await base.InitializeProperties(things, projectId, reviewId, prefilters, additionnalColumnsVisibleAtStart);
 
             var products = this.Things.OfType<ElementDefinition>()
                 .Where(x => x.IsProduct())
@@ -251,6 +244,31 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     Gets a collection of all availables <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <returns>The collection of <see cref="IHaveAnnotatableItemRowViewModel" /></returns>
+        public override List<IHaveAnnotatableItemRowViewModel> GetAvailablesRows()
+        {
+            var rows = new List<IHaveAnnotatableItemRowViewModel>();
+            rows.AddRange(this.Interfaces);
+            rows.AddRange(this.Products);
+            rows.AddRange(this.allPorts);
+            return rows;
+        }
+
+        /// <summary>
+        ///     Updates all <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <param name="annotatableItems">A collection of <see cref="AnnotatableItem" /></param>
+        public override void UpdateAnnotatableRows(List<AnnotatableItem> annotatableItems)
+        {
+            var reviewItems = annotatableItems.OfType<ReviewItem>();
+            this.Interfaces.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
+            this.Products.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
+            this.allPorts.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
+        }
+
+        /// <summary>
         ///     Asserts that a <see cref="ProductRowViewModel" /> has <see cref="PortRowViewModel" /> children
         /// </summary>
         /// <param name="productRow">The <see cref="ProductRowViewModel" /></param>
@@ -300,6 +318,315 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         {
             this.Data = visibility ? this.Products : this.Interfaces;
             this.ShouldShowProducts = visibility;
+        }
+
+        /// <summary>
+        ///     Initializes the diagram with the selected element as a center node.
+        /// </summary>
+        public void InitializeDiagram()
+        {
+            var firstCenterProduct = this.SelectedFirstProductByCloserSelectedItem(this.SelectedElement);
+            this.CreateCentralNodeAndNeighbours(firstCenterProduct);
+        }
+
+        /// <summary>
+        ///     Selects the first central product depending on the selected element.
+        /// </summary>
+        /// <param name="selectedElement">the selected element</param>
+        /// <returns>the selected <see cref="ProductRowViewModel" /></returns>
+        /// <exception cref="ArgumentException">if the selected element is not null and is not of correct type</exception>
+        public ProductRowViewModel SelectedFirstProductByCloserSelectedItem(object selectedElement)
+        {
+            if (selectedElement is ProductRowViewModel productRowViewModel)
+            {
+                return productRowViewModel;
+            }
+
+            if (selectedElement is PortRowViewModel portRowViewModel)
+            {
+                return this.Products.FirstOrDefault(x => x.ThingId == portRowViewModel.ContainerId, this.Products.First());
+            }
+
+            if (selectedElement is InterfaceRowViewModel interfaceRowViewModel)
+            {
+                var source = this.allPorts.FirstOrDefault(x => x.ThingId == interfaceRowViewModel.SourceId, this.allPorts.First());
+                return this.Products.FirstOrDefault(x => x.ThingId == source.ContainerId, this.Products.First());
+            }
+
+            if (selectedElement is null)
+            {
+                return this.Products.First();
+            }
+
+            throw new ArgumentException($"the {selectedElement} is not a valid argument");
+        }
+
+        /// <summary>
+        ///     Tries to get all the neighbours of a <see cref="ProductRowViewModel" />
+        /// </summary>
+        /// <param name="productRow">the product to get the neighbours from</param>
+        /// <returns>A <see cref="IEnumerable{ProductRowViewModel}" /> with the neighbours, or null if the product don't have neighbours</returns>
+        /// <exception cref="Exception">if the source and target of a interface it's the same port</exception>
+        public IEnumerable<ProductRowViewModel> GetNeighbours(ProductRowViewModel productRow)
+        {
+            if (this.HasChildren(productRow))
+            {
+                var ports = this.LoadChildren(productRow);
+                var neighbours = new List<ProductRowViewModel>();
+
+                foreach (var port in ports)
+                {
+                    var sourceInterface = this.Interfaces.FirstOrDefault(x => x.SourceId == port.ThingId && x.IsVisible, null);
+                    var targetInterface = this.Interfaces.FirstOrDefault(x => x.TargetId == port.ThingId && x.IsVisible, null);
+
+                    if (sourceInterface != null && targetInterface != null)
+                    {
+                        throw new Exception("Source and Target of an interface shall be a different port");
+                    }
+
+                    if (sourceInterface != null)
+                    {
+                        var targetPort = this.allPorts.FirstOrDefault(p => p.ThingId == sourceInterface.TargetId, null);
+
+                        if (targetPort != null)
+                        {
+                            var targetPortContainer = this.Products.FirstOrDefault(pr => pr.ThingId == targetPort.ContainerId, null);
+
+                            if (targetPortContainer != null)
+                            {
+                                neighbours.Add(targetPortContainer);
+                            }
+                        }
+                    }
+                    else if (targetInterface != null)
+                    {
+                        var sourcePort = this.allPorts.FirstOrDefault(p => p.ThingId == targetInterface.SourceId, null);
+
+                        if (sourcePort != null)
+                        {
+                            var sourcePortContainer = this.Products.FirstOrDefault(pr => pr.ThingId == sourcePort.ContainerId, null);
+
+                            if (sourcePortContainer != null)
+                            {
+                                neighbours.Add(sourcePortContainer);
+                            }
+                        }
+                    }
+                }
+
+                return neighbours.Distinct();
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        ///     Sets the selected model for this <see cref="IInterfaceViewViewModel" />
+        /// </summary>
+        /// <param name="model">the model to select</param>
+        public void SetSelectedModel(Model model)
+        {
+            if (model is NodeModel node && this.ProductsMap.ContainsKey(node.Id))
+            {
+                this.SelectedElement = this.ProductsMap[node.Id];
+            }
+            else if (model is PortModel port && this.PortsMap.ContainsKey(port.Id))
+            {
+                this.SelectedElement = this.PortsMap[port.Id];
+            }
+            else if (model is LinkModel link && this.InterfacesMap.ContainsKey(link.Id))
+            {
+                this.SelectedElement = this.InterfacesMap[link.Id];
+            }
+        }
+
+        /// <summary>
+        ///     Sets the new central node for this <see cref="IInterfaceViewViewModel" />
+        /// </summary>
+        /// <param name="nodeModel">the new central node</param>
+        /// <returns>true if the node was set, false otherwise</returns>
+        public bool SetCentralNodeModel(NodeModel nodeModel)
+        {
+            if (this.ProductsMap.ContainsKey(nodeModel.Id))
+            {
+                var asociatedProduct = this.ProductsMap[nodeModel.Id];
+                this.CreateCentralNodeAndNeighbours(asociatedProduct);
+                Task.Run(() => this.OnCentralNodeChanged?.Invoke());
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        ///     Creates a central node and his neighbours
+        /// </summary>
+        /// <param name="centerNode">the center node</param>
+        public void CreateCentralNodeAndNeighbours(ProductRowViewModel centerNode)
+        {
+            this.ProductNodes.Clear();
+            this.PortNodes.Clear();
+            this.LinkNodes.Clear();
+
+            this.ProductsMap.Clear();
+            this.PortsMap.Clear();
+            this.InterfacesMap.Clear();
+
+            var neighbours = this.GetNeighbours(centerNode);
+
+            var cx = 800.0;
+            var cy = 500.0;
+            var r = 200.0;
+
+            var node = this.CreateNewNodeFromProduct(centerNode);
+            node.SetPosition(cx, cy);
+            node.IsCentralNode = true;
+
+            if (neighbours != null && neighbours.Any())
+            {
+                var angle = Math.PI / 2.0;
+                var angleIncrement = 2.0 * Math.PI / neighbours.Count();
+
+                foreach (var neighbour in neighbours)
+                {
+                    var x = cx - r * Math.Cos(angle);
+                    var y = cy - r * Math.Sin(angle);
+
+                    var neighbourNode = this.CreateNewNodeFromProduct(neighbour);
+                    neighbourNode.SetPosition(x, y);
+
+                    angle += angleIncrement;
+                }
+            }
+
+            this.CreateInterfacesLinks();
+        }
+
+        /// <summary>
+        ///     Creates a new node from a <see cref="ProductRowViewModel" />. The product is added to the Diagram an the corresponding maps are filled.
+        /// </summary>
+        /// <param name="product">the product for which the node will be created</param>
+        /// <returns>the created <see cref="NodeModel" /></returns>
+        public DiagramNode CreateNewNodeFromProduct(ProductRowViewModel product)
+        {
+            var node = new DiagramNode
+            {
+                Title = product.Name,
+                HasComments = product.HasComment()
+            };
+
+            this.ProductNodes.Add(node);
+            this.ProductsMap.Add(node.Id, product);
+
+            if (this.HasChildren(product))
+            {
+                var ports = this.LoadChildren(product).ToList();
+
+                foreach (var port in ports)
+                {
+                    var index = ports.IndexOf(port);
+                    var portNode = new DiagramPort(node, (PortAlignment)index, port.Name);
+                    node.AddPort(portNode);
+                    portNode.Locked = true;
+                    portNode.HasComments = port.HasComment();
+
+                    switch (port.InterfaceEnd)
+                    {
+                        case "INPUT":
+                            portNode.Direction = PortDirection.In;
+                            break;
+                        case "IN_OUT":
+                            portNode.Direction = PortDirection.InOut;
+                            break;
+                        case "OUT":
+                            portNode.Direction = PortDirection.Out;
+                            break;
+                    }
+
+                    this.PortNodes.Add(portNode);
+                    this.PortsMap.Add(portNode.Id, port);
+                }
+            }
+
+            return node;
+        }
+
+        /// <summary>
+        ///     Creates the interfaces (links) between the ports of the products.
+        /// </summary>
+        public void CreateInterfacesLinks()
+        {
+            foreach (var interf in this.Interfaces)
+            {
+                var sourcePortRow = this.PortsMap.Values.FirstOrDefault(port => port.ThingId == interf.SourceId);
+                var targetPortRow = this.PortsMap.Values.FirstOrDefault(port => port.ThingId == interf.TargetId);
+
+                var sourcePortId = this.PortsMap.FirstOrDefault(item => Equals(item.Value, sourcePortRow)).Key;
+                var targetPortId = this.PortsMap.FirstOrDefault(item => Equals(item.Value, targetPortRow)).Key;
+
+                var source = this.PortNodes.FirstOrDefault(port => port.Id == sourcePortId);
+                var target = this.PortNodes.FirstOrDefault(port => port.Id == targetPortId);
+
+                if (source != null && target != null)
+                {
+                    //TODO: Use Routers.Orthogonal and PathGenerators.Straight and check if the bugs have been corrected.
+                    var link = new DiagramLink(source, target)
+                    {
+                        Locked = true,
+                        SourceMarker = LinkMarker.Square,
+                        TargetMarker = LinkMarker.Arrow,
+                        HasComments = interf.HasComment()
+                    };
+
+                    this.LinkNodes.Add(link);
+                    this.InterfacesMap.Add(link.Id, interf);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Upgrades the nodes with the actual data
+        /// </summary>
+        public bool TryUpdate(object updatedObject, bool hasComments)
+        {
+            switch (updatedObject)
+            {
+                case ProductRowViewModel productRowViewModel when this.Products.Contains(productRowViewModel):
+                {
+                    var indexOfProduct = this.Products.IndexOf(productRowViewModel);
+                    var keyValuePair = this.ProductsMap.First(x => Equals(x.Value, productRowViewModel));
+                    var node = this.ProductNodes.First(x => x.Id == keyValuePair.Key);
+
+                    this.Products[indexOfProduct] = productRowViewModel;
+                    this.ProductsMap[keyValuePair.Key] = productRowViewModel;
+                    node.HasComments = hasComments;
+                    return true;
+                }
+                case PortRowViewModel portRowViewModel when this.allPorts.Contains(portRowViewModel):
+                {
+                    var indexOfPort = this.allPorts.IndexOf(portRowViewModel);
+                    var keyValuePair = this.PortsMap.First(x => Equals(x.Value, portRowViewModel));
+                    var port = this.PortNodes.First(x => x.Id == keyValuePair.Key);
+
+                    this.allPorts[indexOfPort] = portRowViewModel;
+                    this.PortsMap[keyValuePair.Key] = portRowViewModel;
+                    port.HasComments = hasComments;
+                    return true;
+                }
+                case InterfaceRowViewModel interfaceRowViewModel when this.Interfaces.Contains(interfaceRowViewModel):
+                {
+                    var indexOfInterface = this.Interfaces.IndexOf(interfaceRowViewModel);
+                    var keyValuePair = this.InterfacesMap.First(x => Equals(x.Value, interfaceRowViewModel));
+                    var link = this.LinkNodes.First(x => x.Id == keyValuePair.Key);
+
+                    this.Interfaces[indexOfInterface] = interfaceRowViewModel;
+                    this.InterfacesMap[keyValuePair.Key] = interfaceRowViewModel;
+                    link.HasComments = hasComments;
+                    return true;
+                }
+                default:
+                    return false;
+            }
         }
 
         /// <summary>
@@ -382,301 +709,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             });
 
             this.FilterViewModel.InitializeProperties(availableRowFilters);
-        }
-
-        /// <summary>
-        /// Initializes the diagram with the selected element as a center node.
-        /// </summary>
-        public void InitializeDiagram()
-        {
-            var firstCenterProduct = this.SelectedFirstProductByCloserSelectedItem(this.SelectedElement);
-            this.CreateCentralNodeAndNeighbours(firstCenterProduct);
-        }
-
-        /// <summary>
-        /// Selects the first central product depending on the selected element.
-        /// </summary>
-        /// <param name="selectedElement">the selected element</param>
-        /// <returns>the selected <see cref="ProductRowViewModel"/></returns>
-        /// <exception cref="ArgumentException">if the selected element is not null and is not of correct type</exception>
-        public ProductRowViewModel SelectedFirstProductByCloserSelectedItem(object selectedElement)
-        {
-            if (selectedElement is ProductRowViewModel productRowViewModel)
-            {
-                return productRowViewModel;
-            }
-            else if (selectedElement is PortRowViewModel portRowViewModel)
-            {
-                return this.Products.FirstOrDefault(x => x.ThingId == portRowViewModel.ContainerId, this.Products.First());
-            }
-            else if (selectedElement is InterfaceRowViewModel interfaceRowViewModel)
-            {
-                var source = this.allPorts.FirstOrDefault(x => x.ThingId == interfaceRowViewModel.SourceId, this.allPorts.First());
-                return this.Products.FirstOrDefault(x => x.ThingId == source.ContainerId, this.Products.First());
-            }
-            else if (selectedElement is null)
-            {
-                return this.Products.First();
-            }
-            else
-            {
-                throw new ArgumentException($"the {selectedElement} is not a valid argument");
-            }
-        }
-
-        /// <summary>
-        /// Tries to get all the neighbours of a <see cref="ProductRowViewModel"/>
-        /// </summary>
-        /// <param name="productRow">the product to get the neighbours from</param>
-        /// <returns>A <see cref="IEnumerable{ProductRowViewModel}"/> with the neighbours, or null if the product don't have neighbours</returns>
-        /// <exception cref="Exception">if the source and target of a interface it's the same port</exception>
-        public IEnumerable<ProductRowViewModel> GetNeighbours(ProductRowViewModel productRow)
-        {
-            if (this.HasChildren(productRow))
-            {
-                var ports = this.LoadChildren(productRow);
-                var neighbours = new List<ProductRowViewModel>();
-
-                foreach (var port in ports)
-                {                                  
-                    var sourceInterface = this.Interfaces.FirstOrDefault(x => (x.SourceId == port.ThingId) && x.IsVisible, null);
-                    var targetInterface = this.Interfaces.FirstOrDefault(x => (x.TargetId == port.ThingId) && x.IsVisible, null);
-
-                    if (sourceInterface != null && targetInterface != null)
-                    {
-                        throw new Exception("Source and Target of an interface shall be a different port");
-                    }
-                    else if (sourceInterface != null)
-                    {
-                        var targetPort = this.allPorts.FirstOrDefault(p => p.ThingId == sourceInterface.TargetId, null);
-
-                        if (targetPort != null)
-                        {
-                            var targetPortContainer = this.Products.FirstOrDefault(pr => pr.ThingId == targetPort.ContainerId, null);
-
-                            if (targetPortContainer != null)
-                            {
-                                neighbours.Add(targetPortContainer);
-                            }
-                        }
-                    }
-                    else if (targetInterface != null)
-                    {
-                        var sourcePort = this.allPorts.FirstOrDefault(p => p.ThingId == targetInterface.SourceId, null);
-                        if (sourcePort != null)
-                        {
-                            var sourcePortContainer = this.Products.FirstOrDefault(pr => pr.ThingId == sourcePort.ContainerId, null);
-
-                            if (sourcePortContainer != null)
-                            {
-                                neighbours.Add(sourcePortContainer);
-                            }
-                        }
-                    }
-                }
-
-                return neighbours.Distinct();
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Sets the selected model for this <see cref="IInterfaceViewViewModel"/>
-        /// </summary>
-        /// <param name="model">the model to select</param>
-        public void SetSelectedModel(Model model)
-        {
-            if (model is NodeModel node && this.ProductsMap.ContainsKey(node.Id))
-            {
-                this.SelectedElement = this.ProductsMap[node.Id]; 
-            }
-            else if (model is PortModel port && this.PortsMap.ContainsKey(port.Id))
-            {
-                this.SelectedElement = this.PortsMap[port.Id];
-            }
-            else if (model is LinkModel link && this.InterfacesMap.ContainsKey(link.Id))
-            {
-                this.SelectedElement = this.InterfacesMap[link.Id];
-            }
-        }
-
-        /// <summary>
-        /// Sets the new central node for this <see cref="IInterfaceViewViewModel"/>
-        /// </summary>
-        /// <param name="nodeModel">the new central node</param>
-        /// <returns>true if the node was set, false otherwise</returns>
-        public bool SetCentralNodeModel(NodeModel nodeModel)
-        {
-            if (this.ProductsMap.ContainsKey(nodeModel.Id))
-            {
-                var asociatedProduct = this.ProductsMap[nodeModel.Id];
-                this.CreateCentralNodeAndNeighbours(asociatedProduct);
-                Task.Run(() => this.OnCentralNodeChanged?.Invoke());
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Creates a central node and his neighbours
-        /// </summary>
-        /// <param name="centerNode">the center node</param>
-        public void CreateCentralNodeAndNeighbours(ProductRowViewModel centerNode)
-        {
-            this.ProductNodes.Clear();
-            this.PortNodes.Clear();
-            this.LinkNodes.Clear();
-
-            this.ProductsMap.Clear();
-            this.PortsMap.Clear();
-            this.InterfacesMap.Clear();
-
-            var neighbours = this.GetNeighbours(centerNode);
-
-            var cx = 800.0;
-            var cy = 500.0;
-            var r = 200.0;
-
-            var node = CreateNewNodeFromProduct(centerNode);
-            node.SetPosition(cx, cy);
-            node.IsCentralNode = true;
-
-            if (neighbours != null && neighbours.Count() > 0)
-            {
-                var angle = Math.PI/2.0;
-                var angleIncrement = (2.0 * Math.PI) / neighbours.Count();
-
-                foreach (var neighbour in neighbours)
-                {
-                    var x = cx - r * Math.Cos(angle);
-                    var y = cy - r * Math.Sin(angle);
-
-                    var neighbourNode = CreateNewNodeFromProduct(neighbour);
-                    neighbourNode.SetPosition(x, y);
-
-                    angle += angleIncrement;
-                }
-            }
-
-            this.CreateInterfacesLinks();
-        }
-
-        /// <summary>
-        /// Creates a new node from a <see cref="ProductRowViewModel"/>. The product is added to the Diagram an the corresponding maps are filled.
-        /// </summary>
-        /// <param name="product">the product for which the node will be created</param>
-        /// <returns>the created <see cref="NodeModel"/></returns>
-        public DiagramNode CreateNewNodeFromProduct(ProductRowViewModel product)
-        {
-            var node = new DiagramNode();
-            node.Title = product.Name;
-            node.HasComments = product.HasComment();
-            
-            this.ProductNodes.Add(node);
-            this.ProductsMap.Add(node.Id, product);
-
-            if (this.HasChildren(product))
-            {
-                var ports = this.LoadChildren(product);
-                foreach (var port in ports)
-                {
-                    var index = ports.IndexOf(port);
-                    var portNode = new DiagramPort(node, (PortAlignment)index, port.Name);
-                    node.AddPort(portNode);
-                    portNode.Locked = true;
-                    portNode.HasComments = port.HasComment();
-
-                    switch (port.InterfaceEnd)
-                    {
-                        case "INPUT": portNode.Direction = PortDirection.In; 
-                            break;
-                        case "IN_OUT": portNode.Direction = PortDirection.InOut;
-                            break;
-                        case "OUT": portNode.Direction = PortDirection.Out;
-                            break;
-                    }
-
-                    this.PortNodes.Add(portNode);
-                    this.PortsMap.Add(portNode.Id, port);
-                }
-            }
-                        
-            return node;
-        }
-
-        /// <summary>
-        /// Creates the interfaces (links) between the ports of the products.
-        /// </summary>
-        public void CreateInterfacesLinks()
-        {
-            foreach(var interf in this.Interfaces)
-            {
-                var sourcePortRowVM = this.PortsMap.Values.FirstOrDefault(port => port.ThingId == interf.SourceId);
-                var targetPortRowVM = this.PortsMap.Values.FirstOrDefault(port => port.ThingId == interf.TargetId);
-
-                var sourcePortID = this.PortsMap.FirstOrDefault(item => item.Value == sourcePortRowVM).Key;
-                var targetPortID = this.PortsMap.FirstOrDefault(item => item.Value == targetPortRowVM).Key;
-
-                var source = this.PortNodes.FirstOrDefault(port => port.Id == sourcePortID);
-                var target = this.PortNodes.FirstOrDefault(port => port.Id == targetPortID);
-
-                if(source != null && target != null)
-                {
-                    //TODO: Use Routers.Orthogonal and PathGenerators.Straight and check if the bugs have been corrected.
-                    var link = new DiagramLink(source, target);
-                    link.Locked = true;
-                    link.SourceMarker = LinkMarker.Square;
-                    link.TargetMarker = LinkMarker.Arrow;
-                    link.HasComments = interf.HasComment();
-
-                    this.LinkNodes.Add(link);
-                    this.InterfacesMap.Add(link.Id, interf);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Upgrades the nodes with the actual data
-        /// </summary>
-        public bool TryUpdate(object updatedObject, bool hasComments)
-        {
-            if (updatedObject is ProductRowViewModel productRowViewModel && this.Products.Contains(productRowViewModel))
-            {
-                var indexOfProduct = this.Products.IndexOf(productRowViewModel);
-                var keyValuePair = this.ProductsMap.First(x => x.Value == productRowViewModel);
-                var node = this.ProductNodes.First(x => x.Id == keyValuePair.Key);
-
-                this.Products[indexOfProduct] = productRowViewModel;
-                this.ProductsMap[keyValuePair.Key] = productRowViewModel;
-                node.HasComments = hasComments;
-                return true;
-            }
-            else if (updatedObject is PortRowViewModel portRowViewModel && this.allPorts.Contains(portRowViewModel))
-            {
-                var indexOfPort = this.allPorts.IndexOf(portRowViewModel);
-                var keyValuePair = this.PortsMap.First(x => x.Value == portRowViewModel);
-                var port = this.PortNodes.First(x => x.Id == keyValuePair.Key);
-
-                this.allPorts[indexOfPort] = portRowViewModel;
-                this.PortsMap[keyValuePair.Key] = portRowViewModel;
-                port.HasComments = hasComments;
-                return true;
-            }
-            else if (updatedObject is InterfaceRowViewModel interfaceRowViewModel && this.Interfaces.Contains(interfaceRowViewModel))
-            {
-                var indexOfInterface = this.Interfaces.IndexOf(interfaceRowViewModel);
-                var keyValuePair = this.InterfacesMap.First(x => x.Value == interfaceRowViewModel);
-                var link = this.LinkNodes.First(x => x.Id == keyValuePair.Key);
-
-                this.Interfaces[indexOfInterface] = interfaceRowViewModel;
-                this.InterfacesMap[keyValuePair.Key] = interfaceRowViewModel;
-                link.HasComments = hasComments;
-                return true;
-            }
-
-            return false;
         }
     }
 }
