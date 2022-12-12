@@ -344,7 +344,12 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
             this.SelectedItem = newSelectedItem;
             this.SelectedItemCard.ViewModel.SelectedItem = this.SelectedItem;
             this.Comments.ViewModel.SelectedItem = this.SelectedItem;
-            this.Comments.ViewModel.AvailableRows = this.ViewModel?.CurrentBaseViewInstance.GetAvailablesRows();
+
+            if (this.ViewModel?.CurrentBaseViewInstance != null)
+            {
+                this.Comments.ViewModel.AvailableRows = this.ViewModel?.CurrentBaseViewInstance.GetAvailablesRows();
+            }
+
             await this.InvokeAsync(this.StateHasChanged);
         }
 
