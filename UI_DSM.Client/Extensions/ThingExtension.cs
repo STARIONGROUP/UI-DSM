@@ -46,42 +46,42 @@ namespace UI_DSM.Client.Extensions
         /// <summary>
         ///     The name of the satisfy <see cref="Category" />
         /// </summary>
-        public static string SatisfyCategoryName = "satisfies";
+        public const string SatisfyCategoryName = "satisfies";
 
         /// <summary>
         ///     The name of the implement <see cref="Category" />
         /// </summary>
-        public static string ImplementCategoryName = "implements";
+        public const string ImplementCategoryName = "implements";
 
         /// <summary>
         ///     The name of the derive <see cref="Category" />
         /// </summary>
-        public static string DeriveCategoryName = "derives";
+        public const string DeriveCategoryName = "derives";
 
         /// <summary>
         ///     The name of the function <see cref="Category" />
         /// </summary>
-        public static string FunctionCategoryName = "functions";
+        public const string FunctionCategoryName = "functions";
 
         /// <summary>
         ///     The name of the product <see cref="Category" />
         /// </summary>
-        public static string ProductCategoryName = "products";
+        public const string ProductCategoryName = "products";
 
         /// <summary>
         ///     The name of the port <see cref="Category" />
         /// </summary>
-        public static string PortCategoryName = "ports";
+        public const string PortCategoryName = "ports";
 
         /// <summary>
         ///     The name of the interface <see cref="Category" />
         /// </summary>
-        public static string InterfaceCategoryName = "interfaces";
+        public const string InterfaceCategoryName = "interfaces";
         
         /// <summary>
         ///     The name of the interface <see cref="Category" />
         /// </summary>
-        public static string TraceCategoryName = "trace";
+        public const string TraceCategoryName = "trace";
 
         /// <summary>
         ///     Gets the value of a certain parameter
