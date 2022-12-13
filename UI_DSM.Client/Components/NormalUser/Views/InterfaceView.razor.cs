@@ -1,12 +1,12 @@
 ﻿// --------------------------------------------------------------------------------------------------------
 // <copyright file="InterfaceView.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
-// 
+//
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
-// 
+//
 //  This file is part of UI-DSM.
 //  The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 //  The UI-DSM application is provided to the community under the Apache License 2.0.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
@@ -120,6 +120,9 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ShouldShowProducts)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsViewTypeVisible)
+                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
             this.HideColumnsAtStart();
         }
 
@@ -225,6 +228,15 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         private void OnProductVisibilityChanged(bool newValue)
         {
             this.ViewModel.SetProductsVisibility(newValue);
+        }
+
+
+        /// <summary>
+        ///     Toggle the view type dropdown
+        /// </summary>
+        private void ToggleViewTypeDropdown()
+        {
+            this.ViewModel.IsViewTypeVisible = !this.ViewModel.IsViewTypeVisible;
         }
 
         /// <summary>

@@ -16,17 +16,44 @@
 <LoadingComponent IsLoading="this.IsLoading">
 <div class="view-actions">
 	<div class="left-actions">
-		<RadzenCheckBox Value="@this.ViewModel.ShouldShowProducts" TValue="bool" Change="@this.OnProductVisibilityChanged" />
-		<p>Products visible</p>
 
-		<div class="@this.GetSelectorsClass()">
-			<ConnectionVisibilitySelector @ref="@this.ConnectionVisibilitySelectorPort" ConnectedStateText="Show connected ports"
-			                              NotConnectedStateText="Show not connected ports"/>
+			<div id="view-type">
+				<AppButton Type="button" Variant="AppButton.VariantValue.Tertiary" Click="@this.ToggleViewTypeDropdown">
+					View settings
+				</AppButton>
+			</div>
 
-			<ConnectionVisibilitySelector @ref="@this.ConnectionVisibilitySelectorProduct" ConnectedStateText="Show products with port(s)"
-			                              NotConnectedStateText="Show products without port"/>
-		</div>
+
+
+<DxDropDown @bind-IsOpen="@this.ViewModel.IsViewTypeVisible"
+	PreventCloseOnPositionTargetClick="true"
+	Width="400"
+	PositionTarget="#view-type"
+	PositionMode="DropDownPositionMode.Bottom">
+		<BodyTemplate>
+			<div class="interface-view-actions">
+				<div class="view-settings-panel">
+					<label>
+						<RadzenCheckBox Value="@this.ViewModel.ShouldShowProducts" TValue="bool" Change="@this.OnProductVisibilityChanged" />
+						<span>Show as products</span>
+					</label>
+
+					<div class="@this.GetSelectorsClass()">
+						<h5>Connected ports</h5>
+						<ConnectionVisibilitySelector @ref="@this.ConnectionVisibilitySelectorPort" ConnectedStateText="with" NotConnectedStateText="without"/>
+
+						<h5>ports</h5>
+						<ConnectionVisibilitySelector @ref="@this.ConnectionVisibilitySelectorProduct" ConnectedStateText="with" NotConnectedStateText="without"/>
+					</div>
+				</div>
+			</div>
+	</BodyTemplate>
+</DxDropDown>
+
+
+
 	</div>
+
 	<div class="right-actions">
 		<Filter ViewModel="this.ViewModel.FilterViewModel" Id="row">
 			<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
@@ -34,6 +61,10 @@
 		<ColumnChooser TItem="IBelongsToInterfaceView" ViewModel="@this.columnChooser"/>
 	</div>
 </div>
+
+
+
+
 <RadzenDataGrid @ref="@this.Grid" TItem="IBelongsToInterfaceView" Data="@(this.ViewModel.Data)" ExpandMode="DataGridExpandMode.Single"
                 RowRender="@this.RowRender" LoadChildData="@this.LoadChildren" SelectionMode="DataGridSelectionMode.Single"
 				RowSelect="@this.SelectRow" AllowFiltering="true" FilterMode="FilterMode.SimpleWithMenu" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"

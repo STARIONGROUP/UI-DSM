@@ -1,12 +1,12 @@
 ﻿// --------------------------------------------------------------------------------------------------------
 // <copyright file="IInterfaceViewViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
-// 
+//
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
-// 
+//
 //  This file is part of UI-DSM.
 //  The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 //  The UI-DSM application is provided to the community under the Apache License 2.0.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
@@ -59,19 +59,24 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         bool ShouldShowProducts { get; }
 
         /// <summary>
+        ///     Value asserting if products has to been shown
+        /// </summary>
+        bool IsViewTypeVisible { get; set; }
+
+        /// <summary>
         /// A list of the <see cref="NodeModel"/> in the <see cref="Diagram"/>
         /// </summary>
-        List<DiagramNode> ProductNodes { get; } 
+        List<DiagramNode> ProductNodes { get; }
 
         /// <summary>
         /// A list of the <see cref="PortModel"/> in the <see cref="Diagram"/>
         /// </summary>
-        List<DiagramPort> PortNodes { get; } 
+        List<DiagramPort> PortNodes { get; }
 
         /// <summary>
         /// A list of the <see cref="LinkModel"/> in the <see cref="Diagram"/>
         /// </summary>
-        List<DiagramLink> LinkNodes { get; } 
+        List<DiagramLink> LinkNodes { get; }
 
         /// <summary>
         /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>
@@ -92,7 +97,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     The <see cref="IFilterViewModel" />
         /// </summary>
         IFilterViewModel FilterViewModel { get; }
-        
+
         /// <summary>
         ///     Filters current rows
         /// </summary>

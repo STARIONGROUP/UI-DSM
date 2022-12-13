@@ -1,12 +1,12 @@
 ﻿// --------------------------------------------------------------------------------------------------------
 // <copyright file="InterfaceViewViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
-// 
+//
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar, Jaime Bernar
-// 
+//
 //  This file is part of UI-DSM.
 //  The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 //  The UI-DSM application is provided to the community under the Apache License 2.0.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
@@ -62,6 +62,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         private bool shouldShowProducts;
 
         /// <summary>
+        ///     Backing field for <see cref="IsViewTypeVisible" />
+        /// </summary>
+        private bool isViewTypeVisible;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
@@ -78,6 +83,15 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         {
             get => this.shouldShowProducts;
             private set => this.RaiseAndSetIfChanged(ref this.shouldShowProducts, value);
+        }
+
+        /// <summary>
+        ///     Value asserting if products has to been shown
+        /// </summary>
+        public bool IsViewTypeVisible
+        {
+            get => this.isViewTypeVisible;
+            set => this.RaiseAndSetIfChanged(ref this.isViewTypeVisible, value);
         }
 
         /// <summary>
