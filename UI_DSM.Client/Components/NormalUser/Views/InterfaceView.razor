@@ -1,12 +1,12 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
 // InterfaceView.razor
 // Copyright (c) 2022 RHEA System S.A.
-// 
+//
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
-// 
-// This file is part of UI-DSM. 
+//
+// This file is part of UI-DSM.
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
@@ -18,14 +18,15 @@
 	<div class="left-actions">
 		<RadzenCheckBox Value="@this.ViewModel.ShouldShowProducts" TValue="bool" Change="@this.OnProductVisibilityChanged" />
 		<p>Products visible</p>
+
 		<div class="@this.GetSelectorsClass()">
 			<ConnectionVisibilitySelector @ref="@this.ConnectionVisibilitySelectorPort" ConnectedStateText="Show connected ports"
 			                              NotConnectedStateText="Show not connected ports"/>
-		
+
 			<ConnectionVisibilitySelector @ref="@this.ConnectionVisibilitySelectorProduct" ConnectedStateText="Show products with port(s)"
 			                              NotConnectedStateText="Show products without port"/>
 		</div>
-	</div>	
+	</div>
 	<div class="right-actions">
 		<Filter ViewModel="this.ViewModel.FilterViewModel" Id="row">
 			<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>

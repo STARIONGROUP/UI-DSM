@@ -1,27 +1,29 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
 // HaveThingRowIcons.razor
 // Copyright (c) 2022 RHEA System S.A.
-// 
+//
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
-// 
-// This file is part of UI-DSM. 
+//
+// This file is part of UI-DSM.
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
-@if (this.Row.ReviewItem != null)
-{
-	<span class="@(this.GetCssClass())">
-		@{
+@{
+ if (this.Row.ReviewItem != null)
+	{
 			if (this.Row.ReviewItem.IsReviewed)
 			{
-				<FeatherCheckCircle Size="20" Color="green"/>
+					<FeatherCheckCircle Size="20" Color="green"/>
+			}
+			else
+			{
+					<FeatherCircle Size="20" Color="green"/>
 			}
 			if (this.Row.HasComment())
 			{
-				<FeatherMessageCircle Size="20" Color="green"/>
+					<FeatherMessageCircle Size="20" Color="green"/>
 			}
-		}
-	</span>
+	}
 }
