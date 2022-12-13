@@ -16,8 +16,7 @@ namespace UI_DSM.Client.Extensions
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
     using CDP4Common.SiteDirectoryData;
-
-    using DynamicData;
+    using CDP4Common.Types;
 
     /// <summary>
     ///     Extension class for <see cref="Thing" />
@@ -43,6 +42,46 @@ namespace UI_DSM.Client.Extensions
         {
             "equipment"
         };
+
+        /// <summary>
+        ///     The name of the satisfy <see cref="Category" />
+        /// </summary>
+        public const string SatisfyCategoryName = "satisfies";
+
+        /// <summary>
+        ///     The name of the implement <see cref="Category" />
+        /// </summary>
+        public const string ImplementCategoryName = "implements";
+
+        /// <summary>
+        ///     The name of the derive <see cref="Category" />
+        /// </summary>
+        public const string DeriveCategoryName = "derives";
+
+        /// <summary>
+        ///     The name of the function <see cref="Category" />
+        /// </summary>
+        public const string FunctionCategoryName = "functions";
+
+        /// <summary>
+        ///     The name of the product <see cref="Category" />
+        /// </summary>
+        public const string ProductCategoryName = "products";
+
+        /// <summary>
+        ///     The name of the port <see cref="Category" />
+        /// </summary>
+        public const string PortCategoryName = "ports";
+
+        /// <summary>
+        ///     The name of the interface <see cref="Category" />
+        /// </summary>
+        public const string InterfaceCategoryName = "interfaces";
+        
+        /// <summary>
+        ///     The name of the interface <see cref="Category" />
+        /// </summary>
+        public const string TraceCategoryName = "trace";
 
         /// <summary>
         ///     Gets the value of a certain parameter
@@ -278,7 +317,7 @@ namespace UI_DSM.Client.Extensions
         /// <returns>The asserts</returns>
         public static bool IsProduct(this ElementBase elementBase)
         {
-            return elementBase.IsCategorizedBy("products");
+            return elementBase.IsCategorizedBy(ProductCategoryName);
         }
 
         /// <summary>
@@ -288,7 +327,7 @@ namespace UI_DSM.Client.Extensions
         /// <returns>The asserts</returns>
         public static bool IsPort(this ElementBase elementBase)
         {
-            return elementBase is ElementUsage && elementBase.IsCategorizedBy("ports");
+            return elementBase is ElementUsage && elementBase.IsCategorizedBy(PortCategoryName);
         }
 
         /// <summary>
@@ -298,7 +337,7 @@ namespace UI_DSM.Client.Extensions
         /// <returns>The asserts</returns>
         public static bool IsFunction(this ElementBase elementDefinition)
         {
-            return elementDefinition.IsCategorizedBy("functions");
+            return elementDefinition.IsCategorizedBy(FunctionCategoryName);
         }
 
         /// <summary>
@@ -322,35 +361,6 @@ namespace UI_DSM.Client.Extensions
         }
 
         /// <summary>
-        ///     Gets a collection of all <see cref="Parameter" />s name with the associated value of an
-        ///     <see cref="ElementBase" />
-        /// </summary>
-        /// <param name="elementBase">The <see cref="ElementBase" /></param>
-        /// <param name="option">The <see cref="Option" /></param>
-        /// <param name="state">The <see cref="ActualFiniteState" /></param>
-        /// <returns>The collection of pair</returns>
-        public static List<(string, string)> GetAllParameterValues(this ElementBase elementBase, Option option, ActualFiniteState state)
-        {
-            var parameterOrOverride = new List<ParameterOrOverrideBase>();
-
-            switch (elementBase)
-            {
-                case ElementDefinition elementDefinition:
-                    parameterOrOverride.AddRange(elementDefinition.Parameter);
-                    break;
-                case ElementUsage elementUsage:
-                    parameterOrOverride.Add(elementUsage.ParameterOverride);
-
-                    parameterOrOverride.Add(elementUsage.ElementDefinition.Parameter.Where(x =>
-                        elementUsage.ParameterOverride.All(po => po.Parameter.Iid != x.Iid)));
-
-                    break;
-            }
-
-            return parameterOrOverride.Select(parameter => (parameter.ParameterType.Name, parameter.GetParameterValue(option, state))).ToList();
-        }
-
-        /// <summary>
         ///     Gets the name of the <see cref="Thing.Container" /> if the current <see cref="ElementBase" /> is an
         ///     <see cref="ElementUsage" />
         /// </summary>
@@ -359,6 +369,30 @@ namespace UI_DSM.Client.Extensions
         public static string GetElementContainer(this ElementBase element)
         {
             return element.GetContainerOfType<ElementDefinition>()?.Name ?? "-";
+        }
+
+        /// <summary>
+        ///     Get all <see cref="ParameterOrOverrideBase" /> contained into an <see cref="ElementBase" />
+        /// </summary>
+        /// <param name="element">The <see cref="ElementBase" /></param>
+        /// <returns>A collection of <see cref="ParameterOrOverrideBase" /></returns>
+        public static List<ParameterOrOverrideBase> GetAllParameters(this ElementBase element)
+        {
+            switch (element)
+            {
+                case ElementDefinition elementDefinition:
+                    return elementDefinition.Parameter.ToList<ParameterOrOverrideBase>();
+                case ElementUsage elementUsage:
+                {
+                    var parameters = elementUsage.ElementDefinition.GetAllParameters();
+                    var parametersOverride = elementUsage.ParameterOverride;
+                    parameters.RemoveAll(p => parametersOverride.Any(x => x.Parameter.Iid == p.Iid));
+                    parameters.AddRange(parametersOverride);
+                    return parameters;
+                }
+                default:
+                    return new List<ParameterOrOverrideBase>();
+            }
         }
 
         /// <summary>
@@ -389,7 +423,7 @@ namespace UI_DSM.Client.Extensions
         /// <returns>True if the <see cref="BinaryRelationship" /> is an Interface</returns>
         public static bool IsInterface(this BinaryRelationship relationShip)
         {
-            return relationShip.IsCategorizedBy("interfaces")
+            return relationShip.IsCategorizedBy(InterfaceCategoryName)
                    && relationShip.Target is ElementUsage targetUsage
                    && targetUsage.IsPort()
                    && relationShip.Source is ElementUsage sourceUsage
@@ -402,10 +436,29 @@ namespace UI_DSM.Client.Extensions
         /// <param name="parameter">The <see cref="ParameterOrOverrideBase" /></param>
         /// <param name="option">The <see cref="Option" /></param>
         /// <param name="state">The <see cref="ActualFiniteState" /></param>
+        /// <param name="index">The index inside the <see cref="ValueArray{T}" /></param>
         /// <returns>The parameter value</returns>
-        public static string GetParameterValue(this ParameterOrOverrideBase parameter, Option option, ActualFiniteState state)
+        public static string GetParameterValue(this ParameterOrOverrideBase parameter, Option option, ActualFiniteState state, int index = 0)
+        {
+            return parameter.GetParameterValueArray(option, state)[index];
+        }
+
+        /// <summary>
+        ///     Gets the <see cref="ValueArray{T}" /> of a <see cref="ParameterOrOverrideBase" />
+        /// </summary>
+        /// <param name="parameter">The <see cref="ParameterOrOverrideBase" /></param>
+        /// <param name="option">The <see cref="Option" /></param>
+        /// <param name="state">The <see cref="ActualFiniteState" /></param>
+        /// <returns>The <see cref="ValueArray{T}" /> value</returns>
+        public static ValueArray<string> GetParameterValueArray(this ParameterOrOverrideBase parameter, Option option, ActualFiniteState state)
         {
             var optionToQuery = parameter.IsOptionDependent ? option : null;
+
+            if (optionToQuery == null && parameter.IsOptionDependent)
+            {
+                optionToQuery = parameter.ValueSets.First(x => x.ActualOption != null).ActualOption;
+            }
+
             ActualFiniteState stateToQuery = null;
 
             if (parameter.StateDependence != null)
@@ -415,7 +468,7 @@ namespace UI_DSM.Client.Extensions
                     : parameter.StateDependence.ActualState.FirstOrDefault();
             }
 
-            return parameter.QueryParameterBaseValueSet(optionToQuery, stateToQuery).ActualValue.First();
+            return parameter.QueryParameterBaseValueSet(optionToQuery, stateToQuery).ActualValue;
         }
 
         /// <summary>
@@ -462,7 +515,7 @@ namespace UI_DSM.Client.Extensions
                 return new List<ElementBase>();
             }
 
-            var relationShips = function.QueryRelationships("implements");
+            var relationShips = function.QueryRelationships(ImplementCategoryName);
 
             return relationShips.Where(x => x.Source is ElementBase elementBase && elementBase.IsProduct())
                 .Select(x => x.Source as ElementBase).ToList();
@@ -565,7 +618,7 @@ namespace UI_DSM.Client.Extensions
         {
             return thing.GetAllCategories().Any(x => !x.IsDeprecated &&
                                                      categories.Any(cat => string.Equals(x.Name, cat, StringComparison.InvariantCultureIgnoreCase)
-                                                     || string.Equals(x.ShortName, cat, StringComparison.InvariantCultureIgnoreCase)));
+                                                                           || string.Equals(x.ShortName, cat, StringComparison.InvariantCultureIgnoreCase)));
         }
 
         /// <summary>

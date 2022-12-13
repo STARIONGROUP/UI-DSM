@@ -22,7 +22,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
     /// <summary>
     ///     Row view model to display content for a <see cref="BinaryRelationship" /> that are interface
     /// </summary>
-    public class InterfaceRowViewModel : HaveThingRowViewModel<BinaryRelationship>, IBelongsToInterfaceView
+    public class InterfaceRowViewModel : RelationshipRowViewModel, IBelongsToInterfaceView
     {
         /// <summary>
         ///     The source of the <see cref="BinaryRelationship" />
@@ -49,7 +49,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// </summary>
         /// <param name="thing">The <see cref="BinaryRelationship" /></param>
         /// <param name="reviewItem">The associated <see cref="HaveThingRowViewModel{TThing}.ReviewItem" /></param>
-        public InterfaceRowViewModel(BinaryRelationship thing, ReviewItem reviewItem) : base(thing, reviewItem)
+        /// <param name="sourceRow">The <see cref="IHaveThingRowViewModel" /> for the source</param>
+        /// <param name="targetRow">The <see cref="IHaveThingRowViewModel" /> for the target</param>
+        public InterfaceRowViewModel(BinaryRelationship thing, ReviewItem reviewItem, 
+            IHaveThingRowViewModel sourceRow, IHaveThingRowViewModel targetRow) : base(thing, reviewItem, sourceRow, targetRow)
         {
             this.InitializesProperties();
         }
@@ -65,16 +68,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public Category NatureCategory => this.Thing.GetAppliedCategories().FirstOrDefault();
 
         /// <summary>
-        ///     The Iid of the source
-        /// </summary>
-        public Guid SourceId => this.source.Iid;
-
-        /// <summary>
-        ///     The Iid of the target
-        /// </summary>
-        public Guid TargetId => this.target.Iid;
-
-        /// <summary>
         ///     The owner of the <see cref="BinaryRelationship" />
         /// </summary>
         public DomainOfExpertise InterfaceOwner => this.Thing.Owner;
@@ -85,29 +78,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public override string Id => this.ComputedName;
 
         /// <summary>
-        ///     The name of the source
-        /// </summary>
-        public string SourceName => this.source?.Name;
-
-        /// <summary>
-        ///     The name of the target
-        /// </summary>
-        public string TargetName => this.target?.Name;
-
-        /// <summary>
         ///     The owner of the interface
         /// </summary>
         public string Owner => this.Thing.GetOwnerShortName();
-
-        /// <summary>
-        ///     The owner of the source
-        /// </summary>
-        public string SourceOwner => this.source.GetOwnerShortName();
-
-        /// <summary>
-        ///     The owner of the target
-        /// </summary>
-        public string TargetOwner => this.target.GetOwnerShortName();
 
         /// <summary>
         ///     The interface end of the Target

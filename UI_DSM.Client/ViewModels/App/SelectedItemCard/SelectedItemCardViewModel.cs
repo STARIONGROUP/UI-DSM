@@ -80,6 +80,18 @@ namespace UI_DSM.Client.ViewModels.App.SelectedItemCard
         }
 
         /// <summary>
+        ///     Gets the <see cref="Tuple" /> to have the correct component type and label for a
+        ///     <see cref="IHaveAnnotatableItemRowViewModel" />
+        /// </summary>
+        /// <param name="rowViewModel">A <see cref="IHaveAnnotatableItemRowViewModel" /></param>
+        /// <returns>The correspondance</returns>
+        public static Tuple<Type, string> GetCorrespondances(IHaveAnnotatableItemRowViewModel rowViewModel)
+        {
+            var rowViewModelType = rowViewModel.GetType();
+            return Correspondances.ContainsKey(rowViewModelType) ? Correspondances[rowViewModelType] : null;
+        }
+
+        /// <summary>
         ///     Gets the correct <see cref="Type" /> component
         /// </summary>
         /// <returns>The <see cref="Type" /></returns>

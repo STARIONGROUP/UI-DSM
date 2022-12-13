@@ -15,6 +15,7 @@ namespace UI_DSM.Shared.Extensions
 {
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
+    using CDP4Common.SiteDirectoryData;
 
     /// <summary>
     ///     Extension class for <see cref="Thing" /> object
@@ -45,6 +46,18 @@ namespace UI_DSM.Shared.Extensions
             foreach (var containedThings in things.ToList())
             {
                 things.AddRange(containedThings.QueryReferencedThingsDeep());
+            }
+
+            foreach (var components in things.OfType<CompoundParameterType>()
+                         .ToList().Select(compoundParameterType => compoundParameterType.Component))
+            {
+                things.AddRange(components);
+
+                foreach (ParameterTypeComponent parameterTypeComponent in components)
+                {
+                    things.AddRange(parameterTypeComponent.QueryReferencedThingsDeep()); 
+                    things.AddRange(parameterTypeComponent.QueryContainedThingsDeep()); 
+                }
             }
 
             return things.DistinctById();

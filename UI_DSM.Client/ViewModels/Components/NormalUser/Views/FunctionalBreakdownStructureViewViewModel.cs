@@ -106,11 +106,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                                      row.Thing.GetAppliedCategories().Any(thingCat => thingCat.Iid == cat.DefinedThing.Iid)));
 
                 row.IsVisible &= !row.HasOptionExcluded(selectedOption);
-
-                if (row is FunctionRowViewModel function)
-                {
-                    function.UpdateCostValues(selectedOption);
-                }
             }
         }
     }

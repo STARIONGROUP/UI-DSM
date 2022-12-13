@@ -21,6 +21,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
     using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
+    using ThingExtension = UI_DSM.Client.Extensions.ThingExtension;
+
     /// <summary>
     ///     Row view model to display content for a <see cref="Requirement" />
     /// </summary>
@@ -94,7 +96,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     The names of the <see cref="Thing" />s from which the <see cref="Requirement" /> derives
         /// </summary>
-        public IEnumerable<string> DerivesFrom => this.Thing.GetRelatedThingsName("derives", ClassKind.Requirement, false);
+        public IEnumerable<string> DerivesFrom => this.Thing.GetRelatedThingsName(ThingExtension.DeriveCategoryName, ClassKind.Requirement, false);
 
         /// <summary>
         ///     The collection of the names of the <see cref="Thing" /> from which the <see cref="Requirement" /> derives separated by a ','
@@ -104,7 +106,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     The names of the <see cref="Thing" />s to which the <see cref="Requirement" /> derives
         /// </summary>
-        public IEnumerable<string> DerivesTo => this.Thing.GetRelatedThingsName("derives", ClassKind.Requirement);
+        public IEnumerable<string> DerivesTo => this.Thing.GetRelatedThingsName(ThingExtension.DeriveCategoryName, ClassKind.Requirement);
 
         /// <summary>
         ///     The collection of the names of the <see cref="Thing" /> to which the <see cref="Requirement" /> derives separated by a ','
@@ -114,7 +116,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     The names of functions that satisfies the <see cref="Requirement" />
         /// </summary>
-        public IEnumerable<string> SatisfyByFunction => this.Thing.GetRelatedThingsName("satisfy", ClassKind.ElementDefinition, "function", false, false);
+        public IEnumerable<string> SatisfyByFunction => this.Thing.GetRelatedThingsName(ThingExtension.SatisfyCategoryName, ClassKind.ElementUsage,
+            ThingExtension.FunctionCategoryName, false, false);
 
         /// <summary>
         ///     The collection of the name of functions that satisfies the <see cref="Requirement" /> separated by a ','
@@ -124,7 +127,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     The names of products that satisfies the <see cref="Requirement" />
         /// </summary>
-        public IEnumerable<string> SatisfyByProduct => this.Thing.GetRelatedThingsName("satisfy", ClassKind.ElementDefinition, "product", false, false);
+        public IEnumerable<string> SatisfyByProduct => this.Thing.GetRelatedThingsName(ThingExtension.DeriveCategoryName, ClassKind.ElementUsage, ThingExtension.ProductCategoryName, false, false);
 
         /// <summary>
         ///     The collection of the name of products that satisfies the <see cref="Requirement" /> separated by a ','
@@ -144,7 +147,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     A collection of name for <see cref="Requirement" />s that trace this <see cref="Requirement" />
         /// </summary>
-        public IEnumerable<string> Traces => this.Thing.GetRelatedThingsName("trace", ClassKind.Requirement);
+        public IEnumerable<string> Traces => this.Thing.GetRelatedThingsName(ThingExtension.TraceCategoryName, ClassKind.Requirement);
+
+        /// <summary>
+        ///     A collection of name for <see cref="Requirement" />s that trace this <see cref="Requirement" />
+        /// </summary>
+        public IEnumerable<string> TracedBy => this.Thing.GetRelatedThingsName(ThingExtension.TraceCategoryName, ClassKind.Requirement, false);
 
         /// <summary>
         ///     Initializes this row view model properties

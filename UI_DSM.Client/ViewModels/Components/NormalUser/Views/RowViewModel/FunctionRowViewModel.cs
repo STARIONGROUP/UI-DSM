@@ -13,6 +13,7 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
 {
+    using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
 
     using UI_DSM.Client.Extensions;
@@ -54,17 +55,38 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public List<(string, string)> LinkedCostValues { get; private set; } = new();
 
         /// <summary>
+        ///     The names of <see cref="Requirement"/> that are satisfied by the function
+        /// </summary>
+        public IEnumerable<string> SatisfiedRequirements => this.Thing.GetRelatedThingsName(ThingExtension.SatisfyCategoryName, ClassKind.Requirement, 
+            true, false);
+
+        /// <summary>
+        ///     The names of products that implements the function
+        /// </summary>
+        public IEnumerable<string> ProductsImplement => this.Thing.GetRelatedThingsName(ThingExtension.ImplementCategoryName, ClassKind.ElementUsage,
+            ThingExtension.ProductCategoryName, false, false);
+
+        /// <summary>
+        ///     Updates the <see cref="ElementBaseRowViewModel.CurrentOption" /> property
+        /// </summary>
+        /// <param name="selectedOption">The new <see cref="Option" /></param>
+        public override void UpdateOption(Option selectedOption)
+        {
+            base.UpdateOption(selectedOption);
+            this.UpdateCostValues();
+        }
+
+        /// <summary>
         ///     Updates the collection of <see cref="LinkedCostValues" /> based on an option
         /// </summary>
-        /// <param name="option">The <see cref="Option" /></param>
-        public void UpdateCostValues(Option option)
+        private void UpdateCostValues()
         {
             var linkedProducts = this.Thing.GetLinkedProducts();
             this.LinkedCostValues.Clear();
 
             foreach (var product in linkedProducts.OrderBy(x => x.Name))
             {
-                this.LinkedCostValues.Add(product.TryGetParameterValue("cost", null, null, out var cost)
+                this.LinkedCostValues.Add(product.TryGetParameterValue("cost", this.CurrentOption, null, out var cost)
                     ? (product.Name, cost)
                     : (product.Name, "-"));
             }

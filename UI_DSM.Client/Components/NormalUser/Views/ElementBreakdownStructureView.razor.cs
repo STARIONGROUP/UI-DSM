@@ -131,7 +131,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                     .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
                 this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.OptionChooserViewModel.SelectedOption)
-                    .Subscribe(_ => this.InvokeAsync(this.OnRowFilteringClose)));
+                    .Subscribe(_ => this.InvokeAsync(this.OnOptionSelectionClose)));
 
                 this.HideColumnsAtStart();
 
@@ -182,6 +182,23 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             this.ViewModel.FilterRows(this.ViewModel.FilterViewModel.GetSelectedFilters());
             return this.HasChanged();
+        }
+
+        /// <summary>
+        ///     Handles the change of <see cref="Option" />
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private Task OnOptionSelectionClose()
+        {
+            this.ViewModel.OptionChanged();
+
+            if (this.ViewModel.SelectedElement is ElementBaseRowViewModel row)
+            {
+                this.SelectRow(null);
+                this.SelectRow(row);
+            }
+
+            return this.OnRowFilteringClose();
         }
     }
 }

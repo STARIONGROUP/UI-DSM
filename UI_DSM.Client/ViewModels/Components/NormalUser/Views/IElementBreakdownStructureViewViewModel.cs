@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
     using CDP4Common.CommonData;
+    using CDP4Common.EngineeringModelData;
 
     using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.App.Filter;
@@ -66,5 +67,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         /// <param name="selectedFilters">The selected filters</param>
         void FilterRows(IReadOnlyDictionary<ClassKind, List<FilterRow>> selectedFilters);
+
+        /// <summary>
+        ///     Handle the change of <see cref="Option" />
+        /// </summary>
+        void OptionChanged();
     }
 }
