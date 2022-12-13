@@ -29,9 +29,24 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// </summary>
         /// <param name="thing">The <see cref="BinaryRelationship" /></param>
         /// <param name="reviewItem">The associated <see cref="HaveThingRowViewModel{TThing}.ReviewItem" /></param>
-        public RelationshipRowViewModel(BinaryRelationship thing, ReviewItem reviewItem) : base(thing, reviewItem)
+        /// <param name="sourceRow">The <see cref="IHaveThingRowViewModel" /> for the source</param>
+        /// <param name="targetRow">The <see cref="IHaveThingRowViewModel" /> for the target</param>
+        public RelationshipRowViewModel(BinaryRelationship thing, ReviewItem reviewItem,
+            IHaveThingRowViewModel sourceRow, IHaveThingRowViewModel targetRow) : base(thing, reviewItem)
         {
+            this.SourceRow = sourceRow;
+            this.TargetRow = targetRow;
         }
+
+        /// <summary>
+        ///     The <see cref="IHaveThingRowViewModel" /> for the target
+        /// </summary>
+        public IHaveThingRowViewModel TargetRow { get; }
+
+        /// <summary>
+        ///     The <see cref="IHaveThingRowViewModel" /> for the source
+        /// </summary>
+        public IHaveThingRowViewModel SourceRow { get; }
 
         /// <summary>
         ///     Gets the Id of the current <see cref="RelationshipRowViewModel" />

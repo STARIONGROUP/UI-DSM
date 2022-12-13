@@ -61,9 +61,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public string CommaCategories { get; private set; }
 
         /// <summary>
-        ///     A collection of pair of <see cref="string" /> to identify the <see cref="Parameter" /> name and value
+        ///     The selected <see cref="Option" /> for displaying values
         /// </summary>
-        public List<(string, string)> ParameterValues { get; private set; }
+        public Option CurrentOption { get; private set; }
 
         /// <summary>
         ///     The name of the container of the <see cref="ElementBase" />
@@ -86,6 +86,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public override string Id => this.Thing.Name;
 
         /// <summary>
+        ///     The collection of <see cref="ParameterOrOverrideBase" />
+        /// </summary>
+        public List<ParameterOrOverrideBase> Parameters { get; private set; }
+
+        /// <summary>
         ///     Verifies that the current <see cref="ElementBase" /> has the current <see cref="Option" /> has excluded
         /// </summary>
         /// <param name="option">The <see cref="Option" /></param>
@@ -96,13 +101,22 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         }
 
         /// <summary>
+        ///     Updates the <see cref="CurrentOption" /> property
+        /// </summary>
+        /// <param name="selectedOption">The new <see cref="Option" /></param>
+        public virtual void UpdateOption(Option selectedOption)
+        {
+            this.CurrentOption = selectedOption;
+        }
+
+        /// <summary>
         ///     Initializes this row view model properties
         /// </summary>
         private void InitializesProperties()
         {
-            this.ParameterValues = this.Thing.GetAllParameterValues(null, null);
             this.ElementDefinitionId = this.Thing is ElementUsage usage ? usage.ElementDefinition.Iid : this.ThingId;
             this.CommaCategories = this.Categories.AsCommaSeparated();
+            this.Parameters = this.Thing.GetAllParameters().OrderBy(x => x.ParameterType.Name).ToList();
         }
     }
 }

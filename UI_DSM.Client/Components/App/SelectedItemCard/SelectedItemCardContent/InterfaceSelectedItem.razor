@@ -9,11 +9,16 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-@inherits SelectedItemBase<UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel.InterfaceRowViewModel>
-<AppKeyValue Key="Name" Value="@(this.RowViewModel.Id)" />
-<AppKeyValue Key="Owner" Value="@(this.RowViewModel.Owner)" />
-<AppKeyValue Key="Nature" Value="@(this.RowViewModel.Nature)" />
-<AppKeyValue Key="Source" Value="@(this.RowViewModel.SourceEnd)" />
-<AppKeyValue Key="Target" Value="@(this.RowViewModel.TargetEnd)" />
-<AppKeyValue Key="Source Owner" Value="@(this.RowViewModel.SourceOwner)" />
-<AppKeyValue Key="Target Owner" Value="@(this.RowViewModel.TargetOwner)" />
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+@inherits RelationshipSelectedItem
+
+@{
+	if (this.RowViewModel is InterfaceRowViewModel interfaceRow)
+	{
+		<AppKeyValue Key="Name" Value="@(this.RowViewModel.Id)" />
+		<AppKeyValue Key="Owner" Value="@(interfaceRow.Owner)" />
+		<AppKeyValue Key="Nature" Value="@(interfaceRow.Nature)" />
+	}
+
+	base.BuildRenderTree(__builder);
+}

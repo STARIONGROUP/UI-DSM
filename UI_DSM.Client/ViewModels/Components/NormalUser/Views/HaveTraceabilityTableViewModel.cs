@@ -337,7 +337,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 }
 
                 this.AvailableRelationships[rowId][columnId] =
-                    new RelationshipRowViewModel(relationship, relationshipReviewItems.FirstOrDefault(x => x.ThingId == relationship.Iid));
+                    new RelationshipRowViewModel(relationship, relationshipReviewItems.FirstOrDefault(x => x.ThingId == relationship.Iid)
+                    , this.TraceabilityTableViewModel.Rows.First(x => x.ThingId == rowId), 
+                    this.TraceabilityTableViewModel.Columns.First(x => x.ThingId == columnId));
             }
         }
 

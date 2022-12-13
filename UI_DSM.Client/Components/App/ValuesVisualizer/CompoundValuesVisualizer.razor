@@ -1,0 +1,40 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// CompoundValuesVisualizer.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.Extensions
+@using CDP4Common.SiteDirectoryData
+@inherits ValuesVisualizer
+
+<div>
+	@if (this.State != null)
+	{
+		<span>@this.State.Name : </span>
+	}
+	
+	@{ 
+		var compound = (CompoundParameterType)this.Parameter.ParameterType;
+			@for (var componentIndex = 0; componentIndex < compound.Component.Count; componentIndex++)
+			{
+				var currentComponent = compound.Component[componentIndex];
+				<div>
+					<span>@currentComponent.ShortName : </span>
+					<span>@this.Parameter.GetParameterValue(this.Option, this.State, componentIndex)
+						@if (currentComponent.Scale != null)
+						{
+							<span> (@currentComponent.Scale.ShortName)</span>
+						}
+					</span>
+				</div>
+
+			}
+	}
+	
+</div>

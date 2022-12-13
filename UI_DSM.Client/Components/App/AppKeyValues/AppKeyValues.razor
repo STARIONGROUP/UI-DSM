@@ -12,7 +12,7 @@
 @namespace AppComponents
 
 <div class="app-key-values">
-	<AppAccordion Label="@(this.Key)" Variant="AppAccordion.VariantValue.Tiny">
+	<AppAccordion Label="@(this.Key)" Variant="AppAccordion.VariantValue.Tiny" PanelOpen="false">
 		<ul class="app-key-values__list">
 			@foreach (var item in this.Items)
 			{

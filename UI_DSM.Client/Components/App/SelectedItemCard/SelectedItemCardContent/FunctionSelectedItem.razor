@@ -14,3 +14,6 @@
 <AppKeyValue Key="ShortName" Value="@(this.RowViewModel.ShortName)" />
 <AppKeyValue Key="Owner" Value="@(this.RowViewModel.Owner)" />
 <AppKeyValue Key="Container" Value="@(this.RowViewModel.Container)" />
+<ParametersComponent Parameters="@(this.RowViewModel.Parameters)" CurrentOption="@(this.RowViewModel.CurrentOption)"/>
+<AppKeyValues Key="Implemented by product(s)" Items="@(this.RowViewModel.ProductsImplement)" />
+<AppKeyValues Key="Satisfies requirement(s)" Items="@(this.RowViewModel.SatisfiedRequirements)" />

@@ -14,6 +14,7 @@
 namespace UI_DSM.Server.Managers.ReviewManager
 {
     using Microsoft.EntityFrameworkCore;
+    
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.ArtifactManager;
@@ -161,6 +162,8 @@ namespace UI_DSM.Server.Managers.ReviewManager
                 .SelectMany(x => x.ReviewItems)
                 .SelectMany(x => x.Annotations)
                 .OfType<Comment>()
+                .ToList()
+                .DistinctBy(x => x.Id)
                 .Count();
 
             return new ComputedProjectProperties

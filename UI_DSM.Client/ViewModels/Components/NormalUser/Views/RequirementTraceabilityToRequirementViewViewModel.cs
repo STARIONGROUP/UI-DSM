@@ -48,7 +48,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The name of the category
         /// </summary>
-        protected override string TraceCategoryName => "trace";
+        protected override string TraceCategoryName => ThingExtension.TraceCategoryName;
 
         /// <summary>
         ///     Initialize this view model properties
@@ -86,10 +86,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
             var reviewItemsForRelationships = reviewItems.Where(x => relationships.Any(rel => x.ThingId == rel.Iid)).ToList();
 
+            this.TraceabilityTableViewModel.InitializeProperties(rows, columns);
             this.PopulateRelationships(rows, columns, reviewItemsForRelationships);
             InitializesFilterForRequirementRows(this.RowsFilterViewModel, rows.OfType<RequirementRowViewModel>());
             InitializesFilterForRequirementRows(this.ColumnsFilterViewModel, columns.OfType<RequirementRowViewModel>());
-            this.TraceabilityTableViewModel.InitializeProperties(rows, columns);
         }
 
         /// <summary>

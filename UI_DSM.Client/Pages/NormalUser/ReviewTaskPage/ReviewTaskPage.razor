@@ -87,8 +87,8 @@
 							</BodyTemplate>
 						</DxDropDown>
 
-						@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask))
-
+						@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask) 
+						     && this.ViewModel.ReviewTask.IsAssignedTo.Any(x => x.Id == this.ViewModel.Participant.Id))
 						{
 							@if (this.ViewModel.ReviewTask.Status == StatusKind.Open)
 							{

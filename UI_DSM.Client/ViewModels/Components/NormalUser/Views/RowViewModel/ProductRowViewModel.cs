@@ -13,10 +13,13 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
 {
+    using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
 
     using UI_DSM.Client.Extensions;
     using UI_DSM.Shared.Models;
+
+    using ThingExtension = UI_DSM.Client.Extensions.ThingExtension;
 
     /// <summary>
     ///     Row view model to display content for a <see cref="ElementBase" /> that are Product
@@ -31,6 +34,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public ProductRowViewModel(ElementBase thing, ReviewItem reviewItem) : base(thing, reviewItem)
         {
             this.InitializesProperties();
+        }
+
+        /// <summary>
+        ///     Updates the <see cref="ElementBaseRowViewModel.CurrentOption" /> property
+        /// </summary>
+        /// <param name="selectedOption">The new <see cref="Option" /></param>
+        public override void UpdateOption(Option selectedOption)
+        {
+            base.UpdateOption(selectedOption);
+            this.CostValue = this.Thing.TryGetParameterValue("cost", this.CurrentOption, null, out var retrievedValue) ? retrievedValue : "-";
         }
 
         /// <summary>
@@ -104,6 +117,18 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public string Nature => null;
 
         /// <summary>
+        ///     The names of <see cref="Requirement"/> that are satisfied by the product
+        /// </summary>
+        public IEnumerable<string> SatisfiedRequirements => this.Thing.GetRelatedThingsName(ThingExtension.SatisfyCategoryName, ClassKind.Requirement, 
+             true, false);
+
+        /// <summary>
+        ///     The names of functions that are implemented by the product
+        /// </summary>
+        public IEnumerable<string> ImplementedFunctions => this.Thing.GetRelatedThingsName(ThingExtension.ImplementCategoryName, ClassKind.ElementUsage,
+            ThingExtension.FunctionCategoryName, true, false);
+
+        /// <summary>
         ///     Compute the <see cref="ComputedId" />
         /// </summary>
         /// <param name="shouldShowTechnology">If should include the technology</param>
@@ -117,15 +142,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
             {
                 this.ComputedId = this.Thing.Name;
             }
-        }
-
-        /// <summary>
-        ///     Update the cost value based on an <see cref="Option" />
-        /// </summary>
-        /// <param name="option">The <see cref="Option" /></param>
-        public void UpdateCostValue(Option option)
-        {
-            this.CostValue = this.Thing.TryGetParameterValue("cost", option, null, out var retrievedValue) ? retrievedValue : "-";
         }
 
         /// <summary>

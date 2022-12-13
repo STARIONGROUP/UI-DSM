@@ -10,7 +10,8 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @inherits SelectedItemBase<UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel.ElementBaseRowViewModel>
-<AppKeyValue Key="Name" Value="@(this.RowViewModel.Name)" />
-<AppKeyValue Key="ShortName" Value="@(this.RowViewModel.ShortName)" />
-<AppKeyValue Key="Owner" Value="@(this.RowViewModel.Owner)" />
-<AppKeyValue Key="Container" Value="@(this.RowViewModel.Container)" />
+<AppKeyValue Key="Name" Value="@(this.RowViewModel.Name)"/>
+<AppKeyValue Key="ShortName" Value="@(this.RowViewModel.ShortName)"/>
+<AppKeyValue Key="Owner" Value="@(this.RowViewModel.Owner)"/>
+<AppKeyValue Key="Container" Value="@(this.RowViewModel.Container)"/>
+<ParametersComponent Parameters="@(this.RowViewModel.Parameters)" CurrentOption="@(this.RowViewModel.CurrentOption)"/>

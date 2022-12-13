@@ -48,7 +48,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The name of the category
         /// </summary>
-        protected override string TraceCategoryName => "implements";
+        protected override string TraceCategoryName => ThingExtension.ImplementCategoryName;
 
         /// <summary>
         ///     Apply a filtering on rows
@@ -110,10 +110,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             
             var reviewItemsForRelationships = reviewItems.Where(x => relationships.Any(rel => x.ThingId == rel.Iid)).ToList();
 
+            this.TraceabilityTableViewModel.InitializeProperties(rows, columns);
             this.PopulateRelationships(rows, columns, reviewItemsForRelationships);
             InitializesFilterForElementBaseRows(this.RowsFilterViewModel, rows.OfType<ProductRowViewModel>());
             InitializesFilterForElementBaseRows(this.ColumnsFilterViewModel, columns.OfType<FunctionRowViewModel>());
-            this.TraceabilityTableViewModel.InitializeProperties(rows, columns);
         }
     }
 }

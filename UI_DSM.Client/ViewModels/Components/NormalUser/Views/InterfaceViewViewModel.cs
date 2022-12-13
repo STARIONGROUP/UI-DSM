@@ -218,7 +218,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 .Select(x => new ProductRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));
 
             this.allInterfaces = new List<InterfaceRowViewModel>(interfaces
-                .Select(x => new InterfaceRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));
+                .Select(x => new InterfaceRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid), 
+                    this.allPorts.First(source => source.ThingId == x.Source.Iid),
+                    this.allPorts.First(target => target.ThingId == x.Target.Iid))));
 
             this.filteredProducts = new List<ProductRowViewModel>(this.allProducts.OrderBy(x => x.Thing.Name));
             this.Interfaces = new List<InterfaceRowViewModel>(this.allInterfaces.OrderBy(x => x.Id));

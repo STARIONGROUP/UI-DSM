@@ -157,6 +157,22 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     Handle the change of <see cref="Option" />
+        /// </summary>
+        public void OptionChanged()
+        {
+            foreach (var elementBaseRowViewModel in this.TopElement)
+            {
+                elementBaseRowViewModel.UpdateOption(this.OptionChooserViewModel.SelectedOption);
+            }
+
+            foreach (var elementBaseRowViewModel in this.AllRows)
+            {
+                elementBaseRowViewModel.UpdateOption(this.OptionChooserViewModel.SelectedOption);
+            }
+        }
+
+        /// <summary>
         ///     Initializes the filters criteria for rows
         /// </summary>
         protected void InitializesFilter<T>(string categoryNameFiltering) where T : ElementBaseRowViewModel
@@ -183,8 +199,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                                 || x.AllSuperCategories()
                                     .Any(cat => !cat.IsDeprecated && string.Equals(cat.Name, categoryNameFiltering, StringComparison.InvariantCultureIgnoreCase)))
                     .DistinctBy(x => x.Iid))
-                .OrderBy(x => x.Name)
-                .ToList();
+                    .OrderBy(x => x.Name)
+                    .ToList();
 
             availableRowFilters.Add(new FilterModel
             {
