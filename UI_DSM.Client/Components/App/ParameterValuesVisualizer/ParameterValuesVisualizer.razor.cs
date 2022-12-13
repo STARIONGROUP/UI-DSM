@@ -61,12 +61,8 @@ namespace UI_DSM.Client.Components.App.ParameterValuesVisualizer
         protected override void OnParametersSet()
         {
             base.OnParametersSet();
-
-            if (this.Parameter != null)
-            {
-                this.displayValue = this.ComputeDisplayValue();
-                this.hasMultipleValues = this.ComputeHasMultipleValues();
-            }
+            this.displayValue = this.ComputeDisplayValue();
+            this.hasMultipleValues = this.ComputeHasMultipleValues();
         }
 
         /// <summary>

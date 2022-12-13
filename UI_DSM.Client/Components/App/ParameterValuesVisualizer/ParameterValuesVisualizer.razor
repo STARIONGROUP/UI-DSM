@@ -1,5 +1,4 @@
-﻿@using CDP4Common.SiteDirectoryData
-<!--------------------------------------------------------------------------------------------------------
+﻿<!--------------------------------------------------------------------------------------------------------
 // ParameterValuesVisualizer.razor
 // Copyright (c) 2022 RHEA System S.A.
 // 
@@ -10,6 +9,8 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@using CDP4Common.SiteDirectoryData
+
 @if (this.hasMultipleValues)
 {
 	<DxPopup @ref=@this.Popup HeaderText="Values Visualizer" ShowFooter="false">
