@@ -215,6 +215,27 @@ button:focus {
   gap: var(--spacing-1);
 }
 
+
+.interface-view-actions {
+  display: grid;
+  gap: var(--spacing-1);
+}
+
+.interface-view-actions .rz-radio-button-list-horizontal .rz-radio-btn {
+  padding: 0;
+  border: none;
+  font-weight: 500;
+}
+
+.interface-view-actions .rz-radio-button-list-horizontal .rz-radio-btn:hover {
+  background: transparent;
+  color: var(--colors-black);
+}
+
+.interface-view-actions .rz-radio-button-list-horizontal {
+  gap: var(--spacing-1);
+}
+
 .right-actions {
   align-items: center;
   display: flex;
@@ -264,4 +285,42 @@ div.invisible {
   padding-top: var(--spacing-8);
   display: grid;
   gap: var(--spacing-4);
+}
+
+.column-chooser__panel {
+  display: grid;
+}
+
+.column-chooser__panel label {
+  display: grid;
+  padding: var(--spacing-2);
+  grid-template-columns: auto 1fr;
+  gap: var(--spacing-2);
+  border-bottom: 1px solid var(--colors-gray-100);
+}
+
+
+.view-settings-panel {
+  display: grid;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+}
+
+
+.view-settings-panel h5 {
+  padding: var(--spacing-2) 0 var(--spacing-1);
+}
+
+.view-settings-panel .rz-radio-button-list-vertical .rz-radio-btn {
+  margin: 0;
+  padding: var(--spacing-1) 0;
+  font-size: var(--text-sm);
+}
+
+.view-settings-panel .rzi-check {
+  vertical-align: initial !important;
+}
+
+.view-settings-panel .toggle-label {
+  font-weight: 600;
 }

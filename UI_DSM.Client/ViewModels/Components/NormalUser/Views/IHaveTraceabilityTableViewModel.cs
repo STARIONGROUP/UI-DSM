@@ -39,6 +39,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ITraceabilityTableViewModel TraceabilityTableViewModel { get; }
 
         /// <summary>
+        ///     Value asserting if the settings for the view should be visible
+        /// </summary>
+        bool IsViewSettingsVisible { get; set; }
+
+        /// <summary>
         ///     Apply a filtering on rows
         /// </summary>
         /// <param name="selectedFilters">The selected filters</param>

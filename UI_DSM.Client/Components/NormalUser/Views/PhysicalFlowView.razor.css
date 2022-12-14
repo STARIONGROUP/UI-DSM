@@ -1,6 +1,6 @@
 ﻿#diagram-parent {
-    position:relative;
+    position: relative;
     width: 100%;
-    min-height: 1000px;
-    height: 1050px;
+    height: 100%;
+    background-color: var(--colors-gray-50);
 }

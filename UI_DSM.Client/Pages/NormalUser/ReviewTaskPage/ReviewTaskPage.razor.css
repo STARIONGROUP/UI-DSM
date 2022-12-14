@@ -32,12 +32,15 @@
   padding: var(--spacing-8);
   height: calc(100vh - 114px);
   overflow: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .task-page__body-inner {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-8);
+  gap: var(--spacing-4);
+  height: 100%;
 }
 
 .task-page__actions {
@@ -45,4 +48,20 @@
   justify-content: flex-end;
   width: 100%;
   gap: var(--spacing-2);
+}
+
+.task-page__sub-actions {
+  display: flex;
+  width: 100%;
+  gap: var(--spacing-4);
+  align-items: center;
+  font-weight: 500;
+  color: var(--colors-primary-700);
+  margin-top: var(--spacing-2);
+}
+
+.task-page__sub-actions button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
 }

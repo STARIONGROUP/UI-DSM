@@ -12,7 +12,7 @@
 }
 
 
-.dxbs-grid-column-chooser-dialog .dxbs-checkbox .custom-control.custom-checkbox, 
+.dxbs-grid-column-chooser-dialog .dxbs-checkbox .custom-control.custom-checkbox,
 .dxbs-grid-column-chooser-dialog .dxbs-checkbox .custom-control.custom-radio {
   width: var(--spacing-4);
   min-width: var(--spacing-4);
@@ -82,4 +82,8 @@
 
 .filter-actions .rz-chkbox-box .rzi {
   vertical-align: initial;
+}
+
+.view-actions .rz-chkbox-icon {
+  vertical-align: initial !important;
 }

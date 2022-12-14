@@ -1,12 +1,12 @@
 ﻿// --------------------------------------------------------------------------------------------------------
 // <copyright file="InterfaceViewViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
-// 
+//
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar, Jaime Bernar
-// 
+//
 //  This file is part of UI-DSM.
 //  The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 //  The UI-DSM application is provided to the community under the Apache License 2.0.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
@@ -62,6 +62,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         private bool shouldShowProducts;
 
         /// <summary>
+        ///     Backing field for <see cref="IsViewSettingsVisible" />
+        /// </summary>
+        private bool isViewSettingsVisible;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
@@ -81,6 +86,15 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     Value asserting if the settings for the view should be visible
+        /// </summary>
+        public bool IsViewSettingsVisible
+        {
+            get => this.isViewSettingsVisible;
+            set => this.RaiseAndSetIfChanged(ref this.isViewSettingsVisible, value);
+        }
+
+        /// <summary>
         ///     The <see cref="IFilterViewModel" />
         /// </summary>
         public IFilterViewModel FilterViewModel { get; }
@@ -93,7 +107,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The <see cref="IConnectionVisibilitySelectorViewModel" /> for products
         /// </summary>
-        public IConnectionVisibilitySelectorViewModel ProductVisibilityState { get; set; }
+        public IConnectionVisibilitySelectorViewModel ProductVisibilityState { get; private set; } = new ConnectionVisibilitySelectorViewModel();
 
         /// <summary>
         ///     A collection <see cref="IBelongsToInterfaceView" />
@@ -108,7 +122,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The <see cref="IConnectionVisibilitySelectorViewModel" /> for ports
         /// </summary>
-        public IConnectionVisibilitySelectorViewModel PortVisibilityState { get; set; }
+        public IConnectionVisibilitySelectorViewModel PortVisibilityState { get; private set; } = new ConnectionVisibilitySelectorViewModel();
 
         /// <summary>
         ///     A list of the <see cref="NodeModel" /> in the <see cref="Blazor.Diagrams.Core.Diagram" />

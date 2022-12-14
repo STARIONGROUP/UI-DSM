@@ -38,7 +38,7 @@ namespace UI_DSM.Client.Components.App.ConnectionVisibilitySelector
         /// <summary>
         ///     The <see cref="IConnectionVisibilitySelectorViewModel" />
         /// </summary>
-        [Inject]
+        [Parameter]
         public IConnectionVisibilitySelectorViewModel ViewModel { get; set; }
     }
 }

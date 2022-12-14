@@ -1,12 +1,12 @@
 ﻿// --------------------------------------------------------------------------------------------------------
 // <copyright file="InterfaceView.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
-// 
+//
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
-// 
+//
 //  This file is part of UI-DSM.
 //  The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 //  The UI-DSM application is provided to the community under the Apache License 2.0.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
@@ -43,16 +43,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     A collection of <see cref="IDisposable" />
         /// </summary>
         private readonly List<IDisposable> disposables = new();
-
-        /// <summary>
-        ///     Reference to the <see cref="ConnectionVisibilitySelector" /> for ports
-        /// </summary>
-        public ConnectionVisibilitySelector ConnectionVisibilitySelectorPort { get; set; }
-
-        /// <summary>
-        ///     Reference to the <see cref="ConnectionVisibilitySelector" /> for products
-        /// </summary>
-        public ConnectionVisibilitySelector ConnectionVisibilitySelectorProduct { get; set; }
 
         /// <summary>
         ///     Reference to the <see cref="RadzenDataGrid{TItem}" />
@@ -99,9 +89,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             await base.InitializeViewModel(things, projectId, reviewId, prefilters, additionnalColumnsVisibleAtStart);
             this.IsLoading = false;
 
-            this.ViewModel.PortVisibilityState = this.ConnectionVisibilitySelectorPort.ViewModel;
-            this.ViewModel.ProductVisibilityState = this.ConnectionVisibilitySelectorProduct.ViewModel;
-
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.PortVisibilityState.CurrentState)
                 .Subscribe(_ => this.InvokeAsync(this.OnVisibilityStateChanged)));
 
@@ -120,7 +107,19 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ShouldShowProducts)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsViewSettingsVisible)
+                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
             this.HideColumnsAtStart();
+        }
+
+        /// <summary>
+        ///     Handle the change if the view should display products or not
+        /// </summary>
+        /// <param name="newValue">The new value</param>
+        public void OnProductVisibilityChanged(bool newValue)
+        {
+            this.ViewModel.SetProductsVisibility(newValue);
         }
 
         /// <summary>
@@ -219,12 +218,11 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Handle the change if the view should display products or not
+        ///     Toggle the view type dropdown
         /// </summary>
-        /// <param name="newValue">The new value</param>
-        private void OnProductVisibilityChanged(bool newValue)
+        private void ToggleViewSettingsDropdown()
         {
-            this.ViewModel.SetProductsVisibility(newValue);
+            this.ViewModel.IsViewSettingsVisible = !this.ViewModel.IsViewSettingsVisible;
         }
 
         /// <summary>

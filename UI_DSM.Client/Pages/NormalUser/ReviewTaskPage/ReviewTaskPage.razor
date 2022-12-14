@@ -1,12 +1,12 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
 // ReviewTaskPage.razor
 // Copyright (c) 2022 RHEA System S.A.
-// 
+//
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
-// 
-// This file is part of UI-DSM. 
+//
+// This file is part of UI-DSM.
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @page "/Project/{ProjectId}/Review/{ReviewId}/ReviewObjective/{ReviewObjectiveId}/ReviewTask/{ReviewTaskId}"
@@ -55,37 +55,45 @@
 		<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.IsLoading">
 			<main class="task-page__body">
 				<div class="task-page__header">
-					<h1 class="h3">@(this.ViewModel.ReviewTask.Description)</h1>
-					<div class="task-page__actions">
-						<AppButton Id="model-selector-button" Label="Select view" Type="button" Click="@(this.OpenModelSelector)">
-							<FeatherDatabase Size="20" Color="currentColor" StrokeWidth="2"/> <span>@(this.GetModelName())</span>
-						</AppButton>
-						<DxDropDown @bind-IsOpen="@(this.ViewModel.ModelSelectorVisible)"
-						            Width="200"
-						            MaxHeight="500"
-						            PositionTarget="#model-selector-button"
-						            PositionMode="DropDownPositionMode.Bottom"
-						            PreventCloseOnPositionTargetClick="true">
-							<BodyTemplate>
-								<DxListBox Data="@(this.ViewModel.AvailableModels)" TextFieldName="@nameof(Model.ModelName)"
-								           @bind-Value="@(this.ViewModel.SelectedModel)"/>
-							</BodyTemplate>
-						</DxDropDown>
+					<div class="task-page__title-container">
+						<h1 class="h3">@(this.ViewModel.ReviewTask.Description)</h1>
+						<div class="task-page__sub-actions">
+							<button id="model-selector-button" type="button" @onclick="this.OpenModelSelector">
+								<FeatherDatabase Size="20" Color="currentColor" StrokeWidth="2"/> <span>@(this.GetModelName())</span>
+							</button>
 
-						<AppButton Id="view-selector-button" Label="Select view" Type="button" Click="@(this.OpenViewSelector)">
-							<FeatherEye Size="20" Color="currentColor" StrokeWidth="2"/> <span>@(this.ViewModel.CurrentView.GetEnumDisplayName())</span>
-						</AppButton>
-						<DxDropDown @bind-IsOpen="@(this.ViewModel.ViewSelectorVisible)"
-						            Width="200"
-						            MaxHeight="500"
-						            PositionTarget="#view-selector-button"
-						            PositionMode="DropDownPositionMode.Bottom"
-						            PreventCloseOnPositionTargetClick="true">
-							<BodyTemplate>
-								<DxListBox Data="@(this.ViewModel.AvailableViews)" TextFieldName="@nameof(ViewWrapper.ViewName)"
-								           @bind-Value="@(this.ViewModel.SelectedView)"/>
-							</BodyTemplate>
-						</DxDropDown>
+							<DxDropDown @bind-IsOpen="@(this.ViewModel.ModelSelectorVisible)"
+													Width="200"
+													MaxHeight="500"
+													PositionTarget="#model-selector-button"
+													PositionMode="DropDownPositionMode.Bottom"
+													PreventCloseOnPositionTargetClick="true">
+								<BodyTemplate>
+									<DxListBox Data="@(this.ViewModel.AvailableModels)" TextFieldName="@nameof(Model.ModelName)"
+														@bind-Value="@(this.ViewModel.SelectedModel)"/>
+								</BodyTemplate>
+							</DxDropDown>
+
+
+							<button id="view-selector-button" type="button" @onclick="this.OpenViewSelector">
+								<FeatherEye Size="20" Color="currentColor" StrokeWidth="2"/> <span>@(this.ViewModel.CurrentView.GetEnumDisplayName())</span>
+							</button>
+							<DxDropDown @bind-IsOpen="@(this.ViewModel.ViewSelectorVisible)"
+													Width="200"
+													MaxHeight="500"
+													PositionTarget="#view-selector-button"
+													PositionMode="DropDownPositionMode.Bottom"
+													PreventCloseOnPositionTargetClick="true">
+								<BodyTemplate>
+									<DxListBox Data="@(this.ViewModel.AvailableViews)" TextFieldName="@nameof(ViewWrapper.ViewName)"
+														@bind-Value="@(this.ViewModel.SelectedView)"/>
+								</BodyTemplate>
+							</DxDropDown>
+						</div>
+					</div>
+
+					<div class="task-page__actions">
+
 
 						@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask) 
 						     && this.ViewModel.ReviewTask.IsAssignedTo.Any(x => x.Id == this.ViewModel.Participant.Id))

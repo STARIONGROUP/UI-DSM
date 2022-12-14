@@ -19,7 +19,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
     using ReactiveUI;
 
-    using UI_DSM.Client.Components.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.Components.App.TraceabilityTable;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Shared.Models;
@@ -40,11 +39,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     The <see cref="TraceabilityTable" /> reference
         /// </summary>
         public TraceabilityTable Table { get; set; }
-
-        /// <summary>
-        ///     The <see cref="ConnectionVisibilitySelector" /> reference
-        /// </summary>
-        public ConnectionVisibilitySelector ConnectionVisibilitySelector { get; set; }
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -79,8 +73,10 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.Disposables.Add(this.Table);
 
             await this.ViewModel.InitializeProperties(things, projectId, reviewId, prefilters, additionnalColumnsVisibleAtStart);
-            this.ViewModel.TraceabilityTableViewModel.VisibilityState = this.ConnectionVisibilitySelector.ViewModel;
             await this.Table.InitiliazeProperties(this.ViewModel.TraceabilityTableViewModel);
+
+            this.Disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsViewSettingsVisible)
+                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
             this.Disposables.Add(this.WhenAnyValue(x => x.ViewModel.ColumnsFilterViewModel.IsFilterVisible)
                 .Where(x => !x)
@@ -101,6 +97,14 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             this.ViewModel.FilterRows(this.ViewModel.RowsFilterViewModel.GetSelectedFilters());
             await this.Table.Update();
+        }
+
+        /// <summary>
+        ///     Toggle the view type dropdown
+        /// </summary>
+        protected void ToggleViewSettingsDropdown()
+        {
+            this.ViewModel.IsViewSettingsVisible = !this.ViewModel.IsViewSettingsVisible;
         }
 
         /// <summary>

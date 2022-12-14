@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 {
+    using AppComponents;
+
     using Bunit;
    
     using CDP4Common.DTO;
@@ -236,6 +238,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 this.viewModel.UpdateAnnotatableRows(new List<AnnotatableItem> { reviewItem });
                 Assert.That(this.viewModel.TraceabilityTableViewModel.Rows.First().ReviewItem, Is.Not.Null);
+
+                var settingsButton = renderer.FindComponent<AppButton>();
+                await renderer.InvokeAsync(settingsButton.Instance.Click.InvokeAsync);
+                Assert.That(this.viewModel.IsViewSettingsVisible, Is.True);
             }
             catch
             {

@@ -51,7 +51,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The <see cref="IConnectionVisibilitySelectorViewModel" />
         /// </summary>
-        public IConnectionVisibilitySelectorViewModel VisibilityState { get; set; }
+        public IConnectionVisibilitySelectorViewModel VisibilityState { get; } = new ConnectionVisibilitySelectorViewModel();
 
         /// <summary>
         ///     A collection of visible rows
