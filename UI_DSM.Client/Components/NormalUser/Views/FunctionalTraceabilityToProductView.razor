@@ -13,9 +13,30 @@
 
 <div class="view-actions">
 	<div class="left-actions">
-		<ConnectionVisibilitySelector @ref="this.ConnectionVisibilitySelector" />
-		<DxCheckBox CheckType="CheckType.Switch" @bind-Checked="@this.ViewModel.IsOnTechnologyView">Show Technology</DxCheckBox>
+		<div id="view-settings">
+			<AppButton Type="button" Variant="AppButton.VariantValue.Tertiary" Click="@this.ToggleViewSettingsDropdown">
+				View settings
+			</AppButton>
+		</div>
+
 	</div>
+	
+	<DxDropDown @bind-IsOpen="@this.ViewModel.IsViewSettingsVisible"
+	            PreventCloseOnPositionTargetClick="true"
+	            Width="400"
+	            PositionTarget="#view-settings"
+	            PositionMode="DropDownPositionMode.Bottom">
+		<BodyTemplate>
+			<div class="interface-view-actions">
+				<div class="view-settings-panel">
+					<DxCheckBox CheckType="CheckType.Switch" @bind-Checked="@this.ViewModel.IsOnTechnologyView">Show Technology</DxCheckBox>
+
+						<h5>Row Traces</h5>
+						<ConnectionVisibilitySelector ViewModel="this.ViewModel.TraceabilityTableViewModel.VisibilityState" ConnectedStateText="with" NotConnectedStateText="without"/>
+				</div>
+			</div>
+		</BodyTemplate>
+	</DxDropDown>
 
 	<div class="right-actions">
 		<Filter ViewModel="this.ViewModel.RowsFilterViewModel" Id="row">

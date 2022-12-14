@@ -62,9 +62,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         private bool shouldShowProducts;
 
         /// <summary>
-        ///     Backing field for <see cref="IsViewTypeVisible" />
+        ///     Backing field for <see cref="IsViewSettingsVisible" />
         /// </summary>
-        private bool isViewTypeVisible;
+        private bool isViewSettingsVisible;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
@@ -86,12 +86,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Value asserting if products has to been shown
+        ///     Value asserting if the settings for the view should be visible
         /// </summary>
-        public bool IsViewTypeVisible
+        public bool IsViewSettingsVisible
         {
-            get => this.isViewTypeVisible;
-            set => this.RaiseAndSetIfChanged(ref this.isViewTypeVisible, value);
+            get => this.isViewSettingsVisible;
+            set => this.RaiseAndSetIfChanged(ref this.isViewSettingsVisible, value);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The <see cref="IConnectionVisibilitySelectorViewModel" /> for products
         /// </summary>
-        public IConnectionVisibilitySelectorViewModel ProductVisibilityState { get; set; }
+        public IConnectionVisibilitySelectorViewModel ProductVisibilityState { get; private set; } = new ConnectionVisibilitySelectorViewModel();
 
         /// <summary>
         ///     A collection <see cref="IBelongsToInterfaceView" />
@@ -122,7 +122,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The <see cref="IConnectionVisibilitySelectorViewModel" /> for ports
         /// </summary>
-        public IConnectionVisibilitySelectorViewModel PortVisibilityState { get; set; }
+        public IConnectionVisibilitySelectorViewModel PortVisibilityState { get; private set; } = new ConnectionVisibilitySelectorViewModel();
 
         /// <summary>
         ///     A list of the <see cref="NodeModel" /> in the <see cref="Blazor.Diagrams.Core.Diagram" />

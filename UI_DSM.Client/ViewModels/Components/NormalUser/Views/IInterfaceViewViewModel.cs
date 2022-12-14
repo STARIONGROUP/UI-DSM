@@ -41,12 +41,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The <see cref="IConnectionVisibilitySelectorViewModel" /> for products
         /// </summary>
-        IConnectionVisibilitySelectorViewModel ProductVisibilityState { get; set; }
+        IConnectionVisibilitySelectorViewModel ProductVisibilityState { get; }
 
         /// <summary>
         ///     The <see cref="IConnectionVisibilitySelectorViewModel" /> for ports
         /// </summary>
-        IConnectionVisibilitySelectorViewModel PortVisibilityState { get; set; }
+        IConnectionVisibilitySelectorViewModel PortVisibilityState { get; }
 
         /// <summary>
         ///     A collection of filtered <see cref="InterfaceRowViewModel" />
@@ -61,7 +61,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     Value asserting if products has to been shown
         /// </summary>
-        bool IsViewTypeVisible { get; set; }
+        bool IsViewSettingsVisible { get; set; }
 
         /// <summary>
         /// A list of the <see cref="NodeModel"/> in the <see cref="Diagram"/>

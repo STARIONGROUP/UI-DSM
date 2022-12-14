@@ -64,7 +64,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The <see cref="IConnectionVisibilitySelectorViewModel" />
         /// </summary>
-        IConnectionVisibilitySelectorViewModel VisibilityState { get; set; }
+        IConnectionVisibilitySelectorViewModel VisibilityState { get; }
 
         /// <summary>
         ///     Selects the current <see cref="IHaveThingRowViewModel" />

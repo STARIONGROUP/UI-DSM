@@ -17,18 +17,16 @@
 <div class="view-actions">
 	<div class="left-actions">
 
-			<div id="view-type">
-				<AppButton Type="button" Variant="AppButton.VariantValue.Tertiary" Click="@this.ToggleViewTypeDropdown">
+			<div id="view-settings">
+				<AppButton Type="button" Variant="AppButton.VariantValue.Tertiary" Click="@this.ToggleViewSettingsDropdown">
 					View settings
 				</AppButton>
 			</div>
 
-
-
-<DxDropDown @bind-IsOpen="@this.ViewModel.IsViewTypeVisible"
+<DxDropDown @bind-IsOpen="@this.ViewModel.IsViewSettingsVisible"
 	PreventCloseOnPositionTargetClick="true"
 	Width="400"
-	PositionTarget="#view-type"
+	PositionTarget="#view-settings"
 	PositionMode="DropDownPositionMode.Bottom">
 		<BodyTemplate>
 			<div class="interface-view-actions">
@@ -40,17 +38,15 @@
 
 					<div class="@this.GetSelectorsClass()">
 						<h5>Connected ports</h5>
-						<ConnectionVisibilitySelector @ref="@this.ConnectionVisibilitySelectorPort" ConnectedStateText="with" NotConnectedStateText="without"/>
+						<ConnectionVisibilitySelector ViewModel="@this.ViewModel.PortVisibilityState" ConnectedStateText="with" NotConnectedStateText="without"/>
 
 						<h5>ports</h5>
-						<ConnectionVisibilitySelector @ref="@this.ConnectionVisibilitySelectorProduct" ConnectedStateText="with" NotConnectedStateText="without"/>
+						<ConnectionVisibilitySelector ViewModel="@this.ViewModel.ProductVisibilityState" ConnectedStateText="with" NotConnectedStateText="without"/>
 					</div>
 				</div>
 			</div>
 	</BodyTemplate>
 </DxDropDown>
-
-
 
 	</div>
 

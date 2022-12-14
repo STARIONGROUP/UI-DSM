@@ -42,6 +42,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         private readonly List<IDisposable> disposables = new();
 
         /// <summary>
+        ///     Backing field for <see cref="IsViewSettingsVisible" />
+        /// </summary>
+        private bool isViewSettingsVisible;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
@@ -53,6 +58,15 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.InitializeTable();
             this.RowsFilterViewModel = rowsFilter;
             this.ColumnsFilterViewModel = columnsFilter;
+        }
+
+        /// <summary>
+        ///     Value asserting if the settings for the view should be visible
+        /// </summary>
+        public bool IsViewSettingsVisible
+        {
+            get => this.isViewSettingsVisible;
+            set => this.RaiseAndSetIfChanged(ref this.isViewSettingsVisible, value);
         }
 
         /// <summary>
@@ -338,8 +352,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
                 this.AvailableRelationships[rowId][columnId] =
                     new RelationshipRowViewModel(relationship, relationshipReviewItems.FirstOrDefault(x => x.ThingId == relationship.Iid)
-                    , this.TraceabilityTableViewModel.Rows.First(x => x.ThingId == rowId), 
-                    this.TraceabilityTableViewModel.Columns.First(x => x.ThingId == columnId));
+                        , this.TraceabilityTableViewModel.Rows.First(x => x.ThingId == rowId),
+                        this.TraceabilityTableViewModel.Columns.First(x => x.ThingId == columnId));
             }
         }
 

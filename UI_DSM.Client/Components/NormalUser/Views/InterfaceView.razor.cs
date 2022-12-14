@@ -45,16 +45,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         private readonly List<IDisposable> disposables = new();
 
         /// <summary>
-        ///     Reference to the <see cref="ConnectionVisibilitySelector" /> for ports
-        /// </summary>
-        public ConnectionVisibilitySelector ConnectionVisibilitySelectorPort { get; set; }
-
-        /// <summary>
-        ///     Reference to the <see cref="ConnectionVisibilitySelector" /> for products
-        /// </summary>
-        public ConnectionVisibilitySelector ConnectionVisibilitySelectorProduct { get; set; }
-
-        /// <summary>
         ///     Reference to the <see cref="RadzenDataGrid{TItem}" />
         /// </summary>
         public RadzenDataGrid<IBelongsToInterfaceView> Grid { get; set; }
@@ -99,9 +89,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             await base.InitializeViewModel(things, projectId, reviewId, prefilters, additionnalColumnsVisibleAtStart);
             this.IsLoading = false;
 
-            this.ViewModel.PortVisibilityState = this.ConnectionVisibilitySelectorPort.ViewModel;
-            this.ViewModel.ProductVisibilityState = this.ConnectionVisibilitySelectorProduct.ViewModel;
-
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.PortVisibilityState.CurrentState)
                 .Subscribe(_ => this.InvokeAsync(this.OnVisibilityStateChanged)));
 
@@ -120,7 +107,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ShouldShowProducts)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsViewTypeVisible)
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsViewSettingsVisible)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
             this.HideColumnsAtStart();
@@ -230,13 +217,12 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.ViewModel.SetProductsVisibility(newValue);
         }
 
-
         /// <summary>
         ///     Toggle the view type dropdown
         /// </summary>
-        private void ToggleViewTypeDropdown()
+        private void ToggleViewSettingsDropdown()
         {
-            this.ViewModel.IsViewTypeVisible = !this.ViewModel.IsViewTypeVisible;
+            this.ViewModel.IsViewSettingsVisible = !this.ViewModel.IsViewSettingsVisible;
         }
 
         /// <summary>
