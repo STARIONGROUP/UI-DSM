@@ -22,6 +22,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
     using Feather.Blazor.Icons;
 
+    using Microsoft.AspNetCore.Components.Web;
     using Microsoft.Extensions.DependencyInjection;
    
     using Moq;
@@ -270,6 +271,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 this.viewModel.UpdateAnnotatableRows(new List<AnnotatableItem> { reviewItem });
                 Assert.That(this.viewModel.Interfaces.First().ReviewItem, Is.Not.Null);
+
+                var settingsButton = renderer.Find("#view-settings");
+                await renderer.InvokeAsync(async () => await settingsButton.ClickAsync(new MouseEventArgs()));
+                Assert.That(this.viewModel.IsViewSettingsVisible, Is.True);
             }
             catch
             {
