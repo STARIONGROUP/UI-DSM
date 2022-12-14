@@ -114,6 +114,15 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     Handle the change if the view should display products or not
+        /// </summary>
+        /// <param name="newValue">The new value</param>
+        public void OnProductVisibilityChanged(bool newValue)
+        {
+            this.ViewModel.SetProductsVisibility(newValue);
+        }
+
+        /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
         /// </summary>
@@ -206,15 +215,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             this.ViewModel.FilterRows(this.ViewModel.FilterViewModel.GetSelectedFilters());
             return this.InvokeAsync(this.StateHasChanged);
-        }
-
-        /// <summary>
-        ///     Handle the change if the view should display products or not
-        /// </summary>
-        /// <param name="newValue">The new value</param>
-        private void OnProductVisibilityChanged(bool newValue)
-        {
-            this.ViewModel.SetProductsVisibility(newValue);
         }
 
         /// <summary>

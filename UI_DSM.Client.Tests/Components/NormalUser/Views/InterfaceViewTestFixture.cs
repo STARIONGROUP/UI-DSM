@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 {
+    using AppComponents;
+    
     using Bunit;
   
     using CDP4Common.DTO;
@@ -22,14 +24,11 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
     using Feather.Blazor.Icons;
 
-    using Microsoft.AspNetCore.Components.Web;
     using Microsoft.Extensions.DependencyInjection;
    
     using Moq;
    
     using NUnit.Framework;
-
-    using Radzen.Blazor;
 
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Enumerator;
@@ -37,6 +36,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
+    using UI_DSM.Client.ViewModels.App.OptionChooser;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
@@ -61,8 +61,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.context.ConfigureDevExpressBlazor();
             this.reviewItemService = new Mock<IReviewItemService>();
             this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel());
+            var trlViewModel = new ProductBreakdownStructureViewViewModel(this.reviewItemService.Object, new FilterViewModel(), new OptionChooserViewModel());
             this.context.Services.AddSingleton(this.viewModel);
             this.context.Services.AddTransient<IConnectionVisibilitySelectorViewModel, ConnectionVisibilitySelectorViewModel>();
+            this.context.Services.AddSingleton<IProductBreakdownStructureViewViewModel>(trlViewModel);
         }
 
         [TearDown]
@@ -81,32 +83,32 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var interfaceCategoryId = Guid.NewGuid();
 
                 var categories = new List<Category>
-            {
-                new()
                 {
-                    Iid = portCategoryId,
-                    Name = "ports"
-                },
-                new()
-                {
-                    Iid = interfaceCategoryId,
-                    Name = "interfaces"
-                },
-                new()
-                {
-                    Iid = productCategoryId,
-                    Name = "products"
-                }
-            };
+                    new()
+                    {
+                        Iid = portCategoryId,
+                        Name = "ports"
+                    },
+                    new()
+                    {
+                        Iid = interfaceCategoryId,
+                        Name = "interfaces"
+                    },
+                    new()
+                    {
+                        Iid = productCategoryId,
+                        Name = "products"
+                    }
+                };
 
                 var portDefinition = new ElementDefinition()
                 {
                     Iid = Guid.NewGuid(),
                     Name = "Port",
                     Category =
-                {
-                    portCategoryId
-                }
+                    {
+                        portCategoryId
+                    }
                 };
 
                 var notConnectedPort = new ElementUsage()
@@ -204,8 +206,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, new List<string>(), new List<string>());
                 Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
 
-                var button = renderer.FindComponent<RadzenCheckBox<bool>>();
-                await renderer.InvokeAsync(async () => await button.Instance.Change.InvokeAsync(true));
+                await renderer.InvokeAsync(() =>renderer.Instance.OnProductVisibilityChanged(true));
                 Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(0));
 
                 await renderer.InvokeAsync(async () => await renderer.Instance.Grid
@@ -235,9 +236,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 this.viewModel.TrySetSelectedItem(this.viewModel.Products.First());
                 Assert.That(this.viewModel.SelectedElement, Is.TypeOf<ProductRowViewModel>());
 
-                this.viewModel.TrySetSelectedItem(this.viewModel.LoadChildren(this.viewModel.Products.First()).First());
-                Assert.That(this.viewModel.SelectedElement, Is.TypeOf<PortRowViewModel>());
-
                 this.viewModel.TrySetSelectedItem(new RequirementRowViewModel(new Requirement()
                 {
                     Iid = Guid.NewGuid()
@@ -246,7 +244,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 Assert.That(this.viewModel.SelectedElement, Is.Not.TypeOf<RequirementRowViewModel>());
 
                 this.viewModel.TrySetSelectedItem(null);
-                Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
 
                 var otherRenderer = this.context.RenderComponent<TrlView>();
                 
@@ -261,7 +258,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 Assert.Multiple(() =>
                 {
                     Assert.That(rows, Is.Not.Empty);
-                    Assert.That(this.viewModel.Interfaces.First().ReviewItem, Is.Null);
+                    Assert.That(this.viewModel.Interfaces.First().ReviewItem, Is.Not.Null);
                 });
 
                 var reviewItem = new ReviewItem(Guid.NewGuid())
@@ -272,8 +269,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 this.viewModel.UpdateAnnotatableRows(new List<AnnotatableItem> { reviewItem });
                 Assert.That(this.viewModel.Interfaces.First().ReviewItem, Is.Not.Null);
 
-                var settingsButton = renderer.Find("#view-settings");
-                await renderer.InvokeAsync(async () => await settingsButton.ClickAsync(new MouseEventArgs()));
+                var settingsButton = renderer.FindComponent<AppButton>();
+                await renderer.InvokeAsync(settingsButton.Instance.Click.InvokeAsync);
                 Assert.That(this.viewModel.IsViewSettingsVisible, Is.True);
             }
             catch
