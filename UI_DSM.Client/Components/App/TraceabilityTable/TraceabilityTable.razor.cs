@@ -105,11 +105,11 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
             if (itemName.Contains(" -> "))
             {
                 var splittedName = itemName.Split(" -> ");
-                
+
                 var sourceItem = this.ViewModel.VisibleRows
                     .FirstOrDefault(x => string.Equals(splittedName[0], x.Id, StringComparison.InvariantCultureIgnoreCase));
 
-                var targetItem= this.ViewModel.VisibleColumns
+                var targetItem = this.ViewModel.VisibleColumns
                     .FirstOrDefault(x => string.Equals(splittedName[1], x.Id, StringComparison.InvariantCultureIgnoreCase));
 
                 var relationShip = this.ViewModel.GetRelationship(sourceItem, targetItem);
@@ -122,43 +122,42 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
                 return;
             }
 
-            var item = this.ViewModel.VisibleRows
-                .FirstOrDefault(x => string.Equals(itemName, x.Id, StringComparison.InvariantCultureIgnoreCase));
+            if (!(await this.TryScrollToItem(this.ViewModel.VisibleRows, itemName, true)))
+            {
+                await this.TryScrollToItem(this.ViewModel.VisibleColumns, itemName, false);
+            }
+        }
+
+        /// <summary>
+        ///     Tries to scroll to an <see cref="IHaveThingRowViewModel" />
+        /// </summary>
+        /// <param name="items">The collection of <see cref="IHaveThingRowViewModel" /></param>
+        /// <param name="itemName">The name of the <see cref="IHaveThingRowViewModel" /></param>
+        /// <param name="isRow">Value asserting if the item has to be considered as row or column</param>
+        /// <returns>A <see cref="Task" /> with the value asserting if could navigate or not</returns>
+        public async Task<bool> TryScrollToItem(List<IHaveThingRowViewModel> items, string itemName, bool isRow)
+        {
+            var item = items.FirstOrDefault(x => string.Equals(itemName, x.Id, StringComparison.InvariantCultureIgnoreCase));
 
             if (item != null)
             {
                 var relationShip = this.ViewModel.GetRelationship(item, this.ViewModel.SelectedElement)
-                    ?? this.ViewModel.GetRelationship(this.ViewModel.SelectedElement, item);
+                                   ?? this.ViewModel.GetRelationship(this.ViewModel.SelectedElement, item);
 
                 if (relationShip != null)
                 {
                     await this.JsRuntime.InvokeVoidAsync("scrollToElement", $"cell_{relationShip.ThingId}", "center", "center");
+                    return true;
                 }
-                else
-                {
-                    await this.JsRuntime.InvokeVoidAsync("scrollToElement", $"row_{item.ThingId}", "center", "nearest");
-                }
-            }
-            else
-            {
-                item = this.ViewModel.VisibleColumns
-                    .FirstOrDefault(x => string.Equals(itemName, x.Id, StringComparison.InvariantCultureIgnoreCase));
 
-                if (item != null)
-                {
-                    var relationShip = this.ViewModel.GetRelationship(item, this.ViewModel.SelectedElement)
-                                       ?? this.ViewModel.GetRelationship(this.ViewModel.SelectedElement, item);
-
-                    if (relationShip != null)
-                    {
-                        await this.JsRuntime.InvokeVoidAsync("scrollToElement", $"cell_{relationShip.ThingId}", "center", "center");
-                    }
-                    else
-                    {
-                        await this.JsRuntime.InvokeVoidAsync("scrollToElement", $"column_{item.ThingId}", "nearest", "center");
-                    }
-                }
+                var idPrefix = isRow ? "row" : "column";
+                var blockOption = isRow ? "center" : "nearest";
+                var inlineOption = isRow ? "nearest" : "center";
+                await this.JsRuntime.InvokeVoidAsync("scrollToElement", $"{idPrefix}_{item.ThingId}", blockOption, inlineOption);
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>

@@ -19,7 +19,6 @@ namespace UI_DSM.Client.Components.App.Comments
 
     using ReactiveUI;
 
-    using UI_DSM.Client.Components.App.CommentCard;
     using UI_DSM.Client.ViewModels.App.CommentCard;
     using UI_DSM.Client.ViewModels.App.Comments;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
@@ -57,6 +56,30 @@ namespace UI_DSM.Client.Components.App.Comments
         }
 
         /// <summary>
+        ///     Initializes the <see cref="ViewModel" /> properties
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
+        /// <param name="currentView">The current <see cref="View" /></param>
+        /// <param name="participant">The <see cref="Participant" /></param>
+        /// <param name="onLinkCallback">The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public Task InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant participant, EventCallback<Comment> onLinkCallback)
+        {
+            this.ViewModel.InitializesProperties(projectId, reviewId, currentView, participant, onLinkCallback);
+            return this.InvokeAsync(this.StateHasChanged);
+        }
+
+        /// <summary>
+        ///     Handle the change and request to render
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        public Task HasChanged()
+        {
+            return this.InvokeAsync(this.StateHasChanged);
+        }
+
+        /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
         /// </summary>
@@ -69,7 +92,7 @@ namespace UI_DSM.Client.Components.App.Comments
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCommentUpdateMode).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnReplyCreationMode).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnReplyUpdateMode).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
-            
+
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ReplyConfirmCancelPopupViewModel.IsVisible)
                 .Where(x => !x).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
@@ -96,21 +119,6 @@ namespace UI_DSM.Client.Components.App.Comments
             return new CommentCardViewModel(comment, this.ViewModel.Participant, this.ViewModel.OnCommentEditCallback, this.ViewModel.OnDeleteCallback,
                 this.ViewModel.OnUpdateStatusCallback, this.ViewModel.OnReplyCallback, this.ViewModel.OnReplyEditContentCallback,
                 this.ViewModel.OnDeleteReplyCallback, this.ViewModel.OnLinkCallback, rows);
-        }
-
-        /// <summary>
-        ///     Initializes the <see cref="ViewModel"/> properties
-        /// </summary>
-        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
-        /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
-        /// <param name="currentView">The current <see cref="View" /></param>
-        /// <param name="participant">The <see cref="Participant"/></param>
-        /// <param name="onLinkCallback">The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element</param>
-        /// <returns>A <see cref="Task" /></returns>        
-        public Task InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant participant, EventCallback<Comment> onLinkCallback)
-        {
-            this.ViewModel.InitializesProperties(projectId, reviewId, currentView, participant, onLinkCallback);
-            return this.InvokeAsync(this.StateHasChanged);
         }
     }
 }

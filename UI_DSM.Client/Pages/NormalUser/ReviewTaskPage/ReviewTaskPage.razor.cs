@@ -218,6 +218,8 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
             if (!value && this.ViewModel.CurrentBaseViewInstance != null)
             {
                 await this.ViewModel.CurrentBaseViewInstance.HasChanged();
+                this.Comments.ViewModel.SelectedItem = null;
+                this.Comments.ViewModel.SelectedItem = this.SelectedItem;
             }
 
             await this.InvokeAsync(this.StateHasChanged);
