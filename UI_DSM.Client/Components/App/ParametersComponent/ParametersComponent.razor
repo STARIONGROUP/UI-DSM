@@ -10,7 +10,7 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 <div class="app-key-values">
-	<AppAccordion Label="Parameters" Variant="AppAccordion.VariantValue.Tiny" PanelOpen="false">
+	<AppAccordion Label="Parameters" Id="parameterAccordion" Variant="AppAccordion.VariantValue.Tiny" @bind-PanelOpen="@this.IsPanelOpen">
 		<ul class="app-key-values__list">
 			@foreach (var item in this.Parameters)
 			{

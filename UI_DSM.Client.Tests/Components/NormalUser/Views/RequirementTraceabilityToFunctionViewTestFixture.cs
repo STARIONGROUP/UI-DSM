@@ -199,6 +199,33 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Assert.That(renderer.FindComponents<FeatherCheck>(), Has.Count.EqualTo(1));
                     Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
                 });
+
+                var runtime = this.context.JSInterop;
+
+                await renderer.Instance.TryNavigateToItem("1");
+                runtime.VerifyInvoke("scrollToElement",1);
+
+                await renderer.Instance.TryNavigateToItem("2");
+                runtime.VerifyInvoke("scrollToElement", 2);
+
+                await renderer.Instance.TryNavigateToItem("3");
+                runtime.VerifyInvoke("scrollToElement", 2);
+
+                await renderer.Instance.TryNavigateToItem(elementUsage.Name);
+                runtime.VerifyInvoke("scrollToElement", 3);
+
+                this.viewModel.TraceabilityTableViewModel.SelectedElement = this.viewModel.TraceabilityTableViewModel.Rows.First();
+
+                await renderer.Instance.TryNavigateToItem($"{elementUsage.Name} -> 2");
+                runtime.VerifyInvoke("scrollToElement", 4);
+
+                await renderer.Instance.TryNavigateToItem("2");
+                runtime.VerifyInvoke("scrollToElement", 5);
+
+                this.viewModel.TraceabilityTableViewModel.SelectedElement = this.viewModel.TraceabilityTableViewModel.Columns.Last();
+
+                await renderer.Instance.TryNavigateToItem(elementUsage.Name);
+                runtime.VerifyInvoke("scrollToElement", 6);
             }
             catch
             {

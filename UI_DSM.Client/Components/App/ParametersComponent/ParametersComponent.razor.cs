@@ -33,5 +33,10 @@ namespace UI_DSM.Client.Components.App.ParametersComponent
         /// </summary>
         [Parameter]
         public Option CurrentOption { get; set; }
+
+        /// <summary>
+        ///     Value indicating if the panel is open
+        /// </summary>
+        public bool IsPanelOpen { get; set; }
     }
 }

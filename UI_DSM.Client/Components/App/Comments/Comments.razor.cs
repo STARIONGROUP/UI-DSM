@@ -43,6 +43,12 @@ namespace UI_DSM.Client.Components.App.Comments
         public ICommentsViewModel ViewModel { get; set; }
 
         /// <summary>
+        ///     The <see cref="EventCallback{TValue}" /> to handle the double click on a property for navigation
+        /// </summary>
+        [Parameter]
+        public EventCallback<string> OnItemDoubleClick { get; set; }
+
+        /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()

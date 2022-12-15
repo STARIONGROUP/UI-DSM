@@ -72,6 +72,16 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     Tries to navigate to a corresponding item
+        /// </summary>
+        /// <param name="itemName">The name of the item to navigate to</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public override Task TryNavigateToItem(string itemName)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         ///     Initialize the correspondant ViewModel for this component
         /// </summary>
         /// <param name="things">The collection of <see cref="Thing" /></param>

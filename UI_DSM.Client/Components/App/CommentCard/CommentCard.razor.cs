@@ -43,6 +43,12 @@ namespace UI_DSM.Client.Components.App.CommentCard
         public ICommentCardViewModel ViewModel { get; set; }
 
         /// <summary>
+        ///     The <see cref="EventCallback{TValue}" /> to handle the double click on a property for navigation
+        /// </summary>
+        [Parameter]
+        public EventCallback<string> OnItemDoubleClick { get; set; }
+
+        /// <summary>
         ///     Value indicating if the component is on update mode
         /// </summary>
         public bool IsOnStatusUpdateMode { get; set; }
@@ -56,6 +62,11 @@ namespace UI_DSM.Client.Components.App.CommentCard
         ///     The unique html id
         /// </summary>
         public string CardUniqueId => $"comment_{this.ViewModel.Comment.Id}";
+
+        /// <summary>
+        ///     Value indicating if the panel is open or not
+        /// </summary>
+        public bool IsPanelOpen { get; set; }
 
         /// <summary>
         ///     Handle the click event of the content edit button
@@ -101,6 +112,16 @@ namespace UI_DSM.Client.Components.App.CommentCard
         private Task OnLinkCallback()
         {
             return this.ViewModel.OnLinkCallback.InvokeAsync(this.ViewModel.Comment);
+        }
+
+        /// <summary>
+        ///     Fire the <see cref="OnItemDoubleClick" /> callback
+        /// </summary>
+        /// <param name="propertyName">The name of the double-clicked property</param>
+        /// <returns>A <see cref="Task" /></returns>
+        private Task OnDoubleClick(string propertyName)
+        {
+            return this.OnItemDoubleClick.HasDelegate ? this.InvokeAsync(() => this.OnItemDoubleClick.InvokeAsync(propertyName)) : Task.CompletedTask;
         }
     }
 }

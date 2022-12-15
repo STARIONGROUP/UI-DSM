@@ -139,25 +139,10 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 .Where(x => !x).Subscribe(async _ => await this.OnConfirmClosed()));
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.DoneConfirmCancelPopup.IsVisible)
-               .Where(x => !x).Subscribe(async _ => await this.OnConfirmClosed()));
+                .Where(x => !x).Subscribe(async _ => await this.OnConfirmClosed()));
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsLinkerVisible)
                 .Subscribe(async x => await this.OnLinkerVisibilityChanged(x)));
-        }
-
-        /// <summary>
-        /// Handle the change of visible of the <see cref="AnnotationLinker"/> component
-        /// </summary>
-        /// <param name="value">The new visibility</param>
-        /// <returns>A <see cref="Task"/></returns>
-        private async Task OnLinkerVisibilityChanged(bool value)
-        {
-            if (!value && this.ViewModel.CurrentBaseViewInstance != null)
-            {
-                await this.ViewModel.CurrentBaseViewInstance.HasChanged();
-            }
-
-            await this.InvokeAsync(this.StateHasChanged);
         }
 
         /// <summary>
@@ -224,6 +209,21 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         }
 
         /// <summary>
+        ///     Handle the change of visible of the <see cref="AnnotationLinker" /> component
+        /// </summary>
+        /// <param name="value">The new visibility</param>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task OnLinkerVisibilityChanged(bool value)
+        {
+            if (!value && this.ViewModel.CurrentBaseViewInstance != null)
+            {
+                await this.ViewModel.CurrentBaseViewInstance.HasChanged();
+            }
+
+            await this.InvokeAsync(this.StateHasChanged);
+        }
+
+        /// <summary>
         ///     Handle the count Changed event on the Comments collection
         /// </summary>
         /// <param name="baseView">The <see cref="BaseView" /></param>
@@ -283,7 +283,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 if (this.ViewModel.CurrentBaseViewInstance != null)
                 {
                     await this.ViewModel.CurrentBaseViewInstance.InitializeViewModel(this.ViewModel.Things, projectId, reviewId, this.ViewModel.GetPrefilters(),
-                        this.ViewModel.ReviewObjective.AdditionnalColumnsVisibleAtStart); 
+                        this.ViewModel.ReviewObjective.AdditionnalColumnsVisibleAtStart);
 
                     this.ViewModel.CurrentBaseViewInstance.TrySetSelectedItem(this.SelectedItem);
                 }
@@ -388,6 +388,16 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         private string GetModelName()
         {
             return this.ViewModel.CurrentModel == null ? "No model available" : this.ViewModel.CurrentModel.ModelName;
+        }
+
+        /// <summary>
+        ///     Tries to navigate to a corresponding item
+        /// </summary>
+        /// <param name="itemName">The name of the item to navigate to</param>
+        /// <returns>A <see cref="Task" /></returns>
+        private Task TryNavigateToItem(string itemName)
+        {
+            return this.ViewModel.CurrentBaseViewInstance != null ? this.ViewModel.CurrentBaseViewInstance.TryNavigateToItem(itemName) : Task.CompletedTask;
         }
     }
 }

@@ -380,6 +380,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <returns>The <see cref="RelationshipRowViewModel" /> if exists</returns>
         private RelationshipRowViewModel GetRelationship(IHaveThingRowViewModel row, IHaveThingRowViewModel column)
         {
+            if (row == null || column == null)
+            {
+                return null;
+            }
+
             if (this.AvailableRelationships.TryGetValue(row.ThingId, out var possibleRelationships))
             {
                 return possibleRelationships.TryGetValue(column.ThingId, out var relationshipRow) ? relationshipRow : null;

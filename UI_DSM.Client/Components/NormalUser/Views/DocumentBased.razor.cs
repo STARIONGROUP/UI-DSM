@@ -32,5 +32,15 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.ViewModel.SelectedElement = row;
             return this.HasChanged();
         }
+
+        /// <summary>
+        ///     Tries to navigate to a corresponding item
+        /// </summary>
+        /// <param name="itemName">The name of the item to navigate to</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public override Task TryNavigateToItem(string itemName)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

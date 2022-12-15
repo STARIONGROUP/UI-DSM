@@ -20,6 +20,8 @@ namespace UI_DSM.Client
 
     using CDP4JsonSerializer;
 
+    using DevExpress.Blazor;
+
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -114,7 +116,7 @@ namespace UI_DSM.Client
             builder.Services.AddAuthorizationCore();
 
             builder.Services.AddBlazoredSessionStorage();
-            builder.Services.AddDevExpressBlazor();
+            builder.Services.AddDevExpressBlazor(configure => configure.SizeMode = SizeMode.Medium);
         }
     }
 }

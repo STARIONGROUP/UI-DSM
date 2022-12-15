@@ -53,6 +53,8 @@ namespace UI_DSM.Client.Components.App.SelectedItemCard.SelectedItemCardContent
 
             this.sourceParameters[nameof(this.SelectedItem)] = this.RowViewModel.SourceRow;
             this.targetParameters[nameof(this.SelectedItem)] = this.RowViewModel.TargetRow;
+            this.sourceParameters[nameof(this.OnItemDoubleClick)] = this.OnItemDoubleClick;
+            this.targetParameters[nameof(this.OnItemDoubleClick)] = this.OnItemDoubleClick;
             this.sourceCorrespondance = SelectedItemCardViewModel.GetCorrespondances(this.RowViewModel.SourceRow);
             this.targetCorrespondance = SelectedItemCardViewModel.GetCorrespondances(this.RowViewModel.TargetRow);
         }

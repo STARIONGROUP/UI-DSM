@@ -48,7 +48,15 @@ namespace UI_DSM.Client.Components.App.SelectedItemCard
         [Parameter]
         public EventCallback<IHaveThingRowViewModel> MarkAsReviewed { get; set; }
 
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+        /// <summary>
+        ///     The <see cref="EventCallback{TValue}" /> to handle the double click on a property for navigation
+        /// </summary>
+        [Parameter]
+        public EventCallback<string> OnItemDoubleClick { get; set; }
+
+        /// <summary>
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             this.disposables.ForEach(x => x.Dispose());
@@ -80,6 +88,7 @@ namespace UI_DSM.Client.Components.App.SelectedItemCard
         {
             this.parameters.Clear();
             this.parameters[nameof(this.ViewModel.SelectedItem)] = this.ViewModel.SelectedItem;
+            this.parameters[nameof(this.OnItemDoubleClick)] = this.OnItemDoubleClick;
             await this.InvokeAsync(this.StateHasChanged);
         }
     }

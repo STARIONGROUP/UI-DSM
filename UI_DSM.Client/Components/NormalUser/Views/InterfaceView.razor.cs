@@ -106,6 +106,16 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     Tries to navigate to a corresponding item
+        /// </summary>
+        /// <param name="itemName">The name of the item to navigate to</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public override Task TryNavigateToItem(string itemName)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
         /// </summary>
