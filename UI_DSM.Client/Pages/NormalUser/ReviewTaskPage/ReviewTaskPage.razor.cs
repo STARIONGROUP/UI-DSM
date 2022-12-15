@@ -169,6 +169,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         {
             this.IsLoading = true;
             this.ViewModel.Reset();
+            this.BaseView = new DynamicComponent();
 
             await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId), new Guid(this.ReviewId),
                 new Guid(this.ReviewObjectiveId), new Guid(this.ReviewTaskId));
