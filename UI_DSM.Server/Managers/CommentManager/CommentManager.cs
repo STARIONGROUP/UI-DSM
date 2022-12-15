@@ -98,6 +98,7 @@ namespace UI_DSM.Server.Managers.CommentManager
             var comments = this.EntityDbSet.Where(x => x.EntityContainer.Id == projectId 
                                                        && x.AnnotatableItems.Any(item => item.Id == annotatableItemId))
                 .Include(x => x.Author)
+                .ThenInclude(x => x.User)
                 .Include(x => x.AnnotatableItems)
                 .Include(x => x.Replies)
                 .ThenInclude(x => x.Author);

@@ -2,7 +2,6 @@
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 1",
     "description": "Verify the completeness, adequacy and consistency of the preliminary management, design and development, product assurance and associated assembly, integration and verification (AIV) plan.",
@@ -11,16 +10,16 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "a9287111-a8ea-47b0-ad40-8061e8451ea4",
-      "2f3c0d20-9821-4fc7-b3dc-4fb2d580bdc6",
-      "61950dd4-5301-4028-858b-383fc5f7ec3e"
+      "6655545a-8775-430d-a512-4796c3242955",
+      "577e39e5-c206-4606-ad89-ba80e351b097",
+      "ad317f9a-83ae-49a8-8e4d-ba2429c579bb"
     ],
     "relatedViews": [
       "PRODUCTBREAKDOWNSTRUCTUREVIEW"
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "01a31346-77f8-4c30-9bb1-1947ab3e82e7"
+    "id": "1af15d0d-d594-465b-bb23-8040f3fd9297"
   },
   {
     "@type": "ReviewTaskDto",
@@ -40,7 +39,7 @@
       "aiv",
       "design_development"
     ],
-    "id": "a9287111-a8ea-47b0-ad40-8061e8451ea4"
+    "id": "6655545a-8775-430d-a512-4796c3242955"
   },
   {
     "@type": "ReviewTaskDto",
@@ -60,7 +59,7 @@
       "aiv",
       "design_development"
     ],
-    "id": "2f3c0d20-9821-4fc7-b3dc-4fb2d580bdc6"
+    "id": "577e39e5-c206-4606-ad89-ba80e351b097"
   },
   {
     "@type": "ReviewTaskDto",
@@ -75,12 +74,11 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "61950dd4-5301-4028-858b-383fc5f7ec3e"
+    "id": "ad317f9a-83ae-49a8-8e4d-ba2429c579bb"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 2",
     "description": "Verify the proper translation and allocation of the ESA mission requirements into a set of system and subsystem technical specifications in terms of completeness, adequacy and consistency.",
@@ -89,16 +87,16 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "f43f5eb3-2ef4-4b55-9ae2-596ad4bf8e5d",
-      "5da29f72-ced6-43a1-ac50-6223cb057263",
-      "5635e044-87a6-4054-a596-a57f39de198c"
+      "a36e3962-2e1a-457e-a161-04f5efc16d6f",
+      "f1f3bd25-49d7-4c7c-8a6d-54e91e907df6",
+      "4e78c0e6-d575-4972-8c42-f3cb5a3c7a73"
     ],
     "relatedViews": [
       "PRODUCTBREAKDOWNSTRUCTUREVIEW"
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "23405389-1e4a-4eae-8235-7e356f351932"
+    "id": "32f3ba84-3b3a-4a20-8a9d-e953b54c64ce"
   },
   {
     "@type": "ReviewTaskDto",
@@ -113,7 +111,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "f43f5eb3-2ef4-4b55-9ae2-596ad4bf8e5d"
+    "id": "a36e3962-2e1a-457e-a161-04f5efc16d6f"
   },
   {
     "@type": "ReviewTaskDto",
@@ -128,7 +126,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "5da29f72-ced6-43a1-ac50-6223cb057263"
+    "id": "f1f3bd25-49d7-4c7c-8a6d-54e91e907df6"
   },
   {
     "@type": "ReviewTaskDto",
@@ -143,12 +141,11 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "5635e044-87a6-4054-a596-a57f39de198c"
+    "id": "4e78c0e6-d575-4972-8c42-f3cb5a3c7a73"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 3",
     "description": "Verify the completeness, adequacy and consistency of the preliminary design and compliance with the ESA requirements.",
@@ -157,11 +154,11 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "4e0ff0de-51c8-4dc0-b7db-e585d5a94082",
-      "672da97f-eeff-49d0-b2a6-a47c6f9c0460",
-      "b6b3b7fd-c532-4df2-9656-da2836ba063b",
-      "d5e546fe-eb96-4fe5-8f9b-f0bd7938a391",
-      "a7cb4652-90c5-4234-93f6-d32c84878c78"
+      "d912f2d8-f19c-40fe-9baa-64b38accafcb",
+      "819148a0-9ace-4843-ac52-d2efa9c8ce92",
+      "d416aec8-fce7-4ebf-871f-c0559027179f",
+      "34a2507a-976a-45c1-9423-19d6b9a19021",
+      "1b78f5ef-1fc2-4a99-946b-37cfa9ae86be"
     ],
     "relatedViews": [
       "REQUIREMENTBREAKDOWNSTRUCTUREVIEW",
@@ -171,7 +168,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "25bcf6ef-3a78-49c6-b091-33e3729504ae"
+    "id": "6ee3019a-8951-4546-89f1-0717c623eb29"
   },
   {
     "@type": "ReviewTaskDto",
@@ -186,7 +183,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "4e0ff0de-51c8-4dc0-b7db-e585d5a94082"
+    "id": "d912f2d8-f19c-40fe-9baa-64b38accafcb"
   },
   {
     "@type": "ReviewTaskDto",
@@ -201,7 +198,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "672da97f-eeff-49d0-b2a6-a47c6f9c0460"
+    "id": "819148a0-9ace-4843-ac52-d2efa9c8ce92"
   },
   {
     "@type": "ReviewTaskDto",
@@ -216,7 +213,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "b6b3b7fd-c532-4df2-9656-da2836ba063b"
+    "id": "d416aec8-fce7-4ebf-871f-c0559027179f"
   },
   {
     "@type": "ReviewTaskDto",
@@ -231,7 +228,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "d5e546fe-eb96-4fe5-8f9b-f0bd7938a391"
+    "id": "34a2507a-976a-45c1-9423-19d6b9a19021"
   },
   {
     "@type": "ReviewTaskDto",
@@ -246,12 +243,11 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "a7cb4652-90c5-4234-93f6-d32c84878c78"
+    "id": "1b78f5ef-1fc2-4a99-946b-37cfa9ae86be"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 4",
     "description": "To verify completeness, adequacy and consistency of the internal and external interfaces from system level, down to segment and subsystem level.",
@@ -260,14 +256,14 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "a3ebed63-495b-4732-94d2-3f6cf5a401b6",
-      "b7e5e9a6-3848-4c53-8b03-b84cc3685436",
-      "107d0b62-51b4-4900-a944-1fa7e8e779a0"
+      "7f036dd7-bf6d-463d-9e2b-166ba1b6117e",
+      "5468716e-618d-43ac-8dbc-f241aad32c1e",
+      "134943d4-b2af-4caf-90a1-dce557f2e19e"
     ],
     "relatedViews": [],
     "reviewCategories": [],
     "annotations": [],
-    "id": "58c604eb-e496-482a-931c-557ab56405dc"
+    "id": "59ca22b3-e1d5-4be1-a7ff-1bb6b1be0c11"
   },
   {
     "@type": "ReviewTaskDto",
@@ -282,7 +278,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "a3ebed63-495b-4732-94d2-3f6cf5a401b6"
+    "id": "7f036dd7-bf6d-463d-9e2b-166ba1b6117e"
   },
   {
     "@type": "ReviewTaskDto",
@@ -297,7 +293,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "b7e5e9a6-3848-4c53-8b03-b84cc3685436"
+    "id": "5468716e-618d-43ac-8dbc-f241aad32c1e"
   },
   {
     "@type": "ReviewTaskDto",
@@ -312,14 +308,13 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "107d0b62-51b4-4900-a944-1fa7e8e779a0"
+    "id": "134943d4-b2af-4caf-90a1-dce557f2e19e"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [
       "cost"
     ],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 5",
     "description": "Verify the completeness and adequacy of the industry cost estimates report and its consistency with schedule and development plans and the organisational breakdown structure (for Cat. 1 reviews only).",
@@ -328,7 +323,7 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "2e0710df-c411-4f3e-8df0-367653c10724"
+      "4e2d144f-3329-4a3c-bbb8-993099295ea4"
     ],
     "relatedViews": [
       "PRODUCTBREAKDOWNSTRUCTUREVIEW",
@@ -336,7 +331,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "9ff3f4eb-cee1-41c9-a9dc-abd7a9235eb9"
+    "id": "8e21f65c-a183-4917-a292-b535e5d983bd"
   },
   {
     "@type": "ReviewTaskDto",
@@ -353,12 +348,11 @@
     "prefilters": [
       "cost"
     ],
-    "id": "2e0710df-c411-4f3e-8df0-367653c10724"
+    "id": "4e2d144f-3329-4a3c-bbb8-993099295ea4"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 6",
     "description": "Verify the completeness of the risk management plan and that all technical and programmatic risks have been identified and that adequate mitigation actions are in place. This includes the identification of critical technologies, corresponding Technology Readiness Levels (TRL) and initiated pre-development activities.",
@@ -367,11 +361,11 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "edb594cc-61cf-4d82-9e19-0872e9feab41",
-      "0f9c2d0c-bdfb-44a2-9186-8c10db9ee382",
-      "7cde47ec-002f-44ed-80e9-97f5a96197dd",
-      "e938392f-603b-48b3-bdc8-811a29a7bdcf",
-      "823370af-9679-4616-ae09-9ae9a40d04ff"
+      "7a7be16c-5b6f-43ae-bcef-77f07aa2c759",
+      "674b43c2-6eeb-4429-93e2-4dd964fcf758",
+      "d2b2d5db-6fd8-42ab-a8c0-beac4be0b513",
+      "0416f02c-7d55-481d-9a5c-63209142ab95",
+      "e41b9c62-de1a-48f0-b080-edea80e590f8"
     ],
     "relatedViews": [
       "FUNCTIONALBREAKDOWNSTRUCTUREVIEW",
@@ -380,7 +374,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "696a7951-c7e3-4aae-bc5b-5cf919cb35c0"
+    "id": "5f136b0e-659f-4c39-9ee3-035dea9b3239"
   },
   {
     "@type": "ReviewTaskDto",
@@ -395,7 +389,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "edb594cc-61cf-4d82-9e19-0872e9feab41"
+    "id": "7a7be16c-5b6f-43ae-bcef-77f07aa2c759"
   },
   {
     "@type": "ReviewTaskDto",
@@ -410,7 +404,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "0f9c2d0c-bdfb-44a2-9186-8c10db9ee382"
+    "id": "674b43c2-6eeb-4429-93e2-4dd964fcf758"
   },
   {
     "@type": "ReviewTaskDto",
@@ -427,7 +421,7 @@
     "prefilters": [
       "technical_risks"
     ],
-    "id": "7cde47ec-002f-44ed-80e9-97f5a96197dd"
+    "id": "d2b2d5db-6fd8-42ab-a8c0-beac4be0b513"
   },
   {
     "@type": "ReviewTaskDto",
@@ -444,7 +438,7 @@
     "prefilters": [
       "pre-development_activities"
     ],
-    "id": "e938392f-603b-48b3-bdc8-811a29a7bdcf"
+    "id": "0416f02c-7d55-481d-9a5c-63209142ab95"
   },
   {
     "@type": "ReviewTaskDto",
@@ -459,12 +453,11 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "823370af-9679-4616-ae09-9ae9a40d04ff"
+    "id": "e41b9c62-de1a-48f0-b080-edea80e590f8"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 7",
     "description": "Verify the completeness and adequacy of the Product Assurance documents, in particular the critical item list, the qualification status list, and their compliance with the contractually applicable system requirements and the PA plan.",
@@ -473,7 +466,7 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "3fd10882-fe39-4ff4-8055-02be21a38f6f"
+      "778f6f1f-2df9-4e92-8af3-15794764964d"
     ],
     "relatedViews": [
       "REQUIREMENTVERIFICATIONCONTROLVIEW",
@@ -482,7 +475,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "309d5853-bcc7-4d3c-b8d5-abe544c0ce0e"
+    "id": "4a74cee7-c46b-494c-b8ab-c91c021611b6"
   },
   {
     "@type": "ReviewTaskDto",
@@ -499,12 +492,11 @@
     "prefilters": [
       "product_assurance"
     ],
-    "id": "3fd10882-fe39-4ff4-8055-02be21a38f6f"
+    "id": "778f6f1f-2df9-4e92-8af3-15794764964d"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 8",
     "description": "Verify the completeness and adequacy of the Space Debris mitigation plan and its compliance with the ESA Space Debris Mitigation requirements.",
@@ -513,15 +505,15 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "071fda3c-e828-499e-a379-5b1473b6421b",
-      "141858b6-3894-47c9-b849-38c59335e7d5"
+      "7cc23c61-21f2-4c41-b055-39cfdfe91d38",
+      "bcf7ffa8-c935-4719-a052-3bfd1b48b6e6"
     ],
     "relatedViews": [
       "PRODUCTBREAKDOWNSTRUCTUREVIEW"
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "79498a18-c67b-4359-b778-c8d9cedacd29"
+    "id": "0a89fb42-2e9b-436a-8544-7e326df316be"
   },
   {
     "@type": "ReviewTaskDto",
@@ -538,7 +530,7 @@
     "prefilters": [
       "space_debris"
     ],
-    "id": "071fda3c-e828-499e-a379-5b1473b6421b"
+    "id": "7cc23c61-21f2-4c41-b055-39cfdfe91d38"
   },
   {
     "@type": "ReviewTaskDto",
@@ -555,12 +547,11 @@
     "prefilters": [
       "space_debris"
     ],
-    "id": "141858b6-3894-47c9-b849-38c59335e7d5"
+    "id": "bcf7ffa8-c935-4719-a052-3bfd1b48b6e6"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "PRR - 9",
     "description": "Verify that the Project has taken all identified lessons learned of other Projects into account and propose potentially applicable recommendations to other programs. Such lessons learned items will be handled in the ESA Lessons Learned process.",
@@ -569,12 +560,12 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "aeb5aafa-9e07-444f-8471-690b54899e1e"
+      "81c8059b-282e-4a11-a6d9-c084ae9b253e"
     ],
     "relatedViews": [],
     "reviewCategories": [],
     "annotations": [],
-    "id": "baaa3223-cb19-4fdd-8558-fce394143db9"
+    "id": "7554f9f1-d8a7-449a-8956-52291981a0c5"
   },
   {
     "@type": "ReviewTaskDto",
@@ -591,12 +582,11 @@
     "prefilters": [
       "lessons_learned"
     ],
-    "id": "aeb5aafa-9e07-444f-8471-690b54899e1e"
+    "id": "81c8059b-282e-4a11-a6d9-c084ae9b253e"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 1",
     "description": "Verify the proper translation and allocation of the ESA mission requirements into a set of system and subsystem technical specifications, including analysis and justification documents in terms of completeness, adequacy and consistency.",
@@ -605,19 +595,19 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "fc999295-0964-4d1b-ab2d-fefca812a314",
-      "94c6ab54-03f0-4bbc-ac41-5f6539a16277",
-      "00804c2a-a283-4ee7-a4f7-b0d5696fb953",
-      "7f73a225-f724-482b-9b67-b78778fde86d",
-      "e9c60d7d-2706-4f9a-af71-bcc6360f3529",
-      "320f94af-f91f-49fd-893b-3cc1e4a4a427"
+      "22fd37ca-99db-48df-bbf8-e8770d78e3d9",
+      "9004b64d-bf62-4f47-8dca-d8d62dc91ba7",
+      "b993a7b6-ad01-4e92-a807-2219bb342ae4",
+      "dad44eb3-6377-4c3f-9113-4df0f49701cc",
+      "b10b8972-b118-40f0-92d0-9517e3ffebf3",
+      "33cf079f-b601-4709-be44-343f0df19021"
     ],
     "relatedViews": [
       "PRODUCTBREAKDOWNSTRUCTUREVIEW"
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "43aae60e-d1cc-4eb7-b43e-f24529af8653"
+    "id": "d9ac2838-6aa4-4d0b-a493-7702519da6ef"
   },
   {
     "@type": "ReviewTaskDto",
@@ -632,7 +622,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "fc999295-0964-4d1b-ab2d-fefca812a314"
+    "id": "22fd37ca-99db-48df-bbf8-e8770d78e3d9"
   },
   {
     "@type": "ReviewTaskDto",
@@ -647,7 +637,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "94c6ab54-03f0-4bbc-ac41-5f6539a16277"
+    "id": "9004b64d-bf62-4f47-8dca-d8d62dc91ba7"
   },
   {
     "@type": "ReviewTaskDto",
@@ -662,7 +652,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "00804c2a-a283-4ee7-a4f7-b0d5696fb953"
+    "id": "b993a7b6-ad01-4e92-a807-2219bb342ae4"
   },
   {
     "@type": "ReviewTaskDto",
@@ -677,7 +667,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "7f73a225-f724-482b-9b67-b78778fde86d"
+    "id": "dad44eb3-6377-4c3f-9113-4df0f49701cc"
   },
   {
     "@type": "ReviewTaskDto",
@@ -692,7 +682,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "e9c60d7d-2706-4f9a-af71-bcc6360f3529"
+    "id": "b10b8972-b118-40f0-92d0-9517e3ffebf3"
   },
   {
     "@type": "ReviewTaskDto",
@@ -709,12 +699,11 @@
     "prefilters": [
       "justifications"
     ],
-    "id": "320f94af-f91f-49fd-893b-3cc1e4a4a427"
+    "id": "33cf079f-b601-4709-be44-343f0df19021"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 2",
     "description": "Verify that the proposed system design and predicted performances meet the Agency\u2019s requirements for all mission phases, including launcher compatibility, and that the allocation of the performances, budgets and margins to the various elements of the System are compliant with the system level requirements, including availability and reliability requirements.",
@@ -723,12 +712,12 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "0410f123-343a-4620-a76b-1f3e4a5d1499",
-      "e5432e76-9810-402a-874b-f52546c1ec80",
-      "99bf39ac-903c-4adb-9adb-9a3735c37bc3",
-      "41e89db7-191a-4187-b7c6-9523cc7ded9b",
-      "fca79fdb-40b5-4a4f-ba43-46cf722339e2",
-      "c76ce56f-3503-4477-bfb5-46b4ba4a75fb"
+      "8ad2339f-21a9-4ae8-acae-f5fd7d4a9484",
+      "a7a0cece-0c54-43a6-912f-76586203b890",
+      "47f360f4-10c3-499f-a9c3-3d3d321647aa",
+      "38e20ddf-4e26-4f82-a646-b1d0198fef50",
+      "a1fae5f5-e860-4bf6-9f18-68829f00e565",
+      "5ff7bc28-e775-4782-9f1e-48be6a2d9e6b"
     ],
     "relatedViews": [
       "REQUIREMENTBREAKDOWNSTRUCTUREVIEW",
@@ -738,7 +727,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "0068755d-5af8-4ede-9223-551e8435d03a"
+    "id": "40c16927-4e85-4aa1-8948-0d6c5a97bde4"
   },
   {
     "@type": "ReviewTaskDto",
@@ -753,7 +742,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "0410f123-343a-4620-a76b-1f3e4a5d1499"
+    "id": "8ad2339f-21a9-4ae8-acae-f5fd7d4a9484"
   },
   {
     "@type": "ReviewTaskDto",
@@ -768,7 +757,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "e5432e76-9810-402a-874b-f52546c1ec80"
+    "id": "a7a0cece-0c54-43a6-912f-76586203b890"
   },
   {
     "@type": "ReviewTaskDto",
@@ -783,7 +772,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "99bf39ac-903c-4adb-9adb-9a3735c37bc3"
+    "id": "47f360f4-10c3-499f-a9c3-3d3d321647aa"
   },
   {
     "@type": "ReviewTaskDto",
@@ -798,7 +787,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "41e89db7-191a-4187-b7c6-9523cc7ded9b"
+    "id": "38e20ddf-4e26-4f82-a646-b1d0198fef50"
   },
   {
     "@type": "ReviewTaskDto",
@@ -813,7 +802,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "fca79fdb-40b5-4a4f-ba43-46cf722339e2"
+    "id": "a1fae5f5-e860-4bf6-9f18-68829f00e565"
   },
   {
     "@type": "ReviewTaskDto",
@@ -826,17 +815,15 @@
     "hasPrimaryView": false,
     "status": "OPEN",
     "createdOn": "0001-01-01T00:00:00",
-    "author": "00000000-0000-0000-0000-000000000000",
     "isAssignedTo": [],
     "prefilters": [
       "design_development"
     ],
-    "id": "c76ce56f-3503-4477-bfb5-46b4ba4a75fb"
+    "id": "5ff7bc28-e775-4782-9f1e-48be6a2d9e6b"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 3",
     "description": "Verify the technical feasibility of the preliminary system design and operations concepts.",
@@ -845,16 +832,16 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "21c17936-fa88-419b-a675-8cad26a4c2cb",
-      "b3adb22a-9496-4eb9-b6ce-edf54a98e5ab",
-      "f050a96d-c36f-46ef-8016-c464bb0e1753"
+      "8ae76396-dd7f-4edd-8744-4bb8551c7ac6",
+      "a09e8fbe-6c1f-45c9-bb72-c79b9f2cd61a",
+      "53a73129-416a-4949-be76-4c51bf54fb70"
     ],
     "relatedViews": [
       "INTERFACEVIEW"
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "5bc10799-1b80-440a-b981-1051546de63d"
+    "id": "39f4e3e4-5339-44e7-b212-80b8ffed7aa0"
   },
   {
     "@type": "ReviewTaskDto",
@@ -871,7 +858,7 @@
     "prefilters": [
       "mission_analysis"
     ],
-    "id": "21c17936-fa88-419b-a675-8cad26a4c2cb"
+    "id": "8ae76396-dd7f-4edd-8744-4bb8551c7ac6"
   },
   {
     "@type": "ReviewTaskDto",
@@ -886,7 +873,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "b3adb22a-9496-4eb9-b6ce-edf54a98e5ab"
+    "id": "a09e8fbe-6c1f-45c9-bb72-c79b9f2cd61a"
   },
   {
     "@type": "ReviewTaskDto",
@@ -901,12 +888,11 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "f050a96d-c36f-46ef-8016-c464bb0e1753"
+    "id": "53a73129-416a-4949-be76-4c51bf54fb70"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 4",
     "description": "Verify the completeness, adequacy, and consistency of the preliminary management plan, design and development plan and associated assembly, integration and verification (AIV) plan with the development schedule, in particular long lead item procurement.",
@@ -915,13 +901,13 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "0445859a-59f4-4168-9995-628afe0658df",
-      "f0aea982-a624-413d-9796-9a954f2f3cd6"
+      "4aca8acf-57ea-40af-819d-7fb947554579",
+      "fcaa7884-b2bc-4740-8530-8c83542ae2df"
     ],
     "relatedViews": [],
     "reviewCategories": [],
     "annotations": [],
-    "id": "fe3c8982-8198-43ce-bda1-c59c03ca346c"
+    "id": "1bb89dd3-c47d-4b35-b3ce-4a3cc131f7a5"
   },
   {
     "@type": "ReviewTaskDto",
@@ -941,7 +927,7 @@
       "aiv",
       "design_development"
     ],
-    "id": "0445859a-59f4-4168-9995-628afe0658df"
+    "id": "4aca8acf-57ea-40af-819d-7fb947554579"
   },
   {
     "@type": "ReviewTaskDto",
@@ -961,12 +947,11 @@
       "aiv",
       "design_development"
     ],
-    "id": "f0aea982-a624-413d-9796-9a954f2f3cd6"
+    "id": "fcaa7884-b2bc-4740-8530-8c83542ae2df"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 5",
     "description": "Verify the completeness and adequacy of the Product Assurance documents, in particular the critical item list, the qualification status list, and their compliance with the contractually applicable system requirements and the PA plan.",
@@ -975,7 +960,7 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "1bcd9018-90e6-48c9-b65c-da380327fbee"
+      "d5c432b9-8fac-40fb-9f9c-c607e70e4c29"
     ],
     "relatedViews": [
       "REQUIREMENTVERIFICATIONCONTROLVIEW",
@@ -984,7 +969,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "8730b89d-b4da-4cb5-a7d3-f93236e822fd"
+    "id": "702956ed-55c7-4c22-b8fc-64a511265dc2"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1001,12 +986,11 @@
     "prefilters": [
       "product_assurance"
     ],
-    "id": "1bcd9018-90e6-48c9-b65c-da380327fbee"
+    "id": "d5c432b9-8fac-40fb-9f9c-c607e70e4c29"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 6",
     "description": "Verify completeness, adequacy, and consistency of the internal and external interfaces from system level, down to segment and subsystem level.",
@@ -1015,14 +999,14 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "98d6b970-d655-4635-9a9a-74549ce58471",
-      "d01afde9-9059-499e-9689-f918459cd4d8",
-      "f8ec89ab-3093-4bd5-85bb-9c281262a6db"
+      "71f45eee-9bf1-4672-b8c7-5a587da5f22f",
+      "a2663222-ae7c-4a19-8be0-be9d611ca404",
+      "21d5fb9f-f0e9-463f-ad94-f5a617318d7b"
     ],
     "relatedViews": [],
     "reviewCategories": [],
     "annotations": [],
-    "id": "cd5b7a19-1917-4088-bcd5-945381055007"
+    "id": "f4be4966-27c0-4c6e-81b5-164ccda30e60"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1037,7 +1021,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "98d6b970-d655-4635-9a9a-74549ce58471"
+    "id": "71f45eee-9bf1-4672-b8c7-5a587da5f22f"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1052,7 +1036,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "d01afde9-9059-499e-9689-f918459cd4d8"
+    "id": "a2663222-ae7c-4a19-8be0-be9d611ca404"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1067,14 +1051,13 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "f8ec89ab-3093-4bd5-85bb-9c281262a6db"
+    "id": "21d5fb9f-f0e9-463f-ad94-f5a617318d7b"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [
       "cost"
     ],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 7",
     "description": "Verify the completeness and adequacy of the industry cost estimates report and its consistency with schedule and development plans and the organisational breakdown structure (for Cat. 1 reviews only).",
@@ -1083,7 +1066,7 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "7c9e3029-f2ef-4970-a71e-66cdd7759f46"
+      "c9b48268-d092-4d69-bf7e-62e2850e7b54"
     ],
     "relatedViews": [
       "PRODUCTBREAKDOWNSTRUCTUREVIEW",
@@ -1091,7 +1074,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "8c501848-1852-4472-b855-ad33fc047b28"
+    "id": "72442773-218a-4388-9596-283c5ad67abb"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1108,12 +1091,11 @@
     "prefilters": [
       "cost"
     ],
-    "id": "7c9e3029-f2ef-4970-a71e-66cdd7759f46"
+    "id": "c9b48268-d092-4d69-bf7e-62e2850e7b54"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 8",
     "description": "Verify the completeness of the risk management plan and that all technical and programmatic risks have been identified and that adequate mitigation actions are in place. This includes the identification of critical technologies, corresponding Technology Readiness Levels (TRL) and initiated pre-development activities.",
@@ -1122,11 +1104,11 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "5f7de66f-2dad-43b1-878c-25fc0ad2dd4e",
-      "0c60cc6f-9269-45b7-bf20-52482cfaf59d",
-      "f3f7f69f-656d-4247-8991-cd8e8970f498",
-      "55ed2b9f-b8ea-416d-97d8-2b7eb714b28a",
-      "4cca1002-1760-4f47-8427-1b4d5a946576"
+      "d006007b-4dff-479c-99b7-f5d283b265e8",
+      "849c3e6a-1640-4fa8-b310-ddc7de1e1ecc",
+      "70308132-1d32-46c4-ad0f-3342e41a13ae",
+      "cf1c444e-7ed8-4864-8105-a82e3820ad4b",
+      "dcc19f3e-f862-4d9a-95d6-e26c4b27e5dd"
     ],
     "relatedViews": [
       "FUNCTIONALBREAKDOWNSTRUCTUREVIEW",
@@ -1135,7 +1117,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "21319153-6ecc-4cfe-a3e6-18aeeaba3958"
+    "id": "3b02ab7c-d418-497b-8715-4fb86de3d22a"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1150,7 +1132,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "5f7de66f-2dad-43b1-878c-25fc0ad2dd4e"
+    "id": "d006007b-4dff-479c-99b7-f5d283b265e8"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1165,7 +1147,7 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "0c60cc6f-9269-45b7-bf20-52482cfaf59d"
+    "id": "849c3e6a-1640-4fa8-b310-ddc7de1e1ecc"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1182,7 +1164,7 @@
     "prefilters": [
       "technical_risks"
     ],
-    "id": "f3f7f69f-656d-4247-8991-cd8e8970f498"
+    "id": "70308132-1d32-46c4-ad0f-3342e41a13ae"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1199,7 +1181,7 @@
     "prefilters": [
       "pre-development_activities"
     ],
-    "id": "55ed2b9f-b8ea-416d-97d8-2b7eb714b28a"
+    "id": "cf1c444e-7ed8-4864-8105-a82e3820ad4b"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1214,12 +1196,11 @@
     "createdOn": "0001-01-01T00:00:00",
     "isAssignedTo": [],
     "prefilters": [],
-    "id": "4cca1002-1760-4f47-8427-1b4d5a946576"
+    "id": "dcc19f3e-f862-4d9a-95d6-e26c4b27e5dd"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 9",
     "description": "Verify the completeness and adequacy of the Space Debris mitigation plan and its compliance with the ESA Space Debris Mitigation requirements.",
@@ -1228,7 +1209,7 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "c933c436-6575-4e90-b381-578dbf193307"
+      "6231f172-4d04-4b2b-ab7a-26ea3143a92a"
     ],
     "relatedViews": [
       "REQUIREMENTBREAKDOWNSTRUCTUREVIEW",
@@ -1236,7 +1217,7 @@
     ],
     "reviewCategories": [],
     "annotations": [],
-    "id": "fdb311f9-d050-4e3b-87c9-7b31189aebdc"
+    "id": "9bc00f65-1593-496f-a256-be01a54e9156"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1253,12 +1234,11 @@
     "prefilters": [
       "space_debris"
     ],
-    "id": "c933c436-6575-4e90-b381-578dbf193307"
+    "id": "6231f172-4d04-4b2b-ab7a-26ea3143a92a"
   },
   {
     "@type": "ReviewObjectiveDto",
     "additionnalColumnsVisibleAtStart": [],
-    "author": "00000000-0000-0000-0000-000000000000",
     "createdOn": "0001-01-01T00:00:00",
     "title": "SRR - 10",
     "description": "Verify that the Project has taken all identified lessons learned of other Projects into account and propose potentially applicable recommendations to other programs. Such lessons learned items will be handled in the ESA Lessons Learned process.",
@@ -1267,12 +1247,12 @@
     "reviewObjectiveNumber": 0,
     "status": "OPEN",
     "reviewTasks": [
-      "0cf0a539-8e51-4573-bfd6-6935524c04fb"
+      "46f47d32-b1f1-43d7-b724-ea8a9eaddfb7"
     ],
     "relatedViews": [],
     "reviewCategories": [],
     "annotations": [],
-    "id": "9d1cd5da-9314-40a1-a42f-1e45cea5af89"
+    "id": "f418956c-cb57-449e-a048-1b173bd231d4"
   },
   {
     "@type": "ReviewTaskDto",
@@ -1289,6 +1269,6 @@
     "prefilters": [
       "lessons_learned"
     ],
-    "id": "0cf0a539-8e51-4573-bfd6-6935524c04fb"
+    "id": "46f47d32-b1f1-43d7-b724-ea8a9eaddfb7"
   }
 ]

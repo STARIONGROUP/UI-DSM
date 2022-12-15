@@ -212,12 +212,12 @@ namespace UI_DSM.Server.Context
                 .WithMany(x => x.IsAssignedTo);
 
             builder.Entity<Participant>().HasMany(x => x.Annotations)
-                .WithOne(a => (Participant)a.Author)
+                .WithOne(a => a.Author)
                 .HasForeignKey("AuthorId")
                 .OnDelete(DeleteBehavior.Cascade);
             
             builder.Entity<Participant>().HasMany(x => x.Replies)
-                .WithOne(r => (Participant)r.Author)
+                .WithOne(r => r.Author)
                 .HasForeignKey("AuthorId")
                 .OnDelete(DeleteBehavior.Cascade);
 
