@@ -35,7 +35,7 @@ namespace UI_DSM.Server.Context
         /// <param name="options">The options to be used by a <see cref="DbContext" />.</param>
         public DatabaseContext(DbContextOptions options) : base(options)
         {
-            //this.EnsureCreated();
+            this.EnsureCreated();
         }
 
         /// <summary>
