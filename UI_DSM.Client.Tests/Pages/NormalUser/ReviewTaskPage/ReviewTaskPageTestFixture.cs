@@ -144,7 +144,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
                     parameters.Add(p => p.ReviewTaskId, this.reviewTaskId.ToString());
                 });
 
-                Assert.That(renderer.Instance.BaseView, Is.Null);
+                Assert.That(renderer.Instance.BaseView.Instance, Is.Null);
 
                 var review = new Review(this.reviewId)
                 {

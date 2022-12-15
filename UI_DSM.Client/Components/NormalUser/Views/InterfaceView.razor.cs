@@ -45,6 +45,11 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         private readonly List<IDisposable> disposables = new();
 
         /// <summary>
+        ///     Value indicating the the view is fully initialized
+        /// </summary>
+        private bool isFullyInitialized;
+
+        /// <summary>
         ///     Reference to the <see cref="RadzenDataGrid{TItem}" />
         /// </summary>
         public RadzenDataGrid<IBelongsToInterfaceView> Grid { get; set; }
@@ -71,6 +76,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
             this.ViewModel = interfaceView.ViewModel;
             this.IsLoading = false;
+            this.isFullyInitialized = true;
             await Task.CompletedTask;
             return true;
         }
@@ -88,29 +94,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             await base.InitializeViewModel(things, projectId, reviewId, prefilters, additionnalColumnsVisibleAtStart);
             this.IsLoading = false;
-
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.PortVisibilityState.CurrentState)
-                .Subscribe(_ => this.InvokeAsync(this.OnVisibilityStateChanged)));
-
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ProductVisibilityState.CurrentState)
-                .Subscribe(_ => this.InvokeAsync(this.OnVisibilityStateChanged)));
-
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.FilterViewModel.IsFilterVisible)
-                .Where(x => !x)
-                .Subscribe(_ => this.InvokeAsync(this.OnRowFilteringClose)));
-
-            this.columnChooser.InitializeProperties(this.Grid.ColumnsCollection);
-
-            this.disposables.Add(this.WhenAnyValue(x => x.columnChooser.ColumnChooserVisible)
-                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
-
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ShouldShowProducts)
-                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
-
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsViewSettingsVisible)
-                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
-
-            this.HideColumnsAtStart();
         }
 
         /// <summary>
@@ -130,6 +113,53 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             this.IsLoading = true;
             base.OnInitialized();
+        }
+
+        /// <summary>
+        ///     Method invoked after each time the component has been rendered.
+        /// </summary>
+        /// <param name="firstRender">
+        ///     Set to <c>true</c> if this is the first time
+        ///     <see cref="M:Microsoft.AspNetCore.Components.ComponentBase.OnAfterRender(System.Boolean)" /> has been invoked
+        ///     on this component instance; otherwise <c>false</c>.
+        /// </param>
+        /// <remarks>
+        ///     The <see cref="M:Microsoft.AspNetCore.Components.ComponentBase.OnAfterRender(System.Boolean)" /> and
+        ///     <see cref="M:Microsoft.AspNetCore.Components.ComponentBase.OnAfterRenderAsync(System.Boolean)" /> lifecycle methods
+        ///     are useful for performing interop, or interacting with values received from <c>@ref</c>.
+        ///     Use the <paramref name="firstRender" /> parameter to ensure that initialization work is only performed
+        ///     once.
+        /// </remarks>
+        protected override void OnAfterRender(bool firstRender)
+        {
+            base.OnAfterRender(firstRender);
+
+            if (!this.IsLoading && !this.isFullyInitialized)
+            {
+                this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.PortVisibilityState.CurrentState)
+                    .Subscribe(_ => this.InvokeAsync(this.OnVisibilityStateChanged)));
+
+                this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ProductVisibilityState.CurrentState)
+                    .Subscribe(_ => this.InvokeAsync(this.OnVisibilityStateChanged)));
+
+                this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.FilterViewModel.IsFilterVisible)
+                    .Where(x => !x)
+                    .Subscribe(_ => this.InvokeAsync(this.OnRowFilteringClose)));
+
+                this.columnChooser.InitializeProperties(this.Grid.ColumnsCollection);
+
+                this.disposables.Add(this.WhenAnyValue(x => x.columnChooser.ColumnChooserVisible)
+                    .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
+                this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ShouldShowProducts)
+                    .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
+                this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsViewSettingsVisible)
+                    .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
+                this.HideColumnsAtStart();
+                this.isFullyInitialized = true;
+            }
         }
 
         /// <summary>
