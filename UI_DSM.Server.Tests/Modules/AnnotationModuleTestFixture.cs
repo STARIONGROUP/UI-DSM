@@ -252,9 +252,6 @@ namespace UI_DSM.Server.Tests.Modules
                 AnnotatableItems = new List<AnnotatableItem>()
                 {
                     new ReviewObjective(Guid.NewGuid())
-                    {
-                        Author = this.participant
-                    }
                 }
             };
 

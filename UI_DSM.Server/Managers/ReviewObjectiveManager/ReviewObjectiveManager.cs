@@ -84,7 +84,6 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
             }
 
             var relatedEntities = new Dictionary<Guid, Entity>();
-            relatedEntities.InsertEntity(await this.participantManager.FindEntity(reviewObjectiveDto.Author));
             relatedEntities.InsertEntityCollection(await this.reviewTaskManager.FindEntities(reviewObjectiveDto.ReviewTasks));
             relatedEntities.InsertEntityCollection(await this.annotationManager.FindEntities(reviewObjectiveDto.Annotations));
             relatedEntities.InsertEntityCollection(await this.reviewCategoryManager.FindEntities(reviewObjectiveDto.ReviewCategories));
@@ -114,9 +113,8 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// </summary>
         /// <param name="template">The <see cref="ReviewObjective" /> template</param>
         /// <param name="container">The <see cref="Review" /> container</param>
-        /// <param name="author">The <see cref="Participant" /> author</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityOperationResult{TEntity}" /></returns>
-        public async Task<EntityOperationResult<ReviewObjective>> CreateEntityBasedOnTemplate(ReviewObjective template, Review container, Participant author)
+        public async Task<EntityOperationResult<ReviewObjective>> CreateEntityBasedOnTemplate(ReviewObjective template, Review container)
         {
             if (container.ReviewObjectives.Any(x => x.ReviewObjectiveKind == template.ReviewObjectiveKind
                                                     && x.ReviewObjectiveKindNumber == template.ReviewObjectiveKindNumber))
@@ -124,18 +122,15 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
                 return EntityOperationResult<ReviewObjective>.Failed($"A ReviewObjective {template.Title} already exists inside the Review");
             }
 
-            var reviewObjective = new ReviewObjective(template)
-            {
-                Author = author
-            };
-
+            var reviewObjective = new ReviewObjective(template);
+         
             container.ReviewObjectives.Add(reviewObjective);
             this.SetSpecificPropertiesBeforeCreate(reviewObjective);
             var operationResult = new EntityOperationResult<ReviewObjective>(this.Context.Add(reviewObjective), EntityState.Added);
 
             if (operationResult.Entity != null)
             {
-                this.reviewTaskManager.CreateEntitiesBasedOnTemplate(operationResult.Entity, template.ReviewTasks, author);
+                this.reviewTaskManager.CreateEntitiesBasedOnTemplate(operationResult.Entity, template.ReviewTasks);
             }
 
             try
@@ -155,9 +150,8 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// </summary>
         /// <param name="templates">The <see cref="IEnumerable{ReviewObjective}" /> template</param>
         /// <param name="container">The <see cref="Review" /> container</param>
-        /// <param name="author">The <see cref="Participant" /> author</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityOperationResult{TEntity}" /></returns>
-        public async Task<EntityOperationResult<ReviewObjective>> CreateEntityBasedOnTemplates(IEnumerable<ReviewObjective> templates, Review container, Participant author)
+        public async Task<EntityOperationResult<ReviewObjective>> CreateEntityBasedOnTemplates(IEnumerable<ReviewObjective> templates, Review container)
         {
             var reviewObjectives = new List<ReviewObjective>();
             var entityEntries = new List<EntityEntry<ReviewObjective>>();
@@ -174,7 +168,6 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
                 var reviewObjective = new ReviewObjective(template)
                 {
                     Id = Guid.NewGuid(),
-                    Author = author
                 };
 
                 container.ReviewObjectives.Add(reviewObjective);
@@ -195,7 +188,7 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
             {
                 foreach (var reviewObjective in operationResult.Entities)
                 {
-                    this.reviewTaskManager.CreateEntitiesBasedOnTemplate(reviewObjective, reviewTaskForReviewObjectiveTemplate[reviewObjective.Id], author);
+                    this.reviewTaskManager.CreateEntitiesBasedOnTemplate(reviewObjective, reviewTaskForReviewObjectiveTemplate[reviewObjective.Id]);
                 }
             }
 

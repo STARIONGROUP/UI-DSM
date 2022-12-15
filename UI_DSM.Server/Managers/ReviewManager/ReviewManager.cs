@@ -82,7 +82,6 @@ namespace UI_DSM.Server.Managers.ReviewManager
             }
 
             var relatedEntities = new Dictionary<Guid, Entity>();
-            relatedEntities.InsertEntity(await this.participantManager.FindEntity(reviewDto.Author));
             relatedEntities.InsertEntityCollection(await this.reviewObjectiveManager.FindEntities(reviewDto.ReviewObjectives));
             relatedEntities.InsertEntityCollection(await this.artifactManager.FindEntities(reviewDto.Artifacts));
             relatedEntities.InsertEntityCollection(await this.reviewItemManager.FindEntities(reviewDto.ReviewItems));

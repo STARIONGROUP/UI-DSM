@@ -66,7 +66,6 @@ namespace UI_DSM.Serializer.Json.Tests
 
             var reviewTask = new ReviewTaskDto(Guid.NewGuid())
             {
-                Author = participant.Id,
                 Description = "review objective description",
                 Title = "review objective Title",
                 CreatedOn = DateTime.UtcNow,
@@ -89,7 +88,6 @@ namespace UI_DSM.Serializer.Json.Tests
 
             var reviewObjective = new ReviewObjectiveDto(reviewObjectiveGuid)
             {
-                Author = participant.Id,
                 Description = "review objective description",
                 Title = "review objective Title",
                 CreatedOn = DateTime.UtcNow,
@@ -139,7 +137,6 @@ namespace UI_DSM.Serializer.Json.Tests
 
             var review = new ReviewDto(Guid.NewGuid())
             {
-                Author = participant.Id,
                 Description = "review description",
                 Title = "review Title",
                 CreatedOn = DateTime.UtcNow,

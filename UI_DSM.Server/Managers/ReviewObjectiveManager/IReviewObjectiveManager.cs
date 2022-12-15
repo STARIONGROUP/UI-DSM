@@ -27,18 +27,16 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// </summary>
         /// <param name="template">The <see cref="ReviewObjective" /> template</param>
         /// <param name="container">The <see cref="Review" /> container</param>
-        /// <param name="author">The <see cref="Participant" /> author</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityOperationResult{TEntity}" /></returns>
-        Task<EntityOperationResult<ReviewObjective>> CreateEntityBasedOnTemplate(ReviewObjective template, Review container, Participant author);
+        Task<EntityOperationResult<ReviewObjective>> CreateEntityBasedOnTemplate(ReviewObjective template, Review container);
 
         /// <summary>
         ///     Creates an <see cref="ReviewObjective" /> based on a template
         /// </summary>
         /// <param name="templates">The <see cref="ReviewObjective" /> templates</param>
         /// <param name="container">The <see cref="Review" /> container</param>
-        /// <param name="author">The <see cref="Participant" /> author</param>
         /// <returns>A <see cref="Task" /> with the <see cref="EntityOperationResult{TEntity}" /></returns>
-        Task<EntityOperationResult<ReviewObjective>> CreateEntityBasedOnTemplates(IEnumerable<ReviewObjective> templates, Review container, Participant author);
+        Task<EntityOperationResult<ReviewObjective>> CreateEntityBasedOnTemplates(IEnumerable<ReviewObjective> templates, Review container);
 
         /// <summary>
         ///     Get a collection of existing <see cref="ReviewObjectiveCreationDto" /> of a <see cref="Review" />

@@ -67,16 +67,6 @@ namespace UI_DSM.Serializer.Json
                 }
             }
 
-            if (jsonElement.TryGetProperty("author", out var authorProperty))
-            {
-                var propertyValue = authorProperty.GetString();
-
-                if (propertyValue != null)
-                {
-                    dto.Author = Guid.Parse(propertyValue);
-                }
-            }
-
             if (jsonElement.TryGetProperty("reviewNumber", out var reviewNumberProperty))
             {
                 dto.ReviewNumber = reviewNumberProperty.GetInt32();

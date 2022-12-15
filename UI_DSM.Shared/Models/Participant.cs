@@ -69,6 +69,16 @@ namespace UI_DSM.Shared.Models
         public List<ReviewTask> AssignedTasks { get; set; }
 
         /// <summary>
+        ///     A collection of <see cref="Reply" /> of this <see cref="Participant" />
+        /// </summary>
+        public List<Reply> Replies { get; set; }
+
+        /// <summary>
+        ///     A collection of <see cref="Annotation" /> created by this <see cref="Participant" />
+        /// </summary>
+        public List<Annotation> Annotations { get; set; }
+
+        /// <summary>
         ///     Instantiate a <see cref="ParticipantDto" /> from a <see cref="Participant" />
         /// </summary>
         /// <returns>A new <see cref="ParticipantDto" /></returns>
@@ -115,6 +125,8 @@ namespace UI_DSM.Shared.Models
         private void InitializeCollections()
         {
             this.AssignedTasks = new List<ReviewTask>();
+            this.Annotations = new List<Annotation>();
+            this.Replies = new List<Reply>();
         }
     }
 }

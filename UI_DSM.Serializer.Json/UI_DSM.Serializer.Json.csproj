@@ -10,4 +10,8 @@
     <ProjectReference Include="..\UI_DSM.Shared\UI_DSM.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="AutoGenDtoSerializer\" />
+  </ItemGroup>
+
 </Project>

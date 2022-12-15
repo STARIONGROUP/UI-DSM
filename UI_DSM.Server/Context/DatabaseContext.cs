@@ -211,8 +211,16 @@ namespace UI_DSM.Server.Context
             builder.Entity<Participant>().HasMany(x => x.AssignedTasks)
                 .WithMany(x => x.IsAssignedTo);
 
-            builder.Entity<ReviewTask>().HasOne(x => x.Author);
-                
+            builder.Entity<Participant>().HasMany(x => x.Annotations)
+                .WithOne(a => a.Author)
+                .HasForeignKey("AuthorId")
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.Entity<Participant>().HasMany(x => x.Replies)
+                .WithOne(r => r.Author)
+                .HasForeignKey("AuthorId")
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.Entity<ReviewTask>().HasMany(x => x.IsAssignedTo)
                 .WithMany(x => x.AssignedTasks);
 

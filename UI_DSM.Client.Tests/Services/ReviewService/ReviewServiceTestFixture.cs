@@ -52,7 +52,6 @@ namespace UI_DSM.Client.Tests.Services.ReviewService
             {
                 new ReviewDto(Guid.NewGuid())
                 {
-                    Author = participantId,
                     CreatedOn = DateTime.UtcNow,
                     Description = "A review",
                     Title = "Review Title",
@@ -175,7 +174,6 @@ namespace UI_DSM.Client.Tests.Services.ReviewService
                 Description = "Review description",
                 Title = "Review title", 
                 ReviewNumber = 1,
-                Author = new Participant(Guid.NewGuid())
             };
 
             var project = new Project(Guid.NewGuid());
@@ -204,11 +202,6 @@ namespace UI_DSM.Client.Tests.Services.ReviewService
                 Description = "Review description",
                 Title = "Review title",
                 ReviewNumber = 1,
-                Author = new Participant(Guid.NewGuid())
-                {
-                    Role = new Role(Guid.NewGuid()),
-                    User = new UserEntity(Guid.NewGuid())
-                }
             };
 
             var project = new Project(Guid.NewGuid());

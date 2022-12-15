@@ -52,11 +52,6 @@ namespace UI_DSM.Shared.DTO.Models
         public DateTime CreatedOn { get; set; }
 
         /// <summary>
-        ///    Gets or sets the Author of the Review
-        /// </summary>
-        public Guid Author { get; set; }
-
-        /// <summary>
         ///    Gets or sets the ReviewNumber of the Review
         /// </summary>
         public int ReviewNumber { get; set; }
