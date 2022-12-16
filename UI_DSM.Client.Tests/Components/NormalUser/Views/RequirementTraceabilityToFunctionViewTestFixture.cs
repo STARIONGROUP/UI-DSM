@@ -28,6 +28,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using NUnit.Framework;
 
     using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
@@ -225,6 +226,15 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 this.viewModel.TraceabilityTableViewModel.SelectedElement = this.viewModel.TraceabilityTableViewModel.Columns.Last();
 
                 await renderer.Instance.TryNavigateToItem(elementUsage.Name);
+                runtime.VerifyInvoke("scrollToElement", 6);
+
+                this.viewModel.TraceabilityTableViewModel.ColumnVisibilityState.CurrentState = ConnectionToVisibilityState.Connected;
+
+                await renderer.Instance.TryNavigateToItem("1");
+                runtime.VerifyInvoke("scrollToElement", 6);
+                this.viewModel.TraceabilityTableViewModel.ColumnVisibilityState.CurrentState = ConnectionToVisibilityState.NotConnected;
+
+                await renderer.Instance.TryNavigateToItem($"{elementUsage.Name} -> 2");
                 runtime.VerifyInvoke("scrollToElement", 6);
             }
             catch

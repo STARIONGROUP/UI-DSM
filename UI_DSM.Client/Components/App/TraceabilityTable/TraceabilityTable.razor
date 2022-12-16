@@ -17,7 +17,7 @@
 				<thead>
 				<tr>
 					<th>@this.ViewModel.HeaderName</th>
-					@foreach (var column in this.ViewModel.VisibleColumns)
+					@foreach (var column in this.columnsToDisplay)
 					{
 						<th @onclick="() => this.ViewModel.SelectElement(column)" id="column_@column.ThingId">
 							<span class="@this.GetHeaderClass(column)">
@@ -29,7 +29,7 @@
 				</tr>
 				</thead>
 				<tbody>
-				@foreach (var currentRow in this.ViewModel.VisibleRows)
+				@foreach (var currentRow in this.rowsToDisplay)
 				{
 					<tr class="@this.GetTrClass(currentRow)">
 						<th @onclick="() => this.ViewModel.SelectElement(currentRow)" id="row_@currentRow.ThingId">
@@ -38,15 +38,15 @@
 								@currentRow.Id
 							</span>
 						</th>
-							@foreach (var currentColumn in this.ViewModel.VisibleColumns)
-						{
-							<td class="@GetTdClass(currentRow, currentColumn)">
-								@if (this.ViewModel.GetRelationship(currentRow, currentColumn) is { } relationship)
-								{
-									<TraceabilityCell RelationshipRow="relationship" OnClick="(row) => this.ViewModel.SelectElement(row)"/>
-								}
-							</td>
-						}
+							@foreach (var currentColumn in this.columnsToDisplay)
+							{
+								<td class="@GetTdClass(currentRow, currentColumn)">
+									@if (this.ViewModel.GetRelationship(currentRow, currentColumn) is { } relationship)
+									{
+										<TraceabilityCell RelationshipRow="relationship" OnClick="(row) => this.ViewModel.SelectElement(row)"/>
+									}
+								</td>
+							}
 					</tr>
 				}
 				</tbody>

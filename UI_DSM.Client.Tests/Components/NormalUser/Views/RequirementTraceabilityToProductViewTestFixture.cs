@@ -298,13 +298,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
                 });
 
-                this.viewModel.TraceabilityTableViewModel.VisibilityState.CurrentState = ConnectionToVisibilityState.Connected;
-                var invisibleRow = renderer.FindAll(".invisible-row");
-                Assert.That(invisibleRow, Has.Count.EqualTo(0));
-
-                this.viewModel.TraceabilityTableViewModel.VisibilityState.CurrentState = ConnectionToVisibilityState.NotConnected;
-                invisibleRow.Refresh();
-                Assert.That(invisibleRow, Has.Count.EqualTo(1));
+                this.viewModel.TraceabilityTableViewModel.RowVisibilityState.CurrentState = ConnectionToVisibilityState.Connected;
+                this.viewModel.TraceabilityTableViewModel.RowVisibilityState.CurrentState = ConnectionToVisibilityState.NotConnected;
 
                 var filters = renderer.FindComponents<Filter>();
                 var columnFiltering = filters.First(x => x.Instance.Id.Contains("column"));
@@ -320,8 +315,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 Assert.Multiple(() =>
                 {
                     Assert.That(renderer.FindComponents<FeatherCheck>(), Has.Count.EqualTo(0));
-                    Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(0));
+                    Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
                 });
+
+                this.viewModel.TraceabilityTableViewModel.RowVisibilityState.CurrentState = ConnectionToVisibilityState.All;
 
                 var invalidRows = renderer.FindAll(".invalid");
                 Assert.That(invalidRows, Has.Count.EqualTo(0));
