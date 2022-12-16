@@ -42,7 +42,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public void Dispose()
         {
             this.Diagram.MouseUp -= this.Diagram_MouseUp;
-            this.Diagram.MouseDoubleClick -= this.Diagram_MouseDoubleClick;
             this.ViewModel.OnCentralNodeChanged -= this.RefreshDiagram;
         }
 
@@ -104,8 +103,8 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             this.Diagram.Links.Clear();
             this.Diagram.Nodes.Clear();
-            this.ViewModel.ProductNodes.ForEach(node => this.Diagram.Nodes.Add(node));
-            this.ViewModel.LinkNodes.ForEach(link => this.Diagram.Links.Add(link));
+            this.ViewModel.ProductsMap.Keys.ToList().ForEach(node => this.Diagram.Nodes.Add(node));
+            this.ViewModel.InterfacesMap.Keys.ToList().ForEach(link => this.Diagram.Links.Add(link));
             this.Diagram.Refresh();
             this.StateHasChanged();
         }
@@ -131,7 +130,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.Diagram.RegisterModelComponent<DiagramLink, DiagramLinkWidget>();
 
             this.Diagram.MouseUp += this.Diagram_MouseUp;
-            this.Diagram.MouseDoubleClick += this.Diagram_MouseDoubleClick;
         }
 
         /// <summary>
@@ -145,20 +143,14 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             if (args.Button == 0)
             {
                 this.ViewModel.SetSelectedModel(model);
-            }
-        }
 
-        /// <summary>
-        ///     MouseDoubleClick event for the diagram component
-        /// </summary>
-        /// <param name="model">the model clicked (NodeModel,PortModel or LinkModel)</param>
-        /// <param name="args">the args of the event</param>
-        private void Diagram_MouseDoubleClick(Model model, MouseEventArgs args)
-        {
-            //Right button
-            if (args.Button == 0 && model is NodeModel nodeModel)
-            {
-                this.ViewModel.SetCentralNodeModel(nodeModel);
+                if(model is DiagramNode diagramNode && this.ViewModel.ProductsMap.ContainsKey(diagramNode))
+                {
+                    var productRowViewModel = this.ViewModel.ProductsMap[diagramNode];
+                    var neighbours = this.ViewModel.GetNeighbours(productRowViewModel);
+                    
+
+                }
             }
         }
     }

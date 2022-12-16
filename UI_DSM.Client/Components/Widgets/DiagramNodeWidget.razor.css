@@ -4,11 +4,21 @@
     min-width: 100px;
     min-height: 80px;
     padding: 3%;
+    position:relative;
 }
 
-    .custom-node.over {
-        box-shadow: 0 0 0 2px gray;
+    .custom-node.round-node {
+        border-radius: 50% !important;
+        aspect-ratio: 1/1 !important;
     }
+
+    .custom-node.elliptical-node {
+        border-radius: 50% !important;
+    }
+
+.custom-node.over {
+    box-shadow: 0 0 0 2px gray;
+}
 
     .custom-node.selected {
         box-shadow: 0 0 0 0.5px var(--selected-node-color);
@@ -71,6 +81,3 @@
 ::deep .port-comment {
     box-shadow: 0 0 0 2px var(--comment-color) !important;
 }
-
-
-

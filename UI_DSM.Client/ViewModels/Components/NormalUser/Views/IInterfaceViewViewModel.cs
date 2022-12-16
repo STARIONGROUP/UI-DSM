@@ -59,34 +59,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         bool ShouldShowProducts { get; }
 
         /// <summary>
-        /// A list of the <see cref="NodeModel"/> in the <see cref="Diagram"/>
-        /// </summary>
-        List<DiagramNode> ProductNodes { get; } 
-
-        /// <summary>
-        /// A list of the <see cref="PortModel"/> in the <see cref="Diagram"/>
-        /// </summary>
-        List<DiagramPort> PortNodes { get; } 
-
-        /// <summary>
-        /// A list of the <see cref="LinkModel"/> in the <see cref="Diagram"/>
-        /// </summary>
-        List<DiagramLink> LinkNodes { get; } 
-
-        /// <summary>
         /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>
         /// </summary>
-        Dictionary<string, ProductRowViewModel> ProductsMap { get; }
+        Dictionary<DiagramNode, ProductRowViewModel> ProductsMap { get; }
 
         /// <summary>
         /// The map collection from <see cref="PortModel"/> ID to <see cref="PortRowViewModel"/>
         /// </summary>
-        Dictionary<string, PortRowViewModel> PortsMap { get; }
+        Dictionary<DiagramPort, PortRowViewModel> PortsMap { get; }
 
         /// <summary>
         /// The map collection from <see cref="LinkModel"/> ID to <see cref="InterfaceRowViewModel"/>
         /// </summary>
-        Dictionary<string, InterfaceRowViewModel> InterfacesMap { get; }
+        Dictionary<DiagramLink, InterfaceRowViewModel> InterfacesMap { get; }
 
         /// <summary>
         ///     The <see cref="IFilterViewModel" />
@@ -188,7 +173,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         /// <param name="nodeModel">the new central node</param>
         /// <returns>true if the node was set, false otherwise</returns>
-        bool SetCentralNodeModel(NodeModel nodeModel);
+        bool SetCentralNodeModel(DiagramNode nodeModel);
 
         /// <summary>
         /// Upgrades the nodes with the actual data
