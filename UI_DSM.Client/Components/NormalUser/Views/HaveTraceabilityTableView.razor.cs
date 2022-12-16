@@ -90,6 +90,16 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     Tries to navigate to a corresponding item
+        /// </summary>
+        /// <param name="itemName">The name of the item to navigate to</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public override Task TryNavigateToItem(string itemName)
+        {
+            return this.Table.ScrollToElement(itemName);
+        }
+
+        /// <summary>
         ///     Apply the filtering on rows
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>

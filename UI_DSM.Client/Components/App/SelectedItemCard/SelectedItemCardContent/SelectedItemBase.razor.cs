@@ -15,6 +15,8 @@ namespace UI_DSM.Client.Components.App.SelectedItemCard.SelectedItemCardContent
 {
     using Microsoft.AspNetCore.Components;
 
+    using UI_DSM.Client.ViewModels.App.SelectedItemCard;
+
     /// <summary>
     ///     Base component that provide information for related to a selected item
     /// </summary>
@@ -31,6 +33,18 @@ namespace UI_DSM.Client.Components.App.SelectedItemCard.SelectedItemCardContent
         /// </summary>
         [Parameter]
         public object SelectedItem { get; set; }
+
+        /// <summary>
+        ///     The <see cref="ISelectedItemCardViewModel" />
+        /// </summary>
+        [Parameter]
+        public ISelectedItemCardViewModel ViewModel { get; set; }
+
+        /// <summary>
+        ///     The <see cref="EventCallback{TValue}" /> to handle the double click on a property for navigation
+        /// </summary>
+        [Parameter]
+        public EventCallback<string> OnItemDoubleClick { get; set; }
 
         /// <summary>
         ///     Method invoked when the component has received parameters from its parent in

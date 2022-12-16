@@ -15,7 +15,7 @@
 @{
 	if (this.RowViewModel is InterfaceRowViewModel interfaceRow)
 	{
-		<AppKeyValue Key="Name" Value="@(this.RowViewModel.Id)" />
+		<AppKeyValue Key="Name" Value="@(interfaceRow.Id)" OnItemDoubleClick="this.OnItemDoubleClick" />
 		<AppKeyValue Key="Owner" Value="@(interfaceRow.Owner)" />
 		<AppKeyValue Key="Nature" Value="@(interfaceRow.Nature)" />
 	}

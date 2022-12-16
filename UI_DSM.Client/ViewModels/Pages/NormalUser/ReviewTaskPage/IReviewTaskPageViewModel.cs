@@ -17,6 +17,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
 
     using Microsoft.AspNetCore.Components;
 
+    using UI_DSM.Client.Components.App.AnnotationLinker;
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.App.AnnotationLinker;
     using UI_DSM.Client.ViewModels.Components;
@@ -126,7 +127,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         EventCallback<Comment> OnLinkCallback { get; }
 
         /// <summary>
-        ///     Value indicating if the <see cref="CommentLinker" /> is visible
+        ///     Value indicating if the <see cref="AnnotationLinker" /> is visible
         /// </summary>
         bool IsLinkerVisible { get; set; }
 

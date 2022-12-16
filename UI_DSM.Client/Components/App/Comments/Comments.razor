@@ -11,6 +11,7 @@
 -------------------------------------------------------------------------------------------------------->
 @using UI_DSM.Shared.Enumerator
 @using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+
 <AppAccordion Label="Comments">
 	<div class="comments__header">
 		@if (this.ViewModel.SelectedItem is IHaveThingRowViewModel && this.ViewModel.Participant != null && this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask))
@@ -54,6 +55,6 @@
 	<ConfirmCancelPopup ViewModel="@this.ViewModel.ReplyConfirmCancelPopupViewModel"/>
 	@foreach (var comment in this.ViewModel.Comments.Items.OrderBy(x => x.CreatedOn))
 	{
-		<CommentCard ViewModel="@this.CreateCommentCardViewModel(comment)"/>
+		<CommentCard ViewModel="@this.CreateCommentCardViewModel(comment)" OnItemDoubleClick="@this.OnItemDoubleClick" />
 	}
 </AppAccordion>

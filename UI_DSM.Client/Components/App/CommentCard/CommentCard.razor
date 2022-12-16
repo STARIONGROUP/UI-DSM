@@ -1,4 +1,3 @@
-@using UI_DSM.Shared.Enumerator
 <!--------------------------------------------------------------------------------------------------------
 // CommentCard.razor
 // Copyright (c) 2022 RHEA System S.A.
@@ -10,6 +9,7 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Shared.Enumerator
 
 <div class="app-comment">
 	<div class="app-comment__header">
@@ -98,10 +98,10 @@
 	@if (this.ViewModel.LinkedRows.Any())
 	{
 		<div class="app-comment__annotatableItems">
-			<AppAccordion Label="Linked Items" Variant="AppAccordion.VariantValue.Reply" PanelOpen="false">
-				@foreach (var linkedItem in this.ViewModel.LinkedRows.OrderBy(x => x.Id))
+			<AppAccordion Label="Linked Items" Variant="AppAccordion.VariantValue.Reply" @bind-PanelOpen="@this.IsPanelOpen">
+				@foreach (var linkedItem in this.ViewModel.LinkedRows.DistinctBy(x => x.Id).OrderBy(x => x.Id))
 				{
-					<p>@linkedItem.Id</p>
+					<p @ondblclick="() => this.OnDoubleClick(linkedItem.Id)">@linkedItem.Id</p>
 				}
 			</AppAccordion>
 		</div>

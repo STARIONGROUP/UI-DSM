@@ -41,16 +41,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         protected DxGrid DxGrid { get; set; }
 
         /// <summary>
-        /// Method invoked when the component is ready to start, having received its
-        /// initial parameters from its parent in the render tree.
-        /// </summary>
-        protected override void OnInitialized()
-        {
-            this.IsLoading = true;
-            base.OnInitialized();
-        }
-
-        /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
@@ -76,6 +66,18 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     Tries to navigate to a corresponding item
+        /// </summary>
+        /// <param name="itemName">The name of the item to navigate to</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public override Task TryNavigateToItem(string itemName)
+        {
+            var item = this.ViewModel.Rows.FirstOrDefault(x => string.Equals(itemName, x.Id, StringComparison.InvariantCultureIgnoreCase));
+
+            return item != null ? this.DxGrid.SetFocusedDataItemAsync(item) : Task.CompletedTask;
+        }
+
+        /// <summary>
         ///     Initialize the correspondant ViewModel for this component
         /// </summary>
         /// <param name="things">The collection of <see cref="Thing" /></param>
@@ -92,6 +94,16 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.FilterViewModel.IsFilterVisible)
                 .Where(x => !x)
                 .Subscribe(_ => this.InvokeAsync(this.OnRowFilteringClose)));
+        }
+
+        /// <summary>
+        ///     Method invoked when the component is ready to start, having received its
+        ///     initial parameters from its parent in the render tree.
+        /// </summary>
+        protected override void OnInitialized()
+        {
+            this.IsLoading = true;
+            base.OnInitialized();
         }
 
         /// <summary>

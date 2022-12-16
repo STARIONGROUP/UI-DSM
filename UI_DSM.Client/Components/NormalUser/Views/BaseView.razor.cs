@@ -86,5 +86,12 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <param name="annotatableItems">A collection of <see cref="AnnotatableItem"/></param>
         /// <returns>A <see cref="Task"/></returns>
         public abstract Task UpdateAnnotatableRows(List<AnnotatableItem> annotatableItems);
+
+        /// <summary>
+        ///     Tries to navigate to a corresponding item
+        /// </summary>
+        /// <param name="itemName">The name of the item to navigate to</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public abstract Task TryNavigateToItem(string itemName);
     }
 }

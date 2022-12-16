@@ -9,7 +9,7 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-<div @onclick="() => this.OnClick.InvokeAsync(this.RelationshipRow)" >
+<div id="cell_@this.RelationshipRow.ThingId" @onclick="() => this.OnClick.InvokeAsync(this.RelationshipRow)" >
 	<HaveThingRowIcons Row="this.RelationshipRow"/>
 	<FeatherCheck Size="24" Color="currentColor" StrokeWidth="2"/>
 </div>

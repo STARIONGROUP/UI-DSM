@@ -271,7 +271,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 var settingsButton = renderer.FindComponent<AppButton>();
                 await renderer.InvokeAsync(settingsButton.Instance.Click.InvokeAsync);
-                Assert.That(this.viewModel.IsViewSettingsVisible, Is.True);
+                
+                Assert.Multiple(() =>
+                {
+                    Assert.That(renderer.Instance.TryNavigateToItem("a name"), Is.EqualTo(Task.CompletedTask));
+                    Assert.That(this.viewModel.IsViewSettingsVisible, Is.True);
+                });
             }
             catch
             {

@@ -121,10 +121,10 @@
 
 			<aside class="task-page__sidebar task-page__sidebar__right">
 				<ConfirmCancelPopup ViewModel="this.ViewModel.ConfirmCancelDialog"/>
-				<SelectedItemCard @ref="this.SelectedItemCard" MarkAsReviewed="this.ViewModel.OpenConfirmDialog"/>
+				<SelectedItemCard @ref="this.SelectedItemCard" OnItemDoubleClick="this.TryNavigateToItem" MarkAsReviewed="this.ViewModel.OpenConfirmDialog"/>
 				<RelatedViews MainRelatedView="@(this.ViewModel.GetMainRelatedView())" OtherRelatedViews="@(this.ViewModel.GetOtherRelatedViews())"
 				              OnViewSelect="@(this.OnViewSelect)"/>
-				<Comments @ref="this.Comments"/>
+				<Comments @ref="this.Comments" OnItemDoubleClick="this.TryNavigateToItem" />
 			</aside>
 		</UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>
 	}

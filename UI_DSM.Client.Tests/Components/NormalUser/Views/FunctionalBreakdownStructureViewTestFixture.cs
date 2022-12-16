@@ -263,7 +263,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 };
 
                 this.viewModel.UpdateAnnotatableRows(new List<AnnotatableItem>{reviewItem});
-                Assert.That(this.viewModel.TopElement.First().ReviewItem, Is.Not.Null);
+                
+                Assert.Multiple(() => 
+                { 
+                    Assert.That(this.viewModel.TopElement.First().ReviewItem, Is.Not.Null);
+                    Assert.That(renderer.Instance.TryNavigateToItem("a name"), Is.EqualTo(Task.CompletedTask));
+                });
             }
             catch
             {

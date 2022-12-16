@@ -119,8 +119,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     The names of <see cref="Requirement"/> that are satisfied by the product
         /// </summary>
-        public IEnumerable<string> SatisfiedRequirements => this.Thing.GetRelatedThingsName(ThingExtension.SatisfyCategoryName, ClassKind.Requirement, 
-             true, false);
+        public IEnumerable<string> SatisfiedRequirements => this.Thing.GetRelatedThingsName(ThingExtension.SatisfyCategoryName, ClassKind.Requirement);
 
         /// <summary>
         ///     The names of functions that are implemented by the product

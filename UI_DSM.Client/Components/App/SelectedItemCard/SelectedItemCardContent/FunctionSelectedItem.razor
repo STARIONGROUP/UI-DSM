@@ -10,10 +10,10 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @inherits SelectedItemBase<UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel.FunctionRowViewModel>
-<AppKeyValue Key="Name" Value="@(this.RowViewModel.Name)" />
+<AppKeyValue Key="Name" Value="@(this.RowViewModel.Name)" OnItemDoubleClick="this.OnItemDoubleClick" />
 <AppKeyValue Key="ShortName" Value="@(this.RowViewModel.ShortName)" />
 <AppKeyValue Key="Owner" Value="@(this.RowViewModel.Owner)" />
-<AppKeyValue Key="Container" Value="@(this.RowViewModel.Container)" />
-<ParametersComponent Parameters="@(this.RowViewModel.Parameters)" CurrentOption="@(this.RowViewModel.CurrentOption)"/>
-<AppKeyValues Key="Implemented by product(s)" Items="@(this.RowViewModel.ProductsImplement)" />
-<AppKeyValues Key="Satisfies requirement(s)" Items="@(this.RowViewModel.SatisfiedRequirements)" />
+<AppKeyValue Key="Container" Value="@(this.RowViewModel.Container)" OnItemDoubleClick="this.OnItemDoubleClick" />
+<ParametersComponent Parameters="@(this.RowViewModel.Parameters)" CurrentOption="@(this.RowViewModel.CurrentOption)" />
+<AppKeyValues Key="Implemented by product(s)" Items="@(this.RowViewModel.ProductsImplement)" OnItemDoubleClick="this.OnItemDoubleClick"/>
+<AppKeyValues Key="Satisfies requirement(s)" Items="@(this.RowViewModel.SatisfiedRequirements)" OnItemDoubleClick="this.OnItemDoubleClick" />

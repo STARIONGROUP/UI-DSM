@@ -13,11 +13,12 @@
 @using UI_DSM.Shared.Helpers
 @using UI_DSM.Shared.Wrappers
 
+<CascadingValue Name="PreventValidation" Value="true">
 <EditForm Context="editFormContext" Model="@this.ViewModel.Role" OnValidSubmit="@this.ViewModel.OnValidSubmit">
 	<DataAnnotationsValidator />
 	<DxFormLayout>
 		<DxFormLayoutItem Caption="Role Name:" ColSpanMd="12" >
-				<DxTextBox @bind-Text="@this.ViewModel.Role.RoleName" NullText="Enter the name of the role"/>
+			<DxTextBox @bind-Text="@this.ViewModel.Role.RoleName" NullText="Enter the name of the role"/>
 		</DxFormLayoutItem>
 		<DxFormLayoutItem Caption="Access Rights :" ColSpanMd="12">
 			<DxListBox Data="@AccessRightHelper.GetAccessRights()"
@@ -33,3 +34,4 @@
 		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Create" SubmitFormOnClick="true"/>
 	</div>
 </EditForm>
+</CascadingValue>

@@ -9,30 +9,14 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-@namespace AppComponents
 
 <div class="app-key-values">
-	<AppAccordion Label="@(this.Key)" Variant="AppAccordion.VariantValue.Tiny" PanelOpen="false">
+	<AppAccordion Label="@(this.Key)" Variant="AppAccordion.VariantValue.Tiny" @bind-PanelOpen="@this.IsPanelOpen">
 		<ul class="app-key-values__list">
 			@foreach (var item in this.Items)
 			{
-				<li class="app-key-values__list-item">@item</li>
+				<li class="app-key-values__list-item" @ondblclick="() => this.OnDoubleClick(item)">@item</li>
 			}
 		</ul>
 	</AppAccordion>
 </div>
-
-@code {
-
-	/// <summary>
-	///     Key label name
-	/// </summary>
-	[Parameter]
-	public string Key { get; set; }
-
-	/// <summary>
-	///     Values list
-	/// </summary>
-	[Parameter]
-	public IEnumerable<string> Items { get; set; }
-}

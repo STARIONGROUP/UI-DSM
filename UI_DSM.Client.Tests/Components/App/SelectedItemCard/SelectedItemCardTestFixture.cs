@@ -16,12 +16,16 @@ namespace UI_DSM.Client.Tests.Components.App.SelectedItemCard
     using Bunit;
 
     using CDP4Common.EngineeringModelData;
+    using CDP4Common.SiteDirectoryData;
 
     using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.DependencyInjection;
 
     using NUnit.Framework;
 
+    using UI_DSM.Client.Components.App.AppAccordion;
+    using UI_DSM.Client.Components.App.AppKeyValue;
+    using UI_DSM.Client.Components.App.AppKeyValues;
     using UI_DSM.Client.Components.App.SelectedItemCard;
     using UI_DSM.Client.Components.App.SelectedItemCard.SelectedItemCardContent;
     using UI_DSM.Client.ViewModels.App.SelectedItemCard;
@@ -63,8 +67,43 @@ namespace UI_DSM.Client.Tests.Components.App.SelectedItemCard
 
             Assert.That(renderer.FindComponent<ReviewTaskSelectedItem>(), Is.Not.Null);
 
-            this.viewModel.SelectedItem = new RequirementRowViewModel(new Requirement(), null);
+            this.viewModel.SelectedItem = new RequirementRowViewModel(new Requirement()
+            {
+                ShortName = "AOCS-010",
+                Owner = new DomainOfExpertise()
+                {
+                    ShortName = "PWR"
+                }
+            }, null);
+
             Assert.That(renderer.FindComponent<RequirementSelectedItem>(), Is.Not.Null);
+
+            var appKeyValue = renderer.FindComponent<AppKeyValue>();
+            var collectionAppAccordion = renderer.FindComponents<AppAccordion>();
+            var collectionAppKeyValues = renderer.FindComponents<AppKeyValues>();
+            var appKeyValues = collectionAppKeyValues[0];
+            var appAccordion = collectionAppAccordion[0];
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(appKeyValue.Instance.Key, Is.EqualTo("ID"));
+                Assert.That(appKeyValue.Instance.Value, Is.EqualTo(((IHaveThingRowViewModel)this.viewModel.SelectedItem).Id));
+                Assert.That(appAccordion.Instance.PanelOpen, Is.True);
+                Assert.That(() => appAccordion.Instance.PanelOpen = false, Throws.Nothing);
+                Assert.That(appAccordion.Instance.PanelOpen, Is.False);
+                Assert.That(appKeyValues.Instance.Items, Is.Empty);
+            });
+
+            var button = renderer.Find(".app-accordion__button");
+            renderer.InvokeAsync(() => button.Click());
+            Assert.That(appAccordion.Instance.PanelOpen, Is.True);
+
+            var isOpen = true;
+
+            appAccordion.Instance.PanelOpenChanged = new EventCallbackFactory().Create<bool>(this, (x) => isOpen = x);
+            renderer.InvokeAsync(() => button.Click());
+
+            Assert.That(isOpen, Is.False);
         }
     }
 }

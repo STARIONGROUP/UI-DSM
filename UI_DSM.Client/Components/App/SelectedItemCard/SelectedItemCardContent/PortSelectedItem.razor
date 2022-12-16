@@ -12,5 +12,5 @@
 @inherits SelectedItemBase<UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel.PortRowViewModel>
 <AppKeyValue Key="Name" Value="@(this.RowViewModel.Id)" />
 <AppKeyValue Key="Owner" Value="@(this.RowViewModel.Owner)" />
-<AppKeyValue Key="Product Container" Value="@(this.RowViewModel.Container)" />
+<AppKeyValue Key="Product Container" Value="@(this.RowViewModel.Container)" OnItemDoubleClick="this.OnItemDoubleClick" />
 <AppKeyValue Key="Interface End" Value="@(this.RowViewModel.InterfaceEnd)" />
