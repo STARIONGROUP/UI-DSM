@@ -51,7 +51,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The <see cref="IConnectionVisibilitySelectorViewModel" />
         /// </summary>
-        public IConnectionVisibilitySelectorViewModel VisibilityState { get; } = new ConnectionVisibilitySelectorViewModel();
+        public IConnectionVisibilitySelectorViewModel RowVisibilityState { get; } = new ConnectionVisibilitySelectorViewModel();
+
+        /// <summary>
+        ///     The <see cref="IConnectionVisibilitySelectorViewModel" /> for columns
+        /// </summary>
+        public IConnectionVisibilitySelectorViewModel ColumnVisibilityState { get; } = new ConnectionVisibilitySelectorViewModel();
 
         /// <summary>
         ///     A collection of visible rows
@@ -131,6 +136,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public bool DoesRowTraceAnyColumns(IHaveThingRowViewModel row)
         {
             return this.VisibleColumns.Any(column => this.GetRelationship(row, column) != null);
+        }
+
+        /// <summary>
+        ///     Verifies if the current <see cref="IHaveThingRowViewModel" /> column trace any of the visible
+        ///     <see cref="IHaveThingRowViewModel" /> row
+        /// </summary>
+        /// <param name="column">The <see cref="IHaveTraceabilityTableViewModel" /> column</param>
+        /// <returns>The result of the verification</returns>
+        public bool DoesRowTraceAnyRows(IHaveThingRowViewModel column)
+        {
+            return this.VisibleRows.Any(row => this.GetRelationship(row, column) != null);
         }
     }
 }

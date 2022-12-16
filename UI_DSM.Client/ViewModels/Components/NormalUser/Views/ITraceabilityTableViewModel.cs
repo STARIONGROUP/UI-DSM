@@ -62,9 +62,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         Func<IHaveThingRowViewModel, bool> IsValidRow { get; }
 
         /// <summary>
-        ///     The <see cref="IConnectionVisibilitySelectorViewModel" />
+        ///     The <see cref="IConnectionVisibilitySelectorViewModel" /> for rows
         /// </summary>
-        IConnectionVisibilitySelectorViewModel VisibilityState { get; }
+        IConnectionVisibilitySelectorViewModel RowVisibilityState { get; }
+
+        /// <summary>
+        ///     The <see cref="IConnectionVisibilitySelectorViewModel" /> for columns
+        /// </summary>
+        IConnectionVisibilitySelectorViewModel ColumnVisibilityState { get; }
 
         /// <summary>
         ///     Selects the current <see cref="IHaveThingRowViewModel" />
@@ -88,8 +93,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Verifies if the current <see cref="IHaveThingRowViewModel" /> trace any of the visible
         ///     <see cref="IHaveThingRowViewModel" /> column
         /// </summary>
-        /// <param name="row">The <see cref="IHaveTraceabilityTableViewModel" />The <see cref="IHaveThingRowViewModel" /></param>
+        /// <param name="row">The <see cref="IHaveTraceabilityTableViewModel" /></param>
         /// <returns>The result of the verification</returns>
         bool DoesRowTraceAnyColumns(IHaveThingRowViewModel row);
+
+        /// <summary>
+        ///     Verifies if the current <see cref="IHaveThingRowViewModel" /> column trace any of the visible
+        ///     <see cref="IHaveThingRowViewModel" /> row
+        /// </summary>
+        /// <param name="column">The <see cref="IHaveTraceabilityTableViewModel" /> column</param>
+        /// <returns>The result of the verification</returns>
+        bool DoesRowTraceAnyRows(IHaveThingRowViewModel column);
     }
 }

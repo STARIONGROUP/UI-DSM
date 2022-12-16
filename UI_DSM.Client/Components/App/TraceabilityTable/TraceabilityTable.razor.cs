@@ -33,9 +33,19 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
         private readonly List<IDisposable> disposables = new();
 
         /// <summary>
+        ///     A collection of <see cref="IHaveThingRowViewModel" /> columns that have to be displayed
+        /// </summary>
+        private List<IHaveThingRowViewModel> columnsToDisplay = new();
+
+        /// <summary>
         ///     Backing field for the <see cref="IsLoading" /> property
         /// </summary>
         private bool isLoading;
+
+        /// <summary>
+        ///     A collection of <see cref="IHaveThingRowViewModel" /> rows that have to be displayed
+        /// </summary>
+        private List<IHaveThingRowViewModel> rowsToDisplay = new();
 
         /// <summary>
         ///     The <see cref="ITraceabilityTableViewModel" />
@@ -81,8 +91,11 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
 
             await this.InvokeAsync(this.StateHasChanged);
 
-            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.VisibilityState.CurrentState)
-                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.RowVisibilityState.CurrentState)
+                .Subscribe(_ => this.InvokeAsync(this.UpdateRowsToDisplay)));
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ColumnVisibilityState.CurrentState)
+                .Subscribe(_ => this.InvokeAsync(this.UpdateColumnsToDisplay)));
         }
 
         /// <summary>
@@ -106,10 +119,10 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
             {
                 var splittedName = itemName.Split(" -> ");
 
-                var sourceItem = this.ViewModel.VisibleRows
+                var sourceItem = this.rowsToDisplay
                     .FirstOrDefault(x => string.Equals(splittedName[0], x.Id, StringComparison.InvariantCultureIgnoreCase));
 
-                var targetItem = this.ViewModel.VisibleColumns
+                var targetItem = this.columnsToDisplay
                     .FirstOrDefault(x => string.Equals(splittedName[1], x.Id, StringComparison.InvariantCultureIgnoreCase));
 
                 var relationShip = this.ViewModel.GetRelationship(sourceItem, targetItem);
@@ -122,9 +135,9 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
                 return;
             }
 
-            if (!(await this.TryScrollToItem(this.ViewModel.VisibleRows, itemName, true)))
+            if (!await this.TryScrollToItem(this.rowsToDisplay, itemName, true))
             {
-                await this.TryScrollToItem(this.ViewModel.VisibleColumns, itemName, false);
+                await this.TryScrollToItem(this.columnsToDisplay, itemName, false);
             }
         }
 
@@ -171,6 +184,38 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
         }
 
         /// <summary>
+        ///     Updates the rows to display
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private Task UpdateRowsToDisplay()
+        {
+            this.rowsToDisplay = this.ViewModel.RowVisibilityState?.CurrentState switch
+            {
+                ConnectionToVisibilityState.Connected => this.ViewModel.VisibleRows.Where(x => this.ViewModel.DoesRowTraceAnyColumns(x)).ToList(),
+                ConnectionToVisibilityState.NotConnected => this.ViewModel.VisibleRows.Where(x => !this.ViewModel.DoesRowTraceAnyColumns(x)).ToList(),
+                _ => this.ViewModel.VisibleRows
+            };
+
+            return this.InvokeAsync(this.StateHasChanged);
+        }
+
+        /// <summary>
+        ///     Updates the columns to display
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private Task UpdateColumnsToDisplay()
+        {
+            this.columnsToDisplay = this.ViewModel.ColumnVisibilityState?.CurrentState switch
+            {
+                ConnectionToVisibilityState.Connected => this.ViewModel.VisibleColumns.Where(x => this.ViewModel.DoesRowTraceAnyRows(x)).ToList(),
+                ConnectionToVisibilityState.NotConnected => this.ViewModel.VisibleColumns.Where(x => !this.ViewModel.DoesRowTraceAnyRows(x)).ToList(),
+                _ => this.ViewModel.VisibleColumns
+            };
+
+            return this.InvokeAsync(this.StateHasChanged);
+        }
+
+        /// <summary>
         ///     Gets the valid css class for a td element
         /// </summary>
         /// <param name="currentRow">The current <see cref="IHaveThingRowViewModel" /> row</param>
@@ -188,19 +233,7 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
         /// <returns>The css class</returns>
         private string GetTrClass(IHaveThingRowViewModel currentRow)
         {
-            var cssClass = this.ViewModel.VisibilityState?.CurrentState switch
-            {
-                ConnectionToVisibilityState.Connected => this.ViewModel.DoesRowTraceAnyColumns(currentRow) ? string.Empty : "invisible-row",
-                ConnectionToVisibilityState.NotConnected => !this.ViewModel.DoesRowTraceAnyColumns(currentRow) ? string.Empty : "invisible-row",
-                _ => string.Empty
-            };
-
-            if (string.IsNullOrEmpty(cssClass))
-            {
-                cssClass = this.ViewModel.IsValidRow(currentRow) ? string.Empty : "invalid";
-            }
-
-            return cssClass;
+            return this.ViewModel.IsValidRow(currentRow) ? string.Empty : "invalid";
         }
 
         /// <summary>
@@ -210,8 +243,7 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
         /// <returns>The css class</returns>
         private string GetHeaderClass(IHaveThingRowViewModel row)
         {
-            var cssClass = row.Id.Length < 30 ? string.Empty : "app-traceability-table__header--large";
-            return cssClass;
+            return row.Id.Length < 30 ? string.Empty : "app-traceability-table__header--large";
         }
     }
 }
