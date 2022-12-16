@@ -29,6 +29,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.Filter;
+    using UI_DSM.Client.ViewModels.App.OptionChooser;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
@@ -48,8 +49,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.context = new TestContext();
             this.reviewItemService = new Mock<IReviewItemService>();
             this.viewModel = new RequirementBreakdownStructureViewViewModel(this.reviewItemService.Object, new FilterViewModel());
+            var trlViewModel = new ProductBreakdownStructureViewViewModel(this.reviewItemService.Object, new FilterViewModel(), new OptionChooserViewModel());
             this.context.ConfigureDevExpressBlazor();
             this.context.Services.AddSingleton(this.viewModel);
+            this.context.Services.AddSingleton<IProductBreakdownStructureViewViewModel>(trlViewModel);
         }
 
         [TearDown]
@@ -89,7 +92,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     }, Category = {spaceDebrisCategory}
                 });
 
-                requirementsSpecificiation.Requirement.Add(new Requirement(Guid.NewGuid(), null, null));
+                requirementsSpecificiation.Requirement.Add(new Requirement(Guid.NewGuid(), null, null)
+                {
+                    ShortName = "AOCS-100"
+                });
 
                 things.Add(requirementsSpecificiation);
 
@@ -149,7 +155,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 Assert.Multiple(() =>
                 {
                     Assert.That(rows, Is.Not.Empty);
-                    Assert.That(this.viewModel.Rows.First().ReviewItem, Is.Null);
+                    Assert.That(this.viewModel.Rows.First().ReviewItem, Is.Not.Null);
                 });
 
                 var reviewItem = new ReviewItem(Guid.NewGuid())
@@ -158,7 +164,13 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 };
 
                 this.viewModel.UpdateAnnotatableRows(new List<AnnotatableItem> { reviewItem });
-                Assert.That(this.viewModel.Rows.First().ReviewItem, Is.Not.Null);
+                
+                Assert.Multiple(() => 
+                { 
+                    Assert.That(this.viewModel.Rows.First().ReviewItem, Is.Not.Null);
+                    Assert.That(renderer.Instance.TryNavigateToItem("a name"), Is.EqualTo(Task.CompletedTask));
+                    Assert.That(renderer.Instance.TryNavigateToItem("AOCS-100"), Is.EqualTo(Task.CompletedTask));
+                });
             }
             catch
             {

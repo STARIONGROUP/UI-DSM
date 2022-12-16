@@ -238,7 +238,11 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     }
                 });
 
-                Assert.That(this.viewModel.Rows.Last().ReviewItem, Is.Not.Null);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(this.viewModel.Rows.Last().ReviewItem, Is.Not.Null);
+                    Assert.That(renderer.Instance.TryNavigateToItem("a name"), Is.EqualTo(Task.CompletedTask));
+                });
             }
             catch
             {

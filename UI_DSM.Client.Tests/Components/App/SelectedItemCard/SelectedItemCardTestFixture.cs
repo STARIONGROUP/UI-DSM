@@ -79,8 +79,10 @@ namespace UI_DSM.Client.Tests.Components.App.SelectedItemCard
             Assert.That(renderer.FindComponent<RequirementSelectedItem>(), Is.Not.Null);
 
             var appKeyValue = renderer.FindComponent<AppKeyValue>();
-            var appAccordion = renderer.FindComponent<AppAccordion>();
-            var appKeyValues = renderer.FindComponent<AppKeyValues>();
+            var collectionAppAccordion = renderer.FindComponents<AppAccordion>();
+            var collectionAppKeyValues = renderer.FindComponents<AppKeyValues>();
+            var appKeyValues = collectionAppKeyValues.First();
+            var appAccordion = collectionAppAccordion.First();
 
             Assert.Multiple(() =>
             {
@@ -91,6 +93,19 @@ namespace UI_DSM.Client.Tests.Components.App.SelectedItemCard
                 Assert.That(appAccordion.Instance.PanelOpen, Is.False);
                 Assert.That(appKeyValues.Instance.Items, Is.Empty);
             });
+
+            var button = renderer.Find(".app-accordion__button");
+            renderer.InvokeAsync(() => button.Click());
+            Assert.That(appAccordion.Instance.PanelOpen, Is.True);
+
+            var otherAppKeyValues= collectionAppKeyValues.Last();
+
+            var isOpen = true;
+
+            appAccordion.Instance.PanelOpenChanged = new EventCallbackFactory().Create<bool>(this, (x) => isOpen = x);
+            renderer.InvokeAsync(() => button.Click());
+
+            Assert.That(isOpen, Is.False);
         }
     }
 }
