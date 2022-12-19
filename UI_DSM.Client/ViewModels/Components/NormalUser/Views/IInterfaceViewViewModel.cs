@@ -205,5 +205,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// Event fired when the state of the component needs to change.
         /// </summary>
         Action OnCentralNodeChanged { get; set; }
+
+        /// <summary>
+        ///     Saves current diagram layout
+        /// </summary>
+        void SaveCurrentDiagramLayout();
     }
 }

@@ -110,7 +110,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 this.reviewItemService.Setup(x => x.GetReviewItemsForThings(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IEnumerable<Guid>>(), It.IsAny<int>()))
                     .ReturnsAsync(reviewItems);
 
-                await renderer.InvokeAsync(() => renderer.Instance.InitializeViewModel(things, Guid.NewGuid(), Guid.NewGuid(), 
+                await renderer.InvokeAsync(() => renderer.Instance.InitializeViewModel(things, Guid.NewGuid(), Guid.NewGuid(), Guid.Empty,
                     new List<string>{"space_debris"}, new List<string>()));
 
                 Assert.Multiple(() =>

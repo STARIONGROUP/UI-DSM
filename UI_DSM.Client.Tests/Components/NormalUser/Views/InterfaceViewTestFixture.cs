@@ -60,7 +60,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.context = new TestContext();
             this.context.ConfigureDevExpressBlazor();
             this.reviewItemService = new Mock<IReviewItemService>();
-            this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel());
+            this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel(), null);
             var trlViewModel = new ProductBreakdownStructureViewViewModel(this.reviewItemService.Object, new FilterViewModel(), new OptionChooserViewModel());
             this.context.Services.AddSingleton(this.viewModel);
             this.context.Services.AddTransient<IConnectionVisibilitySelectorViewModel, ConnectionVisibilitySelectorViewModel>();
@@ -203,7 +203,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     .Select(x => x.Value)
                     .ToList();
 
-                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, new List<string>(), new List<string>());
+                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, Guid.Empty, new List<string>(), new List<string>());
                 Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
 
                 await renderer.InvokeAsync(() =>renderer.Instance.OnProductVisibilityChanged(true));

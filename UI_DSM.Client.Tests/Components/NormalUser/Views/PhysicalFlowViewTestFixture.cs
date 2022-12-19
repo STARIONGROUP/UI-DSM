@@ -64,7 +64,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 this.context.AddDevExpressBlazorTesting();
                 this.context.ConfigureDevExpressBlazor();
                 this.reviewItemService = new Mock<IReviewItemService>();
-                this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel());
+                this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel(), null);
                 this.context.Services.AddSingleton(this.viewModel);
                 this.context.Services.AddTransient<IFilterViewModel, FilterViewModel>();
                 this.context.Services.AddTransient<IConnectionVisibilitySelectorViewModel, ConnectionVisibilitySelectorViewModel>();
@@ -207,7 +207,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 var reviewItem = new ReviewItem(Guid.NewGuid());
 
-                this.renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, new List<string>(), new List<string>()).RunSynchronously();
+                this.renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, Guid.Empty, new List<string>(), new List<string>()).RunSynchronously();
             }
             catch
             {

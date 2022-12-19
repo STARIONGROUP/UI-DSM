@@ -56,8 +56,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
         /// <returns>A <see cref="Task" /></returns>
-        public abstract Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId,
-            List<string> prefilters, List<string> additionnalColumnsVisibleAtStart);
+        public abstract Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart);
 
         /// <summary>
         ///     Handle the fact that something has changed and needs to update the view

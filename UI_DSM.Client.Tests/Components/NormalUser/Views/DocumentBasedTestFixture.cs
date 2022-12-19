@@ -198,7 +198,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
                 var renderer = this.context.RenderComponent<DocumentBased>();
 
-                await renderer.Instance.InitializeViewModel(new List<Thing> { elementDefinition, otherElement, requirement, requirement2 }, projectId, reviewId, 
+                await renderer.Instance.InitializeViewModel(new List<Thing> { elementDefinition, otherElement, requirement, requirement2 }, projectId, reviewId, Guid.Empty,
                     new List<string>{"aiv"}, new List<string>());
 
                 Assert.Multiple(() =>

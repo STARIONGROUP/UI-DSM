@@ -19,6 +19,9 @@
         <LoadingComponent IsLoading="@this.IsLoading">
             <DiagramCanvas></DiagramCanvas>
             <DiagramLegendWidget></DiagramLegendWidget>
+            <AppButton Label="Save layout" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="() => this.ViewModel.SaveCurrentDiagramLayout()">
+                <FeatherSave Size="20" Color="currentColor" StrokeWidth="2" /> <span>Save</span>
+            </AppButton>
         </LoadingComponent>
     </div>
 </CascadingValue>

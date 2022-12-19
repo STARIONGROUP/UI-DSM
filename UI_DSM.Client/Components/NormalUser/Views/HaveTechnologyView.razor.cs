@@ -32,12 +32,13 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <param name="things">The collection of <see cref="Thing" /></param>
         /// <param name="projectId">The <see cref="Project" /> id</param>
         /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
+        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
         {
-            await base.InitializeViewModel(things, projectId, reviewId, prefilters, additionnalColumnsVisibleAtStart);
+            await base.InitializeViewModel(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart);
             this.IsLoading = false;
 
             this.Disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnTechnologyView)

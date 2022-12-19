@@ -20,6 +20,9 @@ namespace UI_DSM.Client.Model
     /// </summary>
     public class DiagramNode : NodeModel, IDiagramModel
     {
+
+        public Guid ThingId { get; set; }
+        
         /// <summary>
         /// Gets or sets if the model has comments.
         /// </summary>

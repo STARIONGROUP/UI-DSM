@@ -116,7 +116,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
                 new ProductBreakdownStructureViewViewModel(new Mock<IReviewItemService>().Object, new FilterViewModel(), new OptionChooserViewModel());
 
             IInterfaceViewViewModel interfaceView =
-                new InterfaceViewViewModel(new Mock<IReviewItemService>().Object, new FilterViewModel());
+                new InterfaceViewViewModel(new Mock<IReviewItemService>().Object, new FilterViewModel(), null);
 
             this.context.Services.AddSingleton(breakdown);
             this.context.Services.AddSingleton(productBreakdown);

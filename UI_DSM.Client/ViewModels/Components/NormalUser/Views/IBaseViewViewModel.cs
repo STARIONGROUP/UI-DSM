@@ -44,10 +44,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="things">A collection of <see cref="Thing" /></param>
         /// <param name="projectId">The <see cref="Project" /> id</param>
         /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
         /// <returns>A <see cref="Task" /></returns>
-        Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart);
+        Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart);
 
         /// <summary>
         ///     Tries to set the <see cref="SelectedElement" /> to the previous selected item
