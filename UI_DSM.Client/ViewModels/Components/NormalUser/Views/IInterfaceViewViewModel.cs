@@ -13,11 +13,11 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
-    using Blazor.Diagrams.Core;
+    using Blazor.Diagrams.Core.Geometry;
     using Blazor.Diagrams.Core.Models;
 
     using CDP4Common.CommonData;
-
+    
     using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
@@ -37,6 +37,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     A collection of <see cref="ProductRowViewModel" />
         /// </summary>
         List<ProductRowViewModel> Products { get; }
+
+        /// <summary>
+        /// Gets or sets the center point of the diagram
+        /// </summary>
+        Point DiagramCenter { get; set; }
 
         /// <summary>
         ///     The <see cref="IConnectionVisibilitySelectorViewModel" /> for products
@@ -151,6 +156,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         void CreateCentralNodeAndNeighbours(ProductRowViewModel centerNode);
 
         /// <summary>
+        /// Creates neighbours for a product a place them in circle 
+        /// </summary>
+        /// <param name="productRowViewModel">the <see cref="ProductRowViewModel"/></param>
+        void CreateNeighboursAndPositionAroundProduct(ProductRowViewModel productRowViewModel);
+
+        /// <summary>
         /// Creates a new node from a <see cref="ProductRowViewModel"/>. The product is added to the Diagram an the corresponding maps are filled.
         /// </summary>
         /// <param name="product">the product for which the node will be created</param>
@@ -169,21 +180,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         void SetSelectedModel(Blazor.Diagrams.Core.Models.Base.Model model);
 
         /// <summary>
-        /// Sets the new central node for this <see cref="IInterfaceViewViewModel"/>
-        /// </summary>
-        /// <param name="nodeModel">the new central node</param>
-        /// <returns>true if the node was set, false otherwise</returns>
-        bool SetCentralNodeModel(DiagramNode nodeModel);
-
-        /// <summary>
         /// Upgrades the nodes with the actual data
         /// </summary>
         /// <returns>true if the object was updated, false otherwise</returns>
         bool TryUpdate(object updatedObject, bool hasComments);
-
-        /// <summary>
-        /// Event fired when the state of the component needs to change.
-        /// </summary>
-        Action OnCentralNodeChanged { get; set; }
     }
 }

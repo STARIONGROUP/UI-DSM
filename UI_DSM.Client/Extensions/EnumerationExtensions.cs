@@ -30,7 +30,7 @@ namespace UI_DSM.Client.Extensions
         {
             switch (category)
             {
-                case InterfaceCategory.Other: return "gray";
+                case InterfaceCategory.Other: return "lightgray";
                 case InterfaceCategory.Power_Interfaces: return "red";
                 case InterfaceCategory.Signal_Interfaces: return "#00B0F0";
                 case InterfaceCategory.TM_TC_Interfaces: return "#C85D7E";

@@ -14,9 +14,9 @@
 
 @using UI_DSM.Client.Model
 
-<div @ref="this.DivReference" class="default-node custom-node @(this.Node.IsCentralNode ? "central-node" : "") @(Node.Selected ? "selected" : "") @this.OverClass @this.ShapeClass"
+<div @ref="this.DivReference" class="default-node custom-node @this.OverClass @(this.Node.IsExpanded ? "expanded": "")"
      @onmouseover="@((e) => this.OverClass = "over")"
-     @onmouseout="@((e) =>  this.OverClass = string.Empty)">
+     @onmouseout="@((e) =>  this.OverClass = "")">
 
     @(this.Node.Title ?? "Title")
 
@@ -29,13 +29,14 @@
             {
                 var posx = this.Points[i].X.ToString() + "px";
                 var posy = this.Points[i].Y.ToString() + "px";
-
-                <div style="left:@posx; top:@posy; position:absolute;" trans>
+                          
+                <div style="left:@posx; top:@posy; position:absolute;">
                     <PortRenderer Port="port"
-                      Class="@(port.HasComments ? "port-comment custom-port" : "custom-port")">
+                                  Class="@(port.HasComments ? "port-comment custom-port" : "custom-port")">
                         <div class="@(port.Direction.ToString())"></div>
                     </PortRenderer>
                 </div>
+
                 i++;
             }
         }
@@ -44,7 +45,7 @@
             foreach (var port in nodePorts)
             {
                 <PortRenderer Port="port"
-                  Class="@(port.HasComments ? "port-comment custom-port" : "custom-port")">
+                              Class="@(port.HasComments ? "port-comment custom-port" : "custom-port")">
                     <div class="@(port.Direction.ToString())"></div>
                 </PortRenderer>
             }

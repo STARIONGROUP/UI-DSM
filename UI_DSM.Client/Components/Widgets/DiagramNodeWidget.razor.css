@@ -3,29 +3,17 @@
     height: auto;
     min-width: 100px;
     min-height: 80px;
-    padding: 3%;
-    position:relative;
+    padding: 5%;
+    position:absolute;
+    border-radius:0;
 }
-
-    .custom-node.round-node {
-        border-radius: 50% !important;
-        aspect-ratio: 1/1 !important;
-    }
-
-    .custom-node.elliptical-node {
-        border-radius: 50% !important;
-    }
 
 .custom-node.over {
     box-shadow: 0 0 0 2px gray;
 }
 
-    .custom-node.selected {
-        box-shadow: 0 0 0 0.5px var(--selected-node-color);
-    }
-
-    .custom-node.central-node {
-        box-shadow: 0 0 0 3px var(--central-node-color);
+    .custom-node.expanded {
+        box-shadow: 0 0 0 2px #6eb4f5;
     }
 
 ::deep .custom-port {

@@ -15,18 +15,21 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
     using System.Linq;
     using System.Reactive.Linq;
+
     using Blazor.Diagrams.Core;
+    using Blazor.Diagrams.Core.Geometry;
     using Blazor.Diagrams.Core.Models;
     using Blazor.Diagrams.Core.Models.Base;
 
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
-
+    
     using DevExpress.Blazor.Internal;
+    
     using DynamicData;
-
+    
     using ReactiveUI;
-
+        
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Model;
@@ -135,9 +138,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public Dictionary<DiagramLink, InterfaceRowViewModel> InterfacesMap { get; } = new();
 
         /// <summary>
-        /// Event fired when the state of the component needs to change.
+        /// Gets or sets the center of the diagram.
         /// </summary>
-        public Action OnCentralNodeChanged { get; set; }
+        public Point DiagramCenter { get; set; } = new Point(800, 800);
 
         /// <summary>
         ///     Filters current rows
@@ -487,24 +490,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
-        /// Sets the new central node for this <see cref="IInterfaceViewViewModel"/>
-        /// </summary>
-        /// <param name="nodeModel">the new central node</param>
-        /// <returns>true if the node was set, false otherwise</returns>
-        public bool SetCentralNodeModel(DiagramNode nodeModel)
-        {
-            if (this.ProductsMap.ContainsKey(nodeModel))
-            {
-                var asociatedProduct = this.ProductsMap[nodeModel];
-                this.CreateCentralNodeAndNeighbours(asociatedProduct);
-                Task.Run(() => this.OnCentralNodeChanged?.Invoke());
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// Creates a central node and his neighbours
         /// </summary>
         /// <param name="centerProduct">the center product</param>
@@ -515,36 +500,44 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.InterfacesMap.Clear();
 
             var node = CreateNewNodeFromProduct(centerProduct);
-            node.SetPosition(800, 800);
-            node.IsCentralNode = true;
+            node.SetPosition(this.DiagramCenter.X,this.DiagramCenter.Y);
 
-            this.CreateNeighboursAndPositionAroundProduct(centerProduct);
-            this.CreateInterfacesLinks();
+            this.CreateNeighboursAndPositionAroundProduct(centerProduct);            
         }
-        
+
+        /// <summary>
+        /// Creates neighbours for a product a place them in circle 
+        /// </summary>
+        /// <param name="productRowViewModel">the <see cref="ProductRowViewModel"/></param>
         public void CreateNeighboursAndPositionAroundProduct(ProductRowViewModel productRowViewModel)
         {
-            var cx = 800.0;
-            var cy = 500.0;
-            var r = 200.0;
-
-            var neighbours = this.GetNeighbours(productRowViewModel);
-
-            if (neighbours != null && neighbours.Any())
+            if (this.ProductsMap.Values.Contains(productRowViewModel))
             {
-                var angle = Math.PI / 2.0;
-                var angleIncrement = (2.0 * Math.PI) / neighbours.Count();
+                var node = this.ProductsMap.FirstOrDefault(x=>x.Value == productRowViewModel).Key;
+                node.IsExpanded = true;
+                var cx = node == null ? this.DiagramCenter.X : node.Position.X;
+                var cy = node == null ? this.DiagramCenter.Y : node.Position.Y;
+                var r = 250.0;
 
-                foreach (var neighbour in neighbours)
+                var neighbours = this.GetNeighbours(productRowViewModel);
+
+                if (neighbours != null && neighbours.Any())
                 {
-                    var x = cx - r * Math.Cos(angle);
-                    var y = cy - r * Math.Sin(angle);
+                    var angle = Math.PI / 2.0;
+                    var angleIncrement = (2.0 * Math.PI) / neighbours.Count();
 
-                    var neighbourNode = CreateNewNodeFromProduct(neighbour);
-                    neighbourNode.SetPosition(x, y);
+                    foreach (var neighbour in neighbours)
+                    {
+                        var x = cx - r * Math.Cos(angle);
+                        var y = cy - r * Math.Sin(angle);
 
-                    angle += angleIncrement;
+                        var neighbourNode = CreateNewNodeFromProduct(neighbour);
+                        neighbourNode.SetPosition(x, y);
+
+                        angle += angleIncrement;
+                    }
                 }
+                this.CreateInterfacesLinks();
             }
         }
 
@@ -561,15 +554,21 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 node.Title = product.Name;
                 node.HasComments = product.HasComment();
 
-                this.ProductsMap.Add(node, product);
+                var nodeCanBeAdded = !this.ProductsMap.Values.Contains(product);
 
-                if (this.HasChildren(product))
+                if (nodeCanBeAdded)
+                {
+                    this.ProductsMap.Add(node, product);
+                }
+
+                if (this.HasChildren(product) && nodeCanBeAdded)
                 {
                     var ports = this.LoadChildren(product);
                     foreach (var port in ports)
                     {
                         var index = ports.IndexOf(port);
-                        var portNode = new DiagramPort(node, (PortAlignment)index, port.Name);
+                        var alignment = this.GetAproximateAlignment(index, ports.Count());
+                        var portNode = new DiagramPort(node, alignment, port.Name);
                         node.AddPort(portNode);
                         portNode.Locked = true;
                         portNode.HasComments = port.HasComment();
@@ -587,7 +586,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                                 break;
                         }
 
-                        this.PortsMap.Add(portNode, port);
+                        this.PortsMap.TryAdd(portNode, port);
                     }
                 }
             }
@@ -596,10 +595,58 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
+        /// Gets the aproximate alignment of the port depending its position in the node
+        /// </summary>
+        /// <param name="indexOfPort">the index of the port</param>
+        /// <param name="totalPortsInNode"></param>
+        /// <returns>the aproximate alignment of the port</returns>
+        private PortAlignment GetAproximateAlignment(int indexOfPort, int totalPortsInNode)
+        {
+            var increment = (360.0) / totalPortsInNode;
+            var angle = increment * indexOfPort;
+
+            if (angle >= 0 && angle < 22.5 || angle >= 337.5 && angle < 360.0)
+            {
+                return PortAlignment.Right;
+            }
+            else if (angle >= 22.5 && angle < 67.5)
+            {
+                return PortAlignment.TopRight;
+            }
+            else if (angle >= 67.5 && angle < 112.5)
+            {
+                return PortAlignment.Top;
+            }
+            else if (angle >= 112.5 && angle < 157.5)
+            {
+                return PortAlignment.TopLeft;
+            }
+            else if (angle >= 157.5 && angle < 202.5)
+            {
+                return PortAlignment.Left;
+            }
+            else if (angle >= 202.5 && angle < 247.5)
+            {
+                return PortAlignment.BottomLeft;
+            }
+            else if (angle >= 247.5 && angle < 292.5)
+            {
+                return PortAlignment.Bottom;
+            }
+            else if (angle >= 292.5 && angle < 337.5)
+            {
+                return PortAlignment.BottomRight;
+            }
+
+            return PortAlignment.Top;
+        }
+
+        /// <summary>
         /// Creates the interfaces (links) between the ports of the products.
         /// </summary>
         public void CreateInterfacesLinks()
         {
+            this.InterfacesMap.Clear();
             foreach(var interf in this.Interfaces)
             {
                 var sourcePortRowVM = this.PortsMap.Values.FirstOrDefault(port => port.ThingId == interf.SourceId);
@@ -613,16 +660,18 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
                 if(source != null && target != null)
                 {
-                    //TODO: Use Routers.Orthogonal and PathGenerators.Straight and check if the bugs have been corrected.
-                    var link = new DiagramLink(source, target);
-                    //link.Router = Routers.Orthogonal;
-                    //link.PathGenerator = PathGenerators.Smooth;
+                    var link = new DiagramLink(source, target);                    
                     link.Locked = true;
+                    link.Router = Routers.Orthogonal;
+                    link.PathGenerator = PathGenerators.Smooth;
                     link.SourceMarker = LinkMarker.Square;
                     link.TargetMarker = LinkMarker.Arrow;
                     link.HasComments = interf.HasComment();
 
-                    this.InterfacesMap.Add(link, interf);
+                    if(!this.InterfacesMap.Keys.Any(x => x.TargetPort == link.TargetPort && x.SourcePort == link.SourcePort))
+                    {
+                        this.InterfacesMap.Add(link, interf);
+                    }
                 }
             }
         }

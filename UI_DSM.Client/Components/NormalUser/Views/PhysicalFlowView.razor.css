@@ -1,6 +1,10 @@
 ﻿#diagram-parent {
     position:relative;
     width: 100%;
-    min-height: 1000px;
-    height: 1050px;
+    min-height: 100vh;
+    height: 100vh;
+}
+
+::deep .diagram-svg-layer{
+    z-index:1;
 }

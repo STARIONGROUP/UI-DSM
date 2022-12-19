@@ -29,9 +29,15 @@ namespace UI_DSM.Client.Components.Widgets
     /// </summary>
     public partial class DiagramNodeWidget
     {
+        /// <summary>
+        /// Gets or sets the JSRuntime to invoke JS 
+        /// </summary>
         [Inject]
         private IJSRuntime JSRuntime { get; set; }
 
+        /// <summary>
+        /// Gets or sets the reference of the div that contains the node
+        /// </summary>
         private ElementReference DivReference { get; set; }
 
         /// <summary>
@@ -45,128 +51,81 @@ namespace UI_DSM.Client.Components.Widgets
         /// </summary>
         public string OverClass { get; set; } = string.Empty;
 
-        public string ShapeClass { get; set; } = string.Empty;
+        /// <summary>
+        /// Gets or sets the width of the node
+        /// </summary>
+        public int Width { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the height of the node
+        /// </summary>
+        public int Height { get; private set; }
 
-        public double Width { get; set; }
-        public double Height { get; set; }
-
+        /// <summary>
+        /// Gets the points used to position the ports in this node.
+        /// </summary>
         private List<Point> Points = new List<Point>();
 
+        /// <summary>
+        /// Method invoked after each time the component has been rendered. Note that the component does
+        /// not automatically re-render after the completion of any returned <see cref="Task"/>, because
+        /// that would cause an infinite render loop.
+        /// </summary>
+        /// <param name="firstRender">
+        /// Set to <c>true</c> if this is the first time <see cref="OnAfterRender(bool)"/> has been invoked
+        /// on this component instance; otherwise <c>false</c>.
+        /// </param>
+        /// <returns>A <see cref="Task"/> representing any asynchronous operation.</returns>
+        /// <remarks>
+        /// The <see cref="OnAfterRender(bool)"/> and <see cref="OnAfterRenderAsync(bool)"/> lifecycle methods
+        /// are useful for performing interop, or interacting with values received from <c>@ref</c>.
+        /// Use the <paramref name="firstRender"/> parameter to ensure that initialization work is only performed
+        /// once.
+        /// </remarks>
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await base.OnAfterRenderAsync(firstRender);
-
             if (firstRender)
             {
-                var dimensions = await this.JSRuntime.InvokeAsync<double[]>("GetNodeDimensions", this.DivReference);
+                var dimensions = await this.JSRuntime.InvokeAsync<int[]>("GetNodeDimensions", this.DivReference);
                 this.Width = dimensions[0];
                 this.Height = dimensions[1];
-                this.CalculateDistanceBetweenNodes();
+                this.CalculateRectangularDistance();
             }
+
+            await base.OnAfterRenderAsync(firstRender);
         }
 
-        private void CalculateDistanceBetweenNodes()
-        {
-            this.CalculateEllipticalDistance();
-        }
-
+        /// <summary>
+        /// Calculates the coordinates of the ports around the rectangle node
+        /// </summary>
         private void CalculateRectangularDistance()
         {
             this.Points.Clear();
-            var perimeter = 2.0 * this.Width + 2.0 * this.Height;
-            var totalNodes = this.Node.Ports.Cast<DiagramPort>().Count();
-            var distanceBetweenNodes = Math.Round(perimeter / totalNodes);
 
-            var nodesInWidth = Math.Round(this.Width / distanceBetweenNodes);
-            var nodesInHeight = Math.Round(this.Height / distanceBetweenNodes);
-
-            var x0 = 0;
-            var y0 = 0;
-
-            nodesInWidth = nodesInWidth <= 0 ? 1 : nodesInWidth;
-            nodesInHeight = nodesInHeight <= 0 ? 1 : nodesInHeight;
-
-            //TOP
-            for (int i = 0; i < nodesInWidth && this.Points.Count < totalNodes; i++)
-            {
-                this.Points.Add(new Point(x0 + distanceBetweenNodes * i, y0));
-            }
-
-            //RIGHT
-            for (int i = 0; i < nodesInHeight && this.Points.Count < totalNodes; i++)
-            {
-                this.Points.Add(new Point(x0 + this.Width, y0 + distanceBetweenNodes * i));
-            }
-
-            //BOTTOM
-            for (int i = 0; i < nodesInWidth && this.Points.Count < totalNodes; i++)
-            {
-                this.Points.Add(new Point(x0 + this.Width - distanceBetweenNodes * i, y0 + this.Height));
-            }
-
-            //LEFT
-            for (int i = 0; i < nodesInHeight && this.Points.Count < totalNodes; i++)
-            {
-                this.Points.Add(new Point(x0, y0 + this.Height - distanceBetweenNodes * i));
-            }
-        }
-
-        private void CalculateCircularDistance()
-        {
-            this.Points.Clear();
-
-            this.ShapeClass = "round-node";
-
-            var radius = Math.Max(this.Height/2.0, this.Width/2.0);
-
-            var x0 = radius;
-            var y0 = radius;
+            var p = this.Width/2.0;
+            var q = this.Height/2.0;
 
             var totalNodes = this.Node.Ports.Cast<DiagramPort>();
-            var angle = 0.0;
-            var angleIncrement = (Math.PI * 2.0) / totalNodes.Count();
+            var t = 0.0;
+            var tDelta = (2.0 * (this.Width + this.Height)) / totalNodes.Count();
+
+            tDelta = (2.0 * Math.PI) / totalNodes.Count();
 
             foreach (var port in this.Node.Ports.Cast<DiagramPort>())
             {
-                var x = x0 + radius * Math.Cos(angle);
-                var y = y0 + radius * Math.Sin(angle);
+                var cos = Math.Cos(t);
+                var sin = Math.Sin(t);
 
-                this.Points.Add(new Point(x,y));
+                var x = p + p * (Math.Abs(cos) * cos + Math.Abs(sin) * sin);
+                var y = q + q * (Math.Abs(cos) * cos - Math.Abs(sin) * sin);
 
-                angle += angleIncrement;
+                this.Points.Add(new Point(x, y));
+
+                t += tDelta;
             }
-        }
 
-        private void CalculateEllipticalDistance()
-        {
-            this.Points.Clear();
-
-            this.ShapeClass = "elliptical-node";
-
-            var a = this.Width/2.0;
-            var b = this.Height/2.0;
-            var radius = b;
-
-            var h = a;
-            var k = b;
-
-            var totalNodes = this.Node.Ports.Cast<DiagramPort>();
-            var angle = 0.0;
-            var angleIncrement = (Math.PI * 2.0) / totalNodes.Count();
-
-            foreach (var port in this.Node.Ports.Cast<DiagramPort>())
-            {
-                var x = h + radius * Math.Cos(angle);
-                var y = k + radius * Math.Sin(angle);
-                //Use x or y to project
-                var xf = Math.Sqrt((1.0 - ((y - k) * (y - k)) / (b * b)) * a * a) + h;
-                var yf = Math.Sqrt((1.0 - ((x - h) * (x - h)) / (a * a)) * b * b) + k;
-
-                this.Points.Add(new Point(xf, y));
-
-                angle += angleIncrement;
-            }
+            this.StateHasChanged();
+            this.Node.ReinitializePorts();
         }
     }
 }

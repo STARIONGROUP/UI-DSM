@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.Model
 {
     using Blazor.Diagrams.Core.Models;
+    using UI_DSM.Client.Components.Widgets;
 
     /// <summary>
     /// Derived class for holding data for the <see cref="Components.Widgets.DiagramNodeWidget.razor"/>
@@ -26,8 +27,8 @@ namespace UI_DSM.Client.Model
         public bool HasComments { get; set; }
 
         /// <summary>
-        /// Gets or sets if the <see cref="DiagramNode"/> is the central node.
+        /// Gets or sets if the node has been expanded
         /// </summary>
-        public bool IsCentralNode { get; set; }
+        public bool IsExpanded { get; set; }
     }
 }
