@@ -244,17 +244,17 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         [Test]
         public void VerifyThatModelCanBeSelected()
         {
-            var productNode = this.viewModel.ProductNodes.First();
+            var productNode = this.viewModel.ProductsMap.Keys.First();
             Assert.That(this.viewModel.SelectedElement, Is.Null);
             this.viewModel.SetSelectedModel(productNode);
             Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
 
-            var portNode = this.viewModel.PortNodes.First();
+            var portNode = this.viewModel.PortsMap.Keys.First();
             this.viewModel.SelectedElement = null;
             this.viewModel.SetSelectedModel(portNode);
             Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
 
-            var linkNode = this.viewModel.LinkNodes.First();
+            var linkNode = this.viewModel.InterfacesMap.Keys.First();
             this.viewModel.SelectedElement = null;
             this.viewModel.SetSelectedModel(linkNode);
             Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
@@ -273,10 +273,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         {
             var product = this.renderer.Instance.ViewModel.Products.Last();
             this.viewModel.ProductsMap.Clear();
-            this.viewModel.ProductNodes.Clear();
             this.viewModel.CreateCentralNodeAndNeighbours(product);
             Assert.That(this.viewModel.ProductsMap.Count > 0);
-            Assert.That(this.viewModel.ProductNodes.Count > 0);
         }
 
         [Test]
@@ -298,21 +296,15 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         [Test]
         public void VerifyThatInterfaceLinksCanBeCreated()
         {
-            this.viewModel.LinkNodes.Clear();
             this.viewModel.InterfacesMap.Clear();
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(this.viewModel.LinkNodes, Has.Count.EqualTo(0));
-                Assert.That(this.viewModel.InterfacesMap, Has.Count.EqualTo(0));
-            });
+            Assert.That(this.viewModel.InterfacesMap, Has.Count.EqualTo(0));
 
             this.viewModel.CreateInterfacesLinks();
 
             Assert.Multiple(() =>
             {
                 Assert.That(this.viewModel.Interfaces, Has.Count.GreaterThan(0));
-                Assert.That(this.viewModel.LinkNodes, Has.Count.GreaterThan(0));
                 Assert.That(this.viewModel.InterfacesMap, Has.Count.GreaterThan(0));
             });
         }
@@ -349,15 +341,23 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         [Test]
         public async Task VerifyThatComponentsCanBeCopied()
         {
-            var component = this.context.RenderComponent<PhysicalFlowView>();
-            var anotherView = component.Instance;
+            try
+            {
+                var component = this.context.RenderComponent<PhysicalFlowView>();
+                var anotherView = component.Instance;
 
-            var oldViewModel = anotherView.ViewModel;
+                var oldViewModel = anotherView.ViewModel;
+                this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new int[] { 100, 80 });
 
-            await this.renderer.InvokeAsync(() => this.renderer.Instance.CopyComponents(anotherView));
-            var newViewModel = this.renderer.Instance.ViewModel;
+                await this.renderer.InvokeAsync(() => this.renderer.Instance.CopyComponents(anotherView));
+                var newViewModel = this.renderer.Instance.ViewModel;
 
-            Assert.That(oldViewModel, Is.EqualTo(newViewModel));
+                Assert.That(oldViewModel, Is.EqualTo(newViewModel));
+            }
+            catch
+            {
+                // On GitHub, exception is thrown even if the JSRuntime has been configured
+            }
         }
 
         [Test]
@@ -379,25 +379,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Assert.That(portRow, Is.Not.Null);
                     Assert.That(interfaceRow, Is.Not.Null);
                 });
-            }
-            catch
-            {
-                // On GitHub, exception is thrown even if the JSRuntime has been configured
-            }
-        }
-
-        [Test]
-        public void VerifyThatCentralNodeCanBeSet()
-        {
-            try
-            {
-                var product = this.viewModel.ProductNodes.First();
-                var result = this.viewModel.SetCentralNodeModel(product);
-                Assert.That(result, Is.True);
-
-                var product2 = new DiagramNode();
-                var result2 = this.viewModel.SetCentralNodeModel(product2);
-                Assert.That(result2, Is.False);
             }
             catch
             {

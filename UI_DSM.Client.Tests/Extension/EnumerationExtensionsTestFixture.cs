@@ -26,7 +26,7 @@ namespace UI_DSM.Client.Tests.Extension
         {
             Assert.Multiple(() =>
             {
-                Assert.That(InterfaceCategory.Other.ToColorString(), Is.EqualTo("gray"));
+                Assert.That(InterfaceCategory.Other.ToColorString(), Is.EqualTo("lightgray"));
                 Assert.That(InterfaceCategory.Power_Interfaces.ToColorString(), Is.EqualTo("red"));
                 Assert.That(InterfaceCategory.Signal_Interfaces.ToColorString(), Is.EqualTo("#00B0F0"));
                 Assert.That(InterfaceCategory.TM_TC_Interfaces.ToColorString(), Is.EqualTo("#C85D7E"));
