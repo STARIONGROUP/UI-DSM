@@ -61,7 +61,7 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
             var configurationName = "config1";
             var httpResponse = new HttpResponseMessage();
             httpResponse.StatusCode = HttpStatusCode.NotFound;
-            var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Layout/{projectId}/{reviewTaskId}/Save");
+            var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Layout/{projectId}/{reviewTaskId}/{configurationName}/Save");
             request.Respond(_ => httpResponse);
             
             Assert.That(await this.service.SaveDiagramLayout(projectId, reviewTaskId, configurationName, diagramLayoutInformationDtos), Is.False);
