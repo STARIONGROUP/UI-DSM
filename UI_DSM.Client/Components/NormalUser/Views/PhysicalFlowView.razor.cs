@@ -20,7 +20,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using CDP4Common.CommonData;
 
     using Microsoft.AspNetCore.Components.Web;
-
+    using ReactiveUI;
     using UI_DSM.Client.Components.Widgets;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
@@ -35,6 +35,11 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     Gets or sets the diagram component.
         /// </summary>
         public Diagram Diagram { get; set; }
+
+        /// <summary>
+        ///     A collection of <see cref="IDisposable" />
+        /// </summary>
+        private readonly List<IDisposable> disposables = new();
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -145,6 +150,9 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
             this.Diagram.MouseUp += this.Diagram_MouseUp;
             this.Diagram.MouseDoubleClick += this.Diagram_MouseDoubleClick;
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnSavingMode)
+                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
         }
 
         /// <summary>

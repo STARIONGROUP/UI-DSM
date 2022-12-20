@@ -39,15 +39,16 @@ namespace UI_DSM.Client.Services.DiagrammingConfigurationService
         /// </summary>
         /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" />
         /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" />
+        /// <param name="configurationName">The name of the configuration
         /// <param name="diagramLayoutInformation">The <see cref="IEnumerable{DiagramNode}" />to create</param>
         /// <returns>A <see cref="Task" /> 
-        public async Task<bool> SaveDiagramLayout(Guid projectId, Guid reviewTaskId, IEnumerable<DiagramLayoutInformationDto> diagramLayoutInformation)
+        public async Task<bool> SaveDiagramLayout(Guid projectId, Guid reviewTaskId, String configurationName, IEnumerable<DiagramLayoutInformationDto> diagramLayoutInformation)
         {
             try
             {
                 var content = this.jsonService.Serialize(diagramLayoutInformation);
                 var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-                var response = await this.HttpClient.PostAsync($"{this.MainRoute}/{projectId}/{reviewTaskId}/Save", bodyContent);
+                var response = await this.HttpClient.PostAsync($"{this.MainRoute}/{projectId}/{reviewTaskId}/{configurationName}/Save", bodyContent);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception exception)

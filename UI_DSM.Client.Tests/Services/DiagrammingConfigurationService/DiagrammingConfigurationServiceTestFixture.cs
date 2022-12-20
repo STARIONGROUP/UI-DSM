@@ -58,16 +58,16 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
                     yPosition = 447
                 }
             };
-
+            var configurationName = "config1";
             var httpResponse = new HttpResponseMessage();
             httpResponse.StatusCode = HttpStatusCode.NotFound;
             var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Layout/{projectId}/{reviewTaskId}/Save");
             request.Respond(_ => httpResponse);
             
-            Assert.That(await this.service.SaveDiagramLayout(projectId, reviewTaskId, diagramLayoutInformationDtos), Is.False);
+            Assert.That(await this.service.SaveDiagramLayout(projectId, reviewTaskId, configurationName, diagramLayoutInformationDtos), Is.False);
 
             httpResponse.StatusCode = HttpStatusCode.OK;
-            Assert.That(await this.service.SaveDiagramLayout(projectId, reviewTaskId, diagramLayoutInformationDtos), Is.True);
+            Assert.That(await this.service.SaveDiagramLayout(projectId, reviewTaskId, configurationName, diagramLayoutInformationDtos), Is.True);
         }
     }
 }

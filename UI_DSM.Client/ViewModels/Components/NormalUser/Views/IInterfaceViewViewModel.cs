@@ -21,6 +21,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>
@@ -205,6 +206,21 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// Event fired when the state of the component needs to change.
         /// </summary>
         Action OnCentralNodeChanged { get; set; }
+
+        /// <summary>
+        ///     Value indicating the user is currently saving the diagramming configuration
+        /// </summary>
+        bool IsOnSavingMode { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationPopupViewModel" />
+        /// </summary>
+        IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; }
+
+        /// <summary>
+        ///     Opens the <see cref="DiagrammingConfigurationPopup" />
+        /// </summary>
+        void OpenSavingPopup();
 
         /// <summary>
         ///     Saves current diagram layout

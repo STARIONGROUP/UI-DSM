@@ -33,6 +33,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
     using Model = Blazor.Diagrams.Core.Models.Base.Model;
     using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
+    using Microsoft.AspNetCore.Components;
 
     /// <summary>
     ///     View model for the <see cref="Client.Components.NormalUser.Views.InterfaceView" /> component
@@ -257,6 +259,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.InitializesFilter();
 
             this.InitializeDiagram();
+
+            this.DiagrammingConfigurationPopupViewModel = new DiagrammingConfigurationPopupViewModel
+            {
+                OnValidSubmit = new EventCallbackFactory().Create(this, this.SaveCurrentDiagramLayout)
+            };
         }
 
         /// <summary>
@@ -744,12 +751,41 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationPopupViewModel" />
+        /// </summary>
+        public IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; private set; }
+
+        /// <summary>
+        ///     Backing field for <see cref="IsOnCreationMode" />
+        /// </summary>
+        private bool isOnSavingMode;
+
+        /// <summary>
+        ///     Value indicating the user is currently saving the diagramming configuration
+        /// </summary>
+        public bool IsOnSavingMode
+        {
+            get => this.isOnSavingMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnSavingMode, value);
+        }
+
+        /// <summary>
+        ///     Opens the <see cref="DiagrammingConfigurationPopup" />
+        /// </summary>
+        public void OpenSavingPopup()
+        {
+            this.IsOnSavingMode = true;
+        }
+
+
+        /// <summary>
         ///     Saves current diagram layout
         /// </summary>
-        public void SaveCurrentDiagramLayout()
+        public async void SaveCurrentDiagramLayout()
         {
             IEnumerable<DiagramLayoutInformationDto> layoutInformationDtos = this.ProductNodes.Select(x => new DiagramLayoutInformationDto { ThingId = x.ThingId, xPosition = x.Position.X, yPosition = x.Position.Y });
-            this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, layoutInformationDtos);
+            var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationPopupViewModel.ConfigurationName, layoutInformationDtos);
+            this.IsOnSavingMode = !response;
         }
     }
 }

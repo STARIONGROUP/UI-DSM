@@ -29,7 +29,7 @@ namespace UI_DSM.Server.Modules
     /// <summary>
     ///     This module saves the product diagram layout
     /// </summary>
-    [Route("api/Layout/{projectId:guid}/{reviewTaskId:guid}")]
+    [Route("api/Layout/{projectId:guid}/{reviewTaskId:guid}/{configurationName}")]
     public class DiagrammingConfigurationModule : ModuleBase
     {
         /// <summary>
@@ -65,7 +65,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public async Task SaveLayoutConfiguration(Guid projectId, Guid reviewTaskId, List<DiagramLayoutInformationDto> dtos, HttpContext context)
+        public async Task SaveLayoutConfiguration(Guid projectId, Guid reviewTaskId, String configurationName, List<DiagramLayoutInformationDto> dtos, HttpContext context)
         {
             var participantManager = context.RequestServices.GetService<IParticipantManager>();
 
@@ -88,7 +88,7 @@ namespace UI_DSM.Server.Modules
             }
             
             var json = JsonSerializer.Serialize(dtos);
-            File.WriteAllText(Path.Combine(path, "layout.json"), json);
+            File.WriteAllText(Path.Combine(path, configurationName+".json"), json);
         }
     }
 }
