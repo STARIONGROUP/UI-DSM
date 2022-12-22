@@ -13,11 +13,14 @@
 
 namespace UI_DSM.Server.Managers.ReviewTaskManager
 {
+    using Microsoft.EntityFrameworkCore;
+
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
     using UI_DSM.Server.Types;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
@@ -55,29 +58,36 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
         public override async Task<EntityOperationResult<ReviewTask>> UpdateEntity(ReviewTask entity)
         {
             var selectedParticipants = entity.IsAssignedTo.ToList();
+
             if (!this.ValidateCurrentEntity(entity, out var entityOperationResult))
             {
                 return entityOperationResult;
             }
+
             var reviewTask = (await this.GetEntity(entity.Id)).OfType<ReviewTask>().First();
             reviewTask.Status = entity.Status;
             var deletedParticipants = reviewTask.IsAssignedTo.Where(x => selectedParticipants.All(p => p.Id != x.Id));
             var addedParticipants = selectedParticipants.Where(x => reviewTask.IsAssignedTo.All(p => p.Id != x.Id));
+
             foreach (var participant in deletedParticipants.ToList())
             {
                 reviewTask.IsAssignedTo.Remove(participant);
             }
+
             foreach (var addedParticipant in addedParticipants.ToList())
             {
                 reviewTask.IsAssignedTo.Add(addedParticipant);
             }
+
             entity.CreatedOn = entity.CreatedOn.ToUniversalTime();
             var operation = await this.UpdateEntityIntoContext(reviewTask);
+
             if (this.reviewObjectiveManager != null)
             {
                 var foundEntity = await this.FindEntityWithContainer(entity.Id);
                 await this.reviewObjectiveManager.UpdateStatus(foundEntity.EntityContainer.Id);
             }
+
             return operation;
         }
 
@@ -124,6 +134,45 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
         public void InjectManager(IReviewObjectiveManager manager)
         {
             this.reviewObjectiveManager = manager;
+        }
+
+        /// <summary>
+        ///     Gets the <see cref="SearchResultDto"/> based on a <see cref="Guid"/>
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="ReviewTask" /></param>
+        /// <returns>A URL</returns>
+        public override async Task<SearchResultDto> GetSearchResult(Guid entityId)
+        {
+            var reviewTask = await this.EntityDbSet.Where(x => x.Id == entityId)
+                .Include(x => x.EntityContainer)
+                .ThenInclude(x => x.EntityContainer)
+                .ThenInclude(x => x.EntityContainer)
+                .FirstOrDefaultAsync();
+
+            if (reviewTask == null)
+            {
+                return null;
+            }
+
+            var route= $"Project/{reviewTask.EntityContainer.EntityContainer.EntityContainer.Id}/Review/{reviewTask.EntityContainer.EntityContainer.Id}/ReviewObjective/{reviewTask.EntityContainer.Id}/ReviewTask/{reviewTask.Id}";
+            
+            return new SearchResultDto()
+            {
+                BaseUrl = route,
+                ObjectKind = nameof(ReviewTask),
+                DisplayText = reviewTask.Description
+            };
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Entity" /> that needs to be unindexed when the current <see cref="Entity" /> is delete
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the entity</param>
+        /// <returns>A collection of <see cref="Entity" /></returns>
+        public override async Task<IEnumerable<Entity>> GetExtraEntitiesToUnindex(Guid entityId)
+        {
+            await Task.CompletedTask;
+            return Enumerable.Empty<Entity>();
         }
 
         /// <summary>

@@ -14,7 +14,7 @@
 namespace UI_DSM.Server.Managers.ReviewManager
 {
     using Microsoft.EntityFrameworkCore;
-    
+
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.ArtifactManager;
@@ -96,7 +96,7 @@ namespace UI_DSM.Server.Managers.ReviewManager
         /// <param name="projectId">A <see cref="Guid" /> of <see cref="Project" />s</param>
         /// <param name="userName">The name of the current logged user</param>
         /// <returns> A <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
-        public async Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewsId, Guid projectId,  string userName)
+        public async Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewsId, Guid projectId, string userName)
         {
             var dictionary = new Dictionary<Guid, ComputedProjectProperties>();
 
@@ -111,6 +111,60 @@ namespace UI_DSM.Server.Managers.ReviewManager
             }
 
             return dictionary;
+        }
+
+        /// <summary>
+        ///     Gets the <see cref="SearchResultDto"/> based on a <see cref="Guid"/>
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Review" /></param>
+        /// <returns>A URL</returns>
+        public override async Task<SearchResultDto> GetSearchResult(Guid entityId)
+        {
+            var review = await this.EntityDbSet.Where(x => x.Id == entityId)
+                .Include(x => x.EntityContainer).FirstOrDefaultAsync();
+
+            if (review == null)
+            {
+                return null;
+            }
+
+            var route = $"Project/{review.EntityContainer.Id}/Review/{review.Id}";
+
+            return new SearchResultDto()
+            {
+                BaseUrl = route, 
+                DisplayText = review.Title,
+                ObjectKind = nameof(Review)
+            };
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Entity" /> that needs to be unindexed when the current <see cref="Entity" /> is delete
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the entity</param>
+        /// <returns>A collection of <see cref="Entity" /></returns>
+        public override async Task<IEnumerable<Entity>> GetExtraEntitiesToUnindex(Guid entityId)
+        {
+            var review = await this.EntityDbSet.Where(x => x.Id == entityId)
+                .Include(x => x.ReviewItems)
+                .ThenInclude(x => x.Annotations)
+                .Include(x => x.ReviewObjectives)
+                .ThenInclude(x => x.ReviewTasks)
+                .Include(x => x.ReviewObjectives)
+                .ThenInclude(x => x.Annotations)
+                .FirstOrDefaultAsync();
+
+            if (review == null)
+            {
+                return Enumerable.Empty<Entity>();
+            }
+
+            var entities = new List<Entity>(review.ReviewItems);
+            entities.AddRange(review.ReviewItems.SelectMany(x => x.Annotations));
+            entities.AddRange(review.ReviewObjectives);
+            entities.AddRange(review.ReviewObjectives.SelectMany(x => x.Annotations));
+            entities.AddRange(review.ReviewObjectives.SelectMany(x => x.ReviewTasks));
+            return entities;
         }
 
         /// <summary>

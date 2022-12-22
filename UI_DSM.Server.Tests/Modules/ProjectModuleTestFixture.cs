@@ -21,11 +21,11 @@ namespace UI_DSM.Server.Tests.Modules
 
     using NUnit.Framework;
 
-    using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ProjectManager;
     using UI_DSM.Server.Modules;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Server.Types;
     using UI_DSM.Server.Validator;
@@ -44,6 +44,7 @@ namespace UI_DSM.Server.Tests.Modules
         private Mock<HttpResponse> httpResponse;
         private Mock<IServiceProvider> provider;
         private Mock<IParticipantManager> participantManager;
+        private Mock<ISearchService> searchService;
 
         [SetUp]
         public void Setup()
@@ -56,6 +57,7 @@ namespace UI_DSM.Server.Tests.Modules
                 }
             };
 
+            this.searchService = new Mock<ISearchService>();
             this.participantManager = new Mock<IParticipantManager>();
             this.projectManager = new Mock<IEntityManager<Project>>();
             this.projectManager.As<IProjectManager>();
@@ -118,12 +120,12 @@ namespace UI_DSM.Server.Tests.Modules
         {
             var projectDto = new ProjectDto();
 
-            await this.module.CreateEntity(this.projectManager.Object, projectDto, this.httpContext.Object);
+            await this.module.CreateEntity(this.projectManager.Object, projectDto, this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Once);
             projectDto.ProjectName = "Project";
             projectDto.Id = Guid.NewGuid();
 
-            await this.module.CreateEntity(this.projectManager.Object, projectDto, this.httpContext.Object);
+            await this.module.CreateEntity(this.projectManager.Object, projectDto, this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Exactly(2));
 
             projectDto.Id = Guid.Empty;
@@ -131,7 +133,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.projectManager.Setup(x => x.CreateEntity(It.IsAny<Project>()))
                 .ReturnsAsync(EntityOperationResult<Project>.Failed());
 
-            await this.module.CreateEntity(this.projectManager.Object, projectDto, this.httpContext.Object);
+            await this.module.CreateEntity(this.projectManager.Object, projectDto, this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
 
             this.projectManager.Setup(x => x.CreateEntity(It.IsAny<Project>()))
@@ -140,7 +142,7 @@ namespace UI_DSM.Server.Tests.Modules
                     ProjectName = projectDto.ProjectName
                 }));
 
-            await this.module.CreateEntity(this.projectManager.Object, projectDto, this.httpContext.Object);
+            await this.module.CreateEntity(this.projectManager.Object, projectDto, this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 201, Times.Once);
         }
 
@@ -150,7 +152,7 @@ namespace UI_DSM.Server.Tests.Modules
             var guid = Guid.NewGuid();
             this.projectManager.Setup(x => x.FindEntity(guid)).ReturnsAsync((Project)null);
 
-            var response = await this.module.DeleteEntity(this.projectManager.Object, guid, this.httpContext.Object);
+            var response = await this.module.DeleteEntity(this.projectManager.Object, guid, this.searchService.Object, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 404, Times.Once);
 
@@ -161,12 +163,12 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.projectManager.Setup(x => x.FindEntity(guid)).ReturnsAsync(project);
             this.projectManager.Setup(x => x.DeleteEntity(project)).ReturnsAsync(EntityOperationResult<Project>.Failed());
-            response = await this.module.DeleteEntity(this.projectManager.Object, guid, this.httpContext.Object);
+            response = await this.module.DeleteEntity(this.projectManager.Object, guid, this.searchService.Object, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
 
             this.projectManager.Setup(x => x.DeleteEntity(project)).ReturnsAsync(EntityOperationResult<Project>.Success(project));
-            response = await this.module.DeleteEntity(this.projectManager.Object, guid, this.httpContext.Object);
+            response = await this.module.DeleteEntity(this.projectManager.Object, guid, this.searchService.Object, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.True);
         }
 
@@ -176,21 +178,21 @@ namespace UI_DSM.Server.Tests.Modules
             var project = new Project(Guid.NewGuid());
 
             this.projectManager.Setup(x => x.FindEntity(project.Id)).ReturnsAsync((Project)null);
-            await this.module.UpdateEntity(this.projectManager.Object, project.Id, (ProjectDto)project.ToDto(), this.httpContext.Object);
+            await this.module.UpdateEntity(this.projectManager.Object, project.Id, (ProjectDto)project.ToDto(), this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 404, Times.Once);
 
             this.projectManager.Setup(x => x.FindEntity(project.Id)).ReturnsAsync(project);
-            await this.module.UpdateEntity(this.projectManager.Object, project.Id, (ProjectDto)project.ToDto(), this.httpContext.Object);
+            await this.module.UpdateEntity(this.projectManager.Object, project.Id, (ProjectDto)project.ToDto(), this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Once);
 
             project.ProjectName = "Project";
             this.projectManager.Setup(x => x.UpdateEntity(It.IsAny<Project>())).ReturnsAsync(EntityOperationResult<Project>.Failed());
 
-            await this.module.UpdateEntity(this.projectManager.Object, project.Id, (ProjectDto)project.ToDto(), this.httpContext.Object);
+            await this.module.UpdateEntity(this.projectManager.Object, project.Id, (ProjectDto)project.ToDto(), this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
 
             this.projectManager.Setup(x => x.UpdateEntity(It.IsAny<Project>())).ReturnsAsync(EntityOperationResult<Project>.Success(project));
-            await this.module.UpdateEntity(this.projectManager.Object, project.Id, (ProjectDto)project.ToDto(), this.httpContext.Object);
+            await this.module.UpdateEntity(this.projectManager.Object, project.Id, (ProjectDto)project.ToDto(), this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 200, Times.Once);
         }
 

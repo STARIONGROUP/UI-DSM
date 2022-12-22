@@ -20,6 +20,7 @@ namespace UI_DSM.Server.Managers.ParticipantManager
     using UI_DSM.Server.Managers.RoleManager;
     using UI_DSM.Server.Managers.UserManager;
     using UI_DSM.Server.Types;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
@@ -67,6 +68,54 @@ namespace UI_DSM.Server.Managers.ParticipantManager
             relatedEntities.InsertEntity(await this.roleManager.FindEntity(participantDto.Role));
             relatedEntities.InsertEntity(await this.userManager.FindEntity(participantDto.User));
             entity.ResolveProperties(participantDto, relatedEntities);
+        }
+
+        /// <summary>
+        ///     Gets the <see cref="SearchResultDto"/> based on a <see cref="Guid"/>
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Participant" /></param>
+        /// <returns>A URL</returns>
+        public override async Task<SearchResultDto> GetSearchResult(Guid entityId)
+        {
+            var participant = await this.EntityDbSet.Where(x => x.Id == entityId)
+                .Include(x => x.EntityContainer).FirstOrDefaultAsync();
+
+            if (participant == null)
+            {
+                return null;
+            }
+
+            return new SearchResultDto()
+            {
+                BaseUrl = $"Project/{participant.EntityContainer.Id}/Participant/{participant.Id}",
+                DisplayText = participant.ParticipantName,
+                ObjectKind = nameof(Participant)
+            };
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Entity" /> that needs to be unindexed when the current <see cref="Entity" /> is delete
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the entity</param>
+        /// <returns>A collection of <see cref="Entity" /></returns>
+        public override async Task<IEnumerable<Entity>> GetExtraEntitiesToUnindex(Guid entityId)
+        {
+            var participant = await this.EntityDbSet.Where(x => x.Id == entityId)
+                .Include(x => x.Annotations)
+                .Include(x => x.Annotations.OfType<Comment>())
+                .ThenInclude(x => x.Replies)
+                .Include(x => x.Replies)
+                .FirstOrDefaultAsync();
+
+            if (participant == null)
+            {
+                return Enumerable.Empty<Entity>();
+            }
+
+            var entities = new List<Entity>(participant.Replies);
+            entities.AddRange(participant.Annotations);
+            entities.AddRange(participant.Annotations.OfType<Comment>().SelectMany(x => x.Replies));
+            return entities;
         }
 
         /// <summary>

@@ -14,6 +14,7 @@
 namespace UI_DSM.Server.Managers.ProjectManager
 {
     using Microsoft.EntityFrameworkCore;
+
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.AnnotationManager;
@@ -95,6 +96,62 @@ namespace UI_DSM.Server.Managers.ProjectManager
             relatedEntities.InsertEntityCollection(await this.artifactManager.FindEntities(projectDto.Artifacts));
             relatedEntities.InsertEntityCollection(await this.reviewCategoryManager.FindEntities(projectDto.ReviewCategories));
             entity.ResolveProperties(projectDto, relatedEntities);
+        }
+
+        /// <summary>
+        ///     Gets the <see cref="SearchResultDto"/> based on a <see cref="Guid"/>
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <returns>A URL</returns>
+        public override async Task<SearchResultDto> GetSearchResult(Guid entityId)
+        {
+            var project = await this.FindEntity(entityId);
+
+            if (project == null)
+            {
+                return null;
+            }
+
+            return new SearchResultDto()
+            {
+                ObjectKind = nameof(Project),
+                DisplayText = project.ProjectName,
+                BaseUrl = $"Project/{project.Id}"
+            };
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Entity" /> that needs to be unindexed when the current <see cref="Entity" /> is delete
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the entity</param>
+        /// <returns>A collection of <see cref="Entity" /></returns>
+        public override async Task<IEnumerable<Entity>> GetExtraEntitiesToUnindex(Guid entityId)
+        {
+            var project = await this.EntityDbSet.Where(x => x.Id == entityId)
+                .Include(x => x.Reviews)
+                .ThenInclude(x => x.ReviewObjectives)
+                .ThenInclude(x => x.ReviewTasks)
+                .Include(x => x.Participants)
+                .Include(x => x.Annotations)
+                .Include(x => x.Annotations.OfType<Comment>())
+                .ThenInclude(x => x.Replies)
+                .Include(x => x.Reviews)
+                .ThenInclude(x => x.ReviewItems)
+                .FirstOrDefaultAsync();
+
+            if (project == null)
+            {
+                return Enumerable.Empty<Entity>();
+            }
+
+            var entities = new List<Entity>(project.Participants);
+            entities.AddRange(project.Reviews);
+            entities.AddRange(project.Reviews.SelectMany(x => x.ReviewItems));
+            entities.AddRange(project.Reviews.SelectMany(x => x.ReviewObjectives));
+            entities.AddRange(project.Reviews.SelectMany(x => x.ReviewObjectives).SelectMany(x => x.ReviewTasks));
+            entities.AddRange(project.Annotations);
+            entities.AddRange(project.Annotations.OfType<Comment>().SelectMany(x => x.Replies));
+            return entities;
         }
 
         /// <summary>

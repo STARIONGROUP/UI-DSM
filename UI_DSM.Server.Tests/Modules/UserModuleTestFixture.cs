@@ -26,6 +26,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Managers.UserManager;
     using UI_DSM.Server.Modules;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Server.Types;
     using UI_DSM.Server.Validator;
     using UI_DSM.Shared.DTO.UserManagement;
@@ -40,6 +41,7 @@ namespace UI_DSM.Server.Tests.Modules
         private Mock<HttpContext> httpContext;
         private Mock<HttpResponse> httpResponse;
         private Mock<UserManager<User>> authenticationUserManager;
+        private Mock<ISearchService> searchService;
 
         [SetUp]
         public void Setup()
@@ -51,6 +53,7 @@ namespace UI_DSM.Server.Tests.Modules
             configurationSection.Setup(x => x["validAudience"]).Returns("audience");
 
             this.userManager = new Mock<IEntityManager<UserEntity>>();
+            this.searchService = new Mock<ISearchService>();
             configuration.Setup(x => x.GetSection("JwtSettings")).Returns(configurationSection.Object);
 
             this.httpResponse = new Mock<HttpResponse>();
@@ -84,7 +87,7 @@ namespace UI_DSM.Server.Tests.Modules
             var guid = Guid.NewGuid();
             this.userManager.Setup(x => x.FindEntity(guid)).ReturnsAsync((UserEntity)null);
 
-            var response = await this.module.DeleteEntity(this.userManager.Object, guid, this.httpContext.Object);
+            var response = await this.module.DeleteEntity(this.userManager.Object, guid, this.searchService.Object, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 404, Times.Once);
 
@@ -95,12 +98,12 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.userManager.Setup(x => x.FindEntity(guid)).ReturnsAsync(user);
             this.userManager.Setup(x => x.DeleteEntity(user)).ReturnsAsync(EntityOperationResult<UserEntity>.Failed());
-            response = await this.module.DeleteEntity(this.userManager.Object, guid, this.httpContext.Object);
+            response = await this.module.DeleteEntity(this.userManager.Object, guid, this.searchService.Object, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
 
             this.userManager.Setup(x => x.DeleteEntity(user)).ReturnsAsync(EntityOperationResult<UserEntity>.Success(user));
-            response = await this.module.DeleteEntity(this.userManager.Object, guid, this.httpContext.Object);
+            response = await this.module.DeleteEntity(this.userManager.Object, guid, this.searchService.Object, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.True);
         }
 

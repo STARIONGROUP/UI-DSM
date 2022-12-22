@@ -103,6 +103,11 @@ namespace UI_DSM.Client.Services.JsonService
                 return (T)this.cdp4JsonSerializer.Deserialize(stream);
             }
 
+            if (typeof(T).IsAssignableTo(typeof(IEnumerable<CommonBaseSearchDto>)))
+            {
+                return (T)this.deserializer.DeserializeISearchDto(stream);
+            }
+
             return JsonSerializer.Deserialize<T>(stream, this.options);
         }
 

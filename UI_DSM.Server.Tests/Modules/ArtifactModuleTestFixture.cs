@@ -24,6 +24,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Server.Managers.ArtifactManager;
     using UI_DSM.Server.Modules;
     using UI_DSM.Server.Services.FileService;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Server.Validator;
     using UI_DSM.Shared.DTO.Models;
@@ -42,6 +43,7 @@ namespace UI_DSM.Server.Tests.Modules
         private RouteValueDictionary routeValues;
         private Guid projectId;
         private Mock<IFileService> fileService;
+        private Mock<ISearchService> searchService;
 
         [SetUp]
         public void Setup()
@@ -50,6 +52,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.artifactManager = new Mock<IEntityManager<Artifact>>();
             this.artifactManager.As<IArtifactManager>();
             this.artifactManager.As<IContainedEntityManager<Artifact>>();
+            this.searchService = new Mock<ISearchService>();
 
             ModuleTestHelper.Setup<ArtifactModule, ArtifactDto>(new ArtifactDtoValidator(), out this.context,
                 out this.response, out this.request, out this.serviceProvider);
@@ -120,21 +123,21 @@ namespace UI_DSM.Server.Tests.Modules
             };
             
             this.fileService.Setup(x => x.TempFileExists(modelDto.FileName)).Returns(false);
-            await this.module.CreateEntity(this.artifactManager.Object, modelDto, this.context.Object);
+            await this.module.CreateEntity(this.artifactManager.Object, modelDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode=404, Times.Once);
 
             this.fileService.Setup(x => x.TempFileExists(modelDto.FileName)).Returns(true);
             this.fileService.Setup(x => x.Exists(this.projectId.ToString(), modelDto.FileName)).Returns(true);
-            await this.module.CreateEntity(this.artifactManager.Object, modelDto, this.context.Object);
+            await this.module.CreateEntity(this.artifactManager.Object, modelDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 400, Times.Once);
 
             this.fileService.Setup(x => x.Exists(this.projectId.ToString(), modelDto.FileName)).Returns(false);
             this.fileService.Setup(x => x.IsAnnexC3File(modelDto.FileName)).ReturnsAsync(false);
-            await this.module.CreateEntity(this.artifactManager.Object, modelDto, this.context.Object);
+            await this.module.CreateEntity(this.artifactManager.Object, modelDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 400, Times.Exactly(2));
 
             this.fileService.Setup(x => x.IsAnnexC3File(modelDto.FileName)).ReturnsAsync(true);
-            await this.module.CreateEntity(this.artifactManager.Object, modelDto, this.context.Object);
+            await this.module.CreateEntity(this.artifactManager.Object, modelDto, this.searchService.Object, this.context.Object);
             this.fileService.Verify(x => x.MoveFile(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
         }
 
@@ -143,8 +146,8 @@ namespace UI_DSM.Server.Tests.Modules
         {
             var dto = new ModelDto(Guid.NewGuid());
 
-            await this.module.UpdateEntity(this.artifactManager.Object, dto.Id, dto, this.context.Object);
-            await this.module.DeleteEntity(this.artifactManager.Object, dto.Id, this.context.Object);
+            await this.module.UpdateEntity(this.artifactManager.Object, dto.Id, dto, this.searchService.Object, this.context.Object);
+            await this.module.DeleteEntity(this.artifactManager.Object, dto.Id, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 403, Times.Exactly(2));
         }
     }

@@ -17,6 +17,7 @@ namespace UI_DSM.Server.Modules
     using Microsoft.AspNetCore.Mvc;
 
     using UI_DSM.Server.Managers;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -60,13 +61,14 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="dto">The <see cref="RoleDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize(Roles = "Administrator")]
-        public override Task CreateEntity(IEntityManager<Role> manager, RoleDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
+        public override Task CreateEntity(IEntityManager<Role> manager, RoleDto dto, ISearchService searchService, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.CreateEntity(manager, dto, context, deepLevel);
+            return base.CreateEntity(manager, dto, searchService, context, deepLevel);
         }
 
         /// <summary>
@@ -74,12 +76,13 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Role" /> to delete</param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
         [Authorize(Roles = "Administrator")]
-        public override Task<RequestResponseDto> DeleteEntity(IEntityManager<Role> manager, Guid entityId, HttpContext context)
+        public override Task<RequestResponseDto> DeleteEntity(IEntityManager<Role> manager, Guid entityId, ISearchService searchService, HttpContext context)
         {
-            return base.DeleteEntity(manager, entityId, context);
+            return base.DeleteEntity(manager, entityId, searchService, context);
         }
 
         /// <summary>
@@ -88,13 +91,14 @@ namespace UI_DSM.Server.Modules
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Role" /></param>
         /// <param name="dto">The <see cref="RoleDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize(Roles = "Administrator")]
-        public override Task UpdateEntity(IEntityManager<Role> manager, Guid entityId, RoleDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
+        public override Task UpdateEntity(IEntityManager<Role> manager, Guid entityId, RoleDto dto, ISearchService searchService, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.UpdateEntity(manager, entityId, dto, context, deepLevel);
+            return base.UpdateEntity(manager, entityId, dto, searchService, context, deepLevel);
         }
     }
 }

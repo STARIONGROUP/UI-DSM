@@ -18,13 +18,17 @@ namespace UI_DSM.Server.Modules
     using Carter.Response;
 
     using CDP4Common.CommonData;
+    using CDP4Common.EngineeringModelData;
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     using UI_DSM.Client.Extensions;
+    using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Server.Managers.ArtifactManager;
     using UI_DSM.Server.Managers.ThingManager;
+    using UI_DSM.Server.Services.SearchService;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -43,13 +47,64 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="app">The <see cref="IEndpointRouteBuilder" /></param>
         [ExcludeFromCodeCoverage]
-        public override void 
+        public override void
             AddRoutes(IEndpointRouteBuilder app)
         {
             app.MapGet(this.MainRoute, this.GetThings)
                 .Produces<IEnumerable<Thing>>()
                 .WithTags(ThingName)
                 .WithName($"{ThingName}/GetThings");
+
+            app.MapPut(this.MainRoute, this.IndexThings)
+                .WithTags(ThingName)
+                .WithName($"{ThingName}/IndexThings");
+        }
+
+        /// <summary>
+        ///     Indexes all <see cref="Thing" /> that are contained into an <see cref="Iteration" />
+        /// </summary>
+        /// <param name="artifactManager">The <see cref="IArtifactManager" /></param>
+        /// <param name="thingManager">The <see cref="IThingManager" /></param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
+        /// <param name="jsonService">The <see cref="IJsonService"/></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="modelIds">A collection of all <see cref="Model" /> id</param>
+        /// <returns>A <see cref="Task" /></returns>
+        public async Task IndexThings(IArtifactManager artifactManager, IThingManager thingManager, ISearchService searchService, IJsonService jsonService,
+            HttpContext context, Guid projectId, string modelIds)
+        {
+            await context.Response.CompleteAsync();
+            var models = new List<Model>();
+
+            foreach (var modelId in modelIds.FromGuidArray().ToList())
+            {
+                var artifact = await artifactManager.FindEntityWithContainer(modelId);
+
+                if (!TryConvertToModel(context, projectId, artifact, out var model))
+                {
+                    return;
+                }
+
+                models.Add(model);
+            }
+
+            foreach (var model in models.ToList())
+            {
+                var response = await searchService.SearchAfter(model.IterationId.ToString());
+                var searchDtos = jsonService.Deserialize<IEnumerable<CommonBaseSearchDto>>(response);
+
+                if (searchDtos.Any())
+                {
+                    models.Remove(model);
+                }
+            }
+
+            if (models.Any())
+            {
+                var things = await thingManager.GetIterations(models);
+                await searchService.IndexIteration(things);
+            }
         }
 
         /// <summary>
@@ -60,7 +115,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
         /// <param name="modelIds">A collection of <see cref="Guid" /> of the <see cref="Model" /></param>
-        /// <param name="classKind">Optional parameter to specify the <see cref="ClassKind"/></param>
+        /// <param name="classKind">Optional parameter to specify the <see cref="ClassKind" /></param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
         public async Task GetThings(IArtifactManager artifactManager, IThingManager thingManager, HttpContext context,
@@ -90,7 +145,7 @@ namespace UI_DSM.Server.Modules
             {
                 if (!Enum.TryParse(classKind, true, out classKindValue))
                 {
-                    context.Response.StatusCode = 400; 
+                    context.Response.StatusCode = 400;
                     return;
                 }
             }

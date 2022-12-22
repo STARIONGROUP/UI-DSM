@@ -17,12 +17,15 @@
 
 namespace UI_DSM.Shared.DTO.Models
 {
+    using GP.SearchService.SDK.Definitions;
+
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
     ///    The Data Transfer Object representing the <see cref="Role" /> class.
     /// </summary>
+    [SearchDto(nameof(RoleDto))]
     public partial class RoleDto : EntityDto
     {
         /// <summary>

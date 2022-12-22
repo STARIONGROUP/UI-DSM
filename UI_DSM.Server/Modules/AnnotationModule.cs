@@ -23,6 +23,7 @@ namespace UI_DSM.Server.Modules
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Managers.AnnotatableItemManager;
     using UI_DSM.Server.Managers.AnnotationManager;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
@@ -31,7 +32,7 @@ namespace UI_DSM.Server.Modules
 
     /// <summary>
     ///     The <see cref="AnnotationModule" />  is a
-    ///     <see cref="ContainedEntityModule{TEntity,TEntityDto, TEntityContainer}" /> to manage
+    ///     <see cref="ContainedEntityModule{TEntity,TEntityDto,TEntityContainer}" /> to manage
     ///     <see cref="Annotation" /> related to a <see cref="Project" />
     /// </summary>
     [Route("api/Project/{projectId:guid}/Annotation")]
@@ -98,11 +99,12 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="dto">The <see cref="AnnotationDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public override async Task CreateEntity(IEntityManager<Annotation> manager, AnnotationDto dto, HttpContext context, int deepLevel = 0)
+        public override async Task CreateEntity(IEntityManager<Annotation> manager, AnnotationDto dto, ISearchService searchService, HttpContext context, int deepLevel = 0)
         {
             var participant = await this.GetParticipantBasedOnRequest(context, this.ContainerRouteKey);
 
@@ -118,7 +120,7 @@ namespace UI_DSM.Server.Modules
 
             _ = context.RequestServices.GetService<IAnnotatableItemManager>();
             dto.Author = participant.Id;
-            await base.CreateEntity(manager, dto, context, deepLevel);
+            await base.CreateEntity(manager, dto, searchService, context, deepLevel);
         }
 
         /// <summary>
@@ -126,10 +128,11 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Annotation" /> to delete</param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
         [Authorize]
-        public override async Task<RequestResponseDto> DeleteEntity(IEntityManager<Annotation> manager, Guid entityId, HttpContext context)
+        public override async Task<RequestResponseDto> DeleteEntity(IEntityManager<Annotation> manager, Guid entityId, ISearchService searchService, HttpContext context)
         {
             var participant = await this.GetParticipantBasedOnRequest(context, this.ContainerRouteKey);
 
@@ -150,7 +153,7 @@ namespace UI_DSM.Server.Modules
                 };
             }
 
-            return await base.DeleteEntity(manager, entityId, context);
+            return await base.DeleteEntity(manager, entityId, searchService, context);
         }
 
         /// <summary>
@@ -159,11 +162,12 @@ namespace UI_DSM.Server.Modules
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Annotation" /></param>
         /// <param name="dto">The <see cref="AnnotationDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" />as result</returns>
         [Authorize]
-        public override async Task UpdateEntity(IEntityManager<Annotation> manager, Guid entityId, AnnotationDto dto, HttpContext context, int deepLevel = 0)
+        public override async Task UpdateEntity(IEntityManager<Annotation> manager, Guid entityId, AnnotationDto dto, ISearchService searchService, HttpContext context, int deepLevel = 0)
         {
             var participant = await this.GetParticipantBasedOnRequest(context, this.ContainerRouteKey);
 
@@ -181,7 +185,7 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            await base.UpdateEntity(manager, entityId, dto, context, deepLevel);
+            await base.UpdateEntity(manager, entityId, dto, searchService, context, deepLevel);
         }
 
         /// <summary>

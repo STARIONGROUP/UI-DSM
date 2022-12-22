@@ -27,6 +27,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
     using UI_DSM.Server.Managers.ReviewTaskManager;
     using UI_DSM.Server.Modules;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Server.Types;
     using UI_DSM.Server.Validator;
@@ -46,6 +47,7 @@ namespace UI_DSM.Server.Tests.Modules
         private Mock<IEntityManager<Review>> reviewManager;
         private Mock<IEntityManager<ReviewObjective>> reviewObjectiveManager;
         private Mock<IParticipantManager> participantManager;
+        private Mock<ISearchService> searchService;
         private RouteValueDictionary routeValues;
         private Guid projectId;
         private Guid reviewId;
@@ -63,6 +65,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.reviewManager = new Mock<IEntityManager<Review>>();
             this.reviewManager.As<IContainedEntityManager<Review>>();
             this.participantManager = new Mock<IParticipantManager>();
+            this.searchService = new Mock<ISearchService>();
 
             ModuleTestHelper.Setup<ReviewTaskModule, ReviewTaskDto>(new ReviewTaskDtoValidator(), out this.context,
                 out this.response, out this.request, out this.serviceProvider);
@@ -226,7 +229,7 @@ namespace UI_DSM.Server.Tests.Modules
                 Title = "Title"
             };
 
-            await this.module.CreateEntity(this.reviewTaskManager.Object, dto, this.context.Object);
+            await this.module.CreateEntity(this.reviewTaskManager.Object, dto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 405, Times.Once);
         }
 
@@ -248,12 +251,12 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
 
-            await this.module.DeleteEntity(this.reviewTaskManager.Object, reviewTask.Id, this.context.Object);
+            await this.module.DeleteEntity(this.reviewTaskManager.Object, reviewTask.Id, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(participant);
 
-            await this.module.DeleteEntity(this.reviewTaskManager.Object, reviewTask.Id, this.context.Object);
+            await this.module.DeleteEntity(this.reviewTaskManager.Object, reviewTask.Id, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 400, Times.Once);
 
             this.reviewObjectiveManager.As<IContainedEntityManager<ReviewObjective>>()
@@ -268,7 +271,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.reviewTaskManager.Setup(x => x.DeleteEntity(reviewTask))
                 .ReturnsAsync(EntityOperationResult<ReviewTask>.Success(null));
 
-            var deleteResponse = await this.module.DeleteEntity(this.reviewTaskManager.Object, reviewTask.Id, this.context.Object);
+            var deleteResponse = await this.module.DeleteEntity(this.reviewTaskManager.Object, reviewTask.Id, this.searchService.Object, this.context.Object);
             Assert.That(deleteResponse.IsRequestSuccessful, Is.True);
         }
 
@@ -296,7 +299,7 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
 
-            await this.module.UpdateEntity(this.reviewTaskManager.Object, reviewTask.Id, dto, this.context.Object);
+            await this.module.UpdateEntity(this.reviewTaskManager.Object, reviewTask.Id, dto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(participant);
@@ -313,7 +316,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.reviewTaskManager.Setup(x => x.UpdateEntity(reviewTask))
                 .ReturnsAsync(EntityOperationResult<ReviewTask>.Success(reviewTask));
 
-            await this.module.UpdateEntity(this.reviewTaskManager.Object, reviewTask.Id, dto, this.context.Object);
+            await this.module.UpdateEntity(this.reviewTaskManager.Object, reviewTask.Id, dto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 200, Times.Once);
         }
     }

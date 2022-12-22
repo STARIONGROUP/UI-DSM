@@ -22,6 +22,7 @@ namespace UI_DSM.Server.Modules
 
     using UI_DSM.Serializer.Json;
     using UI_DSM.Server.Managers;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -131,10 +132,11 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="dto">The <see cref="TEntityDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
-        public virtual async Task CreateEntity(IEntityManager<TEntity> manager, TEntityDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
+        public virtual async Task CreateEntity(IEntityManager<TEntity> manager, TEntityDto dto, ISearchService searchService, HttpContext context, [FromQuery] int deepLevel = 0)
         {
             var requestReponse = new EntityRequestResponseDto();
             var entity = this.ValidateEntityDtoAndCreateEntity(dto, context, requestReponse);
@@ -149,6 +151,11 @@ namespace UI_DSM.Server.Modules
             var identityResult = await manager.CreateEntity(entity);
             this.HandleOperationResult(requestReponse, context.Response, identityResult, 201, deepLevel);
             await context.Response.Negotiate(requestReponse);
+
+            if (identityResult.Succeeded)
+            {
+                await searchService.IndexData((TEntityDto)identityResult.Entity.ToDto());
+            }
         }
 
         /// <summary>
@@ -156,9 +163,10 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="TEntity" /> to delete</param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
-        public virtual async Task<RequestResponseDto> DeleteEntity(IEntityManager<TEntity> manager, Guid entityId, HttpContext context)
+        public virtual async Task<RequestResponseDto> DeleteEntity(IEntityManager<TEntity> manager, Guid entityId, ISearchService searchService, HttpContext context)
         {
             var entity = await manager.FindEntity(entityId);
             var requestResponse = new RequestResponseDto();
@@ -183,6 +191,7 @@ namespace UI_DSM.Server.Modules
                 context.Response.StatusCode = 500;
             }
 
+            await searchService.DeleteIndexedData(entity.ToDto());
             return requestResponse;
         }
 
@@ -192,10 +201,12 @@ namespace UI_DSM.Server.Modules
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="TEntity" /></param>
         /// <param name="dto">The <see cref="TEntityDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" />as result</returns>
-        public virtual async Task UpdateEntity(IEntityManager<TEntity> manager, Guid entityId, TEntityDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
+        public virtual async Task UpdateEntity(IEntityManager<TEntity> manager, Guid entityId, TEntityDto dto, ISearchService searchService, 
+            HttpContext context, [FromQuery] int deepLevel = 0)
         {
             var entity = await manager.FindEntity(entityId);
             var requestResponse = new EntityRequestResponseDto();
@@ -212,7 +223,7 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            await this.ValidateAndUpdateEntity(manager, entity, dto, context, requestResponse, deepLevel);
+            await this.ValidateAndUpdateEntity(manager, entity, dto, searchService, context, requestResponse, deepLevel);
         }
 
         /// <summary>
@@ -238,11 +249,13 @@ namespace UI_DSM.Server.Modules
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entity">The <see cref="TEntity" /></param>
         /// <param name="dto">The <see cref="TEntityDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="requestResponse">The <see cref="EntityRequestResponseDto" /></param>
         /// <param name="deepLevel">The deep level</param>
         /// <returns>A <see cref="Task" /></returns>
-        protected async Task ValidateAndUpdateEntity(IEntityManager<TEntity> manager, TEntity entity, TEntityDto dto, HttpContext context, EntityRequestResponseDto requestResponse, int deepLevel)
+        protected async Task ValidateAndUpdateEntity(IEntityManager<TEntity> manager, TEntity entity, TEntityDto dto, ISearchService searchService,
+            HttpContext context, EntityRequestResponseDto requestResponse, int deepLevel)
         {
             var validationResult = context.Request.Validate(dto);
 
@@ -256,9 +269,14 @@ namespace UI_DSM.Server.Modules
             }
 
             await manager.ResolveProperties(entity, dto);
-            var idendityResult = await manager.UpdateEntity(entity);
-            this.HandleOperationResult(requestResponse, context.Response, idendityResult, deepLevel: deepLevel);
+            var identityResult = await manager.UpdateEntity(entity);
+            this.HandleOperationResult(requestResponse, context.Response, identityResult, deepLevel: deepLevel);
             await context.Response.Negotiate(requestResponse);
+
+            if (identityResult.Succeeded)
+            {
+                await searchService.IndexData((TEntityDto)identityResult.Entity.ToDto());
+            }
         }
 
         /// <summary>
@@ -390,10 +408,11 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="deserializer">The <see cref="IJsonDeserializer" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">The deepLevel</param>
         /// <returns>A <see cref="Task" /></returns>
-        private Task ConvertEntityAndCreate(IEntityManager<TEntity> manager, IJsonDeserializer deserializer, HttpContext context, [FromQuery] int deepLevel = 0)
+        private Task ConvertEntityAndCreate(IEntityManager<TEntity> manager, IJsonDeserializer deserializer, ISearchService searchService, HttpContext context, [FromQuery] int deepLevel = 0)
         {
             var dto = this.DeserializeBodyRequest(deserializer, context);
 
@@ -403,7 +422,7 @@ namespace UI_DSM.Server.Modules
                 return Task.CompletedTask;
             }
 
-            return this.CreateEntity(manager, dto, context, deepLevel);
+            return this.CreateEntity(manager, dto, searchService, context, deepLevel);
         }
 
         /// <summary>
@@ -411,11 +430,13 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="deserializer">The <see cref="IJsonDeserializer" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="TEntity" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">The deepLevel</param>
         /// <returns>A <see cref="Task" /></returns>
-        private Task ConvertEntityAndUpdate(IEntityManager<TEntity> manager, IJsonDeserializer deserializer, Guid entityId, HttpContext context, [FromQuery] int deepLevel = 0)
+        private Task ConvertEntityAndUpdate(IEntityManager<TEntity> manager, IJsonDeserializer deserializer, ISearchService searchService,
+            Guid entityId, HttpContext context, [FromQuery] int deepLevel = 0)
         {
             var dto = this.DeserializeBodyRequest(deserializer, context);
 
@@ -425,7 +446,7 @@ namespace UI_DSM.Server.Modules
                 return Task.CompletedTask;
             }
 
-            return this.UpdateEntity(manager, entityId, dto, context, deepLevel);
+            return this.UpdateEntity(manager, entityId, dto, searchService, context, deepLevel);
         }
     }
 }

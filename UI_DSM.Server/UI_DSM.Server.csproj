@@ -27,4 +27,17 @@
     <ProjectReference Include="..\UI_DSM.Serializer.Json\UI_DSM.Serializer.Json.csproj" />
     <ProjectReference Include="..\UI_DSM.Shared\UI_DSM.Shared.csproj" />
   </ItemGroup>
+
+<ItemGroup>
+  <Reference Include="CometSearch.Common">
+    <HintPath>lib\CometSearch.Common.dll</HintPath>
+  </Reference>
+</ItemGroup>
+
+<ItemGroup>
+  <None Update="lib\CometSearch.Common.dll">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </None>
+</ItemGroup>
+
 </Project>

@@ -17,11 +17,14 @@
 
 namespace UI_DSM.Shared.DTO.Models
 {
+    using GP.SearchService.SDK.Definitions;
+
     using UI_DSM.Shared.Models;
 
     /// <summary>
     ///    The Data Transfer Object representing the <see cref="UserEntity" /> class.
     /// </summary>
+    [SearchDto(nameof(UserEntityDto))]
     public partial class UserEntityDto : EntityDto
     {
         /// <summary>

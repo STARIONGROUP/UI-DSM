@@ -29,6 +29,7 @@ namespace UI_DSM.Server.Modules
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.UserManager;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.DTO.UserManagement;
@@ -207,10 +208,11 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityDto">The <see cref="UserEntityDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task CreateEntity(IEntityManager<UserEntity> manager, UserEntityDto entityDto, HttpContext context, [FromQuery] int deepLevel = 0)
+        public override async Task CreateEntity(IEntityManager<UserEntity> manager, UserEntityDto entityDto, ISearchService searchService, HttpContext context, [FromQuery] int deepLevel = 0)
         {
             await Task.CompletedTask;
 
@@ -231,12 +233,13 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="UserEntity" /> to delete</param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
         [Authorize(Roles = "Administrator")]
-        public override Task<RequestResponseDto> DeleteEntity(IEntityManager<UserEntity> manager, Guid entityId, HttpContext context)
+        public override Task<RequestResponseDto> DeleteEntity(IEntityManager<UserEntity> manager, Guid entityId, ISearchService searchService, HttpContext context)
         {
-            return base.DeleteEntity(manager, entityId, context);
+            return base.DeleteEntity(manager, entityId, searchService, context);
         }
 
         /// <summary>

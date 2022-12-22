@@ -17,6 +17,7 @@ namespace UI_DSM.Server.Modules
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Server.Managers;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -80,11 +81,12 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="dto">The <see cref="ReplyDto" /></param>
+        /// <param name="searchService"></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public override async Task CreateEntity(IEntityManager<Reply> manager, ReplyDto dto, HttpContext context, int deepLevel = 0)
+        public override async Task CreateEntity(IEntityManager<Reply> manager, ReplyDto dto, ISearchService searchService, HttpContext context, int deepLevel = 0)
         {
             var participant = await this.GetParticipantBasedOnRequest(context, ProjectKey);
 
@@ -94,7 +96,7 @@ namespace UI_DSM.Server.Modules
             }
 
             dto.Author = participant.Id;
-            await base.CreateEntity(manager, dto, context, deepLevel);
+            await base.CreateEntity(manager, dto, searchService, context, deepLevel);
         }
 
         /// <summary>
@@ -102,10 +104,11 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Reply" /> to delete</param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
         [Authorize]
-        public override async Task<RequestResponseDto> DeleteEntity(IEntityManager<Reply> manager, Guid entityId, HttpContext context)
+        public override async Task<RequestResponseDto> DeleteEntity(IEntityManager<Reply> manager, Guid entityId, ISearchService searchService, HttpContext context)
         {
             var participant = await this.GetParticipantBasedOnRequest(context, ProjectKey);
 
@@ -126,7 +129,7 @@ namespace UI_DSM.Server.Modules
                 };
             }
 
-            return await base.DeleteEntity(manager, entityId, context);
+            return await base.DeleteEntity(manager, entityId, searchService, context);
         }
 
         /// <summary>
@@ -135,11 +138,13 @@ namespace UI_DSM.Server.Modules
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Reply" /></param>
         /// <param name="dto">The <see cref="ReplyDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" />as result</returns>
         [Authorize]
-        public override async Task UpdateEntity(IEntityManager<Reply> manager, Guid entityId, ReplyDto dto, HttpContext context, int deepLevel = 0)
+        public override async Task UpdateEntity(IEntityManager<Reply> manager, Guid entityId, ReplyDto dto, ISearchService searchService,
+            HttpContext context, int deepLevel = 0)
         {
             var participant = await this.GetParticipantBasedOnRequest(context, ProjectKey);
 
@@ -156,7 +161,7 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            await base.UpdateEntity(manager, entityId, dto, context, deepLevel);
+            await base.UpdateEntity(manager, entityId, dto, searchService, context, deepLevel);
         }
 
         /// <summary>

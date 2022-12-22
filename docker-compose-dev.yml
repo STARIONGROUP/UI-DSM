@@ -15,6 +15,50 @@ services:
     networks:
       - uidsm_net
     restart: unless-stopped
+  search:
+    container_name: uidsm_search
+    image: gitlab.esa.int:4567/rhea-generic-platform/rhea-generic-platform/gp-search-service
+    environment:
+      - Meilisearch__host=${MEILI_HOST:-http://uidsm_meilisearch:7700}
+      - Meilisearch__key=${MEILI_MASTER_KEY:-masterkey}
+      - MessageBroker__host=uidsm_rabbitmq
+      - MessageBroker__port=5672
+    volumes:
+      - './searchlibrary:/app/Plugins'
+    networks:
+      - uidsm_net
+    ports:
+      - 2222:80
+    restart: unless-stopped
+  meilisearch:
+    container_name: uidsm_meilisearch
+    image: "getmeili/meilisearch:latest"
+    environment:
+      - MEILI_NO_ANALYTICS=false
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterkey}
+      - MEILI_HTTP_PAYLOAD_SIZE_LIMIT=209715200
+    networks:
+      - uidsm_net
+    ports:
+      - 7700:7700
+    expose:
+      - 7700
+    volumes:
+      - 'meilisearch:/meili_data'
+    restart: always
+  rabbitmq:
+   container_name: uidsm_rabbitmq
+   image: "rabbitmq:3-management"
+   restart: unless-stopped
+   networks:
+      - uidsm_net
+   ports:
+      - 15672:15672
+      - 5672:5672
+   expose:
+      - 5672
+   volumes:
+      - 'rabbitmq_data:/data'
 
 networks:
   uidsm_net:
@@ -22,3 +66,6 @@ networks:
 
 volumes:
     postgres:
+    meilisearch:
+    searchlibrary:
+    rabbitmq_data:
