@@ -17,14 +17,20 @@
 
 .app-key-value__key {
     color: var(--colors-gray-500);
+    white-space: nowrap;
 }
 
 .app-key-value__value {
     color: var(--colors-gray-700);
     font-weight: 500;
+    text-align: right;
 }
 
 .more {
     color: var(--colors-primary-500);
-    text-decoration: underline;
+}
+
+.parameter-values-visualizer {
+    display: flex;
+    justify-content: space-between;
 }

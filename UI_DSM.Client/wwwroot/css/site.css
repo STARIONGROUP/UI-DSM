@@ -324,3 +324,17 @@ div.invisible {
 .view-settings-panel .toggle-label {
   font-weight: 600;
 }
+
+.dxbl-grid .dxbl-grid-table .dxbl-grid-focused-row:not(.dxbl-grid-touch-selection):not(.dxbl-grid-touch-selection-edge)>td:not(.dxbl-grid-empty-cell):not(.dxbl-grid-indent-cell) {
+  color: var(--colors-primary-500);
+}
+
+.dxbl-grid .dxbl-grid-table .dxbl-grid-focused-row:not(.dxbl-grid-touch-selection):not(.dxbl-grid-touch-selection-edge)>td:not(.dxbl-grid-empty-cell):not(.dxbl-grid-indent-cell) .dxbl-btn.dxbl-btn-link, .dxbl-grid .dxbl-grid-table .dxbl-grid-focused-row:not(.dxbl-grid-touch-selection):not(.dxbl-grid-touch-selection-edge)>td:not(.dxbl-grid-empty-cell):not(.dxbl-grid-indent-cell) .dxbl-btn.dxbl-btn-outline-link, .dxbl-grid .dxbl-grid-table .dxbl-grid-focused-row:not(.dxbl-grid-touch-selection):not(.dxbl-grid-touch-selection-edge)>td:not(.dxbl-grid-empty-cell):not(.dxbl-grid-indent-cell) .dxbl-btn.dxbl-btn-text-link {
+  --dxbl-btn-color: var(--colors-primary-700);
+  --dxbl-btn-hover-color: var(--colors-primary-700);
+}
+
+.dxbl-grid .dxbl-grid-table .dxbl-grid-focused-row.dxbl-grid-selected-row:not(.dxbl-grid-touch-selection):not(.dxbl-grid-touch-selection-edge)>td:not(.dxbl-grid-empty-cell):not(.dxbl-grid-indent-cell) {
+  color: var(--colors-primary-700);
+  background-color: var(--colors-primary-25);
+}

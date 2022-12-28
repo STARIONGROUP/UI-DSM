@@ -39,6 +39,15 @@
   font-size: var(--text-base);
 }
 
+.app-accordion__button--medium {
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--text-base);
+  background: var(--colors-primary-25);
+  border-top: 1px solid var(--colors-primary-100);
+  font-weight: 500;
+  color: var(--colors-primary-700);
+}
+
 .app-accordion__button--tiny {
   color: var(--colors-primary-700);
   padding: var(--spacing-2) var(--spacing-4);
