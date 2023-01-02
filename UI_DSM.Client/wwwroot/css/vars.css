@@ -10,6 +10,7 @@
     --colors-gray-700: #3f4046;
     --colors-gray-800: #252529;
     --colors-gray-900: #0a0a0b;
+    --colors-primary-25: #f6f7fd;
     --colors-primary-50: #e5e8fa;
     --colors-primary-100: #cfd5f7;
     --colors-primary-200: #a4afef;
@@ -130,5 +131,7 @@
     --port-inout-color: #4499FF;
     --central-node-color: #008bd2;
     --selected-node-color: #1155FF;
-    --comment-color:green;
+    --comment-color: green;
+    --dxbl-grid-focus-bg: var(--colors-primary-25);
+    --dxbl-grid-focus-color: var(--colors-primary-500);
 }

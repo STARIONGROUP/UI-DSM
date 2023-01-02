@@ -10,3 +10,8 @@
   gap: var(--spacing-2);
   line-height: 130%;
 }
+
+.app-key-values__list-item button {
+  text-align: left;
+  color: var(--colors-primary-500);
+}

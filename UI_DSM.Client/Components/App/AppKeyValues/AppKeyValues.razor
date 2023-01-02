@@ -15,7 +15,18 @@
 		<ul class="app-key-values__list">
 			@foreach (var item in this.Items)
 			{
-				<li class="app-key-values__list-item" @ondblclick="() => this.OnDoubleClick(item)">@item</li>
+				<li class="app-key-values__list-item" >
+					@if(this.OnItemDoubleClick.HasDelegate)
+					{
+						<button @ondblclick="() => this.OnDoubleClick(item)">
+							@item
+						</button>
+					}
+					else
+					{
+						@item
+					}
+				</li>
 			}
 		</ul>
 	</AppAccordion>
