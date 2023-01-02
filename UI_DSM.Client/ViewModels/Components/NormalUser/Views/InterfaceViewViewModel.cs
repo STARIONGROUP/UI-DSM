@@ -57,11 +57,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         private List<ProductRowViewModel> allProducts;
 
         /// <summary>
-        ///     The <see cref="Guid" /> of the <see cref="ReviewTask" />
-        /// </summary>
-        private Guid ReviewTaskId;
-
-        /// <summary>
         ///     A collection of filtered <see cref="ProductRowViewModel" />
         /// </summary>
         private List<ProductRowViewModel> filteredProducts;
@@ -254,7 +249,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
             this.filteredProducts = new List<ProductRowViewModel>(this.allProducts.OrderBy(x => x.Thing.Name));
             this.Interfaces = new List<InterfaceRowViewModel>(this.allInterfaces.OrderBy(x => x.Id));
-            this.ReviewTaskId = reviewTaskId;
             this.ApplyVisibility();
             this.InitializesFilter();
 
