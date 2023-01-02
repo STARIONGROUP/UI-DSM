@@ -59,7 +59,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The <see cref="Guid" /> of the <see cref="ReviewTask" />
         /// </summary>
-        public Guid ReviewTaskId;
+        private Guid ReviewTaskId;
 
         /// <summary>
         ///     A collection of filtered <see cref="ProductRowViewModel" />
