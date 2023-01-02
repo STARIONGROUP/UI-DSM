@@ -58,6 +58,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         protected Guid ReviewId { get; private set; }
 
         /// <summary>
+        ///     The <see cref="ReviewTask" /> id
+        /// </summary>
+        protected Guid ReviewTaskId { get; private set; }
+
+        /// <summary>
         ///     A collection of columns name that can be visible by default at start
         /// </summary>
         public List<string> AdditionnalColumnsVisibleAtStart { get; protected set; }
@@ -96,6 +101,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.Things = things;
             this.ProjectId = projectId;
             this.ReviewId = reviewId;
+            this.ReviewTaskId = reviewTaskId;
             this.Prefilters = prefilters;
             this.AdditionnalColumnsVisibleAtStart = additionnalColumnsVisibleAtStart;
             return Task.CompletedTask;

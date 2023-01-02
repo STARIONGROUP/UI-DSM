@@ -49,6 +49,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.Diagram.MouseUp -= this.Diagram_MouseUp;
             this.Diagram.MouseDoubleClick -= this.Diagram_MouseDoubleClick;
             this.ViewModel.OnCentralNodeChanged -= this.RefreshDiagram;
+            this.disposables.ForEach(x => x.Dispose());
         }
 
         /// <summary>

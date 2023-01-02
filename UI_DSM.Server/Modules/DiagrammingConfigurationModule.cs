@@ -19,10 +19,7 @@ namespace UI_DSM.Server.Modules
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Components;
-    using UI_DSM.Client.Services.Administration.ParticipantService;
-    using UI_DSM.Server.Context;
     using UI_DSM.Server.Managers.ParticipantManager;
-    using UI_DSM.Server.Services.AboutService;
     using UI_DSM.Server.Services.FileService;
     using UI_DSM.Shared.DTO.Common;
 
@@ -62,10 +59,14 @@ namespace UI_DSM.Server.Modules
         /// <summary>
         ///     Saves the product diagram layout
         /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" />
+        /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" />
+        /// <param name="configurationName">The name of the configuration
+        /// <param name="dtos">The <see cref="List{DiagramLayoutInformationDto}" /> to save
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public async Task SaveLayoutConfiguration(Guid projectId, Guid reviewTaskId, String configurationName, List<DiagramLayoutInformationDto> dtos, HttpContext context)
+        public async Task SaveLayoutConfiguration(Guid projectId, Guid reviewTaskId, string configurationName, List<DiagramLayoutInformationDto> dtos, HttpContext context)
         {
             var participantManager = context.RequestServices.GetService<IParticipantManager>();
 
