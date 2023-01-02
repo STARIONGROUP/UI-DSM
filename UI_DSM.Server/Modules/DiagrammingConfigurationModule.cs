@@ -80,15 +80,14 @@ namespace UI_DSM.Server.Modules
             {
                 return;
             }
-
-            var path = Path.Combine(this.fileService.GetTempFolder(), reviewTaskId.ToString());
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
             
             var json = JsonSerializer.Serialize(dtos);
-            File.WriteAllText(Path.Combine(path, configurationName+".json"), json);
+            var fileName = configurationName + ".json";
+
+            File.WriteAllText(Path.Combine(this.fileService.GetTempFolder(), fileName), json);
+            var configurationPath = Path.Combine("Diagram configuration", reviewTaskId.ToString());
+            var pathOfSavedConfig = this.fileService.MoveFile(fileName, configurationPath);
+            await context.Response.Negotiate(pathOfSavedConfig);
         }
     }
 }
