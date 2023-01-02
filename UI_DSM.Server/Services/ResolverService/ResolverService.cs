@@ -265,10 +265,6 @@ namespace UI_DSM.Server.Services.ResolverService
                     var searchedParticipant = await this.participantManager.GetSearchResult(commonBaseSearchDto.Id);
                     return IsContainedIntoProject(managedProjects, searchedParticipant) ? searchedParticipant : null;
 
-                case nameof(ModelDto):
-                    var searchedModel = await this.modelManager.GetSearchResult(commonBaseSearchDto.Id);
-                    return IsContainedIntoProject(projects, searchedModel) ? searchedModel : null;
-
                 case nameof(ReviewCategoryDto):
                     if (loggedUser.IsAdmin)
                     {
@@ -276,6 +272,10 @@ namespace UI_DSM.Server.Services.ResolverService
                     }
 
                     return null;
+
+                case nameof(ModelDto):
+                    var searchedModel = await this.modelManager.GetSearchResult(commonBaseSearchDto.Id);
+                    return IsContainedIntoProject(projects, searchedModel) ? searchedModel : null;
 
                 case nameof(ReviewDto):
                     var searchedReview = await this.reviewManager.GetSearchResult(commonBaseSearchDto.Id);

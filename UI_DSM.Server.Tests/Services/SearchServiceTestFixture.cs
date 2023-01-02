@@ -15,7 +15,9 @@ namespace UI_DSM.Server.Tests.Services
 {
     using System.Net;
 
+    using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
+    using CDP4Common.SiteDirectoryData;
 
     using NUnit.Framework;
 
@@ -23,7 +25,7 @@ namespace UI_DSM.Server.Tests.Services
 
     using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Shared.DTO.Models;
-    using UI_DSM.Shared.Models;
+    using UI_DSM.Shared.Extensions;
 
     [TestFixture]
     public class SearchServiceTestFixture
@@ -108,13 +110,34 @@ namespace UI_DSM.Server.Tests.Services
         }
 
         [Test]
-        public async Task VerifyIndexIteration()
+        public void VerifyIndexIteration()
         {
             var iteration = new Iteration();
 
+            var parameterType = new TextParameterType()
+            {
+                Iid = Guid.NewGuid(),
+                Name = Client.Extensions.ThingExtension.ReviewExternalContentName
+            };
+
             var elementDefinition = new ElementDefinition()
             {
-                Iid = Guid.NewGuid()
+                Iid = Guid.NewGuid(),
+                Parameter = 
+                { 
+                    new Parameter()
+                    {
+                        Iid = Guid.NewGuid(),
+                        ParameterType = parameterType
+                    }
+                },
+                HyperLink = 
+                {
+                    new HyperLink()
+                    {
+                        Iid= Guid.NewGuid()
+                    }
+                }
             };
 
             var usage = new ElementUsage()
@@ -122,6 +145,71 @@ namespace UI_DSM.Server.Tests.Services
                 Iid = Guid.NewGuid(),
                 ElementDefinition = elementDefinition
             };
+
+            var usageContainer = new ElementDefinition()
+            {
+                Iid = Guid.NewGuid(),
+                ContainedElement = { usage },
+                HyperLink =
+                {
+                    new HyperLink()
+                    {
+                        Iid = Guid.NewGuid()
+                    }
+                }
+            };
+
+            iteration.Element.Add(usageContainer);
+            iteration.Element.Add(elementDefinition);
+
+            var requirement = new Requirement()
+            {
+                Iid = Guid.NewGuid(),
+                HyperLink =
+                {
+                    new HyperLink()
+                    {
+                        Iid = Guid.NewGuid()
+                    }
+                }
+            };
+
+            var otherRequirement = new Requirement()
+            {
+                Iid = Guid.NewGuid(),
+                HyperLink =
+                {
+                    new HyperLink()
+                    {
+                        Iid = Guid.NewGuid()
+                    }
+                },
+                ParameterValue =
+                {
+                    new SimpleParameterValue()
+                    {
+                        ParameterType = parameterType
+                    }
+                }
+            };
+
+            var specification = new RequirementsSpecification()
+            {
+                Iid = Guid.NewGuid(),
+                Requirement = { otherRequirement, requirement }
+            };
+
+            iteration.RequirementsSpecification.Add(specification);
+            
+            var relationShip = new BinaryRelationship()
+            {
+                Iid = Guid.NewGuid(),
+                Source = requirement,
+                Target = usage
+            };
+
+            iteration.Relationship.Add(relationShip);
+            Assert.That(async () => await this.service.IndexIteration(iteration.GetContainedAndReferencedThings()), Throws.Nothing);
         }
     }
 }
