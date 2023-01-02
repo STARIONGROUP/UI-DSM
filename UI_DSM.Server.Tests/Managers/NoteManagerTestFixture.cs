@@ -224,5 +224,28 @@ namespace UI_DSM.Server.Tests.Managers
                 Assert.That(note.Author, Is.Not.Null);
             });
         }
+
+        [Test]
+        public async Task VerifyGetSearchResult()
+        {
+            var note = new Note(Guid.NewGuid())
+            {
+                EntityContainer = new Project(Guid.NewGuid())
+            };
+
+            var result = await this.manager.GetSearchResult(note.Id);
+            Assert.That(result, Is.Null);
+
+            this.noteDbSet.UpdateDbSetCollection(new List<Note> { note });
+            result = await this.manager.GetSearchResult(note.Id);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var result = await this.manager.GetExtraEntitiesToUnindex(Guid.NewGuid());
+            Assert.That(result, Is.Empty);
+        }
     }
 }

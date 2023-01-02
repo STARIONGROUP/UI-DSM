@@ -297,6 +297,8 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         {
             var reviewObjective = await this.EntityDbSet.Where(x => x.Id == entityId)
                 .Include(x => x.Annotations)
+                .Include(x => x.Annotations.OfType<Comment>())
+                .ThenInclude(x => x.Replies)
                 .Include(x => x.ReviewTasks)
                 .FirstOrDefaultAsync();
 
@@ -306,6 +308,7 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
             }
 
             var entities = new List<Entity>(reviewObjective.Annotations);
+            entities.AddRange(reviewObjective.Annotations.OfType<Comment>().SelectMany(x => x.Replies));
             entities.AddRange(reviewObjective.ReviewTasks);
             return entities;
         }

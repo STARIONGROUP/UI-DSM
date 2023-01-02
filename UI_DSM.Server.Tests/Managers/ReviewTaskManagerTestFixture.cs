@@ -217,11 +217,13 @@ namespace UI_DSM.Server.Tests.Managers
         {
             var participant = new Participant(Guid.NewGuid());
             var assignedParticipant = new Participant(Guid.NewGuid());  
+            
             List<Guid> participants = new()
             {
                 participant.Id,
                 assignedParticipant.Id
             };
+            
             List<Guid> assignedParticipants = new()
             {
                 assignedParticipant.Id
@@ -244,6 +246,35 @@ namespace UI_DSM.Server.Tests.Managers
             {
                 Assert.That(reviewTask.IsAssignedTo, Does.Contain(assignedParticipant));
             });
+        }
+
+        [Test]
+        public async Task VerifyGetSearchResult()
+        {
+            var reviewTask = new ReviewTask(Guid.NewGuid())
+            {
+                EntityContainer = new ReviewObjective(Guid.NewGuid())
+                {
+                     EntityContainer = new Review(Guid.NewGuid())
+                     {
+                         EntityContainer = new Project(Guid.NewGuid())
+                     }
+                }
+            };
+
+            var result = await this.manager.GetSearchResult(reviewTask.Id);
+            Assert.That(result, Is.Null);
+
+            this.reviewTaskDbSet.UpdateDbSetCollection(new List<ReviewTask> { reviewTask });
+            result = await this.manager.GetSearchResult(reviewTask.Id);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var result = await this.manager.GetExtraEntitiesToUnindex(Guid.NewGuid());
+            Assert.That(result, Is.Empty);
         }
     }
 }

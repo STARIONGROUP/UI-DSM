@@ -137,5 +137,20 @@ namespace UI_DSM.Server.Tests.Managers
                 Assert.That(this.manager.ResolveProperties(null, null).IsCompleted, Is.True);
             });
         }
+
+        [Test]
+        public void VerifyGetSearchResult()
+        {
+            Assert.That(async () => await this.manager.GetSearchResult(Guid.NewGuid()), Throws.Nothing);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var id = Guid.NewGuid();
+            await this.manager.GetExtraEntitiesToUnindex(id);
+            this.reviewItemManager.Verify(x => x.GetExtraEntitiesToUnindex(id), Times.Once);
+            this.reviewObjectiveManager.Verify(x => x.GetExtraEntitiesToUnindex(id), Times.Once);
+        }
     }
 }

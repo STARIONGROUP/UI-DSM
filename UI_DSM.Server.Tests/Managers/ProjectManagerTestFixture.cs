@@ -333,5 +333,54 @@ namespace UI_DSM.Server.Tests.Managers
 
             return entities;
         }
+
+        [Test]
+        public async Task VerifyGetSearchResult()
+        {
+            var project = new Project(Guid.NewGuid());
+
+            var result = await this.manager.GetSearchResult(project.Id);
+            Assert.That(result, Is.Null);
+
+            this.projectDbSet.UpdateDbSetCollection(new List<Project> { project });
+            result = await this.manager.GetSearchResult(project.Id);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var project = new Project(Guid.NewGuid())
+            {
+                Reviews =
+                {
+                    new Review()
+                    {
+                        ReviewObjectives =
+                        {
+                            new ReviewObjective()
+                            {
+                                ReviewTasks = { new ReviewTask() }
+                            }
+                        },
+                        ReviewItems = { new ReviewItem() }
+                    }
+                },
+                Annotations =
+                {
+                    new Comment()
+                    {
+                        Replies = { new Reply() }
+                    }
+                }
+            };
+
+            var result = await this.manager.GetExtraEntitiesToUnindex(project.Id);
+            Assert.That(result, Is.Empty);
+
+            this.projectDbSet.UpdateDbSetCollection(new List<Project>{project});
+            result = await this.manager.GetExtraEntitiesToUnindex(project.Id);
+            Assert.That(result.ToList(), Has.Count.EqualTo(6));
+        }
     }
 }

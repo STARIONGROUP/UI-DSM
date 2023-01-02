@@ -152,6 +152,12 @@ namespace UI_DSM.Server.Managers.ReviewManager
                 .ThenInclude(x => x.ReviewTasks)
                 .Include(x => x.ReviewObjectives)
                 .ThenInclude(x => x.Annotations)
+                .Include(x => x.ReviewObjectives)
+                .ThenInclude(x => x.Annotations.OfType<Comment>())
+                .ThenInclude(x => x.Replies)
+                .Include(x => x.ReviewItems)
+                .ThenInclude(x => x.Annotations.OfType<Comment>())
+                .ThenInclude(x => x.Replies)
                 .FirstOrDefaultAsync();
 
             if (review == null)
@@ -161,8 +167,10 @@ namespace UI_DSM.Server.Managers.ReviewManager
 
             var entities = new List<Entity>(review.ReviewItems);
             entities.AddRange(review.ReviewItems.SelectMany(x => x.Annotations));
+            entities.AddRange(review.ReviewItems.SelectMany(x => x.Annotations.OfType<Comment>()).SelectMany(x => x.Replies));
             entities.AddRange(review.ReviewObjectives);
             entities.AddRange(review.ReviewObjectives.SelectMany(x => x.Annotations));
+            entities.AddRange(review.ReviewObjectives.SelectMany(x => x.Annotations.OfType<Comment>()).SelectMany(x => x.Replies));
             entities.AddRange(review.ReviewObjectives.SelectMany(x => x.ReviewTasks));
             return entities;
         }

@@ -294,5 +294,37 @@ namespace UI_DSM.Server.Tests.Managers
             var retrievedComments = await this.manager.GetCommentsOfAnnotatableItem(project1.Id, this.annotatableItems[0].Id);
             Assert.That(retrievedComments.OfType<Comment>().ToList(), Has.Count.EqualTo(1));
         }
+
+        [Test]
+        public async Task VerifyGetSearchResult()
+        {
+            var comment = new Comment(Guid.NewGuid())
+            {
+                EntityContainer = new Project(Guid.NewGuid())
+            };
+
+            var result = await this.manager.GetSearchResult(comment.Id);
+            Assert.That(result, Is.Null);
+            
+            this.commentDbSet.UpdateDbSetCollection(new List<Comment>{comment});
+            result = await this.manager.GetSearchResult(comment.Id);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var comment = new Comment(Guid.NewGuid())
+            {
+                Replies = { new Reply(Guid.NewGuid()) }
+            };
+
+            var result = await this.manager.GetExtraEntitiesToUnindex(comment.Id);
+            Assert.That(result, Is.Empty);
+
+            this.commentDbSet.UpdateDbSetCollection(new List<Comment> { comment });
+            result = await this.manager.GetExtraEntitiesToUnindex(comment.Id);
+            Assert.That(result, Is.Not.Empty);
+        }
     }
 }

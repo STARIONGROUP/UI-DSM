@@ -188,5 +188,31 @@ namespace UI_DSM.Server.Tests.Managers
 
                 Assert.That(reply.Author, Is.Not.Null);
         }
+
+        [Test]
+        public async Task VerifyGetSearchResult()
+        {
+            var reply = new Reply(Guid.NewGuid())
+            {
+                EntityContainer = new Comment(Guid.NewGuid())
+                {
+                    EntityContainer = new Project(Guid.NewGuid())
+                }
+            };
+
+            var result = await this.manager.GetSearchResult(reply.Id);
+            Assert.That(result, Is.Null);
+
+            this.replyDbSet.UpdateDbSetCollection(new List<Reply> { reply });
+            result = await this.manager.GetSearchResult(reply.Id);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var result = await this.manager.GetExtraEntitiesToUnindex(Guid.NewGuid());
+            Assert.That(result, Is.Empty);
+        }
     }
 }

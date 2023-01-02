@@ -152,5 +152,25 @@ namespace UI_DSM.Server.Tests.Managers
             var creationResult = this.manager.DeleteEntity(reviewCategory).Result;
             Assert.That(creationResult.Succeeded, Is.False);
         }
+
+        [Test]
+        public async Task VerifyGetSearchResult()
+        {
+            var reviewCategory = new ReviewCategory(Guid.NewGuid());
+
+            var result = await this.manager.GetSearchResult(reviewCategory.Id);
+            Assert.That(result, Is.Null);
+
+            this.reviewCategoryDbSet.UpdateDbSetCollection(new List<ReviewCategory> { reviewCategory });
+            result = await this.manager.GetSearchResult(reviewCategory.Id);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var result = await this.manager.GetExtraEntitiesToUnindex(Guid.NewGuid());
+            Assert.That(result, Is.Empty);
+        }
     }
 }

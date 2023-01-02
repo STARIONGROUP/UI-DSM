@@ -155,5 +155,31 @@ namespace UI_DSM.Server.Tests.Managers
             var result = await this.manager.LinkAnnotationToItems(review, annotation, thingIds);
             Assert.That(result.Succeeded, Is.False);
         }
+
+        [Test]
+        public async Task VerifyGetSearchResult()
+        {
+            var reviewItem = new ReviewItem(Guid.NewGuid())
+            {
+                EntityContainer = new Review(Guid.NewGuid())
+                {
+                    EntityContainer = new Project(Guid.NewGuid())
+                }
+            };
+
+            var result = await this.manager.GetSearchResult(reviewItem.Id);
+            Assert.That(result, Is.Null);
+
+            this.reviewItemDbSet.UpdateDbSetCollection(new List<ReviewItem> { reviewItem });
+            result = await this.manager.GetSearchResult(reviewItem.Id);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var result = await this.manager.GetExtraEntitiesToUnindex(Guid.NewGuid());
+            Assert.That(result, Is.Empty);
+        }
     }
 }

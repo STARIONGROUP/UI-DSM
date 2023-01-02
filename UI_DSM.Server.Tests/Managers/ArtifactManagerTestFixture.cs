@@ -159,6 +159,20 @@ namespace UI_DSM.Server.Tests.Managers
 
             this.modelManager.Verify(x => x.ResolveProperties(artifact, dto), Times.Once);
         }
+
+        [Test]
+        public void VerifyGetSearchResult()
+        {
+            Assert.That(async () => await this.manager.GetSearchResult(Guid.NewGuid()), Throws.Nothing);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var id = Guid.NewGuid();
+            await this.manager.GetExtraEntitiesToUnindex(id);
+            this.modelManager.Verify(x => x.GetExtraEntitiesToUnindex(id), Times.Once);
+        }
     }
 
     [ExcludeFromCodeCoverage]
