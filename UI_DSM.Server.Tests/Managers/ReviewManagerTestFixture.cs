@@ -308,5 +308,62 @@ namespace UI_DSM.Server.Tests.Managers
             return entities;
         }
 
+        [Test]
+        public async Task VerifyGetSearchResult()
+        {
+            var review = new Review(Guid.NewGuid())
+            {
+                EntityContainer = new Project(Guid.NewGuid())
+            };
+
+            var result = await this.manager.GetSearchResult(review.Id);
+            Assert.That(result, Is.Null);
+
+            this.reviewDbSet.UpdateDbSetCollection(new List<Review> { review });
+            result = await this.manager.GetSearchResult(review.Id);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var review = new Review(Guid.NewGuid())
+            {
+                ReviewItems =
+                {
+                    new ReviewItem()
+                    {
+                        Annotations =
+                        {
+                            new Comment
+                            {
+                                Replies = { new Reply() }
+                            }
+                        }
+                    }
+                },
+                ReviewObjectives =
+                {
+                    new ReviewObjective()
+                    {
+                        ReviewTasks = { new ReviewTask() },
+                        Annotations =
+                        {
+                            new Comment()
+                            {
+                                Replies = { new Reply()}
+                            }
+                        }
+                    }
+                }
+            };
+
+            var result = await this.manager.GetExtraEntitiesToUnindex(review.Id);
+            Assert.That(result, Is.Empty);
+
+            this.reviewDbSet.UpdateDbSetCollection(new List<Review>{review});
+            result = await this.manager.GetExtraEntitiesToUnindex(review.Id);
+            Assert.That(result.ToList(), Has.Count.EqualTo(7));
+        }
     }
 }

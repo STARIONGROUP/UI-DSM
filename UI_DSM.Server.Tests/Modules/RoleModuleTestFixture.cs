@@ -21,6 +21,7 @@ namespace UI_DSM.Server.Tests.Modules
 
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Modules;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Server.Types;
     using UI_DSM.Server.Validator;
@@ -36,6 +37,7 @@ namespace UI_DSM.Server.Tests.Modules
         private List<Role> roles;
         private Mock<HttpContext> httpContext;
         private Mock<HttpResponse> httpResponse;
+        private Mock<ISearchService> searchService;
 
         [SetUp]
         public void Setup()
@@ -52,6 +54,7 @@ namespace UI_DSM.Server.Tests.Modules
                 }
             };
 
+            this.searchService = new Mock<ISearchService>();
             this.roleManager = new Mock<IEntityManager<Role>>();
             this.roleManager.Setup(x => x.GetEntities(0)).ReturnsAsync(this.roles);
 
@@ -82,12 +85,12 @@ namespace UI_DSM.Server.Tests.Modules
         {
             var projectDto = new RoleDto();
 
-            await this.module.CreateEntity(this.roleManager.Object, projectDto, this.httpContext.Object);
+            await this.module.CreateEntity(this.roleManager.Object, projectDto, this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Once);
             projectDto.RoleName = "Role";
             projectDto.Id = Guid.NewGuid();
 
-            await this.module.CreateEntity(this.roleManager.Object, projectDto, this.httpContext.Object);
+            await this.module.CreateEntity(this.roleManager.Object, projectDto, this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Exactly(2));
 
             projectDto.Id = Guid.Empty;
@@ -95,7 +98,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.roleManager.Setup(x => x.CreateEntity(It.IsAny<Role>()))
                 .ReturnsAsync(EntityOperationResult<Role>.Failed());
 
-            await this.module.CreateEntity(this.roleManager.Object, projectDto, this.httpContext.Object);
+            await this.module.CreateEntity(this.roleManager.Object, projectDto, this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
 
             this.roleManager.Setup(x => x.CreateEntity(It.IsAny<Role>()))
@@ -104,7 +107,7 @@ namespace UI_DSM.Server.Tests.Modules
                     RoleName = projectDto.RoleName
                 }));
 
-            await this.module.CreateEntity(this.roleManager.Object, projectDto, this.httpContext.Object);
+            await this.module.CreateEntity(this.roleManager.Object, projectDto, this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 201, Times.Once);
         }
 
@@ -114,7 +117,7 @@ namespace UI_DSM.Server.Tests.Modules
             var guid = Guid.NewGuid();
             this.roleManager.Setup(x => x.FindEntity(guid)).ReturnsAsync((Role)null);
 
-            var response = await this.module.DeleteEntity(this.roleManager.Object, guid, this.httpContext.Object);
+            var response = await this.module.DeleteEntity(this.roleManager.Object, guid, this.searchService.Object, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 404, Times.Once);
 
@@ -125,12 +128,12 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.roleManager.Setup(x => x.FindEntity(guid)).ReturnsAsync(role);
             this.roleManager.Setup(x => x.DeleteEntity(role)).ReturnsAsync(EntityOperationResult<Role>.Failed());
-            response = await this.module.DeleteEntity(this.roleManager.Object, guid, this.httpContext.Object);
+            response = await this.module.DeleteEntity(this.roleManager.Object, guid, this.searchService.Object, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
 
             this.roleManager.Setup(x => x.DeleteEntity(role)).ReturnsAsync(EntityOperationResult<Role>.Success(role));
-            response = await this.module.DeleteEntity(this.roleManager.Object, guid, this.httpContext.Object);
+            response = await this.module.DeleteEntity(this.roleManager.Object, guid, this.searchService.Object, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.True);
         }
 
@@ -140,21 +143,21 @@ namespace UI_DSM.Server.Tests.Modules
             var role = new Role(Guid.NewGuid());
 
             this.roleManager.Setup(x => x.FindEntity(role.Id)).ReturnsAsync((Role)null);
-            await this.module.UpdateEntity(this.roleManager.Object, role.Id, (RoleDto)role.ToDto(), this.httpContext.Object);
+            await this.module.UpdateEntity(this.roleManager.Object, role.Id, (RoleDto)role.ToDto(), this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 404, Times.Once);
 
             this.roleManager.Setup(x => x.FindEntity(role.Id)).ReturnsAsync(role);
-            await this.module.UpdateEntity(this.roleManager.Object, role.Id, (RoleDto)role.ToDto(), this.httpContext.Object);
+            await this.module.UpdateEntity(this.roleManager.Object, role.Id, (RoleDto)role.ToDto(), this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Once);
 
             role.RoleName = "Role";
             this.roleManager.Setup(x => x.UpdateEntity(It.IsAny<Role>())).ReturnsAsync(EntityOperationResult<Role>.Failed());
 
-            await this.module.UpdateEntity(this.roleManager.Object, role.Id, (RoleDto)role.ToDto(), this.httpContext.Object);
+            await this.module.UpdateEntity(this.roleManager.Object, role.Id, (RoleDto)role.ToDto(), this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
 
             this.roleManager.Setup(x => x.UpdateEntity(It.IsAny<Role>())).ReturnsAsync(EntityOperationResult<Role>.Success(role));
-            await this.module.UpdateEntity(this.roleManager.Object, role.Id, (RoleDto)role.ToDto(), this.httpContext.Object);
+            await this.module.UpdateEntity(this.roleManager.Object, role.Id, (RoleDto)role.ToDto(), this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 200, Times.Once);
         }
     }

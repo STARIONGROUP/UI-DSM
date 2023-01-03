@@ -21,6 +21,7 @@ namespace UI_DSM.Server.Tests.Modules
 
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Modules;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Server.Types;
     using UI_DSM.Server.Validator;
@@ -35,7 +36,8 @@ namespace UI_DSM.Server.Tests.Modules
         private List<ReviewCategory> reviewCategories;
         private Mock<HttpContext> httpContext;
         private Mock<HttpResponse> httpResponse;
-        
+        private Mock<ISearchService> searchService;
+
         [SetUp]
         public void Setup()
         {
@@ -51,6 +53,7 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.reviewCategoryManager = new Mock<IEntityManager<ReviewCategory>>();
             this.reviewCategoryManager.Setup(x => x.GetEntities(0)).ReturnsAsync(this.reviewCategories);
+            this.searchService = new Mock<ISearchService>();
 
             ModuleTestHelper.Setup<ReviewCategoryModule, ReviewCategoryDto>(new ReviewCategoryDtoValidator(), out this.httpContext, out this.httpResponse, out _, out _);
             this.module = new ReviewCategoryModule();
@@ -79,14 +82,14 @@ namespace UI_DSM.Server.Tests.Modules
         {
             var reviewCategoryDto = new ReviewCategoryDto();
 
-            await this.module.CreateEntity(this.reviewCategoryManager.Object, reviewCategoryDto, this.httpContext.Object);
+            await this.module.CreateEntity(this.reviewCategoryManager.Object, reviewCategoryDto, this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Once);
             reviewCategoryDto.ReviewCategoryName = "Category";
             reviewCategoryDto.Description = "Description";
             reviewCategoryDto.TagColor = "#72D33F";
             reviewCategoryDto.Id = Guid.NewGuid();
 
-            await this.module.CreateEntity(this.reviewCategoryManager.Object, reviewCategoryDto, this.httpContext.Object);
+            await this.module.CreateEntity(this.reviewCategoryManager.Object, reviewCategoryDto, this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Exactly(2));
 
             reviewCategoryDto.Id = Guid.Empty;
@@ -94,7 +97,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.reviewCategoryManager.Setup(x => x.CreateEntity(It.IsAny<ReviewCategory>()))
                 .ReturnsAsync(EntityOperationResult<ReviewCategory>.Failed());
 
-            await this.module.CreateEntity(this.reviewCategoryManager.Object, reviewCategoryDto, this.httpContext.Object);
+            await this.module.CreateEntity(this.reviewCategoryManager.Object, reviewCategoryDto, this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
 
             this.reviewCategoryManager.Setup(x => x.CreateEntity(It.IsAny<ReviewCategory>()))
@@ -103,7 +106,7 @@ namespace UI_DSM.Server.Tests.Modules
                     ReviewCategoryName = reviewCategoryDto.ReviewCategoryName
                 }));
 
-            await this.module.CreateEntity(this.reviewCategoryManager.Object, reviewCategoryDto, this.httpContext.Object);
+            await this.module.CreateEntity(this.reviewCategoryManager.Object, reviewCategoryDto, this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 201, Times.Once);
         }
 
@@ -113,7 +116,7 @@ namespace UI_DSM.Server.Tests.Modules
             var guid = Guid.NewGuid();
             this.reviewCategoryManager.Setup(x => x.FindEntity(guid)).ReturnsAsync((ReviewCategory)null);
 
-            var response = await this.module.DeleteEntity(this.reviewCategoryManager.Object, guid, this.httpContext.Object);
+            var response = await this.module.DeleteEntity(this.reviewCategoryManager.Object, guid, this.searchService.Object, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 404, Times.Once);
 
@@ -124,12 +127,12 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.reviewCategoryManager.Setup(x => x.FindEntity(guid)).ReturnsAsync(reviewCategory);
             this.reviewCategoryManager.Setup(x => x.DeleteEntity(reviewCategory)).ReturnsAsync(EntityOperationResult<ReviewCategory>.Failed());
-            response = await this.module.DeleteEntity(this.reviewCategoryManager.Object, guid, this.httpContext.Object);
+            response = await this.module.DeleteEntity(this.reviewCategoryManager.Object, guid, this.searchService.Object, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.False);
             this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
 
             this.reviewCategoryManager.Setup(x => x.DeleteEntity(reviewCategory)).ReturnsAsync(EntityOperationResult<ReviewCategory>.Success(reviewCategory));
-            response = await this.module.DeleteEntity(this.reviewCategoryManager.Object, guid, this.httpContext.Object);
+            response = await this.module.DeleteEntity(this.reviewCategoryManager.Object, guid, this.searchService.Object, this.httpContext.Object);
             Assert.That(response.IsRequestSuccessful, Is.True);
         }
 
@@ -137,14 +140,12 @@ namespace UI_DSM.Server.Tests.Modules
         public async Task VerifyUpdateReviewCategory()
         {
             var reviewCategory = new ReviewCategory(Guid.NewGuid());
-           
-
             this.reviewCategoryManager.Setup(x => x.FindEntity(reviewCategory.Id)).ReturnsAsync((ReviewCategory)null);
-            await this.module.UpdateEntity(this.reviewCategoryManager.Object, reviewCategory.Id, (ReviewCategoryDto)reviewCategory.ToDto(), this.httpContext.Object);
+            await this.module.UpdateEntity(this.reviewCategoryManager.Object, reviewCategory.Id, (ReviewCategoryDto)reviewCategory.ToDto(), this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 404, Times.Once);
 
             this.reviewCategoryManager.Setup(x => x.FindEntity(reviewCategory.Id)).ReturnsAsync(reviewCategory);
-            await this.module.UpdateEntity(this.reviewCategoryManager.Object, reviewCategory.Id, (ReviewCategoryDto)reviewCategory.ToDto(), this.httpContext.Object);
+            await this.module.UpdateEntity(this.reviewCategoryManager.Object, reviewCategory.Id, (ReviewCategoryDto)reviewCategory.ToDto(), this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 422, Times.Once);
 
             reviewCategory.ReviewCategoryName = "Category";
@@ -152,11 +153,11 @@ namespace UI_DSM.Server.Tests.Modules
             reviewCategory.TagColor = "#3F55D3";
             this.reviewCategoryManager.Setup(x => x.UpdateEntity(It.IsAny<ReviewCategory>())).ReturnsAsync(EntityOperationResult<ReviewCategory>.Failed());
 
-            await this.module.UpdateEntity(this.reviewCategoryManager.Object, reviewCategory.Id, (ReviewCategoryDto)reviewCategory.ToDto(), this.httpContext.Object);
+            await this.module.UpdateEntity(this.reviewCategoryManager.Object, reviewCategory.Id, (ReviewCategoryDto)reviewCategory.ToDto(), this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 500, Times.Once);
 
             this.reviewCategoryManager.Setup(x => x.UpdateEntity(It.IsAny<ReviewCategory>())).ReturnsAsync(EntityOperationResult<ReviewCategory>.Success(reviewCategory));
-            await this.module.UpdateEntity(this.reviewCategoryManager.Object, reviewCategory.Id, (ReviewCategoryDto)reviewCategory.ToDto(), this.httpContext.Object);
+            await this.module.UpdateEntity(this.reviewCategoryManager.Object, reviewCategory.Id, (ReviewCategoryDto)reviewCategory.ToDto(), this.searchService.Object, this.httpContext.Object);
             this.httpResponse.VerifySet(x => x.StatusCode = 200, Times.Once);
         }
     }

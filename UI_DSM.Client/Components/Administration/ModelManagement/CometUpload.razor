@@ -25,7 +25,7 @@
 					           TextChanged="@this.ViewModel.UrlTextHasChanged"
 					           TextExpression="@(() => this.ViewModel.UploadData.Url)"/>
 				</DxFormLayoutItem>
-				<p>or</p>
+				<DxFormLayoutItem Caption="or" ColSpanMd="12"/>
 				<DxFormLayoutItem Caption="Annex C3 File :" ColSpanMd="12">
 					<InputFile OnChange="this.OnFileSelected" accept=".zip" @key="this.inputFileKey"/>
 				</DxFormLayoutItem>

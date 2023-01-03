@@ -13,12 +13,14 @@
 
 namespace UI_DSM.Shared.DTO.Models
 {
+    using GP.SearchService.SDK.Definitions;
+
     using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     The Data Transfer Object representing the abstract <see cref="Entity" /> class.
     /// </summary>
-    public abstract class EntityDto
+    public abstract class EntityDto : ISearchDto
     {
         /// <summary>
         ///     Initiazes a new <see cref="EntityDto" />
@@ -41,6 +43,11 @@ namespace UI_DSM.Shared.DTO.Models
         ///     <see cref="Entity" />
         /// </summary>
         public Guid Id { get; set; }
+
+        /// <summary>
+        ///     The type of the class
+        /// </summary>
+        public string Type => this.GetType().Name;
 
         /// <summary>
         ///     Instantiate a <see cref="Entity" /> from a <see cref="EntityDto" />

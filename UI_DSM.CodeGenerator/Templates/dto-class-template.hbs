@@ -17,13 +17,17 @@
 
 namespace UI_DSM.Shared.DTO.Models
 {
+    {{#unless this.IsAbstract}}
+    using GP.SearchService.SDK.Definitions;
+
+    {{/unless}}
     {{#if (PropertyReflection.HasEnumeratorProperties this)}}
     using UI_DSM.Shared.Enumerator;
     {{/if}}
     using UI_DSM.Shared.Models;
 
     {{ #Documentation this}}
-    public {{#if this.IsAbstract}}abstract {{/if}}partial class {{this.Name}}Dto : {{this.BaseType.Name}}Dto
+    {{#unless this.IsAbstract}}[SearchDto(nameof({{this.Name}}Dto))]{{/unless}}public {{#if this.IsAbstract}}abstract {{/if}}partial class {{this.Name}}Dto : {{this.BaseType.Name}}Dto
     {
         {{ #Documentation this "constructor"}}
         {{#if this.IsAbstract}}protected{{else}}public{{/if}} {{this.Name}}Dto()

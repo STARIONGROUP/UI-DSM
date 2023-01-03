@@ -430,5 +430,47 @@ namespace UI_DSM.Server.Tests.Managers
 
             return entities;
         }
+
+        [Test]
+        public async Task VerifyGetSearchResult()
+        {
+            var reviewObjective = new ReviewObjective(Guid.NewGuid())
+            {
+                EntityContainer = new Review(Guid.NewGuid())
+                {
+                    EntityContainer = new Project(Guid.NewGuid())
+                }
+            };
+
+            var result = await this.manager.GetSearchResult(reviewObjective.Id);
+            Assert.That(result, Is.Null);
+
+            this.reviewObjectiveDbSet.UpdateDbSetCollection(new List<ReviewObjective> { reviewObjective });
+            result = await this.manager.GetSearchResult(reviewObjective.Id);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var reviewObjective = new ReviewObjective(Guid.NewGuid())
+            {
+                ReviewTasks = { new ReviewTask() },
+                Annotations =
+                {
+                    new Comment()
+                    {
+                        Replies = { new Reply() }
+                    }
+                }
+            };
+
+            var result = await this.manager.GetExtraEntitiesToUnindex(reviewObjective.Id);
+            Assert.That(result, Is.Empty);
+
+            this.reviewObjectiveDbSet.UpdateDbSetCollection(new List<ReviewObjective>{reviewObjective});
+            result = await this.manager.GetExtraEntitiesToUnindex(reviewObjective.Id);
+            Assert.That(result.ToList(), Has.Count.EqualTo(3));
+        }
     }
 }

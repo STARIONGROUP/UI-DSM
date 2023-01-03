@@ -22,6 +22,7 @@ namespace UI_DSM.Server.Modules
 
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Managers.ParticipantManager;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
@@ -147,18 +148,20 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="dto">The <see cref="ParticipantDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public override async Task CreateEntity(IEntityManager<Participant> manager, ParticipantDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
+        public override async Task CreateEntity(IEntityManager<Participant> manager, ParticipantDto dto, ISearchService searchService, HttpContext context, 
+            [FromQuery] int deepLevel = 0)
         {
             if (!await IsAuthorizedParticipant((IParticipantManager)manager, context, this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey)))
             {
                 return;
             }
 
-            await base.CreateEntity(manager, dto, context, deepLevel);
+            await base.CreateEntity(manager, dto, searchService, context, deepLevel);
         }
 
         /// <summary>
@@ -167,18 +170,19 @@ namespace UI_DSM.Server.Modules
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Participant" /></param>
         /// <param name="dto">The <see cref="ParticipantDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public override async Task UpdateEntity(IEntityManager<Participant> manager, Guid entityId, ParticipantDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
+        public override async Task UpdateEntity(IEntityManager<Participant> manager, Guid entityId, ParticipantDto dto, ISearchService searchService, HttpContext context, [FromQuery] int deepLevel = 0)
         {
             if (!await IsAuthorizedParticipant((IParticipantManager)manager, context, this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey)))
             {
                 return;
             }
 
-            await base.UpdateEntity(manager, entityId, dto, context, deepLevel);
+            await base.UpdateEntity(manager, entityId, dto, searchService, context, deepLevel);
         }
 
         /// <summary>
@@ -186,10 +190,11 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Participant" /> to delete</param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
         [Authorize]
-        public override async Task<RequestResponseDto> DeleteEntity(IEntityManager<Participant> manager, Guid entityId, HttpContext context)
+        public override async Task<RequestResponseDto> DeleteEntity(IEntityManager<Participant> manager, Guid entityId,ISearchService searchService, HttpContext context)
         {
             if (!await IsAuthorizedParticipant((IParticipantManager)manager, context, this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey)))
             {
@@ -199,7 +204,7 @@ namespace UI_DSM.Server.Modules
                 };
             }
 
-            return await base.DeleteEntity(manager, entityId, context);
+            return await base.DeleteEntity(manager, entityId, searchService, context);
         }
 
         /// <summary>

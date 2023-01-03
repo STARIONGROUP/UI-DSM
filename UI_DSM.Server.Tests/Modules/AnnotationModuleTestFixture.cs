@@ -32,6 +32,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Server.Services.SearchService;
 
     [TestFixture]
     public class AnnotationModuleTestFixture
@@ -44,6 +45,7 @@ namespace UI_DSM.Server.Tests.Modules
         private Mock<IServiceProvider> serviceProvider;
         private Mock<IEntityManager<Project>> projectManager;
         private Mock<IParticipantManager> participantManager;
+        private Mock<ISearchService> searchService;
         private RouteValueDictionary routeValues;
         private Guid projectId;
         private Participant participant;
@@ -56,6 +58,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.annotationManager = new Mock<IEntityManager<Annotation>>();
             this.annotationManager.As<IAnnotationManager>();
             this.annotationManager.As<IContainedEntityManager<Annotation>>();
+            this.searchService = new Mock<ISearchService>();
 
             ModuleTestHelper.Setup<AnnotationModule, AnnotationDto>(new AnnotationDtoValidator(), out this.context,
                 out this.response, out this.request, out this.serviceProvider);
@@ -167,7 +170,7 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.serviceProvider.Setup(x => x.GetService(typeof(IParticipantManager))).Returns(null);
 
-            await this.module.CreateEntity(this.annotationManager.Object, dto, this.context.Object);
+            await this.module.CreateEntity(this.annotationManager.Object, dto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 500, Times.Once);
 
             this.routeValues["projectId"] = project.Id.ToString();
@@ -175,17 +178,17 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.participantManager.Setup(x => x.GetParticipantForProject(project.Id, "user")).ReturnsAsync((Participant)null);
 
-            await this.module.CreateEntity(this.annotationManager.Object, dto, this.context.Object);
+            await this.module.CreateEntity(this.annotationManager.Object, dto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
 
             this.participantManager.Setup(x => x.GetParticipantForProject(project.Id, "user")).ReturnsAsync(this.participant);
-            await this.module.CreateEntity(this.annotationManager.Object, dto, this.context.Object);
+            await this.module.CreateEntity(this.annotationManager.Object, dto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 403, Times.Once);
 
             this.participant.Role = new Role() {AccessRights = { AccessRight.ReviewTask }};
 
             this.participantManager.Setup(x => x.GetParticipantForProject(project.Id, "user")).ReturnsAsync(this.participant);
-            await this.module.CreateEntity(this.annotationManager.Object, dto, this.context.Object);
+            await this.module.CreateEntity(this.annotationManager.Object, dto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 422, Times.Once);
 
             dto.Author = this.participant.Id;
@@ -196,14 +199,14 @@ namespace UI_DSM.Server.Tests.Modules
                 Guid.NewGuid()
             };
 
-            await this.module.CreateEntity(this.annotationManager.Object, dto, this.context.Object);
+            await this.module.CreateEntity(this.annotationManager.Object, dto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 400, Times.Once);
             this.projectManager.Setup(x => x.GetEntity(project.Id,0)).ReturnsAsync(project.GetAssociatedEntities());
 
             this.annotationManager.Setup(x => x.CreateEntity(It.IsAny<Annotation>()))
                 .ReturnsAsync(EntityOperationResult<Annotation>.Success(new Comment(Guid.NewGuid())));
 
-            await this.module.CreateEntity(this.annotationManager.Object, dto, this.context.Object);
+            await this.module.CreateEntity(this.annotationManager.Object, dto, this.searchService.Object, this.context.Object);
 
             this.response.VerifySet(x => x.StatusCode = 201, Times.Once);
         }
@@ -225,12 +228,12 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync((Participant)null);
 
-            await this.module.DeleteEntity(this.annotationManager.Object, annotation.Id, this.context.Object);
+            await this.module.DeleteEntity(this.annotationManager.Object, annotation.Id, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
 
             this.annotationManager.Setup(x => x.GetEntity(annotation.Id, 0)).ReturnsAsync(new List<Entity>{annotation});
             this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(new Participant(Guid.NewGuid()));
-            var deleteResult = await this.module.DeleteEntity(this.annotationManager.Object, annotation.Id, this.context.Object);
+            var deleteResult = await this.module.DeleteEntity(this.annotationManager.Object, annotation.Id, this.searchService.Object, this.context.Object);
             Assert.That(deleteResult.IsRequestSuccessful, Is.False);
 
             this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(annotation.Author);
@@ -238,7 +241,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.annotationManager.As<IContainedEntityManager<Annotation>>().Setup(x => x.FindEntityWithContainer(annotation.Id)).ReturnsAsync(annotation);
             this.annotationManager.Setup(x => x.DeleteEntity(annotation)).ReturnsAsync(EntityOperationResult<Annotation>.Success(null));
             
-            deleteResult = await this.module.DeleteEntity(this.annotationManager.Object, annotation.Id, this.context.Object);
+            deleteResult = await this.module.DeleteEntity(this.annotationManager.Object, annotation.Id, this.searchService.Object, this.context.Object);
             Assert.That(deleteResult.IsRequestSuccessful, Is.True);
         }
 
@@ -267,20 +270,20 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync((Participant)null);
 
-            await this.module.UpdateEntity(this.annotationManager.Object, annotation.Id, annotationDto, this.context.Object);
+            await this.module.UpdateEntity(this.annotationManager.Object, annotation.Id, annotationDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
 
             this.annotationManager.Setup(x => x.GetEntity(annotation.Id, 0)).ReturnsAsync(new List<Entity> { annotation });
             this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(new Participant(Guid.NewGuid()));
             annotationDto!.Content = "new content";
 
-            await this.module.UpdateEntity(this.annotationManager.Object, annotation.Id, annotationDto, this.context.Object);
+            await this.module.UpdateEntity(this.annotationManager.Object, annotation.Id, annotationDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 403, Times.Once);
             annotationDto!.Content = annotation.Content;
 
             this.annotationManager.As<IContainedEntityManager<Annotation>>().Setup(x => x.FindEntityWithContainer(annotation.Id)).ReturnsAsync(annotation);
             this.annotationManager.Setup(x => x.UpdateEntity(It.IsAny<Annotation>())).ReturnsAsync(EntityOperationResult<Annotation>.Success(annotation));
-            await this.module.UpdateEntity(this.annotationManager.Object, annotation.Id, annotationDto, this.context.Object);
+            await this.module.UpdateEntity(this.annotationManager.Object, annotation.Id, annotationDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 200, Times.Once);
         }
 

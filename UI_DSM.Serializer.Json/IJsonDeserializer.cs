@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Serializer.Json
 {
+    using GP.SearchService.SDK.Definitions;
+
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
 
@@ -33,5 +35,12 @@ namespace UI_DSM.Serializer.Json
         /// <param name="stream">The <see cref="Stream" /></param>
         /// <returns>The <see cref="EntityRequestResponseDto" /></returns>
         EntityRequestResponseDto DeserializeEntityRequestResponseDto(Stream stream);
+
+        /// <summary>
+        ///     Deserializes a <see cref="Stream"/> into a collection of <see cref="CommonBaseSearchDto" />
+        /// </summary>
+        /// <param name="stream">The <see cref="Stream" /></param>
+        /// <returns>A collection of <see cref="CommonBaseSearchDto" /></returns>
+        IEnumerable<CommonBaseSearchDto> DeserializeISearchDto(Stream stream);
     }
 }

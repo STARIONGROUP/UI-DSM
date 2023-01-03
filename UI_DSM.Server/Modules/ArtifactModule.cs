@@ -20,13 +20,14 @@ namespace UI_DSM.Server.Modules
 
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Services.FileService;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     The <see cref="ArtifactModule" />  is a
-    ///     <see cref="ContainedEntityModule{TEntity,TEntityDto, TEntityContainer}" /> to manage
+    ///     <see cref="ContainedEntityModule{TEntity,TEntityDto,TEntityContainer}" /> to manage
     ///     <see cref="Artifact" /> related to a <see cref="Project" />
     /// </summary>
     [Route("api/Project/{projectId:guid}/Artifact")]
@@ -78,11 +79,12 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="dto">The <see cref="ArtifactDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public override async Task CreateEntity(IEntityManager<Artifact> manager, ArtifactDto dto, HttpContext context, int deepLevel = 0)
+        public override async Task CreateEntity(IEntityManager<Artifact> manager, ArtifactDto dto, ISearchService searchService, HttpContext context, int deepLevel = 0)
         {
             var requestResponse = new EntityRequestResponseDto();
 
@@ -135,7 +137,7 @@ namespace UI_DSM.Server.Modules
             }
 
             dto.FileName = this.fileService.MoveFile(dto.FileName, projectId.ToString());
-            await base.CreateEntity(manager, dto, context, deepLevel);
+            await base.CreateEntity(manager, dto, searchService, context, deepLevel);
         }
 
         /// <summary>
@@ -143,10 +145,11 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Artifact" /> to delete</param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
         [Authorize]
-        public override async Task<RequestResponseDto> DeleteEntity(IEntityManager<Artifact> manager, Guid entityId, HttpContext context)
+        public override async Task<RequestResponseDto> DeleteEntity(IEntityManager<Artifact> manager, Guid entityId, ISearchService searchService, HttpContext context)
         {
             context.Response.StatusCode = 403;
             await Task.CompletedTask;
@@ -159,11 +162,12 @@ namespace UI_DSM.Server.Modules
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Artifact" /></param>
         /// <param name="dto">The <see cref="ArtifactDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" />as result</returns>
         [Authorize]
-        public override Task UpdateEntity(IEntityManager<Artifact> manager, Guid entityId, ArtifactDto dto, HttpContext context, int deepLevel = 0)
+        public override Task UpdateEntity(IEntityManager<Artifact> manager, Guid entityId, ArtifactDto dto, ISearchService searchService, HttpContext context, int deepLevel = 0)
         {
             context.Response.StatusCode = 403;
             return Task.CompletedTask;

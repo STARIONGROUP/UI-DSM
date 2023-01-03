@@ -17,12 +17,15 @@
 
 namespace UI_DSM.Shared.DTO.Models
 {
+    using GP.SearchService.SDK.Definitions;
+
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
     ///    The Data Transfer Object representing the <see cref="Review" /> class.
     /// </summary>
+    [SearchDto(nameof(ReviewDto))]
     public partial class ReviewDto : EntityDto
     {
         /// <summary>

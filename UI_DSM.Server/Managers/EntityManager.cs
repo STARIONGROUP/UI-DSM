@@ -20,6 +20,7 @@ namespace UI_DSM.Server.Managers
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Types;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
@@ -169,6 +170,20 @@ namespace UI_DSM.Server.Managers
         /// <param name="dto">The <see cref="EntityDto" /></param>
         /// <returns>A <see cref="Task" /></returns>
         public abstract Task ResolveProperties(TEntity entity, EntityDto dto);
+
+        /// <summary>
+        ///     Gets the URL to access the <see cref="TEntity" />
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="TEntity" /></param>
+        /// <returns>A URL</returns>
+        public abstract Task<SearchResultDto> GetSearchResult(Guid entityId);
+
+        /// <summary>
+        ///     Gets all <see cref="Entity" /> that needs to be unindexed when the current <see cref="Entity" /> is delete
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the entity</param>
+        /// <returns>A collection of <see cref="Entity" /></returns>
+        public abstract Task<IEnumerable<Entity>> GetExtraEntitiesToUnindex(Guid entityId);
 
         /// <summary>
         ///     Validates the <see cref="TEntity" /> before doing any operation into the <see cref="DatabaseContext" />

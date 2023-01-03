@@ -17,6 +17,7 @@ namespace UI_DSM.Server.Managers.ThingManager
     using CDP4Common.EngineeringModelData;
 
     using UI_DSM.Server.Services.CometService;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
@@ -55,6 +56,29 @@ namespace UI_DSM.Server.Managers.ThingManager
             }
 
             return things.DistinctById();
+        }
+
+        /// <summary>
+        ///     Tries to get a <see cref="Thing" /> based on a <see cref="CommonBaseSearchDto" />
+        /// </summary>
+        /// <param name="commonBaseSearchDto">The <see cref="CommonBaseSearchDto" /></param>
+        /// <param name="model">A <see cref="Model" /></param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Thing" /></returns>
+        public async Task<Thing> GetThing(CommonBaseSearchDto commonBaseSearchDto, Model model)
+        {
+            var iteration = await this.cometService.GetIteration(model);
+            var hyperLinks = iteration.Element.SelectMany(x => x.HyperLink).ToList();
+            hyperLinks.AddRange(iteration.RequirementsSpecification.SelectMany(x => x.Requirement).SelectMany(x => x.HyperLink));
+
+            return commonBaseSearchDto.Type.Split(".").Last() switch
+            {
+                (nameof(ElementDefinition)) => iteration.Element.FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
+                (nameof(Requirement)) => iteration.RequirementsSpecification.SelectMany(x => x.Requirement).FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
+                (nameof(ElementUsage)) => iteration.Element.SelectMany(x => x.ContainedElement).FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
+                (nameof(BinaryRelationship)) => iteration.Relationship.OfType<BinaryRelationship>().FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
+                (nameof(HyperLink)) => hyperLinks.FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
+                _ => null
+            };
         }
 
         /// <summary>

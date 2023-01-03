@@ -33,6 +33,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
+    using UI_DSM.Server.Services.SearchService;
 
     [TestFixture]
     public class ReviewModuleTestFixture
@@ -45,6 +46,7 @@ namespace UI_DSM.Server.Tests.Modules
         private Mock<IServiceProvider> serviceProvider;
         private Mock<IEntityManager<Project>> projectManager;
         private Mock<IParticipantManager> participantManager;
+        private Mock<ISearchService> searchService;
         private RouteValueDictionary routeValues;
 
         [SetUp]
@@ -55,6 +57,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.reviewManager = new Mock<IEntityManager<Review>>();
             this.reviewManager.As<IReviewManager>();
             this.reviewManager.As<IContainedEntityManager<Review>>();
+            this.searchService = new Mock<ISearchService>();
 
             ModuleTestHelper.Setup<ReviewModule, ReviewDto>(new ReviewDtoValidator(), out this.context,
                 out this.response, out this.request, out this.serviceProvider);
@@ -167,7 +170,7 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.serviceProvider.Setup(x => x.GetService(typeof(IParticipantManager))).Returns(null);
 
-            await this.module.CreateEntity(this.reviewManager.Object, dto, this.context.Object);
+            await this.module.CreateEntity(this.reviewManager.Object, dto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 500, Times.Once);
 
             this.routeValues["projectId"] = project.Id.ToString();
@@ -175,7 +178,7 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.participantManager.Setup(x => x.GetParticipantForProject(project.Id, "user")).ReturnsAsync((Participant)null);
 
-            await this.module.CreateEntity(this.reviewManager.Object, dto, this.context.Object);
+            await this.module.CreateEntity(this.reviewManager.Object, dto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
 
             var participant = new Participant(Guid.NewGuid())
@@ -185,24 +188,24 @@ namespace UI_DSM.Server.Tests.Modules
             };
 
             this.participantManager.Setup(x => x.GetParticipantForProject(project.Id, "user")).ReturnsAsync(participant);
-            await this.module.CreateEntity(this.reviewManager.Object, dto, this.context.Object);
+            await this.module.CreateEntity(this.reviewManager.Object, dto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 403, Times.Once);
 
             participant.Role.AccessRights.Add(AccessRight.CreateReview);
 
             this.participantManager.Setup(x => x.GetParticipantForProject(project.Id, "user")).ReturnsAsync(participant);
-            await this.module.CreateEntity(this.reviewManager.Object, dto, this.context.Object);
+            await this.module.CreateEntity(this.reviewManager.Object, dto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 422, Times.Once);
 
             dto.Description = "A description";
             dto.Title = "a title";
             dto.Artifacts = new List<Guid> { Guid.NewGuid() };
 
-            await this.module.CreateEntity(this.reviewManager.Object, dto, this.context.Object);
+            await this.module.CreateEntity(this.reviewManager.Object, dto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 500, Times.Once);
             this.projectManager.Setup(x => x.GetEntity(project.Id,0)).ReturnsAsync(project.GetAssociatedEntities());
             this.reviewManager.Setup(x => x.CreateEntity(It.IsAny<Review>())).ReturnsAsync(EntityOperationResult<Review>.Success(new Review(Guid.NewGuid())));
-            await this.module.CreateEntity(this.reviewManager.Object, dto, this.context.Object);
+            await this.module.CreateEntity(this.reviewManager.Object, dto, this.searchService.Object, this.context.Object);
 
             this.response.VerifySet(x => x.StatusCode = 201, Times.Once);
         }
@@ -227,19 +230,19 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync((Participant)null);
 
-            await this.module.DeleteEntity(this.reviewManager.Object, review.Id, this.context.Object);
+            await this.module.DeleteEntity(this.reviewManager.Object, review.Id, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
 
             this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(participant);
 
-            await this.module.DeleteEntity(this.reviewManager.Object, review.Id, this.context.Object);
+            await this.module.DeleteEntity(this.reviewManager.Object, review.Id, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 403, Times.Once);
             participant.Role.AccessRights.Add(AccessRight.DeleteReview);
             this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(participant);
 
             this.reviewManager.As<IContainedEntityManager<Review>>().Setup(x => x.FindEntityWithContainer(review.Id)).ReturnsAsync(review);
             this.reviewManager.Setup(x => x.DeleteEntity(review)).ReturnsAsync(EntityOperationResult<Review>.Success(null));
-            var deleteResult = await this.module.DeleteEntity(this.reviewManager.Object, review.Id, this.context.Object);
+            var deleteResult = await this.module.DeleteEntity(this.reviewManager.Object, review.Id, this.searchService.Object, this.context.Object);
             Assert.That(deleteResult.IsRequestSuccessful, Is.True);
         }
 
@@ -277,14 +280,14 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync((Participant)null);
 
-            await this.module.UpdateEntity(this.reviewManager.Object, review.Id, reviewDto, this.context.Object);
+            await this.module.UpdateEntity(this.reviewManager.Object, review.Id, reviewDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
 
             this.participantManager.Setup(x => x.GetParticipantForProject(It.IsAny<Guid>(), "user")).ReturnsAsync(participant);
 
             this.reviewManager.As<IContainedEntityManager<Review>>().Setup(x => x.FindEntityWithContainer(review.Id)).ReturnsAsync(review);
             this.reviewManager.Setup(x => x.UpdateEntity(It.IsAny<Review>())).ReturnsAsync(EntityOperationResult<Review>.Success(review));
-            await this.module.UpdateEntity(this.reviewManager.Object, review.Id, reviewDto, this.context.Object);
+            await this.module.UpdateEntity(this.reviewManager.Object, review.Id, reviewDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 200, Times.Once);
         }
 

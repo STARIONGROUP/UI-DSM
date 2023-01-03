@@ -456,16 +456,25 @@ namespace UI_DSM.Client.ViewModels.App.Comments
             {
                 if (thingRowViewModel.ReviewItem == null)
                 {
-                    var reviewItemResponse = await this.reviewItemService.CreateReviewItem(this.ProjectId, this.ReviewId, thingRowViewModel.ThingId);
+                    var createdReviewItem = await this.reviewItemService.GetReviewItemForThing(this.ProjectId, this.ReviewId, thingRowViewModel.ThingId);
 
-                    if (reviewItemResponse.IsRequestSuccessful)
+                    if (createdReviewItem != null)
                     {
-                        thingRowViewModel.UpdateReviewItem(reviewItemResponse.Entity);
+                        thingRowViewModel.UpdateReviewItem(createdReviewItem);
                     }
                     else
                     {
-                        this.ErrorMessageViewModel.HandleErrors(reviewItemResponse.Errors);
-                        return;
+                        var reviewItemResponse = await this.reviewItemService.CreateReviewItem(this.ProjectId, this.ReviewId, thingRowViewModel.ThingId);
+
+                        if (reviewItemResponse.IsRequestSuccessful)
+                        {
+                            thingRowViewModel.UpdateReviewItem(reviewItemResponse.Entity);
+                        }
+                        else
+                        {
+                            this.ErrorMessageViewModel.HandleErrors(reviewItemResponse.Errors);
+                            return;
+                        }
                     }
                 }
 
@@ -590,6 +599,20 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         private async Task UpdateProperties()
         {
             this.Comments.Clear();
+
+            if (this.SelectedItem is IHaveThingRowViewModel { ReviewItem: null } row)
+            {
+                var reviewItem = await this.reviewItemService.GetReviewItemForThing(this.ProjectId, this.ReviewId, row.ThingId);
+
+                if (reviewItem != null)
+                {
+                    row.UpdateReviewItem(reviewItem);
+                }
+                else
+                {
+                    return;
+                }
+            }
 
             if (this.SelectedItem is IHaveAnnotatableItemRowViewModel { AnnotatableItemId: { } } annotatableItemRowViewModel)
             {

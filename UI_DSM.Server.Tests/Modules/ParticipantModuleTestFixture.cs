@@ -25,6 +25,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Modules;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Server.Types;
     using UI_DSM.Server.Validator;
@@ -42,6 +43,7 @@ namespace UI_DSM.Server.Tests.Modules
         private Mock<HttpRequest> request;
         private Mock<IServiceProvider> serviceProvider;
         private Mock<IEntityManager<Project>> projectManager;
+        private Mock<ISearchService> searchService;
         private RouteValueDictionary routeValues;
 
         [SetUp]
@@ -51,6 +53,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.participantManager = new Mock<IEntityManager<Participant>>();
             this.participantManager.As<IParticipantManager>();
             this.participantManager.As<IContainedEntityManager<Participant>>();
+            this.searchService = new Mock<ISearchService>();
 
             ModuleTestHelper.Setup<ParticipantModule, ParticipantDto>(new ParticipantDtoValidator(), out this.context, 
                 out this.response, out this.request, out this.serviceProvider);
@@ -143,7 +146,7 @@ namespace UI_DSM.Server.Tests.Modules
             var project = new Project(Guid.NewGuid());
             this.routeValues["projectId"] = project.Id.ToString();
 
-            await this.module.CreateEntity(this.participantManager.Object, participantDto, this.context.Object);
+            await this.module.CreateEntity(this.participantManager.Object, participantDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 403, Times.Once);
 
             this.participantManager.As<IParticipantManager>().Setup(x => x.GetParticipantForProject(project.Id, It.IsAny<string>()))
@@ -155,13 +158,13 @@ namespace UI_DSM.Server.Tests.Modules
                     }
                 });
 
-            await this.module.CreateEntity(this.participantManager.Object, participantDto, this.context.Object);
+            await this.module.CreateEntity(this.participantManager.Object, participantDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 422, Times.Once);
 
             participantDto.User = Guid.NewGuid();
 
             this.projectManager.Setup(x => x.FindEntity(project.Id)).ReturnsAsync((Project)null);
-            await this.module.CreateEntity(this.participantManager.Object, participantDto, this.context.Object);
+            await this.module.CreateEntity(this.participantManager.Object, participantDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode=400, Times.Once);
 
             this.projectManager.Setup(x => x.GetEntity(project.Id,0)).ReturnsAsync(project.GetAssociatedEntities());
@@ -173,7 +176,7 @@ namespace UI_DSM.Server.Tests.Modules
                     User = new UserEntity(Guid.NewGuid())
                 }));
 
-            await this.module.CreateEntity(this.participantManager.Object, participantDto, this.context.Object);
+            await this.module.CreateEntity(this.participantManager.Object, participantDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 201, Times.Once);
         }
 
@@ -193,7 +196,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.routeValues["projectId"] = Guid.NewGuid().ToString();
 
             this.participantManager.As<IContainedEntityManager<Participant>>().Setup(x => x.FindEntityWithContainer(participant.Id)).ReturnsAsync((Participant)null);
-            await this.module.UpdateEntity(this.participantManager.Object, participant.Id, participantDto, this.context.Object);
+            await this.module.UpdateEntity(this.participantManager.Object, participant.Id, participantDto, this.searchService.Object, this.context.Object);
 
             this.response.VerifySet(x => x.StatusCode = 403, Times.Once);
 
@@ -206,22 +209,22 @@ namespace UI_DSM.Server.Tests.Modules
                     }
                 });
 
-            await this.module.UpdateEntity(this.participantManager.Object, participant.Id, participantDto, this.context.Object);
+            await this.module.UpdateEntity(this.participantManager.Object, participant.Id, participantDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode= 404, Times.Once);
 
             project.Participants.Add(participant);
             this.participantManager.As<IContainedEntityManager<Participant>>().Setup(x => x.FindEntityWithContainer(participant.Id)).ReturnsAsync(participant);
-            await this.module.UpdateEntity(this.participantManager.Object, participant.Id, participantDto, this.context.Object);
+            await this.module.UpdateEntity(this.participantManager.Object, participant.Id, participantDto, this.searchService.Object, this.context.Object);
 
             this.response.VerifySet(x => x.StatusCode = 400, Times.Once);
 
             this.routeValues["projectId"] = project.Id.ToString();
-            await this.module.UpdateEntity(this.participantManager.Object, participant.Id, participantDto, this.context.Object);
+            await this.module.UpdateEntity(this.participantManager.Object, participant.Id, participantDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 422, Times.Once);
 
             participantDto = participant.ToDto() as ParticipantDto;
             this.participantManager.Setup(x => x.UpdateEntity(It.IsAny<Participant>())).ReturnsAsync(EntityOperationResult<Participant>.Success(participant));
-            await this.module.UpdateEntity(this.participantManager.Object, participant.Id, participantDto, this.context.Object);
+            await this.module.UpdateEntity(this.participantManager.Object, participant.Id, participantDto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 200, Times.Once);
         }
 
@@ -240,13 +243,13 @@ namespace UI_DSM.Server.Tests.Modules
             this.participantManager.As<IParticipantManager>().Setup(x => x.GetParticipantForProject(project.Id, It.IsAny<string>()))
                 .ReturnsAsync((Participant)null);
 
-            await this.module.DeleteEntity(this.participantManager.Object, participant.Id, this.context.Object);
+            await this.module.DeleteEntity(this.participantManager.Object, participant.Id, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 403, Times.Once);
 
             this.participantManager.As<IParticipantManager>().Setup(x => x.GetParticipantForProject(project.Id, It.IsAny<string>()))
                 .ReturnsAsync(participant);
 
-            await this.module.DeleteEntity(this.participantManager.Object, participant.Id, this.context.Object);
+            await this.module.DeleteEntity(this.participantManager.Object, participant.Id, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode= 403, Times.Exactly(2));
 
             participant.Role = new Role(Guid.NewGuid())
@@ -263,11 +266,11 @@ namespace UI_DSM.Server.Tests.Modules
             this.participantManager.As<IContainedEntityManager<Participant>>().Setup(x => x.FindEntityWithContainer(It.IsAny<Guid>()))
                 .ReturnsAsync(participant);
 
-            await this.module.DeleteEntity(this.participantManager.Object, participant.Id, this.context.Object);
+            await this.module.DeleteEntity(this.participantManager.Object, participant.Id, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 500, Times.Once);
 
             this.participantManager.Setup(x => x.DeleteEntity(participant)).ReturnsAsync(EntityOperationResult<Participant>.Success(participant));
-            await this.module.DeleteEntity(this.participantManager.Object, participant.Id, this.context.Object);
+            await this.module.DeleteEntity(this.participantManager.Object, participant.Id, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = It.IsAny<int>(), Times.Exactly(3));
         }
 

@@ -70,6 +70,49 @@ namespace UI_DSM.Serializer.Json
         }
 
         /// <summary>
+        ///     Deserializes a <see cref="Stream" /> into a collection of <see cref="CommonBaseSearchDto" />
+        /// </summary>
+        /// <param name="stream">The <see cref="Stream" /></param>
+        /// <returns>A collection of <see cref="CommonBaseSearchDto" /></returns>
+        public IEnumerable<CommonBaseSearchDto> DeserializeISearchDto(Stream stream)
+        {
+            using var document = JsonDocument.Parse(stream);
+            var documentRoot = document.RootElement;
+
+            if (documentRoot.ValueKind != JsonValueKind.Array)
+            {
+                throw new ArgumentException($"The {nameof(stream)} must be of type JsonValueKind.Array", nameof(stream));
+            }
+
+            return documentRoot.EnumerateArray().Select(this.DeserializeISearchDto).ToList();
+        }
+
+        /// <summary>
+        ///     Deserializes an <see cref="JsonElement" /> into a <see cref="CommonBaseSearchDto" />
+        /// </summary>
+        /// <param name="jsonObject">The <see cref="JsonElement" /></param>
+        /// <returns>The <see cref="CommonBaseSearchDto" /></returns>
+        private CommonBaseSearchDto DeserializeISearchDto(JsonElement jsonObject)
+        {
+            if (jsonObject.ValueKind != JsonValueKind.Object)
+            {
+                throw new ArgumentException($"The {nameof(jsonObject)} must be of type JsonValueKind.Object", nameof(jsonObject));
+            }
+
+            if (!jsonObject.TryGetProperty("@Type", out var typeElement) && !jsonObject.TryGetProperty("type", out typeElement))
+            {
+                throw new SerializationException("The @type Json property is not available, the Deserializer cannot be used to deserialize this JsonElement");
+            }
+
+            if (!jsonObject.TryGetProperty("@Id", out var idElement) && !jsonObject.TryGetProperty("id", out idElement))
+            {
+                throw new SerializationException("The @id Json property is not available, the Deserializer cannot be used to deserialize this JsonElement");
+            }
+
+            return new CommonBaseSearchDto { Id = Guid.Parse(idElement.GetString()!), Type = typeElement.GetString()};
+        }
+
+        /// <summary>
         ///     Deserializes an <see cref="JsonElement" /> of type <see cref="JsonValueKind.Array" /> to an
         ///     <see cref="EntityDto" /> object
         /// </summary>

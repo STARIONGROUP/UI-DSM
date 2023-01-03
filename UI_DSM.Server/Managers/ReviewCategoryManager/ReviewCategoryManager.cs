@@ -10,9 +10,11 @@
 //  The UI-DSM application is provided to the community under the Apache License 2.0.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
+
 namespace UI_DSM.Server.Managers.ReviewCategoryManager
 {
     using UI_DSM.Server.Context;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
@@ -44,6 +46,41 @@ namespace UI_DSM.Server.Managers.ReviewCategoryManager
 
             entity.ResolveProperties(reviewCategoryDto, null);
             await Task.CompletedTask;
+        }
+
+        /// <summary>
+        ///     Gets the <see cref="SearchResultDto"/> based on a <see cref="Guid"/>
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="ReviewCategory" /></param>
+        /// <returns>A URL</returns>
+        public override async Task<SearchResultDto> GetSearchResult(Guid entityId)
+        {
+            var reviewCategory = await this.FindEntity(entityId);
+
+            if (reviewCategory == null)
+            {
+                return null;
+            }
+
+            var route=  $"ReviewCategory/{reviewCategory.Id}";
+            
+            return new SearchResultDto()
+            {
+                BaseUrl = route,
+                ObjectKind = nameof(ReviewCategory),
+                DisplayText = reviewCategory.ReviewCategoryName
+            };
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Entity" /> that needs to be unindexed when the current <see cref="Entity" /> is delete
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the entity</param>
+        /// <returns>A collection of <see cref="Entity" /></returns>
+        public override async Task<IEnumerable<Entity>> GetExtraEntitiesToUnindex(Guid entityId)
+        {
+            await Task.CompletedTask;
+            return Enumerable.Empty<Entity>();
         }
     }
 }

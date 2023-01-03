@@ -67,7 +67,7 @@ namespace UI_DSM.CodeGenerator.Helpers
                     throw new HandlebarsException("The context should be a Type");
                 }
 
-                var properties = type.GetProperties();
+                var properties = type.GetProperties().Where(x => x.CanWrite);
                 return properties;
             });
 
@@ -189,7 +189,7 @@ namespace UI_DSM.CodeGenerator.Helpers
                     throw new HandlebarsException("The context should be a Type");
                 }
 
-                var properties = type.GetProperties().Where(x => x.Name != "Id").ToList();
+                var properties = type.GetProperties().Where(x => x.Name != "Id" && x.CanWrite).ToList();
                 return properties;
             }); 
         }

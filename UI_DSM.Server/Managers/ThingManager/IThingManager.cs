@@ -16,6 +16,7 @@ namespace UI_DSM.Server.Managers.ThingManager
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
 
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -40,5 +41,13 @@ namespace UI_DSM.Server.Managers.ThingManager
         /// <param name="classKind">The <see cref="ClassKind" /></param>
         /// <returns>A <see cref="Task" /> with the collection of <see cref="Thing" /></returns>
         Task<IEnumerable<Thing>> GetThings(IEnumerable<Model> models, ClassKind classKind);
+
+        /// <summary>
+        ///     Tries to get a <see cref="Thing" /> based on a <see cref="CommonBaseSearchDto" />
+        /// </summary>
+        /// <param name="commonBaseSearchDto">The <see cref="CommonBaseSearchDto" /></param>
+        /// <param name="model">A <see cref="Model" /></param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Thing" /></returns>
+        Task<Thing> GetThing(CommonBaseSearchDto commonBaseSearchDto, Model model);
     }
 }

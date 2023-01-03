@@ -25,6 +25,7 @@ namespace UI_DSM.Server.Modules
     using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
     using UI_DSM.Server.Managers.ReviewTaskManager;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Shared.Assembler;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -142,11 +143,12 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="dto">The <see cref="ReviewObjectiveDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public override Task CreateEntity(IEntityManager<ReviewObjective> manager, ReviewObjectiveDto dto, HttpContext context, int deepLevel = 0)
+        public override Task CreateEntity(IEntityManager<ReviewObjective> manager, ReviewObjectiveDto dto, ISearchService searchService, HttpContext context, int deepLevel = 0)
         {
             context.Response.StatusCode = 405;
             return Task.CompletedTask;
@@ -158,12 +160,14 @@ namespace UI_DSM.Server.Modules
         /// <param name="reviewManager">The <see cref="IReviewManager" /></param>
         /// <param name="manager">The <see cref="IReviewObjectiveManager" /></param>
         /// <param name="reviewTaskManager">The <see cref="IReviewTaskManager" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="dto">The <see cref="ReviewObjectiveCreationDto" /></param>
         /// <param name="deepLevel">The optional deepLevel</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public async Task CreateEntityTemplate(IReviewManager reviewManager, IReviewObjectiveManager manager, IReviewTaskManager reviewTaskManager, HttpContext context,
+        public async Task CreateEntityTemplate(IReviewManager reviewManager, IReviewObjectiveManager manager, IReviewTaskManager reviewTaskManager, 
+            ISearchService searchService, HttpContext context,
             ReviewObjectiveCreationDto dto, int deepLevel = 0)
         {
             var template = this.reviewObjectivesTemplates.SingleOrDefault(x => x.ReviewObjectiveKind == dto.Kind
@@ -219,6 +223,13 @@ namespace UI_DSM.Server.Modules
             var identityResult = await manager.CreateEntityBasedOnTemplate(template, review);
             this.HandleOperationResult(requestResponse, context.Response, identityResult, 201, deepLevel);
             await context.Response.Negotiate(requestResponse);
+
+            if (identityResult.Succeeded)
+            {
+                var searchTask = identityResult.Entity.ReviewTasks.Select(x => (ReviewTaskDto)x.ToDto());
+                await searchService.IndexData((ReviewObjectiveDto)identityResult.Entity.ToDto());
+                await searchService.IndexData(searchTask);
+            }
         }
 
         /// <summary>
@@ -226,13 +237,13 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="reviewManager">The <see cref="IReviewManager" /></param>
         /// <param name="manager">The <see cref="IReviewObjectiveManager" /></param>
-        /// <param name="reviewTaskManager">The <see cref="IReviewTaskManager" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="dtos">The <see cref="List{ReviewObjectiveCreationDto}" /></param>
         /// <param name="deepLevel">The optional deepLevel</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public async Task CreateEntityTemplates(IReviewManager reviewManager, IReviewObjectiveManager manager, HttpContext context,
+        public async Task CreateEntityTemplates(IReviewManager reviewManager, IReviewObjectiveManager manager, HttpContext context, ISearchService searchService,
             List<ReviewObjectiveCreationDto> dtos, int deepLevel = 0)
         {
             var templates = this.reviewObjectivesTemplates.Where(x => dtos.Any(y => y.Kind == x.ReviewObjectiveKind
@@ -288,6 +299,15 @@ namespace UI_DSM.Server.Modules
             var identityResults = await manager.CreateEntityBasedOnTemplates(templates, review);
             this.HandleOperationResult(requestResponse, context.Response, identityResults, 201, deepLevel);
             await context.Response.Negotiate(requestResponse);
+
+            if (identityResults.Succeeded)
+            {
+                var searchObjective = identityResults.Entities.Select(x => (ReviewObjectiveDto)x.ToDto());
+                var searchTask = identityResults.Entities.SelectMany(x => x.ReviewTasks).Select(x => (ReviewTaskDto)x.ToDto());
+
+                await searchService.IndexData(searchObjective);
+                await searchService.IndexData(searchTask);
+            }
         }
 
         /// <summary>
@@ -295,10 +315,11 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="ReviewObjective" /> to delete</param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
         [Authorize]
-        public override async Task<RequestResponseDto> DeleteEntity(IEntityManager<ReviewObjective> manager, Guid entityId, HttpContext context)
+        public override async Task<RequestResponseDto> DeleteEntity(IEntityManager<ReviewObjective> manager, Guid entityId, ISearchService searchService, HttpContext context)
         {
             var participant = await this.GetParticipantBasedOnRequest(context, ProjectKey);
 
@@ -317,7 +338,7 @@ namespace UI_DSM.Server.Modules
                 };
             }
 
-            return await base.DeleteEntity(manager, entityId, context);
+            return await base.DeleteEntity(manager, entityId, searchService, context);
         }
 
         /// <summary>
@@ -326,11 +347,13 @@ namespace UI_DSM.Server.Modules
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="ReviewObjective" /></param>
         /// <param name="dto">The <see cref="ReviewObjectiveDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" />as result</returns>
         [Authorize]
-        public override async Task UpdateEntity(IEntityManager<ReviewObjective> manager, Guid entityId, ReviewObjectiveDto dto, HttpContext context, int deepLevel = 0)
+        public override async Task UpdateEntity(IEntityManager<ReviewObjective> manager, Guid entityId, ReviewObjectiveDto dto, ISearchService searchService,
+            HttpContext context, int deepLevel = 0)
         {
             var participant = await this.GetParticipantBasedOnRequest(context, ProjectKey);
 
@@ -339,7 +362,7 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            await base.UpdateEntity(manager, entityId, dto, context, deepLevel);
+            await base.UpdateEntity(manager, entityId, dto, searchService, context, deepLevel);
         }
 
         /// <summary>

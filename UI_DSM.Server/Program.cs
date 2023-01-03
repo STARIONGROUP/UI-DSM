@@ -36,7 +36,9 @@ namespace UI_DSM.Server
     using UI_DSM.Server.Services.AboutService;
     using UI_DSM.Server.Services.CometService;
     using UI_DSM.Server.Services.FileService;
+    using UI_DSM.Server.Services.ResolverService;
     using UI_DSM.Server.Services.RouteParserService;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Shared.Models;
 
     using LogLevel = Microsoft.Extensions.Logging.LogLevel;
@@ -85,10 +87,19 @@ namespace UI_DSM.Server
             builder.Services.AddSingleton<ICdp4JsonSerializer, Cdp4JsonSerializer>();
             builder.Services.AddSingleton<IJsonService, JsonService>();
             builder.Services.AddSingleton<ICometService, CometService>();
+            builder.Services.AddScoped<IResolverService, ResolverService>();
             var dateTime = DateTime.Now;
             builder.Services.AddSingleton<IAboutService, AboutService>( _ => new AboutService(dateTime));
             builder.Services.AddScoped<IRouteParserService, RouteParserService>();
             builder.Services.AddSingleton<IFileService, FileService>(_ => new FileService(builder.Configuration["StoragePath"]));
+            var searchEngineUrl = builder.Configuration["SearchEngine"];
+            
+            var searchHttp = new HttpClient()
+            {
+                BaseAddress = new Uri(searchEngineUrl)
+            };
+
+            builder.Services.AddSingleton<ISearchService, SearchService>(_ => new SearchService(searchHttp));
 
             builder.Services.AddRouting(options =>
             {

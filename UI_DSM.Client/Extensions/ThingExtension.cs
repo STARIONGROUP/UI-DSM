@@ -24,26 +24,6 @@ namespace UI_DSM.Client.Extensions
     public static class ThingExtension
     {
         /// <summary>
-        ///     Collection of <see cref="Category" /> name for <see cref="ElementDefinition" /> that should have a technology parameter
-        /// </summary>
-        private static readonly List<string> MandatoryCategoriesForTechnology = new()
-        {
-            "consumables",
-            "equipment",
-            "instruments",
-            "subequipment",
-            "thermal equipment"
-        };
-
-        /// <summary>
-        ///     Collection of <see cref="Category" /> name for <see cref="ElementDefinition" /> that should have a TRL parameter
-        /// </summary>
-        private static readonly List<string> MandatoryCategoriesForTrl = new()
-        {
-            "equipment"
-        };
-
-        /// <summary>
         ///     The name of the satisfy <see cref="Category" />
         /// </summary>
         public const string SatisfyCategoryName = "satisfies";
@@ -77,11 +57,36 @@ namespace UI_DSM.Client.Extensions
         ///     The name of the interface <see cref="Category" />
         /// </summary>
         public const string InterfaceCategoryName = "interfaces";
-        
+
         /// <summary>
-        ///     The name of the interface <see cref="Category" />
+        ///     The name of the trace <see cref="Category" />
         /// </summary>
         public const string TraceCategoryName = "trace";
+
+        /// <summary>
+        ///     The name of the review external content <see cref="Parameter" />
+        /// </summary>
+        public const string ReviewExternalContentName = "review external content";
+
+        /// <summary>
+        ///     Collection of <see cref="Category" /> name for <see cref="ElementDefinition" /> that should have a technology parameter
+        /// </summary>
+        private static readonly List<string> MandatoryCategoriesForTechnology = new()
+        {
+            "consumables",
+            "equipment",
+            "instruments",
+            "subequipment",
+            "thermal equipment"
+        };
+
+        /// <summary>
+        ///     Collection of <see cref="Category" /> name for <see cref="ElementDefinition" /> that should have a TRL parameter
+        /// </summary>
+        private static readonly List<string> MandatoryCategoriesForTrl = new()
+        {
+            "equipment"
+        };
 
         /// <summary>
         ///     Gets the value of a certain parameter
@@ -144,7 +149,7 @@ namespace UI_DSM.Client.Extensions
         public static bool HasValidReviewExternalContent(this ElementDefinition elementDefinition, List<string> prefilters)
         {
             var parameter = elementDefinition.Parameter
-                .FirstOrDefault(x => string.Equals(x.ParameterType.Name, "review external content", StringComparison.InvariantCultureIgnoreCase));
+                .FirstOrDefault(x => string.Equals(x.ParameterType.Name, ReviewExternalContentName, StringComparison.InvariantCultureIgnoreCase));
 
             if (parameter == null)
             {
@@ -164,7 +169,7 @@ namespace UI_DSM.Client.Extensions
         public static bool HasValidReviewExternalContent(this Requirement requirement, List<string> prefilters)
         {
             var parameter = requirement.ParameterValue
-                .FirstOrDefault(x => string.Equals(x.ParameterType.Name, "review external content", StringComparison.InvariantCultureIgnoreCase));
+                .FirstOrDefault(x => string.Equals(x.ParameterType.Name, ReviewExternalContentName, StringComparison.InvariantCultureIgnoreCase));
 
             if (parameter == null)
             {
@@ -173,6 +178,28 @@ namespace UI_DSM.Client.Extensions
 
             var values = parameter.Value;
             return values.Any(x => prefilters.Any(prefilter => prefilter == x));
+        }
+
+        /// <summary>
+        ///     Asserts that a <see cref="ElementDefinition" /> has a parameter value Review External Content
+        /// </summary>
+        /// <param name="elementDefinition">The <see cref="ElementDefinition" /></param>
+        /// <returns>True if contains the parameter value</returns>
+        public static bool HasReviewExternalContent(this ElementDefinition elementDefinition)
+        {
+            return elementDefinition.Parameter
+                .Any(x => string.Equals(x.ParameterType.Name, ReviewExternalContentName, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        /// <summary>
+        ///     Asserts that a <see cref="Requirement" /> has a parameter value Review External Content
+        /// </summary>
+        /// <param name="requirement">The <see cref="Requirement" /></param>
+        /// <returns>True if contains the parameter value</returns>
+        public static bool HasReviewExternalContent(this Requirement requirement)
+        {
+            return requirement.ParameterValue
+                .Any(x => string.Equals(x.ParameterType.Name, ReviewExternalContentName, StringComparison.InvariantCultureIgnoreCase));
         }
 
         /// <summary>
@@ -358,6 +385,46 @@ namespace UI_DSM.Client.Extensions
         public static bool ShouldHaveTrlParameter(this ElementBase elementBase)
         {
             return elementBase.IsCategorizedBy(MandatoryCategoriesForTrl);
+        }
+
+        /// <summary>
+        ///     Gets the specific category name base on a <see cref="Thing" />
+        /// </summary>
+        /// <param name="thing">The <see cref="Thing" /></param>
+        /// <returns>The name of the category if any</returns>
+        public static string GetSpecificCategoryForThing(this Thing thing)
+        {
+            return thing switch
+            {
+                ElementBase elementBase when elementBase.IsProduct() => ProductCategoryName,
+                ElementBase elementBase when elementBase.IsFunction() => FunctionCategoryName,
+                ElementBase elementBase when elementBase.IsPort() => PortCategoryName,
+                BinaryRelationship binaryRelationship when binaryRelationship.IsInterface() => InterfaceCategoryName,
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(DeriveCategoryName) => DeriveCategoryName,
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(TraceCategoryName) => TraceCategoryName,
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(ImplementCategoryName) => ImplementCategoryName,
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(SatisfyCategoryName) && binaryRelationship.Source is ElementBase elementBase && elementBase.IsProduct() => $"{SatisfyCategoryName} product",
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(SatisfyCategoryName) && binaryRelationship.Source is ElementBase elementBase && elementBase.IsFunction() => $"{SatisfyCategoryName} function",
+                _ => string.Empty
+            };
+        }
+
+        /// <summary>
+        ///     Gets the specific name of a <see cref="Thing" />
+        /// </summary>
+        /// <param name="thing">The <see cref="Thing" /></param>
+        /// <returns>The name of the <see cref="Thing" /></returns>
+        public static string GetSpecificNameForThing(this Thing thing)
+        {
+            return thing switch
+            {
+                ElementDefinition elementDefinition => elementDefinition.Name,
+                ElementUsage elementUsage => $"{((ElementDefinition)elementUsage.Container).Name}.{elementUsage.Name}",
+                BinaryRelationship binaryRelationship => $"{binaryRelationship.Source.GetSpecificNameForThing()} -> {binaryRelationship.Target.GetSpecificNameForThing()}",
+                Requirement requirement => requirement.ShortName,
+                HyperLink hyperLink => hyperLink.Content,
+                _ => thing.GetName()
+            };
         }
 
         /// <summary>

@@ -21,7 +21,6 @@ namespace UI_DSM.Server.Tests.Managers
 
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Managers.ModelManager;
-    using UI_DSM.Server.Services.CometService;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -150,6 +149,29 @@ namespace UI_DSM.Server.Tests.Managers
 
             await this.manager.ResolveProperties(model, dto);
             Assert.That(model.ModelName, Is.EqualTo(((ModelDto)dto).ModelName));
+        }
+
+        [Test]
+        public async Task VerifyGetSearchResult()
+        {
+            var model = new Model(Guid.NewGuid())
+            {
+                EntityContainer = new Project(Guid.NewGuid())
+            };
+
+            var result = await this.manager.GetSearchResult(model.Id);
+            Assert.That(result, Is.Null);
+
+            this.modelDbSet.UpdateDbSetCollection(new List<Model> { model });
+            result = await this.manager.GetSearchResult(model.Id);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var result = await this.manager.GetExtraEntitiesToUnindex(Guid.NewGuid());
+            Assert.That(result, Is.Empty);
         }
     }
 }

@@ -156,5 +156,28 @@ namespace UI_DSM.Server.Tests.Managers
             operationResult = await this.manager.RegisterUser(user, "pass");
             Assert.That(operationResult.Succeeded, Is.False);
         }
+
+        [Test]
+        public async Task VerifyGetSearchResult()
+        {
+            var userEntity = new UserEntity(Guid.NewGuid())
+            {
+                EntityContainer = new Project(Guid.NewGuid())
+            };
+
+            var result = await this.manager.GetSearchResult(userEntity.Id);
+            Assert.That(result, Is.Null);
+
+            this.userDbSet.UpdateDbSetCollection(new List<UserEntity> { userEntity });
+            result = await this.manager.GetSearchResult(userEntity.Id);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var result = await this.manager.GetExtraEntitiesToUnindex(Guid.NewGuid());
+            Assert.That(result, Is.Empty);
+        }
     }
 }

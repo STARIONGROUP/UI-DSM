@@ -16,6 +16,7 @@ namespace UI_DSM.Server.Managers.ArtifactManager
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Managers.ModelManager;
     using UI_DSM.Server.Types;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
@@ -168,6 +169,27 @@ namespace UI_DSM.Server.Managers.ArtifactManager
                     await this.modelManager.ResolveProperties(model, dto);
                     break;
             }
+        }
+
+        /// <summary>
+        ///     Gets the <see cref="SearchResultDto"/> based on a <see cref="Guid"/>
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Artifact" /></param>
+        /// <returns>A URL</returns>
+        public async Task<SearchResultDto> GetSearchResult(Guid entityId)
+        {
+            await Task.CompletedTask;
+            return null;
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Entity" /> that needs to be unindexed when the current <see cref="Entity" /> is delete
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the entity</param>
+        /// <returns>A collection of <see cref="Entity" /></returns>
+        public Task<IEnumerable<Entity>> GetExtraEntitiesToUnindex(Guid entityId)
+        {
+            return this.modelManager.GetExtraEntitiesToUnindex(entityId);
         }
 
         /// <summary>

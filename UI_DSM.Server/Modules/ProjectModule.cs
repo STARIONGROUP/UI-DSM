@@ -23,6 +23,7 @@ namespace UI_DSM.Server.Modules
     using UI_DSM.Server.Managers;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ProjectManager;
+    using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
@@ -128,13 +129,14 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="dto">The <see cref="ProjectDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService"/></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize(Roles = "Administrator")]
-        public override Task CreateEntity(IEntityManager<Project> manager, ProjectDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
+        public override Task CreateEntity(IEntityManager<Project> manager, ProjectDto dto, ISearchService searchService, HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.CreateEntity(manager, dto, context, deepLevel);
+            return base.CreateEntity(manager, dto, searchService, context, deepLevel);
         }
 
         /// <summary>
@@ -142,12 +144,13 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Project" /> to delete</param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
         [Authorize(Roles = "Administrator")]
-        public override Task<RequestResponseDto> DeleteEntity(IEntityManager<Project> manager, Guid entityId, HttpContext context)
+        public override Task<RequestResponseDto> DeleteEntity(IEntityManager<Project> manager, Guid entityId, ISearchService searchService, HttpContext context)
         {
-            return base.DeleteEntity(manager, entityId, context);
+            return base.DeleteEntity(manager, entityId, searchService, context);
         }
 
         /// <summary>
@@ -156,26 +159,28 @@ namespace UI_DSM.Server.Modules
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Project" /></param>
         /// <param name="dto">The <see cref="ProjectDto" /></param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize(Roles = "Administrator")]
-        public override Task UpdateEntity(IEntityManager<Project> manager, Guid entityId, ProjectDto dto, HttpContext context, [FromQuery] int deepLevel = 0)
+        public override Task UpdateEntity(IEntityManager<Project> manager, Guid entityId, ProjectDto dto, ISearchService searchService,
+            HttpContext context, [FromQuery] int deepLevel = 0)
         {
-            return base.UpdateEntity(manager, entityId, dto, context, deepLevel);
+            return base.UpdateEntity(manager, entityId, dto, searchService, context, deepLevel);
         }
 
         /// <summary>
         ///     Gets, for all <see cref="Project" />, the number of open <see cref="ReviewTask" /> and <see cref="Comment" />
         ///     related to the <see cref="Project" />
         /// </summary>
-        /// <param name="projectManager">The <see cref="IProjectManager"/></param>
-        /// <param name="context">The <see cref="HttpContext"/></param>
-        /// <returns>A <see cref="Task"/></returns>
+        /// <param name="projectManager">The <see cref="IProjectManager" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns>A <see cref="Task" /></returns>
         [Authorize]
         public async Task GetOpenTasksAndComments(IProjectManager projectManager, HttpContext context)
         {
-            var projectsId = (await projectManager.GetAvailableProjectsForUser(context.User.Identity?.Name)).Select(x => x.Id) ;
+            var projectsId = (await projectManager.GetAvailableProjectsForUser(context.User.Identity?.Name)).Select(x => x.Id);
 
             var computedProperties = await projectManager.GetOpenTasksAndComments(projectsId, context.User.Identity?.Name);
             await context.Response.Negotiate(computedProperties);

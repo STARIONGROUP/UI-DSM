@@ -161,5 +161,25 @@ namespace UI_DSM.Server.Tests.Managers
             var creationResult = this.manager.DeleteEntity(role).Result;
             Assert.That(creationResult.Succeeded, Is.False);
         }
+
+        [Test]
+        public async Task VerifyGetSearchResult()
+        {
+            var role = new Role(Guid.NewGuid());
+
+            var result = await this.manager.GetSearchResult(role.Id);
+            Assert.That(result, Is.Null);
+
+            this.roleDbSet.UpdateDbSetCollection(new List<Role> { role });
+            result = await this.manager.GetSearchResult(role.Id);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var result = await this.manager.GetExtraEntitiesToUnindex(Guid.NewGuid());
+            Assert.That(result, Is.Empty);
+        }
     }
 }

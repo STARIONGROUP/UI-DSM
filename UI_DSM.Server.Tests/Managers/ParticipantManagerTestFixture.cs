@@ -320,5 +320,44 @@ namespace UI_DSM.Server.Tests.Managers
             var participant = await this.manager.GetParticipantForProject(project.Id, "user3");
             Assert.That(participant, Is.EqualTo(participants.First()));
         }
+
+        [Test]
+        public async Task VerifyGetSearchResult()
+        {
+            var participant = new Participant(Guid.NewGuid())
+            {
+                EntityContainer = new Project(Guid.NewGuid())
+            };
+
+            var result = await this.manager.GetSearchResult(participant.Id);
+            Assert.That(result, Is.Null);
+
+            this.participantDbSet.UpdateDbSetCollection(new List<Participant> { participant });
+            result = await this.manager.GetSearchResult(participant.Id);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task VerifyGetExtraEntitiesToUnindex()
+        {
+            var participant = new Participant(Guid.NewGuid())
+            {
+                Annotations = new List<Annotation>
+                {
+                    new Comment(Guid.NewGuid())
+                    {
+                        Replies = { new Reply(Guid.NewGuid()) }
+                    }
+                }
+            };
+
+            var result = await this.manager.GetExtraEntitiesToUnindex(participant.Id);
+            Assert.That(result, Is.Empty);
+
+            this.participantDbSet.UpdateDbSetCollection(new List<Participant>{participant});
+
+            result = await this.manager.GetExtraEntitiesToUnindex(participant.Id);
+            Assert.That(result.ToList(), Has.Count.EqualTo(2));
+        }
     }
 }

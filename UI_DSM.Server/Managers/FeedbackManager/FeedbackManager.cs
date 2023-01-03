@@ -13,10 +13,12 @@
 
 namespace UI_DSM.Server.Managers.FeedbackManager
 {
+    using Microsoft.EntityFrameworkCore;
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Managers.AnnotatableItemManager;
     using UI_DSM.Server.Managers.ParticipantManager;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
@@ -63,6 +65,42 @@ namespace UI_DSM.Server.Managers.FeedbackManager
             relatedEntities.InsertEntityCollection(await this.annotatableItemManager.FindEntities(feedbackDto.AnnotatableItems));
 
             entity.ResolveProperties(feedbackDto, relatedEntities);
+        }
+
+        /// <summary>
+        ///     Gets the <see cref="SearchResultDto"/> based on a <see cref="Guid"/>
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Feedback" /></param>
+        /// <returns>A URL</returns>
+        public override async Task<SearchResultDto> GetSearchResult(Guid entityId)
+        {
+            var feedback = await this.EntityDbSet.Where(x => x.Id == entityId)
+                .Include(x => x.EntityContainer).FirstOrDefaultAsync();
+
+            if(feedback == null)
+            {
+                return null;
+            }
+
+            var route = $"Project/{feedback.EntityContainer.Id}/Feedback/{feedback.Id}";
+            
+            return new SearchResultDto()
+            {
+                BaseUrl = route,
+                ObjectKind = nameof(Feedback),
+                DisplayText = feedback.Content
+            };
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Entity" /> that needs to be unindexed when the current <see cref="Entity" /> is delete
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the entity</param>
+        /// <returns>A collection of <see cref="Entity" /></returns>
+        public override async Task<IEnumerable<Entity>> GetExtraEntitiesToUnindex(Guid entityId)
+        {
+            await Task.CompletedTask;
+            return Enumerable.Empty<Entity>();
         }
 
         /// <summary>

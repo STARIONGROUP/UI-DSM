@@ -21,6 +21,7 @@ namespace UI_DSM.Server.Managers.CommentManager
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReplyManager;
     using UI_DSM.Server.Types;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
@@ -76,6 +77,44 @@ namespace UI_DSM.Server.Managers.CommentManager
             relatedEntities.InsertEntityCollection(await this.replyManager.FindEntities(commentDto.Replies));
 
             entity.ResolveProperties(commentDto, relatedEntities);
+        }
+
+        /// <summary>
+        ///     Gets the <see cref="SearchResultDto"/> based on a <see cref="Guid"/>
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Comment" /></param>
+        /// <returns>A URL</returns>
+        public override async Task<SearchResultDto> GetSearchResult(Guid entityId)
+        {
+            var comment = await this.EntityDbSet.Where(x => x.Id == entityId)
+                .Include(x => x.EntityContainer).FirstOrDefaultAsync();
+
+            if (comment == null)
+            {
+                return null;
+            }
+
+            var route= $"Project/{comment.EntityContainer.Id}/Comment/{comment.Id}";
+
+            return new SearchResultDto()
+            {
+                ObjectKind = nameof(Comment),
+                BaseUrl = route,
+                DisplayText = comment.Content
+            };
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Entity" /> that needs to be unindexed when the current <see cref="Entity" /> is delete
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the entity</param>
+        /// <returns>A collection of <see cref="Entity" /></returns>
+        public override async Task<IEnumerable<Entity>> GetExtraEntitiesToUnindex(Guid entityId)
+        {
+            var comment = await this.EntityDbSet.Where(x => x.Id == entityId)
+                .Include(x => x.Replies).FirstOrDefaultAsync();
+
+            return comment == null ? Enumerable.Empty<Entity>() : comment.Replies;
         }
 
         /// <summary>

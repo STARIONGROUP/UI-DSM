@@ -18,6 +18,7 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
     using UI_DSM.Server.Managers.ReviewItemManager;
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
     using UI_DSM.Server.Types;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
 
@@ -152,6 +153,29 @@ namespace UI_DSM.Server.Managers.AnnotatableItemManager
         public Task ResolveProperties(AnnotatableItem entity, EntityDto dto)
         {
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        ///     Gets the <see cref="SearchResultDto"/> based on a <see cref="Guid"/>
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the <see cref="AnnotatableItem" /></param>
+        /// <returns>A URL</returns>
+        public async Task<SearchResultDto> GetSearchResult(Guid entityId)
+        {
+            await Task.CompletedTask;
+            return null;
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Entity" /> that needs to be unindexed when the current <see cref="Entity" /> is delete
+        /// </summary>
+        /// <param name="entityId">The <see cref="Guid" /> of the entity</param>
+        /// <returns>A collection of <see cref="Entity" /></returns>
+        public async Task<IEnumerable<Entity>> GetExtraEntitiesToUnindex(Guid entityId)
+        {
+            var entities = new List<Entity>(await this.reviewItemManager.GetExtraEntitiesToUnindex(entityId));
+            entities.AddRange(await this.reviewObjectiveManager.GetExtraEntitiesToUnindex(entityId));
+            return entities;
         }
     }
 }
