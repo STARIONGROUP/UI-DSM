@@ -18,7 +18,7 @@
      @onmouseover="@((e) => this.OverClass = "over")"
      @onmouseout="@((e) =>  this.OverClass = "")">
 
-    @(this.Node.Title ?? "Title")
+    @(this.Node?.Title ?? "Title")
 
     @{
         var nodePorts = this.Node.Ports.Cast<DiagramPort>();

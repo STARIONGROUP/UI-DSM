@@ -22,6 +22,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using CDP4Common.EngineeringModelData;
     using CDP4Common.Types;
     using CDP4Dal;
+    using CDP4JsonSerializer;
     using DevExpress.Blazor.Popup.Internal;
     using Feather.Blazor.Icons;
     using Microsoft.AspNetCore.Components.Web;
@@ -36,12 +37,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.Components.Widgets;
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Model;
+    using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
+    using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.Models;
 
     using BinaryRelationship = CDP4Common.DTO.BinaryRelationship;
@@ -52,6 +55,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     [TestFixture]
     public class PhysicalFlowViewTestFixture
     {
+        private Mock<IInterfaceViewViewModel> viewModelMock;
         private IInterfaceViewViewModel viewModel;
         private Mock<IReviewItemService> reviewItemService;
         private TestContext context;
@@ -70,7 +74,15 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 this.context.ConfigureDevExpressBlazor();
                 this.reviewItemService = new Mock<IReviewItemService>();
                 this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel());
-                this.context.Services.AddSingleton(this.viewModel);
+                
+                this.context.Services.AddSingleton(this.viewModel);                
+
+                this.context.Services.AddTransient<ICdp4JsonSerializer, Cdp4JsonSerializer>();
+                this.context.Services.AddTransient<IJsonSerializer, JsonSerializer>();
+                this.context.Services.AddTransient<IJsonDeserializer, JsonDeserializer>();
+                this.context.Services.AddTransient<IJsonService, JsonService>();
+                this.context.Services.AddTransient<IReviewItemService, ReviewItemService>();
+                this.context.Services.AddTransient<IDocumentBasedViewModel, DocumentBasedViewModel>();
                 this.context.Services.AddTransient<IFilterViewModel, FilterViewModel>();
                 this.context.Services.AddTransient<IConnectionVisibilitySelectorViewModel, ConnectionVisibilitySelectorViewModel>();
                 this.context.JSInterop.Setup<Rectangle>("ZBlazorDiagrams.getBoundingClientRect", _ => true);
@@ -80,32 +92,32 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var interfaceCategoryId = Guid.NewGuid();
 
                 var categories = new List<Category>
-            {
-                new()
                 {
-                    Iid = portCategoryId,
-                    Name = "ports"
-                },
-                new()
-                {
-                    Iid = interfaceCategoryId,
-                    Name = "interfaces"
-                },
-                new()
-                {
-                    Iid = productCategoryId,
-                    Name = "products"
-                }
-            };
+                    new()
+                    {
+                        Iid = portCategoryId,
+                        Name = "ports"
+                    },
+                    new()
+                    {
+                        Iid = interfaceCategoryId,
+                        Name = "interfaces"
+                    },
+                    new()
+                    {
+                        Iid = productCategoryId,
+                        Name = "products"
+                    }
+                };
 
                 var portDefinition = new ElementDefinition()
                 {
                     Iid = Guid.NewGuid(),
                     Name = "Port",
                     Category =
-                {
-                    portCategoryId
-                }
+                    {
+                        portCategoryId
+                    }
                 };
 
                 var notConnectedPort = new ElementUsage()
@@ -114,9 +126,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Name = "Port_ACC",
                     ElementDefinition = portDefinition.Iid,
                     Category =
-                {
-                    portCategoryId
-                }
+                    {
+                        portCategoryId
+                    }
                 };
 
                 var sourcePort = new ElementUsage()
@@ -126,9 +138,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     ElementDefinition = portDefinition.Iid,
                     InterfaceEnd = InterfaceEndKind.INPUT,
                     Category =
-                {
-                    portCategoryId
-                }
+                    {
+                        portCategoryId
+                    }
                 };
 
                 var targetPort = new ElementUsage()
@@ -138,9 +150,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     ElementDefinition = portDefinition.Iid,
                     InterfaceEnd = InterfaceEndKind.OUTPUT,
                     Category =
-                {
-                    portCategoryId
-                }
+                    {
+                        portCategoryId
+                    }
                 };
 
                 var accelorometerBox = new ElementDefinition()
@@ -177,15 +189,15 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var assembler = new Assembler(new Uri("http://localhost"));
 
                 var things = new List<Thing>(categories)
-            {
-                sourcePort,
-                targetPort,
-                notConnectedPort,
-                accelorometerBox,
-                powerGenerator,
-                interfaceRelationShip,
-                emptyProduct
-            };
+                {
+                    sourcePort,
+                    targetPort,
+                    notConnectedPort,
+                    accelorometerBox,
+                    powerGenerator,
+                    interfaceRelationShip,
+                    emptyProduct
+                };
 
                 assembler.Synchronize(things).Wait();
                 _ = assembler.Cache.Select(x => x.Value.Value);
@@ -349,15 +361,34 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var oldViewModel = anotherView.ViewModel;
                 this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new int[] { 100, 80 });
 
-                await this.renderer.InvokeAsync(() => this.renderer.Instance.CopyComponents(anotherView));
+                Task<bool> result = Task.FromResult(false);
+                await this.renderer.InvokeAsync(() => result = this.renderer.Instance.CopyComponents(anotherView));
                 var newViewModel = this.renderer.Instance.ViewModel;
 
                 Assert.That(oldViewModel, Is.EqualTo(newViewModel));
+                Assert.IsTrue(result.Result);
             }
             catch
             {
                 // On GitHub, exception is thrown even if the JSRuntime has been configured
             }
+        }
+
+        [Test]
+        public async Task VerifyThatComponentsAreNotCopied()
+        {
+            var component = this.context.RenderComponent<DocumentBased>();
+            var anotherView = component.Instance;
+
+            var oldViewModel = anotherView.ViewModel;
+            this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new int[] { 100, 80 });
+
+            Task<bool> result = Task.FromResult(false);
+            await this.renderer.InvokeAsync(() => result = this.renderer.Instance.CopyComponents(anotherView));
+            var newViewModel = this.renderer.Instance.ViewModel;
+
+            Assert.That(oldViewModel, Is.Not.EqualTo(newViewModel));
+            Assert.IsFalse(result.Result);
         }
 
         [Test]
@@ -403,6 +434,29 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             {
                 // On GitHub, exception is thrown even if the JSRuntime has been configured
             }
+        }
+
+        [Test]
+        public async Task VerifyThatDoubleClickOnModelWorks()
+        {            
+            var diagramNode = this.viewModel.ProductsMap.Keys.Last();
+            await this.renderer.InvokeAsync(() => this.renderer.Instance.MouseDoubleClickOnModel(diagramNode, new Blazor.Diagrams.Core.Geometry.Point(0, 0)));
+            Assert.That(this.viewModel.ProductsMap, Has.Count.GreaterThan(0));
+
+            var link = this.viewModel.InterfacesMap.Keys.Last();
+            Assert.That(link.Vertices.Count == 0);
+            await this.renderer.InvokeAsync(() => this.renderer.Instance.MouseDoubleClickOnModel(link, new Blazor.Diagrams.Core.Geometry.Point(0, 0)));
+            Assert.That(link.Vertices.Count > 0);
+        }
+
+        [Test]
+        public void VerifyThatMouseUpOnModelWorks()
+        {
+            var diagramNode = this.viewModel.ProductsMap.Keys.Last();
+            var previousSelectedElement = this.renderer.Instance.ViewModel.SelectedElement;
+            this.renderer.Instance.MouseUpOnComponent(diagramNode);
+            var lastSelectedElement = this.renderer.Instance.ViewModel.SelectedElement;
+            Assert.That(lastSelectedElement, Is.Not.EqualTo(previousSelectedElement));
         }
     }
 }

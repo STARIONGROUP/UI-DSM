@@ -67,6 +67,11 @@ namespace UI_DSM.Client.Components.Widgets
         private List<Point> Points = new List<Point>();
 
         /// <summary>
+        /// Gets the points used to position the ports in this node.
+        /// </summary>
+        public IReadOnlyList<Point> PortsCoordinates => this.Points.AsReadOnly();
+
+        /// <summary>
         /// Method invoked after each time the component has been rendered. Note that the component does
         /// not automatically re-render after the completion of any returned <see cref="Task"/>, because
         /// that would cause an infinite render loop.
@@ -87,12 +92,23 @@ namespace UI_DSM.Client.Components.Widgets
             if (firstRender)
             {
                 var dimensions = await this.JSRuntime.InvokeAsync<int[]>("GetNodeDimensions", this.DivReference);
-                this.Width = dimensions[0];
-                this.Height = dimensions[1];
-                this.CalculateRectangularDistance();
+                                
+                this.Width = dimensions != null ? dimensions[0] : 100;
+                this.Height = dimensions != null ? dimensions[1] : 80;
+                this.CalculatePortsPositions();
             }
 
             await base.OnAfterRenderAsync(firstRender);
+        }
+
+        /// <summary>
+        /// Calculates the positions of the corresponding ports
+        /// </summary>
+        public void CalculatePortsPositions()
+        {
+            this.Points.Clear();
+            this.CalculateRectangularDistance();
+            this.StateHasChanged();
         }
 
         /// <summary>
@@ -100,18 +116,14 @@ namespace UI_DSM.Client.Components.Widgets
         /// </summary>
         private void CalculateRectangularDistance()
         {
-            this.Points.Clear();
-
             var p = this.Width/2.0;
             var q = this.Height/2.0;
 
             var totalNodes = this.Node.Ports.Cast<DiagramPort>();
             var t = 0.0;
-            var tDelta = (2.0 * (this.Width + this.Height)) / totalNodes.Count();
+            var tDelta = (2.0 * Math.PI) / totalNodes.Count();
 
-            tDelta = (2.0 * Math.PI) / totalNodes.Count();
-
-            foreach (var port in this.Node.Ports.Cast<DiagramPort>())
+            foreach (var port in totalNodes)
             {
                 var cos = Math.Cos(t);
                 var sin = Math.Sin(t);
@@ -123,9 +135,6 @@ namespace UI_DSM.Client.Components.Widgets
 
                 t += tDelta;
             }
-
-            this.StateHasChanged();
-            this.Node.ReinitializePorts();
         }
     }
 }

@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.Components.NormalUser.Views
 {
     using Blazor.Diagrams.Core;
+    using Blazor.Diagrams.Core.Geometry;
     using Blazor.Diagrams.Core.Models;
     using Blazor.Diagrams.Core.Models.Base;
 
@@ -155,20 +156,8 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             if (args.Button == 0)
             {
-                if(model is DiagramNode diagramNode && this.ViewModel.ProductsMap.ContainsKey(diagramNode))
-                {
-                    var productRowViewModel = this.ViewModel.ProductsMap[diagramNode];
-                    this.ViewModel.CreateNeighboursAndPositionAroundProduct(productRowViewModel);
-                    this.RefreshDiagram();
-                }
-                else if(model is DiagramLink diagramLink)
-                {
-                    var vertex = new LinkVertexModel(diagramLink, new Blazor.Diagrams.Core.Geometry.Point(args.OffsetX, args.OffsetY));
-                    diagramLink.Vertices.Add(vertex);
-                    this.ViewModel.CreateInterfacesLinks();
-                    this.Diagram.Refresh();
-                }
-            }
+                this.MouseDoubleClickOnModel(model, new Point(args.OffsetX, args.OffsetY));
+            }            
         }
 
         /// <summary>
@@ -181,8 +170,38 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             //Right button
             if (args.Button == 0)
             {
-                this.ViewModel.SetSelectedModel(model);
+                this.MouseUpOnComponent(model);
             }
+        }
+
+        /// <summary>
+        /// Mouse double click on a diagram's model
+        /// </summary>
+        /// <param name="model">the model double clicked</param>
+        public void MouseDoubleClickOnModel(Model model, Point point)
+        {
+            if (model is DiagramNode diagramNode && this.ViewModel.ProductsMap.ContainsKey(diagramNode))
+            {
+                var productRowViewModel = this.ViewModel.ProductsMap[diagramNode];
+                this.ViewModel.CreateNeighboursAndPositionAroundProduct(productRowViewModel);
+                this.RefreshDiagram();
+            }
+            else if (model is DiagramLink diagramLink)
+            {
+                var vertex = new LinkVertexModel(diagramLink, point);
+                diagramLink.Vertices.Add(vertex);
+                this.ViewModel.CreateInterfacesLinks();
+                this.Diagram.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Mouse up on a diagram's model
+        /// </summary>
+        /// <param name="model">the model clicked</param>
+        public void MouseUpOnComponent(Model model)
+        {
+            this.ViewModel.SetSelectedModel(model);
         }
     }
 }
