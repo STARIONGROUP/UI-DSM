@@ -10,11 +10,11 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 
-@namespace AppComponents
-
 <label class="search-bar">
-  <span class="search-bar__icon">
-    <FeatherSearch Color="#5C6370" />
-  </span>
-  <input class="search-bar__input" placeholder="search" />
+	<form @onsubmit="@this.Search">	
+		<span class="search-bar__icon">
+			<button type="submit"><FeatherSearch Color="#5C6370" /></button>
+		</span>
+		<input class="search-bar__input" placeholder="search" @bind="@this.Keyword"/>
+	</form>
 </label>

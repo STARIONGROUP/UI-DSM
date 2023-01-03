@@ -124,7 +124,7 @@ namespace UI_DSM.Server.Managers.UserManager
 
             return new SearchResultDto()
             {
-                BaseUrl = $"User/{user.Id}",
+                BaseUrl = $"/Administration/UserManagement",
                 DisplayText = user.UserName,
                 ObjectKind = nameof(User)
             };

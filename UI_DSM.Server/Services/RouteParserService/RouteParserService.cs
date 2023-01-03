@@ -15,6 +15,7 @@ namespace UI_DSM.Server.Services.RouteParserService
 {
     using System.Text;
 
+    using UI_DSM.Server.Managers.ModelManager;
     using UI_DSM.Server.Managers.ProjectManager;
     using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
@@ -48,6 +49,11 @@ namespace UI_DSM.Server.Services.RouteParserService
         ///     The <see cref="ParsedUrlDto" /> for the index page
         /// </summary>
         private readonly ParsedUrlDto index = new("Home", "/");
+
+        /// <summary>
+        ///     The <see cref="IModelManager" />
+        /// </summary>
+        private readonly IModelManager modelManager;
 
         /// <summary>
         ///     The <see cref="IProjectManager" />
@@ -88,8 +94,9 @@ namespace UI_DSM.Server.Services.RouteParserService
         /// <param name="reviewTaskManager">The <see cref="IReviewTaskManager" /></param>
         /// <param name="userManager">The <see cref="IUserManager" /></param>
         /// <param name="roleManager">The <see cref="IRoleManager" /></param>
+        /// <param name="modelManager">The <see cref="IModelManager" /></param>
         public RouteParserService(IProjectManager projectManager, IReviewManager reviewManager, IReviewObjectiveManager reviewObjectiveManager,
-            IReviewTaskManager reviewTaskManager, IUserManager userManager, IRoleManager roleManager)
+            IReviewTaskManager reviewTaskManager, IUserManager userManager, IRoleManager roleManager, IModelManager modelManager)
         {
             this.projectManager = projectManager;
             this.reviewManager = reviewManager;
@@ -97,6 +104,7 @@ namespace UI_DSM.Server.Services.RouteParserService
             this.reviewTaskManager = reviewTaskManager;
             this.userManager = userManager;
             this.roleManager = roleManager;
+            this.modelManager = modelManager;
         }
 
         /// <summary>
@@ -111,7 +119,7 @@ namespace UI_DSM.Server.Services.RouteParserService
                 return new List<ParsedUrlDto> { this.index };
             }
 
-            var splittedUrl = url.Split('/').Where(x => !string.IsNullOrEmpty(x)).ToList();
+            var splittedUrl = url.Split('?')[0].Split('/').Where(x => !string.IsNullOrEmpty(x)).ToList();
 
             if (url.StartsWith(AdministrationPrefix, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -170,7 +178,7 @@ namespace UI_DSM.Server.Services.RouteParserService
         /// <returns>A <see cref="Task" /> with a collection of <see cref="ParsedUrlDto" /></returns>
         private async Task<List<ParsedUrlDto>> ParseAdministrationUrl(IReadOnlyList<string> splittedUrl)
         {
-            var parsedUrlDtos = new List<ParsedUrlDto>() { this.index };
+            var parsedUrlDtos = new List<ParsedUrlDto> { this.index };
             var managementIndex = splittedUrl[1].IndexOf(AdministrationPostfix, StringComparison.InvariantCultureIgnoreCase);
             var pageName = managementIndex == -1 ? splittedUrl[1] : splittedUrl[1].Remove(managementIndex, splittedUrl[1].Length - managementIndex);
             parsedUrlDtos.Add(new ParsedUrlDto($"{pageName} Management", $"{AdministrationPrefix}{pageName}{AdministrationPostfix}"));
@@ -260,6 +268,12 @@ namespace UI_DSM.Server.Services.RouteParserService
             {
                 var reviewTask = await this.reviewTaskManager.FindEntity(entityId);
                 return reviewTask?.Description;
+            }
+
+            if (string.Equals(typeName, nameof(Model), StringComparison.InvariantCultureIgnoreCase))
+            {
+                var model = await this.modelManager.FindEntity(entityId);
+                return model?.ModelName;
             }
 
             return string.Empty;

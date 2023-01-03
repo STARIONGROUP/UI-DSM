@@ -94,7 +94,8 @@ namespace UI_DSM.Server.Managers.ReviewItemManager
             {
                 DisplayText = "Review Item",
                 BaseUrl = url,
-                ObjectKind = nameof(ReviewItem)
+                ObjectKind = nameof(ReviewItem),
+                Location = $"{((Project)reviewItem.EntityContainer.EntityContainer).ProjectName} > {((Review)reviewItem.EntityContainer).Title}"
             };
         }
 

@@ -134,7 +134,8 @@ namespace UI_DSM.Server.Managers.ReviewManager
             {
                 BaseUrl = route, 
                 DisplayText = review.Title,
-                ObjectKind = nameof(Review)
+                ObjectKind = nameof(Review),
+                Location = ((Project)review.EntityContainer).ProjectName
             };
         }
 
@@ -152,12 +153,10 @@ namespace UI_DSM.Server.Managers.ReviewManager
                 .ThenInclude(x => x.ReviewTasks)
                 .Include(x => x.ReviewObjectives)
                 .ThenInclude(x => x.Annotations)
-                .Include(x => x.ReviewObjectives)
-                .ThenInclude(x => x.Annotations.OfType<Comment>())
-                .ThenInclude(x => x.Replies)
+                .ThenInclude(x => (x as Comment).Replies)
                 .Include(x => x.ReviewItems)
-                .ThenInclude(x => x.Annotations.OfType<Comment>())
-                .ThenInclude(x => x.Replies)
+                .ThenInclude(x => x.Annotations)
+                .ThenInclude(x => (x as Comment).Replies)
                 .FirstOrDefaultAsync();
 
             if (review == null)

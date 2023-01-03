@@ -103,7 +103,8 @@ namespace UI_DSM.Server.Managers.ModelManager
             {
                 BaseUrl = route,
                 ObjectKind = nameof(Model),
-                DisplayText = model.ModelName
+                DisplayText = model.ModelName,
+                Location = ((Project)model.EntityContainer).ProjectName
             };
         }
     }

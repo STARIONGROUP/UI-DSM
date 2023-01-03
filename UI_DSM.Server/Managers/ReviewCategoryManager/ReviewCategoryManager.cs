@@ -62,7 +62,7 @@ namespace UI_DSM.Server.Managers.ReviewCategoryManager
                 return null;
             }
 
-            var route=  $"ReviewCategory/{reviewCategory.Id}";
+            var route=  $"Administration/ReviewCategory/{reviewCategory.Id}";
             
             return new SearchResultDto()
             {

@@ -23,16 +23,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     public partial class ProductBreakdownStructureView : ElementBreakdownStructureView<IProductBreakdownStructureViewViewModel>, IReusableView
     {
         /// <summary>
-        /// Method invoked when the component is ready to start, having received its
-        /// initial parameters from its parent in the render tree.
-        /// </summary>
-        protected override void OnInitialized()
-        {
-            this.IsLoading = true;
-            base.OnInitialized();
-        }
-
-        /// <summary>
         ///     Tries to copy components from another <see cref="BaseView" />
         /// </summary>
         /// <param name="otherView">The other <see cref="BaseView" /></param>
@@ -48,6 +38,16 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.IsLoading = false;
             await Task.CompletedTask;
             return true;
+        }
+
+        /// <summary>
+        ///     Method invoked when the component is ready to start, having received its
+        ///     initial parameters from its parent in the render tree.
+        /// </summary>
+        protected override void OnInitialized()
+        {
+            this.IsLoading = true;
+            base.OnInitialized();
         }
 
         /// <summary>

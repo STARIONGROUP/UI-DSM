@@ -122,8 +122,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         {
             if (selectedItem is IHaveThingRowViewModel row)
             {
-                var existingRow = this.TraceabilityTableViewModel.VisibleRows.FirstOrDefault(x => x.ThingId == row.ThingId);
-                existingRow ??= this.TraceabilityTableViewModel.VisibleColumns.FirstOrDefault(x => x.ThingId == row.ThingId);
+                var existingRow = this.GetAvailablesRows().OfType<IHaveThingRowViewModel>().FirstOrDefault(x => x.ThingId == row.ThingId);
                 this.TraceabilityTableViewModel.SelectedElement = existingRow;
             }
         }

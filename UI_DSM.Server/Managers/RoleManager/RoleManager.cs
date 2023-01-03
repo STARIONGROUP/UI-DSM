@@ -66,7 +66,7 @@ namespace UI_DSM.Server.Managers.RoleManager
             {
                 ObjectKind = nameof(Role),
                 DisplayText = role.RoleName,
-                BaseUrl = $"Role/{role.Id}"
+                BaseUrl = $"Administration/Role/{role.Id}"
             };
         }
 

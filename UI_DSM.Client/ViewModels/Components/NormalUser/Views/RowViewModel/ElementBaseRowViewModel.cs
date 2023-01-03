@@ -91,6 +91,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public List<ParameterOrOverrideBase> Parameters { get; private set; }
 
         /// <summary>
+        ///     Value indicating if the row is expanded or not
+        /// </summary>
+        public bool IsExpanded { get; set; }
+
+        /// <summary>
         ///     Verifies that the current <see cref="ElementBase" /> has the current <see cref="Option" /> has excluded
         /// </summary>
         /// <param name="option">The <see cref="Option" /></param>

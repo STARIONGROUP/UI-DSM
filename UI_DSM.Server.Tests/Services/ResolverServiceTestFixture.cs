@@ -165,7 +165,7 @@ namespace UI_DSM.Server.Tests.Services
             this.reviewCategoryManager.Setup(x => x.GetSearchResult(dtos[4].Id)).ReturnsAsync(new SearchResultDto());
 
             resolvedDtos = await this.service.ResolveSearchResult(dtos, username);
-            Assert.That(resolvedDtos, Has.Count.EqualTo(dtos.Count));
+            Assert.That(resolvedDtos, Has.Count.EqualTo(dtos.Count - 1));
 
             this.userManager.Setup(x => x.GetUserByName(username)).ReturnsAsync(new UserEntity(Guid.NewGuid()));
 

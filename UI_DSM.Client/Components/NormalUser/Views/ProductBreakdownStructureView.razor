@@ -35,7 +35,7 @@ else
 	<RadzenDataGrid @ref="@this.Grid" Data="@(this.ViewModel.TopElement)" TItem="ElementBaseRowViewModel" ExpandMode="DataGridExpandMode.Single"
 	                RowRender="@this.RowRender" LoadChildData="@this.LoadChildren" SelectionMode="DataGridSelectionMode.Single" RowSelect="@this.SelectRow"
 	                AllowFiltering="true" FilterMode="FilterMode.SimpleWithMenu" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-	                LogicalFilterOperator="LogicalFilterOperator.Or" AllowColumnResize="true">
+	                LogicalFilterOperator="LogicalFilterOperator.Or" AllowColumnResize="true" RowExpand="@this.OnRowExpand">
 		<Columns>
 			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(ElementBaseRowViewModel.Name)" Pickable="false" Title="Name">
 				<Template Context="data">

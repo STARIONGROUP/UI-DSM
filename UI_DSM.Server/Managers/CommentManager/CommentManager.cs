@@ -100,7 +100,8 @@ namespace UI_DSM.Server.Managers.CommentManager
             {
                 ObjectKind = nameof(Comment),
                 BaseUrl = route,
-                DisplayText = comment.Content
+                DisplayText = comment.Content,
+                Location = ((Project)comment.EntityContainer).ProjectName
             };
         }
 

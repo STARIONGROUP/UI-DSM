@@ -88,7 +88,8 @@ namespace UI_DSM.Server.Managers.FeedbackManager
             {
                 BaseUrl = route,
                 ObjectKind = nameof(Feedback),
-                DisplayText = feedback.Content
+                DisplayText = feedback.Content,
+                Location = ((Project)feedback.EntityContainer).ProjectName
             };
         }
 

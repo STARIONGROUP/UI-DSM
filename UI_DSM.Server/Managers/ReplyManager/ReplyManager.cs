@@ -101,7 +101,8 @@ namespace UI_DSM.Server.Managers.ReplyManager
             {
                 BaseUrl = route,
                 ObjectKind = nameof(Reply),
-                DisplayText = reply.Content
+                DisplayText = reply.Content,
+                Location = $"{((Project)reply.EntityContainer.EntityContainer).ProjectName}"
             };
         }
 
