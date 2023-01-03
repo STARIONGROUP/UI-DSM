@@ -515,8 +515,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             {
                 var node = this.ProductsMap.FirstOrDefault(x=>x.Value == productRowViewModel).Key;
                 node.IsExpanded = true;
-                var cx = node == null ? this.DiagramCenter.X : node.Position.X;
-                var cy = node == null ? this.DiagramCenter.Y : node.Position.Y;
                 var r = 250.0;
 
                 var neighbours = this.GetNeighbours(productRowViewModel);
@@ -528,8 +526,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
                     foreach (var neighbour in neighbours)
                     {
-                        var x = cx - r * Math.Cos(angle);
-                        var y = cy - r * Math.Sin(angle);
+                        var x = node.Position.X - r * Math.Cos(angle);
+                        var y = node.Position.Y - r * Math.Sin(angle);
 
                         var neighbourNode = CreateNewNodeFromProduct(neighbour);
                         neighbourNode.SetPosition(x, y);
