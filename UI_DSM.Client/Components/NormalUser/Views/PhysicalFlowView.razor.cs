@@ -20,7 +20,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using CDP4Common.CommonData;
 
     using Microsoft.AspNetCore.Components.Web;
-
+    using ReactiveUI;
     using UI_DSM.Client.Components.Widgets;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
@@ -37,6 +37,11 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public Diagram Diagram { get; set; }
 
         /// <summary>
+        ///     A collection of <see cref="IDisposable" />
+        /// </summary>
+        private readonly List<IDisposable> disposables = new();
+
+        /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
@@ -44,6 +49,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.Diagram.MouseUp -= this.Diagram_MouseUp;
             this.Diagram.MouseDoubleClick -= this.Diagram_MouseDoubleClick;
             this.ViewModel.OnCentralNodeChanged -= this.RefreshDiagram;
+            this.disposables.ForEach(x => x.Dispose());
         }
 
         /// <summary>
@@ -87,12 +93,13 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <param name="things">The collection of <see cref="Thing" /></param>
         /// <param name="projectId">The <see cref="UI_DSM.Shared.Models.Project" /> id</param>
         /// <param name="reviewId">The <see cref="UI_DSM.Shared.Models.Review" /> id</param>
+        /// <param name="reviewTaskId">The <see cref="UI_DSM.Shared.Models.ReviewTask" /> id</param>
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
+        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
         {
-            await base.InitializeViewModel(things, projectId, reviewId, prefilters, additionnalColumnsVisibleAtStart);
+            await base.InitializeViewModel(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart);
             this.ViewModel.InitializeDiagram();
             this.RefreshDiagram();
             this.IsLoading = false;
@@ -144,6 +151,9 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
             this.Diagram.MouseUp += this.Diagram_MouseUp;
             this.Diagram.MouseDoubleClick += this.Diagram_MouseDoubleClick;
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnSavingMode)
+                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
         }
 
         /// <summary>

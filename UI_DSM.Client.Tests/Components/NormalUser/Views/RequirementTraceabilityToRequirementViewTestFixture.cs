@@ -153,7 +153,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     });
 
                 var renderer = this.context.RenderComponent<RequirementTraceabilityToRequirementView>();
-                await renderer.Instance.InitializeViewModel(requirementsSpecification, projectId, reviewId, new List<string>(), new List<string>());
+                await renderer.Instance.InitializeViewModel(requirementsSpecification, projectId, reviewId, Guid.Empty, new List<string>(), new List<string>());
 
                 Assert.Multiple(() =>
                 {

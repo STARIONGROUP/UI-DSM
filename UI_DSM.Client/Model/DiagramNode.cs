@@ -21,6 +21,11 @@ namespace UI_DSM.Client.Model
     public class DiagramNode : NodeModel, IDiagramModel
     {
         /// <summary>
+        ///  Gets or sets the id of the <see cref="DiagramNode" />
+        /// </summary>
+        public Guid ThingId { get; set; }
+        
+        /// <summary>
         /// Gets or sets if the model has comments.
         /// </summary>
         public bool HasComments { get; set; }

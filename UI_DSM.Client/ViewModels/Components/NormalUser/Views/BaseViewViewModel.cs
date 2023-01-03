@@ -58,6 +58,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         protected Guid ReviewId { get; private set; }
 
         /// <summary>
+        ///     The <see cref="ReviewTask" /> id
+        /// </summary>
+        protected Guid ReviewTaskId { get; private set; }
+
+        /// <summary>
         ///     A collection of columns name that can be visible by default at start
         /// </summary>
         public List<string> AdditionnalColumnsVisibleAtStart { get; protected set; }
@@ -87,14 +92,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="things">A collection of <see cref="Thing" /></param>
         /// <param name="projectId">The <see cref="Project" /> id</param>
         /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
         /// <returns>A <see cref="Task" /></returns>
-        public virtual Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
+        public virtual Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
         {
             this.Things = things;
             this.ProjectId = projectId;
             this.ReviewId = reviewId;
+            this.ReviewTaskId = reviewTaskId;
             this.Prefilters = prefilters;
             this.AdditionnalColumnsVisibleAtStart = additionnalColumnsVisibleAtStart;
             return Task.CompletedTask;

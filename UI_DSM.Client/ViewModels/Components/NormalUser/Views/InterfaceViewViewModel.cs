@@ -24,12 +24,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.Services.DiagrammingConfigurationService;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     using Model = Blazor.Diagrams.Core.Models.Base.Model;
+    using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
+    using Microsoft.AspNetCore.Components;
 
     /// <summary>
     ///     View model for the <see cref="Client.Components.NormalUser.Views.InterfaceView" /> component
@@ -67,13 +72,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         private bool isViewSettingsVisible;
 
         /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationService" />
+        /// </summary>
+        private readonly IDiagrammingConfigurationService diagrammingConfigurationService;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
         /// <param name="filterViewModel">The <see cref="IFilterViewModel" /></param>
-        public InterfaceViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel) : base(reviewItemService)
+        public InterfaceViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel, IDiagrammingConfigurationService diagrammingConfigurationService) : base(reviewItemService)
         {
             this.FilterViewModel = filterViewModel;
+            this.diagrammingConfigurationService = diagrammingConfigurationService;
         }
 
         /// <summary>
@@ -201,9 +212,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
+        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
         {
-            await base.InitializeProperties(things, projectId, reviewId, prefilters, additionnalColumnsVisibleAtStart);
+            await base.InitializeProperties(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart);
 
             var products = this.Things.OfType<ElementDefinition>()
                 .Where(x => x.IsProduct())
@@ -242,6 +253,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.InitializesFilter();
 
             this.InitializeDiagram();
+
+            this.DiagrammingConfigurationPopupViewModel = new DiagrammingConfigurationPopupViewModel
+            {
+                OnValidSubmit = new EventCallbackFactory().Create(this, this.SaveCurrentDiagramLayout)
+            };
         }
 
         /// <summary>
@@ -528,7 +544,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             var node = new DiagramNode
             {
                 Title = product.Name,
-                HasComments = product.HasComment()
+                HasComments = product.HasComment(),
+                ThingId = product.ThingId
             };
 
             this.ProductNodes.Add(node);
@@ -725,6 +742,44 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             });
 
             this.FilterViewModel.InitializeProperties(availableRowFilters);
+        }
+
+        /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationPopupViewModel" />
+        /// </summary>
+        public IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; private set; }
+
+        /// <summary>
+        ///     Backing field for <see cref="IsOnCreationMode" />
+        /// </summary>
+        private bool isOnSavingMode;
+
+        /// <summary>
+        ///     Value indicating the user is currently saving the diagramming configuration
+        /// </summary>
+        public bool IsOnSavingMode
+        {
+            get => this.isOnSavingMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnSavingMode, value);
+        }
+
+        /// <summary>
+        ///     Opens the <see cref="DiagrammingConfigurationPopup" />
+        /// </summary>
+        public void OpenSavingPopup()
+        {
+            this.IsOnSavingMode = true;
+        }
+
+
+        /// <summary>
+        ///     Saves current diagram layout
+        /// </summary>
+        public async void SaveCurrentDiagramLayout()
+        {
+            IEnumerable<DiagramLayoutInformationDto> layoutInformationDtos = this.ProductNodes.Select(x => new DiagramLayoutInformationDto { ThingId = x.ThingId, xPosition = x.Position.X, yPosition = x.Position.Y });
+            var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationPopupViewModel.ConfigurationName, layoutInformationDtos);
+            this.IsOnSavingMode = !response;
         }
     }
 }

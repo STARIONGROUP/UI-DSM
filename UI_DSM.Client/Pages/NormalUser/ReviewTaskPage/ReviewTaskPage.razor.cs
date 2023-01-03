@@ -189,12 +189,13 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 this.DisposeViewDisposables();
                 var projectId = new Guid(this.ProjectId);
                 var reviewId = new Guid(this.ReviewId);
+                var reviewTaskId = new Guid(this.ReviewTaskId);
                 await this.Comments.InitializesProperties(projectId, reviewId, this.ViewModel.CurrentView, this.ViewModel.Participant, this.ViewModel.OnLinkCallback);
                 this.SelectedItemCard.InitializeViewModel(this.ViewModel.Participant);
 
                 if (baseView is not IReusableView reusableView || !await reusableView.CopyComponents(this.ViewModel.CurrentBaseViewInstance))
                 {
-                    await baseView.InitializeViewModel(this.ViewModel.Things, projectId, reviewId, this.ViewModel.GetPrefilters(), this.ViewModel.ReviewObjective.AdditionnalColumnsVisibleAtStart);
+                    await baseView.InitializeViewModel(this.ViewModel.Things, projectId, reviewId, reviewTaskId, this.ViewModel.GetPrefilters(), this.ViewModel.ReviewObjective.AdditionnalColumnsVisibleAtStart);
                     baseView.TrySetSelectedItem(this.SelectedItem);
                 }
 
@@ -280,11 +281,12 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
                 var projectId = new Guid(this.ProjectId);
                 var reviewId = new Guid(this.ReviewId);
+                var reviewTaskId = new Guid(this.ReviewTaskId);
                 await this.ViewModel.UpdateModel(this.ViewModel.SelectedModel);
 
                 if (this.ViewModel.CurrentBaseViewInstance != null)
                 {
-                    await this.ViewModel.CurrentBaseViewInstance.InitializeViewModel(this.ViewModel.Things, projectId, reviewId, this.ViewModel.GetPrefilters(),
+                    await this.ViewModel.CurrentBaseViewInstance.InitializeViewModel(this.ViewModel.Things, projectId, reviewId, reviewTaskId, this.ViewModel.GetPrefilters(),
                         this.ViewModel.ReviewObjective.AdditionnalColumnsVisibleAtStart);
 
                     this.ViewModel.CurrentBaseViewInstance.TrySetSelectedItem(this.SelectedItem);
