@@ -46,9 +46,9 @@ namespace UI_DSM.Client.Components.App.TextEditor
         public string SubmitText { get; set; }
 
         /// <summary>
-        ///     A reference to the <see cref="DxButton" />
+        /// Value indicating if the submit button is enabled or not
         /// </summary>
-        public DxButton SubmitButton { get; set; }
+        public bool SubmitEnabled { get; set; } = true;
 
         /// <summary>
         ///     Handle the update of the current content
@@ -56,7 +56,7 @@ namespace UI_DSM.Client.Components.App.TextEditor
         /// <returns>A <see cref="Task" /></returns>
         private async Task OnSubmit()
         {
-            this.SubmitButton.Enabled = false;
+            this.SubmitEnabled = false;
 
             if (this.Content == "<p><br></p>" || string.IsNullOrEmpty(this.Content))
             {
@@ -67,7 +67,7 @@ namespace UI_DSM.Client.Components.App.TextEditor
                 await this.InvokeAsync(() => this.OnValidSubmit.InvokeAsync(this.Content));
             }
 
-            this.SubmitButton.Enabled = true;
+            this.SubmitEnabled = true;
         }
     }
 }

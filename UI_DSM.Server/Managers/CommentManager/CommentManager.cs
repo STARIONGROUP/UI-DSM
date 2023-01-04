@@ -43,14 +43,14 @@ namespace UI_DSM.Server.Managers.CommentManager
         private readonly IReplyManager replyManager;
 
         /// <summary>
+        ///     The <see cref="IReviewTaskManager" />
+        /// </summary>
+        private readonly IReviewTaskManager reviewTaskManager;
+
+        /// <summary>
         ///     The <see cref="IAnnotatableItemManager" />
         /// </summary>
         private IAnnotatableItemManager annotatableItemManager;
-
-        /// <summary>
-        ///     The <see cref="IReviewTaskManager" />
-        /// </summary>
-        private IReviewTaskManager reviewTaskManager;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="CommentManager" /> class.

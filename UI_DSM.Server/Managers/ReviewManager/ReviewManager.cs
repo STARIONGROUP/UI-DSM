@@ -230,7 +230,7 @@ namespace UI_DSM.Server.Managers.ReviewManager
             {
                 TaskCount = tasks,
                 OpenCommentCount = comments.Count(x => x.Status == StatusKind.Open),
-                TotalCommentCount = comments.Count()
+                TotalCommentCount = comments.Count
             };
         }
     }
