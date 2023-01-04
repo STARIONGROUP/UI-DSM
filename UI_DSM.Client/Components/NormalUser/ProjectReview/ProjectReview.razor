@@ -34,11 +34,14 @@
           <NavLink href=@("/Project/"+this.ViewModel.Project.Id+"/Review/"+review.Id)>
                 @if (this.ViewModel.CommentsAndTasks.ContainsKey(review.Id))
                 {
-                   <AppProjectCard Title="@review.Title" Created="@review.CreatedOn.ToString()" Tasks="@this.ViewModel.CommentsAndTasks[review.Id].TaskCount" Comments="@this.ViewModel.CommentsAndTasks[review.Id].CommentCount" />
+	                <AppProjectCard Title="@review.Title" Created="@review.CreatedOn.ToString()" 
+	                                Tasks="@this.ViewModel.CommentsAndTasks[review.Id].TaskCount" 
+	                                OpenComments="@this.ViewModel.CommentsAndTasks[review.Id].OpenCommentCount"
+									TotalComments="@this.ViewModel.CommentsAndTasks[review.Id].TotalCommentCount" />
                 }
                 else
                 {
-                   <AppProjectCard Title="@review.Title" Created="@review.CreatedOn.ToString()" Tasks="-1" Comments="-1" />
+                   <AppProjectCard Title="@review.Title" Created="@review.CreatedOn.ToString()" Tasks="-1" OpenComments="-1" />
                 }
           </NavLink>
       }

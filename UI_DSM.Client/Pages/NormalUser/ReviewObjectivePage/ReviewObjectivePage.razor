@@ -39,7 +39,17 @@ else{
 
 					@foreach (var task in this.ViewModel.ReviewObjective.ReviewTasks.OrderBy(x => x.TaskNumber))
 					{
-						<ReviewTaskCard ReviewTask="@task" ProjectId="@this.ProjectId" ReviewId="@this.ReviewId" ReviewObjectiveId="@this.ReviewObjectiveId" ViewModel="this.ViewModel" />
+						@if (this.ViewModel.CommentsCount.ContainsKey(task.Id))
+						{
+							<ReviewTaskCard ReviewTask="@task" ProjectId="@this.ProjectId" ReviewId="@this.ReviewId" 
+							                ReviewObjectiveId="@this.ReviewObjectiveId" ViewModel="this.ViewModel" 
+							                CommentsCount="@this.ViewModel.CommentsCount[task.Id]" />
+						}
+						else
+						{
+							<ReviewTaskCard ReviewTask="@task" ProjectId="@this.ProjectId" ReviewId="@this.ReviewId" 
+							                ReviewObjectiveId="@this.ReviewObjectiveId" ViewModel="this.ViewModel" />
+						}
 					}
 				</div>
 			</div>

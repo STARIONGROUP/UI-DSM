@@ -30,6 +30,6 @@ namespace UI_DSM.Server.Managers.ReviewManager
         /// <param name="projectId">A <see cref="Guid" /> of <see cref="Project" />s</param>
         /// <param name="userName">The name of the current logged user</param>
         /// <returns>A <see cref="Task" /> with the <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
-        Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewsId, Guid projectId, string userName);
+        Task<Dictionary<Guid, AdditionalComputedProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewsId, Guid projectId, string userName);
     }
 }

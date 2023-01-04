@@ -196,8 +196,19 @@ namespace UI_DSM.Server.Tests.Managers
             {
                 EntityContainer = new Comment(Guid.NewGuid())
                 {
-                    EntityContainer = new Project(Guid.NewGuid())
-                }
+                    CreatedInside = new ReviewTask()
+                    {
+                        EntityContainer = new ReviewObjective()
+                        {
+                            EntityContainer = new Review()
+                            {
+                                EntityContainer = new Project()
+                            }
+                        }
+                    },
+                    Author = new Participant()
+                },
+                Author = new Participant()
             };
 
             var result = await this.manager.GetSearchResult(reply.Id);

@@ -66,7 +66,7 @@ namespace UI_DSM.Client.ViewModels.Pages
         /// <summary>
         ///     A collection of comments and tasks <see cref="Project" /> for the user
         /// </summary>
-        public Dictionary<Guid, ComputedProjectProperties> CommentsAndTasks { get; set; } = new();
+        public Dictionary<Guid, AdditionalComputedProperties> CommentsAndTasks { get; set; } = new();
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

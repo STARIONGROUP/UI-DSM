@@ -14,6 +14,7 @@
 namespace UI_DSM.Server.Managers.ReviewTaskManager
 {
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -33,5 +34,12 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
         /// </summary>
         /// <param name="manager">The <see cref="IReviewObjectiveManager" /></param>
         void InjectManager(IReviewObjectiveManager manager);
+
+        /// <summary>
+        ///     Gets the number of comments that are associated to <see cref="ReviewTask" />s
+        /// </summary>
+        /// <param name="reviewTasksId">A collection of <see cref="Guid" /> for <see cref="ReviewTask" /></param>
+        /// <returns>A <see cref="Dictionary{Guid, AdditionalComputedProperties}" /></returns>
+        Task<Dictionary<Guid, AdditionalComputedProperties>> GetCommentsCount(IEnumerable<Guid> reviewTasksId);
     }
 }

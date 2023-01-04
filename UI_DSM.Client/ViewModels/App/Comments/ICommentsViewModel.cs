@@ -147,7 +147,8 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <param name="currentView">The current <see cref="View" /></param>
         /// <param name="currentParticipant">The current <see cref="Participant" /></param>
         /// <param name="onLinkCallback">The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element</param>
-        void InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant currentParticipant, EventCallback<Comment> onLinkCallback);
+        /// <param name="task">The <see cref="ReviewTask"/></param>
+        void InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant currentParticipant, EventCallback<Comment> onLinkCallback, ReviewTask task);
 
         /// <summary>
         ///     Opens the creation popup

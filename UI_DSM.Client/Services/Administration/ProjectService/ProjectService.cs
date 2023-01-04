@@ -135,7 +135,7 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
         ///     related to the <see cref="Project" />
         /// </summary>
         /// <returns>A <see cref="Task" /> with a <see cref="Dictionary{Guid, ComputedProjectProperties}" /></returns>
-        public async Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments()
+        public async Task<Dictionary<Guid, AdditionalComputedProperties>> GetOpenTasksAndComments()
         {
             var response = await this.HttpClient.GetAsync($"{this.MainRoute}/OpenTasksAndComments");
 
@@ -144,7 +144,7 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
                 throw new HttpRequestException(response.ReasonPhrase);
             }
 
-            return this.jsonService.Deserialize<Dictionary<Guid, ComputedProjectProperties>>(await response.Content.ReadAsStreamAsync());
+            return this.jsonService.Deserialize<Dictionary<Guid, AdditionalComputedProperties>>(await response.Content.ReadAsStreamAsync());
         }
     }
 }

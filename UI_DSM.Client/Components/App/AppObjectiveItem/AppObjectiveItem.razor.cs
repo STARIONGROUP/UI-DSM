@@ -33,5 +33,17 @@ namespace UI_DSM.Client.Components.App.AppObjectiveItem
         /// </summary>
         [Parameter]
         public int Tasks { get; set; }
+
+        /// <summary>
+        ///     Amount of open comments
+        /// </summary>
+        [Parameter]
+        public int OpenComments { get; set; }
+
+        /// <summary>
+        ///     Amount of comments
+        /// </summary>
+        [Parameter]
+        public int TotalComments { get; set; }
     }
 }

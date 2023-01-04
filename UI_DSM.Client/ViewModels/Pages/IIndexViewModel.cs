@@ -46,7 +46,7 @@ namespace UI_DSM.Client.ViewModels.Pages
         /// <summary>
         ///     A collection of comments and tasks <see cref="Project" /> for the user
         /// </summary>
-        public Dictionary<Guid, ComputedProjectProperties> CommentsAndTasks { get; set; }
+        public Dictionary<Guid, AdditionalComputedProperties> CommentsAndTasks { get; set; }
 
         /// <summary>
         ///     Navigate to the page dedicated to the given <see cref="Project" />

@@ -86,8 +86,8 @@ namespace UI_DSM.Shared.Models
         {
             var dto = new ParticipantDto(this.Id)
             {
-                User = this.User == null ? Guid.Empty : this.User.Id,
-                Role = this.Role == null ? Guid.Empty : this.Role.Id,
+                User = this.User?.Id ?? Guid.Empty,
+                Role = this.Role?.Id ?? Guid.Empty,
             };
 
             return dto;

@@ -24,6 +24,7 @@ namespace UI_DSM.Server.Tests.Managers
     using UI_DSM.Server.Managers.CommentManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReplyManager;
+    using UI_DSM.Server.Managers.ReviewTaskManager;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
@@ -40,6 +41,7 @@ namespace UI_DSM.Server.Tests.Managers
         private Mock<IReplyManager> replyManager;
         private Mock<DbSet<Project>> projectDbSet;
         private Mock<DbSet<Comment>> commentDbSet;
+        private Mock<IReviewTaskManager> reviewTaskManager;
 
         [SetUp]
         public void Setup()
@@ -50,9 +52,10 @@ namespace UI_DSM.Server.Tests.Managers
             this.context.Setup(x => x.Set<Comment>()).Returns(this.commentDbSet.Object);
             this.participantManager = new Mock<IParticipantManager>();
             this.annotatableItemManager = new Mock<IAnnotatableItemManager>();
+            this.reviewTaskManager = new Mock<IReviewTaskManager>();
             this.replyManager = new Mock<IReplyManager>();
 
-            this.manager = new CommentManager(this.context.Object, this.participantManager.Object, this.replyManager.Object);
+            this.manager = new CommentManager(this.context.Object, this.participantManager.Object, this.replyManager.Object, this.reviewTaskManager.Object);
             this.manager.InjectManager(this.annotatableItemManager.Object);
 
             this.participant = new Participant(Guid.NewGuid())
@@ -300,7 +303,17 @@ namespace UI_DSM.Server.Tests.Managers
         {
             var comment = new Comment(Guid.NewGuid())
             {
-                EntityContainer = new Project(Guid.NewGuid())
+                CreatedInside = new ReviewTask()
+                {
+                    EntityContainer = new ReviewObjective()
+                    {
+                        EntityContainer = new Review()
+                        {
+                            EntityContainer = new Project()
+                        }
+                    }
+                },
+                Author = new Participant()
             };
 
             var result = await this.manager.GetSearchResult(comment.Id);

@@ -127,5 +127,26 @@ namespace UI_DSM.Client.Services.ReviewTaskService
                 throw new HttpRequestException(exception.Message);
             }
         }
+
+        /// <summary>
+        ///     Gets, for all <see cref="ReviewTask" /> inside a <see cref="ReviewObjective"/>, the number of <see cref="Comment" />
+        ///     related to the <see cref="ReviewTask" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid"/> of the <see cref="Project"/></param>
+        /// <param name="reviewId">The <see cref="Guid"/> of the <see cref="Review"/></param>
+        /// <param name="reviewObjectiveId">The <see cref="Guid"/> of the <see cref="ReviewObjective"/></param>
+        /// <returns>A <see cref="Task" /> with a <see cref="Dictionary{Guid, ComputedProjectProperties}" /></returns>
+        public async Task<Dictionary<Guid, AdditionalComputedProperties>> GetCommmentsCount(Guid projectId, Guid reviewId, Guid reviewObjectiveId)
+        {
+            this.ComputeMainRoute(projectId, reviewId, reviewObjectiveId);
+            var response = await this.HttpClient.GetAsync($"{this.MainRoute}/CommentsCount");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(response.ReasonPhrase);
+            }
+
+            return this.jsonService.Deserialize<Dictionary<Guid, AdditionalComputedProperties>>(await response.Content.ReadAsStreamAsync());
+        }
     }
 }

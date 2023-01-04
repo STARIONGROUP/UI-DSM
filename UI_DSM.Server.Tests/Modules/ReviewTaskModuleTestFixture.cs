@@ -31,6 +31,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Server.Types;
     using UI_DSM.Server.Validator;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
@@ -318,6 +319,30 @@ namespace UI_DSM.Server.Tests.Modules
 
             await this.module.UpdateEntity(this.reviewTaskManager.Object, reviewTask.Id, dto, this.searchService.Object, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 200, Times.Once);
+        }
+
+        [Test]
+        public async Task VerifyGetCommentsCount()
+        {
+            var reviewTasks = new List<ReviewTask>
+            {
+                new(Guid.NewGuid())
+            };
+
+            var guids = reviewTasks.Select(x => x.Id).ToList();
+            
+            var result = new Dictionary<Guid, AdditionalComputedProperties>
+            {
+                [guids[0]] = new()
+                {
+                    OpenCommentCount = 15,
+                    TaskCount = 0
+                }
+            };
+
+            this.reviewTaskManager.As<IReviewTaskManager>().Setup(x => x.GetCommentsCount(It.IsAny<IEnumerable<Guid>>())).ReturnsAsync(result);
+            await this.module.GetCommentsCount(this.reviewTaskManager.As<IReviewTaskManager>().Object, Guid.NewGuid(), this.context.Object);
+            this.reviewTaskManager.As<IReviewTaskManager>().Verify(x => x.GetCommentsCount(It.IsAny<IEnumerable<Guid>>()), Times.Once);
         }
     }
 }

@@ -13,6 +13,7 @@
 
 namespace UI_DSM.Shared.Models
 {
+    using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
     using UI_DSM.Shared.Annotations;
@@ -51,6 +52,12 @@ namespace UI_DSM.Shared.Models
         public EntityContainerList<Reply> Replies { get; protected set; }
 
         /// <summary>
+        ///     The <see cref="ReviewTask" /> where this <see cref="Comment" /> has beed created
+        /// </summary>
+        [DeepLevel(1)]
+        public ReviewTask CreatedInside { get; set; }
+
+        /// <summary>
         ///     The <see cref="View" /> where the <see cref="Comment" /> has been created
         /// </summary>
         public View View { get; set; }
@@ -70,7 +77,8 @@ namespace UI_DSM.Shared.Models
             {
                 Replies = this.Replies.Select(x => x.Id).ToList(),
                 View = this.View,
-                Status = this.Status
+                Status = this.Status,
+                CreatedInside = this.CreatedInside?.Id ?? Guid.Empty
             };
 
             dto.IncludeCommonProperties(this);
@@ -94,6 +102,7 @@ namespace UI_DSM.Shared.Models
             this.Replies.ResolveList(commentDto.Replies, resolvedEntity);
             this.View = commentDto.View;
             this.Status = commentDto.Status;
+            this.CreatedInside = this.GetEntity<ReviewTask>(commentDto.CreatedInside, resolvedEntity);
         }
 
         /// <summary>

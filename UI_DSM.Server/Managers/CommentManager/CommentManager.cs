@@ -20,6 +20,7 @@ namespace UI_DSM.Server.Managers.CommentManager
     using UI_DSM.Server.Managers.AnnotatableItemManager;
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReplyManager;
+    using UI_DSM.Server.Managers.ReviewTaskManager;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
@@ -47,15 +48,22 @@ namespace UI_DSM.Server.Managers.CommentManager
         private IAnnotatableItemManager annotatableItemManager;
 
         /// <summary>
+        ///     The <see cref="IReviewTaskManager" />
+        /// </summary>
+        private IReviewTaskManager reviewTaskManager;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="CommentManager" /> class.
         /// </summary>
         /// <param name="context">The <see cref="DatabaseContext" /></param>
         /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
         /// <param name="replyManager">The <see cref="IReplyManager" /></param>
-        public CommentManager(DatabaseContext context, IParticipantManager participantManager, IReplyManager replyManager) : base(context)
+        /// <param name="reviewTaskManager">The <see cref="IReviewTaskManager" /></param>
+        public CommentManager(DatabaseContext context, IParticipantManager participantManager, IReplyManager replyManager, IReviewTaskManager reviewTaskManager) : base(context)
         {
             this.participantManager = participantManager;
             this.replyManager = replyManager;
+            this.reviewTaskManager = reviewTaskManager;
         }
 
         /// <summary>
@@ -75,33 +83,43 @@ namespace UI_DSM.Server.Managers.CommentManager
             relatedEntities.InsertEntity(await this.participantManager.FindEntity(commentDto.Author));
             relatedEntities.InsertEntityCollection(await this.annotatableItemManager.FindEntities(commentDto.AnnotatableItems));
             relatedEntities.InsertEntityCollection(await this.replyManager.FindEntities(commentDto.Replies));
+            relatedEntities.InsertEntity(await this.reviewTaskManager.FindEntity(commentDto.CreatedInside));
 
             entity.ResolveProperties(commentDto, relatedEntities);
         }
 
         /// <summary>
-        ///     Gets the <see cref="SearchResultDto"/> based on a <see cref="Guid"/>
+        ///     Gets the <see cref="SearchResultDto" /> based on a <see cref="Guid" />
         /// </summary>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Comment" /></param>
         /// <returns>A URL</returns>
         public override async Task<SearchResultDto> GetSearchResult(Guid entityId)
         {
             var comment = await this.EntityDbSet.Where(x => x.Id == entityId)
-                .Include(x => x.EntityContainer).FirstOrDefaultAsync();
+                .Include(x => x.Author)
+                .Include(x => x.CreatedInside)
+                .ThenInclude(x => x.EntityContainer)
+                .ThenInclude(x => x.EntityContainer)
+                .ThenInclude(x => x.EntityContainer).FirstOrDefaultAsync();
 
             if (comment == null)
             {
                 return null;
             }
 
-            var route= $"Project/{comment.EntityContainer.Id}/Comment/{comment.Id}";
+            var reviewTask = comment.CreatedInside;
+            var reviewObjective = (ReviewObjective)reviewTask.EntityContainer;
+            var review = (Review)reviewObjective.EntityContainer;
+            var project = (Project)review.EntityContainer;
 
-            return new SearchResultDto()
+            var route = $"Project/{project.Id}/Review/{review.Id}/ReviewObjective/{reviewObjective.Id}/ReviewTask/{reviewTask.Id}";
+
+            return new SearchResultDto
             {
                 ObjectKind = nameof(Comment),
                 BaseUrl = route,
-                DisplayText = comment.Content,
-                Location = ((Project)comment.EntityContainer).ProjectName
+                DisplayText = $"{comment.Author.ParticipantName}: {comment.Content}",
+                Location = $"{project.ProjectName} > {review.Title} > {reviewObjective.Title} > {reviewTask.Description}"
             };
         }
 
@@ -135,7 +153,7 @@ namespace UI_DSM.Server.Managers.CommentManager
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
         public async Task<IEnumerable<Entity>> GetCommentsOfAnnotatableItem(Guid projectId, Guid annotatableItemId)
         {
-            var comments = this.EntityDbSet.Where(x => x.EntityContainer.Id == projectId 
+            var comments = this.EntityDbSet.Where(x => x.EntityContainer.Id == projectId
                                                        && x.AnnotatableItems.Any(item => item.Id == annotatableItemId))
                 .Include(x => x.Author)
                 .ThenInclude(x => x.User)
@@ -161,8 +179,17 @@ namespace UI_DSM.Server.Managers.CommentManager
             }
 
             var foundEntity = await this.FindEntity(entity.Id);
+
             entity.View = foundEntity.View;
             entity.CreatedOn = foundEntity.CreatedOn.ToUniversalTime();
+
+            var entry = this.Context.Entry(foundEntity);
+
+            if (entry != null)
+            {
+                entity.CreatedInside = await this.reviewTaskManager.FindEntity(entry.Property<Guid?>("CreatedInsideId")
+                    .OriginalValue.GetValueOrDefault());
+            }
 
             return await this.UpdateEntityIntoContext(entity);
         }

@@ -11,8 +11,6 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-using ReactiveUI;
-
 namespace UI_DSM.Client.Pages.NormalUser.ReviewObjectivePage
 {
     using Microsoft.AspNetCore.Components;
@@ -80,8 +78,10 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewObjectivePage
         protected override async Task OnInitializedAsync()
         {
             this.IsLoading = true;
+
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ReviewObjective)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnAssignmentMode)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 

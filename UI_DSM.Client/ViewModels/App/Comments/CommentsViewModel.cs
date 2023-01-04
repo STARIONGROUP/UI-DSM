@@ -90,6 +90,11 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         private Reply selectedReply;
 
         /// <summary>
+        /// Reference to the <see cref="reviewTask"/>
+        /// </summary>
+        private ReviewTask reviewTask;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="CommentsViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
@@ -289,13 +294,16 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <param name="currentView">The <see cref="View" /></param>
         /// <param name="currentParticipant">The current <see cref="Participant"/></param>
         /// <param name="onLinkCallback">The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element</param>
-        public void InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant currentParticipant, EventCallback<Comment> onLinkCallback)
+        /// <param name="task">The <see cref="reviewTask"/></param>
+        public void InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant currentParticipant, EventCallback<Comment> onLinkCallback, 
+            ReviewTask task)
         {
             this.ProjectId = projectId;
             this.ReviewId = reviewId;
             this.CurrentView = currentView;
             this.Participant = currentParticipant;
             this.OnLinkCallback = onLinkCallback;
+            this.reviewTask = task;
         }
 
         /// <summary>
@@ -523,6 +531,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         {
             comment.View = this.CurrentView;
             comment.AnnotatableItems.Add(thingRowViewModel.ReviewItem);
+            comment.CreatedInside = this.reviewTask;
 
             var commentCreation = await this.annotationService.CreateAnnotation(this.ProjectId, comment);
 

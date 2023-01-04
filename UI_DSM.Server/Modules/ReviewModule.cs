@@ -45,7 +45,7 @@ namespace UI_DSM.Server.Modules
             base.AddRoutes(app);
 
             app.MapGet($"{this.MainRoute}/OpenTasksAndComments", this.GetOpenTasksAndComments)
-                .Produces<Dictionary<Guid, ComputedProjectProperties>>()
+                .Produces<Dictionary<Guid, AdditionalComputedProperties>>()
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/GetOpenTasksAndComments");
         }

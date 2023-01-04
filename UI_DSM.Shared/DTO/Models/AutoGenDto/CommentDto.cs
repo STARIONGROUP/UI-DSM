@@ -51,6 +51,11 @@ namespace UI_DSM.Shared.DTO.Models
         public List<Guid> Replies { get; set; }
 
         /// <summary>
+        ///    Gets or sets the CreatedInside of the Comment
+        /// </summary>
+        public Guid CreatedInside { get; set; }
+
+        /// <summary>
         ///    Gets or sets the View of the Comment
         /// </summary>
         public View View { get; set; }

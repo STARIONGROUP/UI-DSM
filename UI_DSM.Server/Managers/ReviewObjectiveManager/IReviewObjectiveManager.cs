@@ -53,7 +53,7 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// <param name="projectId">A <see cref="Guid" /> of <see cref="Project" />s</param>
         /// <param name="userName">The name of the current logged user</param>
         /// <returns>A <see cref="Task" /> with the <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
-        Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewObjectivesId, Guid projectId, string userName);
+        Task<Dictionary<Guid, AdditionalComputedProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewObjectivesId, Guid projectId, string userName);
 
         /// <summary>
         ///     Update the status of the <see cref="ReviewObjective" /> if necessary

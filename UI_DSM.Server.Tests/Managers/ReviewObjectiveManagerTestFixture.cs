@@ -42,12 +42,15 @@ namespace UI_DSM.Server.Tests.Managers
         private Mock<IReviewCategoryManager> reviewCategoryManager;
         private Mock<DbSet<ReviewObjective>> reviewObjectiveDbSet;
         private Mock<DbSet<Review>> reviewDbSet;
+        private Mock<DbSet<Comment>> commentDbSet;
 
         [SetUp]
         public void Setup()
         {
             this.context = new Mock<DatabaseContext>();
             this.context.CreateDbSetForContext(out this.reviewObjectiveDbSet, out this.reviewDbSet);
+            this.context.CreateDbSetForContext(out this.commentDbSet);
+            this.context.Setup(x => x.Comments).Returns(this.commentDbSet.Object);
             this.participantManager = new Mock<IParticipantManager>();
             this.reviewTaskManager = new Mock<IReviewTaskManager>();
             this.annotationManager = new Mock<IAnnotationManager>();
@@ -403,9 +406,9 @@ namespace UI_DSM.Server.Tests.Managers
             var guids = project.Reviews.First().ReviewObjectives.Select(x => x.Id).ToList();
             var computedProjectProperties = await this.manager.GetOpenTasksAndComments(guids, project.Id, participant.User.UserName);
 
-            var expectedComputed = new ComputedProjectProperties
+            var expectedComputed = new AdditionalComputedProperties
             {
-                CommentCount = 0,
+                OpenCommentCount = 0,
                 TaskCount = 1
             };
 

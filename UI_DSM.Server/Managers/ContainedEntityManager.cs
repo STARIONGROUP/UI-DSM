@@ -51,7 +51,8 @@ namespace UI_DSM.Server.Managers
         public async Task<TEntity> FindEntityWithContainer(Guid entityId)
         {
             return await this.EntityDbSet.Where(x => x.Id == entityId)
-                .Include(x => x.EntityContainer).FirstOrDefaultAsync();
+                .Include(x => x.EntityContainer)
+                .FirstOrDefaultAsync();
         }
 
         /// <summary>

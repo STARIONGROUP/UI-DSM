@@ -223,9 +223,9 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// <param name="projectId">A <see cref="Guid" /> of <see cref="Project" />s</param>
         /// <param name="userName">The name of the current logged user</param>
         /// <returns> A <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
-        public async Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewObjectivesId, Guid projectId, string userName)
+        public async Task<Dictionary<Guid, AdditionalComputedProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewObjectivesId, Guid projectId, string userName)
         {
-            var dictionary = new Dictionary<Guid, ComputedProjectProperties>();
+            var dictionary = new Dictionary<Guid, AdditionalComputedProperties>();
 
             foreach (var reviewObjectiveId in reviewObjectivesId)
             {
@@ -333,8 +333,8 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// <param name="reviewObjectiveId">A <see cref="Guid" /> for <see cref="ReviewObjective" /></param>
         /// <param name="projectId">A <see cref="Guid" /> of <see cref="Project" />s</param>
         /// <param name="userName">The name of the current logged user</param>
-        /// <returns> A <see cref="ComputedProjectProperties" /></returns>
-        private async Task<ComputedProjectProperties> GetOpenTasksAndComments(Guid reviewObjectiveId, Guid projectId, string userName)
+        /// <returns> A <see cref="AdditionalComputedProperties" /></returns>
+        private async Task<AdditionalComputedProperties> GetOpenTasksAndComments(Guid reviewObjectiveId, Guid projectId, string userName)
         {
             if (this.EntityDbSet.All(x => x.Id != reviewObjectiveId))
             {
@@ -355,16 +355,19 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
                 .AsEnumerable()
                 .Count(x => x.Status == StatusKind.Open && x.IsAssignedTo != null && x.IsAssignedTo.Any(p => p.Id == participant.Id));
 
-            var comments = this.EntityDbSet
-                .Where(x => x.Id == reviewObjectiveId)
-                .SelectMany(x => x.Annotations)
-                .OfType<Comment>()
-                .Count();
+            var reviewTasks = await this.EntityDbSet.Where(x => x.Id == reviewObjectiveId)
+                .SelectMany(x => x.ReviewTasks)
+                .Select(x => x.Id)
+                .ToListAsync();
 
-            return new ComputedProjectProperties
+            var comments = await this.Context.Comments.Where(x => reviewTasks.Any(rt => rt == x.CreatedInside.Id))
+                .ToListAsync();
+
+            return new AdditionalComputedProperties
             {
                 TaskCount = tasks,
-                CommentCount = comments
+                OpenCommentCount = comments.Count(x => x.Status == StatusKind.Open),
+                TotalCommentCount = comments.Count
             };
         }
     }

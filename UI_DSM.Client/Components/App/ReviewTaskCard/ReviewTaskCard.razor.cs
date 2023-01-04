@@ -17,6 +17,7 @@ namespace UI_DSM.Client.Components.App.ReviewTaskCard
 
     using UI_DSM.Client.Pages.NormalUser.ReviewObjectivePage;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -65,6 +66,12 @@ namespace UI_DSM.Client.Components.App.ReviewTaskCard
         /// </summary>
         [Parameter]
         public IReviewObjectivePageViewModel ViewModel { get; set; }
+
+        /// <summary>
+        ///     The <see cref="AdditionalComputedProperties" />
+        /// </summary>
+        [Parameter]
+        public AdditionalComputedProperties CommentsCount { get; set; }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its
