@@ -31,8 +31,8 @@ namespace UI_DSM.Client.Model
         public bool HasComments { get; set; }
 
         /// <summary>
-        /// Gets or sets if the <see cref="DiagramNode"/> is the central node.
+        /// Gets or sets if the node has been expanded
         /// </summary>
-        public bool IsCentralNode { get; set; }
+        public bool IsExpanded { get; set; }
     }
 }

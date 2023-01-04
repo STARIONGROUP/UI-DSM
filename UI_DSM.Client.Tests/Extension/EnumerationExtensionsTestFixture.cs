@@ -2,7 +2,7 @@
 // <copyright file="EnumerationExtensionsTestFixture.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
-//  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+//  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar, Jaime Bernar
 // 
 //  This file is part of UI-DSM.
 //  The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
@@ -26,7 +26,7 @@ namespace UI_DSM.Client.Tests.Extension
         {
             Assert.Multiple(() =>
             {
-                Assert.That(InterfaceCategory.Other.ToColorString(), Is.EqualTo("gray"));
+                Assert.That(InterfaceCategory.Other.ToColorString(), Is.EqualTo("lightgray"));
                 Assert.That(InterfaceCategory.Power_Interfaces.ToColorString(), Is.EqualTo("red"));
                 Assert.That(InterfaceCategory.Signal_Interfaces.ToColorString(), Is.EqualTo("#00B0F0"));
                 Assert.That(InterfaceCategory.TM_TC_Interfaces.ToColorString(), Is.EqualTo("#C85D7E"));

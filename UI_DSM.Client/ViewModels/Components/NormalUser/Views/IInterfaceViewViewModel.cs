@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
     using Blazor.Diagrams.Core;
+    using Blazor.Diagrams.Core.Geometry;
     using Blazor.Diagrams.Core.Models;
 
     using CDP4Common.CommonData;
@@ -41,6 +42,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         List<ProductRowViewModel> Products { get; }
 
         /// <summary>
+        /// Gets or sets the center point of the diagram
+        /// </summary>
+        Point DiagramCenter { get; set; }
+
+        /// <summary>
         ///     The <see cref="IConnectionVisibilitySelectorViewModel" /> for products
         /// </summary>
         IConnectionVisibilitySelectorViewModel ProductVisibilityState { get; }
@@ -66,34 +72,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         bool IsViewSettingsVisible { get; set; }
 
         /// <summary>
-        /// A list of the <see cref="NodeModel"/> in the <see cref="Diagram"/>
-        /// </summary>
-        List<DiagramNode> ProductNodes { get; }
-
-        /// <summary>
-        /// A list of the <see cref="PortModel"/> in the <see cref="Diagram"/>
-        /// </summary>
-        List<DiagramPort> PortNodes { get; }
-
-        /// <summary>
-        /// A list of the <see cref="LinkModel"/> in the <see cref="Diagram"/>
-        /// </summary>
-        List<DiagramLink> LinkNodes { get; }
-
-        /// <summary>
         /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>
         /// </summary>
-        Dictionary<string, ProductRowViewModel> ProductsMap { get; }
+        Dictionary<DiagramNode, ProductRowViewModel> ProductsMap { get; }
 
         /// <summary>
         /// The map collection from <see cref="PortModel"/> ID to <see cref="PortRowViewModel"/>
         /// </summary>
-        Dictionary<string, PortRowViewModel> PortsMap { get; }
+        Dictionary<DiagramPort, PortRowViewModel> PortsMap { get; }
 
         /// <summary>
         /// The map collection from <see cref="LinkModel"/> ID to <see cref="InterfaceRowViewModel"/>
         /// </summary>
-        Dictionary<string, InterfaceRowViewModel> InterfacesMap { get; }
+        Dictionary<DiagramLink, InterfaceRowViewModel> InterfacesMap { get; }
 
         /// <summary>
         ///     The <see cref="IFilterViewModel" />
@@ -156,7 +147,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="selectedElement">the selected element</param>
         /// <returns>the selected <see cref="ProductRowViewModel"/></returns>
         /// <exception cref="ArgumentException">if the selected element is not null and is not of type <see cref="ElementBaseRowViewModel"/></exception>
-        ProductRowViewModel SelectedFirstProductByCloserSelectedItem(object selectedElement);
+        ProductRowViewModel SelectFirstProductByCloserSelectedItem(object selectedElement);
 
         /// <summary>
         /// Tries to get all the neighbours of a <see cref="ProductRowViewModel"/>
@@ -171,6 +162,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         /// <param name="centerNode">the center node</param>
         void CreateCentralNodeAndNeighbours(ProductRowViewModel centerNode);
+
+        /// <summary>
+        /// Creates neighbours for a product a place them in circle 
+        /// </summary>
+        /// <param name="productRowViewModel">the <see cref="ProductRowViewModel"/></param>
+        void CreateNeighboursAndPositionAroundProduct(ProductRowViewModel productRowViewModel);
 
         /// <summary>
         /// Creates a new node from a <see cref="ProductRowViewModel"/>. The product is added to the Diagram an the corresponding maps are filled.
@@ -191,22 +188,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         void SetSelectedModel(Blazor.Diagrams.Core.Models.Base.Model model);
 
         /// <summary>
-        /// Sets the new central node for this <see cref="IInterfaceViewViewModel"/>
-        /// </summary>
-        /// <param name="nodeModel">the new central node</param>
-        /// <returns>true if the node was set, false otherwise</returns>
-        bool SetCentralNodeModel(NodeModel nodeModel);
-
-        /// <summary>
         /// Upgrades the nodes with the actual data
         /// </summary>
         /// <returns>true if the object was updated, false otherwise</returns>
         bool TryUpdate(object updatedObject, bool hasComments);
-
-        /// <summary>
-        /// Event fired when the state of the component needs to change.
-        /// </summary>
-        Action OnCentralNodeChanged { get; set; }
 
         /// <summary>
         ///     Value indicating the user is currently saving the diagramming configuration

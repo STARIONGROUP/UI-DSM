@@ -14,22 +14,46 @@
 
 @using UI_DSM.Client.Model
 
-<div class="default-node custom-node @(this.Node.IsCentralNode ? "central-node" : "") @(Node.Selected ? "selected" : "") @this.NodeClass" 
-     @onmouseover="@((e)=> this.NodeClass = "over")" 
-     @onmouseout="@((e)=> this.NodeClass = string.Empty)">
+<div @ref="this.DivReference" class="default-node custom-node @this.OverClass @(this.Node.IsExpanded ? "expanded": "")"
+     @onmouseover="@((e) => this.OverClass = "over")"
+     @onmouseout="@((e) =>  this.OverClass = "")">
 
-    @(this.Node.Title ?? "Title")
+    @(this.Node?.Title ?? "Title")
 
-    @foreach (var port in this.Node.Ports.Cast<DiagramPort>())
-    {
-        <PortRenderer Port="port" 
+    @{
+        var nodePorts = this.Node.Ports.Cast<DiagramPort>();
+        var i = 0;
+        if (this.Points.Count == nodePorts.Count())
+        {
+            foreach (var port in nodePorts)
+            {
+                var posx = this.Points[i].X.ToString() + "px";
+                var posy = this.Points[i].Y.ToString() + "px";
+
+                <div style="left:@posx; top:@posy; position:absolute;">
+                    <PortRenderer Port="port"
                       Class="@(port.HasComments ? "port-comment custom-port" : "custom-port")">
+                        <div class="@(port.Direction.ToString())"></div>
+                    </PortRenderer>
+                </div>
 
-            <div class="@(port.Direction.ToString())"></div>
-        </PortRenderer>
+                i++;
+            }
+        }
+        else
+        {
+
+            foreach (var port in nodePorts)
+            {
+                <PortRenderer Port="port"
+                  Class="@(port.HasComments ? "port-comment custom-port" : "custom-port")">
+                    <div class="@(port.Direction.ToString())"></div>
+                </PortRenderer>
+            }
+        }
     }
 
-    @if(this.Node.HasComments)
+    @if (this.Node.HasComments)
     {
         <div class="node-comment"></div>
     }

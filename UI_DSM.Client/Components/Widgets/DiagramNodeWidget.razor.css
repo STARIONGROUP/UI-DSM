@@ -1,22 +1,20 @@
-﻿.custom-node {
+﻿﻿.custom-node {
     width: auto;
     height: auto;
     min-width: 100px;
     min-height: 80px;
-    padding: 3%;
+    padding: 5%;
+    position: absolute;
+    border-radius: 0;
 }
 
-    .custom-node.over {
-        box-shadow: 0 0 0 2px gray;
-    }
+.custom-node.over {
+    box-shadow: 0 0 0 2px gray;
+}
 
-    .custom-node.selected {
-        box-shadow: 0 0 0 0.5px var(--selected-node-color);
-    }
-
-    .custom-node.central-node {
-        box-shadow: 0 0 0 3px var(--central-node-color);
-    }
+.custom-node.expanded {
+    box-shadow: 0 0 0 2px #6eb4f5;
+}
 
 ::deep .custom-port {
     width: 14px !important;
@@ -27,9 +25,9 @@
     justify-content: center;
 }
 
-::deep .custom-port.has-links {
-    background: whitesmoke !important;
-}
+    ::deep .custom-port.has-links {
+        background: whitesmoke !important;
+    }
 
     ::deep .custom-port:hover {
         background: lightgray !important;
@@ -71,6 +69,3 @@
 ::deep .port-comment {
     box-shadow: 0 0 0 2px var(--comment-color) !important;
 }
-
-
-
