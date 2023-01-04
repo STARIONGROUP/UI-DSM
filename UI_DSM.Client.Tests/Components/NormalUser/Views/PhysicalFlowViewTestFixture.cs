@@ -344,8 +344,11 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.viewModel.CreateCentralNodeAndNeighbours(product2);
             await this.renderer.InvokeAsync(() => this.renderer.Instance.RefreshDiagram());
 
-            Assert.That(nodes, Is.Not.EqualTo(diagram.Nodes));
-            Assert.That(links, Is.Not.EqualTo(diagram.Links));
+            Assert.Multiple(() =>
+            {
+                Assert.That(nodes, Is.Not.EqualTo(diagram.Nodes));
+                Assert.That(links, Is.Not.EqualTo(diagram.Links));
+            });
         }
 
         [Test]
@@ -363,8 +366,11 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 await this.renderer.InvokeAsync(() => result = this.renderer.Instance.CopyComponents(anotherView));
                 var newViewModel = this.renderer.Instance.ViewModel;
 
-                Assert.That(oldViewModel, Is.EqualTo(newViewModel));
-                Assert.That(result.Result, Is.True);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(oldViewModel, Is.EqualTo(newViewModel));
+                    Assert.That(result.Result, Is.True);
+                });
             }
             catch
             {
@@ -444,9 +450,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             Assert.That(this.viewModel.ProductsMap, Has.Count.GreaterThan(0));
 
             var link = this.viewModel.InterfacesMap.Keys.Last();
-            Assert.That(link.Vertices.Count, Is.EqualTo(0));
+            Assert.That(link.Vertices, Has.Count.EqualTo(0));
             await this.renderer.InvokeAsync(() => this.renderer.Instance.MouseDoubleClickOnModel(link, new Blazor.Diagrams.Core.Geometry.Point(0, 0)));
-            Assert.That(link.Vertices.Count, Is.GreaterThan(0));
+            Assert.That(link.Vertices, Has.Count.GreaterThan(0));
         }
 
         [Test]

@@ -487,7 +487,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="productRowViewModel">the <see cref="ProductRowViewModel"/></param>
         public void CreateNeighboursAndPositionAroundProduct(ProductRowViewModel productRowViewModel)
         {
-            if (this.ProductsMap.Values.Contains(productRowViewModel))
+            if (this.ProductsMap.ContainsValue(productRowViewModel))
             {
                 var node = this.ProductsMap.FirstOrDefault(x => x.Value == productRowViewModel).Key;
                 node.IsExpanded = true;
@@ -529,7 +529,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 ThingId = product.ThingId
             };
 
-            var nodeCanBeAdded = !this.ProductsMap.Values.Contains(product);
+            var nodeCanBeAdded = !this.ProductsMap.ContainsValue(product);
 
             if (nodeCanBeAdded)
             {
@@ -542,7 +542,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 foreach (var port in ports)
                 {
                     var index = ports.IndexOf(port);
-                    var alignment = this.GetAproximateAlignment(index, ports.Count());
+                    var alignment = GetAproximateAlignment(index, ports.Count());
                     var portNode = new DiagramPort(node, alignment, port.Name);
                     node.AddPort(portNode);
                     portNode.Locked = true;
@@ -574,7 +574,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="indexOfPort">the index of the port</param>
         /// <param name="totalPortsInNode"></param>
         /// <returns>the aproximate alignment of the port</returns>
-        private PortAlignment GetAproximateAlignment(int indexOfPort, int totalPortsInNode)
+        private static PortAlignment GetAproximateAlignment(int indexOfPort, int totalPortsInNode)
         {
             var increment = (360.0) / totalPortsInNode;
             var angle = increment * indexOfPort;
