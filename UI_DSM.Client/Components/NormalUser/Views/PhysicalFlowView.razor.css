@@ -1,6 +1,12 @@
-﻿#diagram-parent {
+﻿﻿#diagram-parent {
     position: relative;
     width: 100%;
-    height: 100%;
-    background-color: var(--colors-gray-50);
+    min-height: 1000px;
+    height: 1050px;
+    min-height: 100vh;
+    height: 100vh;
+}
+
+::deep .diagram-svg-layer {
+    z-index: 1;
 }

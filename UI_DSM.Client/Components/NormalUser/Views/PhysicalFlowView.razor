@@ -22,7 +22,7 @@
 </DxPopup>
 
 <CascadingValue Value="this.Diagram">
-    <div id="diagram-parent">
+    <div id="diagram-parent" @ref="this.DiagramReference">
         <LoadingComponent IsLoading="@this.IsLoading">
             <DiagramCanvas></DiagramCanvas>
             <DiagramLegendWidget></DiagramLegendWidget>

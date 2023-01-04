@@ -49,7 +49,8 @@ namespace UI_DSM.Client.Components.Widgets
             base.OnInitialized();
                         
             this.Link.Color = this.Color;
-            this.Link.SelectedColor = "#278EFF";                        
+            this.Link.SelectedColor = "#278EFF";
+            this.Link.Refresh();
         }
     }
 }

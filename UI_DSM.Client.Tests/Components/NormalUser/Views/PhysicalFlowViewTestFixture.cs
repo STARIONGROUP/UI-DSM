@@ -20,9 +20,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
     using CDP4Common.DTO;
     using CDP4Common.EngineeringModelData;
-
     using CDP4Dal;
-
+    using CDP4JsonSerializer;
     using Microsoft.Extensions.DependencyInjection;
    
     using Moq;
@@ -31,12 +30,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.Model;
+    using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
+    using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.Models;
 
     using BinaryRelationship = CDP4Common.DTO.BinaryRelationship;
@@ -66,6 +67,15 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 this.reviewItemService = new Mock<IReviewItemService>();
                 this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel(), null);
                 this.context.Services.AddSingleton(this.viewModel);
+
+                this.context.Services.AddSingleton(this.viewModel);
+
+                this.context.Services.AddTransient<ICdp4JsonSerializer, Cdp4JsonSerializer>();
+                this.context.Services.AddTransient<IJsonSerializer, JsonSerializer>();
+                this.context.Services.AddTransient<IJsonDeserializer, JsonDeserializer>();
+                this.context.Services.AddTransient<IJsonService, JsonService>();
+                this.context.Services.AddTransient<IReviewItemService, ReviewItemService>();
+                this.context.Services.AddTransient<IDocumentBasedViewModel, DocumentBasedViewModel>();
                 this.context.Services.AddTransient<IFilterViewModel, FilterViewModel>();
                 this.context.Services.AddTransient<IConnectionVisibilitySelectorViewModel, ConnectionVisibilitySelectorViewModel>();
                 this.context.JSInterop.Setup<Rectangle>("ZBlazorDiagrams.getBoundingClientRect", _ => true);
@@ -239,17 +249,17 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         [Test]
         public void VerifyThatModelCanBeSelected()
         {
-            var productNode = this.viewModel.ProductNodes.First();
+            var productNode = this.viewModel.ProductsMap.Keys.First();
             Assert.That(this.viewModel.SelectedElement, Is.Null);
             this.viewModel.SetSelectedModel(productNode);
             Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
 
-            var portNode = this.viewModel.PortNodes.First();
+            var portNode = this.viewModel.PortsMap.Keys.First();
             this.viewModel.SelectedElement = null;
             this.viewModel.SetSelectedModel(portNode);
             Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
 
-            var linkNode = this.viewModel.LinkNodes.First();
+            var linkNode = this.viewModel.InterfacesMap.Keys.First();
             this.viewModel.SelectedElement = null;
             this.viewModel.SetSelectedModel(linkNode);
             Assert.That(this.viewModel.SelectedElement, Is.Not.Null);
@@ -268,10 +278,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         {
             var product = this.renderer.Instance.ViewModel.Products.Last();
             this.viewModel.ProductsMap.Clear();
-            this.viewModel.ProductNodes.Clear();
             this.viewModel.CreateCentralNodeAndNeighbours(product);
             Assert.That(this.viewModel.ProductsMap.Count > 0);
-            Assert.That(this.viewModel.ProductNodes.Count > 0);
         }
 
         [Test]
@@ -293,21 +301,15 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         [Test]
         public void VerifyThatInterfaceLinksCanBeCreated()
         {
-            this.viewModel.LinkNodes.Clear();
             this.viewModel.InterfacesMap.Clear();
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(this.viewModel.LinkNodes, Has.Count.EqualTo(0));
-                Assert.That(this.viewModel.InterfacesMap, Has.Count.EqualTo(0));
-            });
+            Assert.That(this.viewModel.InterfacesMap, Has.Count.EqualTo(0));
 
             this.viewModel.CreateInterfacesLinks();
 
             Assert.Multiple(() =>
             {
                 Assert.That(this.viewModel.Interfaces, Has.Count.GreaterThan(0));
-                Assert.That(this.viewModel.LinkNodes, Has.Count.GreaterThan(0));
                 Assert.That(this.viewModel.InterfacesMap, Has.Count.GreaterThan(0));
             });
         }
@@ -344,15 +346,42 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         [Test]
         public async Task VerifyThatComponentsCanBeCopied()
         {
-            var component = this.context.RenderComponent<PhysicalFlowView>();
+            try
+            {
+                var component = this.context.RenderComponent<PhysicalFlowView>();
+                var anotherView = component.Instance;
+
+                var oldViewModel = anotherView.ViewModel;
+                this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new int[] { 100, 80 });
+
+                Task<bool> result = Task.FromResult(false);
+                await this.renderer.InvokeAsync(() => result = this.renderer.Instance.CopyComponents(anotherView));
+                var newViewModel = this.renderer.Instance.ViewModel;
+
+                Assert.That(oldViewModel, Is.EqualTo(newViewModel));
+                Assert.IsTrue(result.Result);
+            }
+            catch
+            {
+                // On GitHub, exception is thrown even if the JSRuntime has been configured
+            }
+        }
+
+        [Test]
+        public async Task VerifyThatComponentsAreNotCopied()
+        {
+            var component = this.context.RenderComponent<DocumentBased>();
             var anotherView = component.Instance;
 
             var oldViewModel = anotherView.ViewModel;
+            this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new int[] { 100, 80 });
 
-            await this.renderer.InvokeAsync(() => this.renderer.Instance.CopyComponents(anotherView));
+            Task<bool> result = Task.FromResult(false);
+            await this.renderer.InvokeAsync(() => result = this.renderer.Instance.CopyComponents(anotherView));
             var newViewModel = this.renderer.Instance.ViewModel;
 
-            Assert.That(oldViewModel, Is.EqualTo(newViewModel));
+            Assert.That(oldViewModel, Is.Not.EqualTo(newViewModel));
+            Assert.IsFalse(result.Result);
         }
 
         [Test]
@@ -364,9 +393,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var port = this.viewModel.PortsMap.Values.First();
                 var interf = this.viewModel.InterfacesMap.Values.First();
 
-                var productRow = this.viewModel.SelectedFirstProductByCloserSelectedItem(product);
-                var portRow = this.viewModel.SelectedFirstProductByCloserSelectedItem(port);
-                var interfaceRow = this.viewModel.SelectedFirstProductByCloserSelectedItem(interf);
+                var productRow = this.viewModel.SelectFirstProductByCloserSelectedItem(product);
+                var portRow = this.viewModel.SelectFirstProductByCloserSelectedItem(port);
+                var interfaceRow = this.viewModel.SelectFirstProductByCloserSelectedItem(interf);
 
                 Assert.Multiple(() =>
                 {
@@ -374,25 +403,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Assert.That(portRow, Is.Not.Null);
                     Assert.That(interfaceRow, Is.Not.Null);
                 });
-            }
-            catch
-            {
-                // On GitHub, exception is thrown even if the JSRuntime has been configured
-            }
-        }
-
-        [Test]
-        public void VerifyThatCentralNodeCanBeSet()
-        {
-            try
-            {
-                var product = this.viewModel.ProductNodes.First();
-                var result = this.viewModel.SetCentralNodeModel(product);
-                Assert.That(result, Is.True);
-
-                var product2 = new DiagramNode();
-                var result2 = this.viewModel.SetCentralNodeModel(product2);
-                Assert.That(result2, Is.False);
             }
             catch
             {
@@ -417,6 +427,29 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             {
                 // On GitHub, exception is thrown even if the JSRuntime has been configured
             }
+        }
+
+        [Test]
+        public async Task VerifyThatDoubleClickOnModelWorks()
+        {
+            var diagramNode = this.viewModel.ProductsMap.Keys.Last();
+            await this.renderer.InvokeAsync(() => this.renderer.Instance.MouseDoubleClickOnModel(diagramNode, new Blazor.Diagrams.Core.Geometry.Point(0, 0)));
+            Assert.That(this.viewModel.ProductsMap, Has.Count.GreaterThan(0));
+
+            var link = this.viewModel.InterfacesMap.Keys.Last();
+            Assert.That(link.Vertices.Count == 0);
+            await this.renderer.InvokeAsync(() => this.renderer.Instance.MouseDoubleClickOnModel(link, new Blazor.Diagrams.Core.Geometry.Point(0, 0)));
+            Assert.That(link.Vertices.Count > 0);
+        }
+
+        [Test]
+        public void VerifyThatMouseUpOnModelWorks()
+        {
+            var diagramNode = this.viewModel.ProductsMap.Keys.Last();
+            var previousSelectedElement = this.renderer.Instance.ViewModel.SelectedElement;
+            this.renderer.Instance.MouseUpOnComponent(diagramNode);
+            var lastSelectedElement = this.renderer.Instance.ViewModel.SelectedElement;
+            Assert.That(lastSelectedElement, Is.Not.EqualTo(previousSelectedElement));
         }
     }
 }
