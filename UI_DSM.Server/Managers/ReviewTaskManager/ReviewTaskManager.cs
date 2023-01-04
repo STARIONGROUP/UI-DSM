@@ -160,7 +160,10 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
             {
                 BaseUrl = route,
                 ObjectKind = nameof(ReviewTask),
-                DisplayText = reviewTask.Description
+                DisplayText = reviewTask.Description,
+                Location = $"{((Project)reviewTask.EntityContainer.EntityContainer.EntityContainer).ProjectName} > " +
+                           $"{((Review)reviewTask.EntityContainer.EntityContainer).Title} > " +
+                           $"{((ReviewObjective)reviewTask.EntityContainer).Title}"
             };
         }
 

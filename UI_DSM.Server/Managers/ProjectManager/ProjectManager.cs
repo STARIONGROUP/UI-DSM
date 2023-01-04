@@ -133,8 +133,7 @@ namespace UI_DSM.Server.Managers.ProjectManager
                 .ThenInclude(x => x.ReviewTasks)
                 .Include(x => x.Participants)
                 .Include(x => x.Annotations)
-                .Include(x => x.Annotations.OfType<Comment>())
-                .ThenInclude(x => x.Replies)
+                .ThenInclude(x => (x as Comment).Replies)
                 .Include(x => x.Reviews)
                 .ThenInclude(x => x.ReviewItems)
                 .FirstOrDefaultAsync();

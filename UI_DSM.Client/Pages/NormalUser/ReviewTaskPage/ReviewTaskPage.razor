@@ -93,8 +93,6 @@
 					</div>
 
 					<div class="task-page__actions">
-
-
 						@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask) 
 						     && this.ViewModel.ReviewTask.IsAssignedTo.Any(x => x.Id == this.ViewModel.Participant.Id))
 						{

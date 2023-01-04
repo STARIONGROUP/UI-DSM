@@ -87,9 +87,10 @@ namespace UI_DSM.Server.Managers.ParticipantManager
 
             return new SearchResultDto()
             {
-                BaseUrl = $"Project/{participant.EntityContainer.Id}/Participant/{participant.Id}",
+                BaseUrl = $"Administration/Project/{participant.EntityContainer.Id}",
                 DisplayText = participant.ParticipantName,
-                ObjectKind = nameof(Participant)
+                ObjectKind = nameof(Participant),
+                Location = ((Project)participant.EntityContainer).ProjectName
             };
         }
 
@@ -102,9 +103,7 @@ namespace UI_DSM.Server.Managers.ParticipantManager
         {
             var participant = await this.EntityDbSet.Where(x => x.Id == entityId)
                 .Include(x => x.Annotations)
-                .Include(x => x.Annotations.OfType<Comment>())
-                .ThenInclude(x => x.Replies)
-                .Include(x => x.Replies)
+                .ThenInclude(x => (x as Comment).Replies)
                 .FirstOrDefaultAsync();
 
             if (participant == null)

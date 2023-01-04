@@ -13,6 +13,10 @@
 
 namespace UI_DSM.Shared.DTO.Common
 {
+    using CDP4Common.EngineeringModelData;
+
+    using UI_DSM.Shared.Enumerator;
+
     /// <summary>
     ///     Data Transfer Object that represent the result of a search query
     /// </summary>
@@ -34,8 +38,28 @@ namespace UI_DSM.Shared.DTO.Common
         public string BaseUrl { get; set; }
 
         /// <summary>
+        ///     The location of the current ressource
+        /// </summary>
+        public string Location { get; set; }
+
+        /// <summary>
         ///     A specific category applied to an item
         /// </summary>
         public string SpecificCategory { get; set; }
+
+        /// <summary>
+        ///     A collection of <see cref="View" /> where the current item visible
+        /// </summary>
+        public IEnumerable<View> AvailableViews { get; set; }
+
+        /// <summary>
+        ///     The <see cref="Guid" /> of the item
+        /// </summary>
+        public Guid ItemId { get; set; }
+
+        /// <summary>
+        ///     The <see cref="Guid" /> of the containing <see cref="Iteration" />
+        /// </summary>
+        public Guid IterationId { get; set; }
     }
 }

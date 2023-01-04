@@ -123,15 +123,13 @@ namespace UI_DSM.Server.Services.SearchService
             things = things.ToList();
             var requirements = Converter.Convert(things.OfType<Requirement>()).OfType<CometSearch.Common.SearchDto.Requirement>();
             var elementDefinitions = Converter.Convert(things.OfType<ElementDefinition>()).OfType<CometSearch.Common.SearchDto.ElementDefinition>();
-            var elementUsages = Converter.Convert(things.OfType<ElementUsage>()).OfType<CometSearch.Common.SearchDto.ElementUsage>();
-            var relationShips = Converter.Convert(things.OfType<BinaryRelationship>()).OfType<CometSearch.Common.SearchDto.BinaryRelationship>();
+            var relationShips = Converter.Convert(things.OfType<BinaryRelationship>().Where(x => x.GetAvailableViews().Any())).OfType<CometSearch.Common.SearchDto.BinaryRelationship>();
             var hyperlinks = things.OfType<Requirement>().Where(x => x.HasReviewExternalContent()).SelectMany(x => x.HyperLink).ToList();
             hyperlinks.AddRange(things.OfType<ElementDefinition>().Where(x => x.HasReviewExternalContent()).SelectMany(x => x.HyperLink));
             var hyperlinksDto = Converter.Convert(hyperlinks).OfType<CometSearch.Common.SearchDto.HyperLink>();
 
             await this.IndexData(requirements);
             await this.IndexData(elementDefinitions);
-            await this.IndexData(elementUsages);
             await this.IndexData(relationShips);
             await this.IndexData(hyperlinksDto);
         }

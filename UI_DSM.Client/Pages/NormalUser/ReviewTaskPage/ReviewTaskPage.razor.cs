@@ -24,6 +24,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Components.App.Comments;
     using UI_DSM.Client.Components.App.SelectedItemCard;
     using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
@@ -197,6 +198,11 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 {
                     await baseView.InitializeViewModel(this.ViewModel.Things, projectId, reviewId, reviewTaskId, this.ViewModel.GetPrefilters(), this.ViewModel.ReviewObjective.AdditionnalColumnsVisibleAtStart);
                     baseView.TrySetSelectedItem(this.SelectedItem);
+
+                    if (this.SelectedItem is IHaveThingRowViewModel row)
+                    {
+                        await baseView.TryNavigateToItem(row.Id);
+                    }
                 }
 
                 this.ViewModel.CurrentBaseViewInstance = baseView;

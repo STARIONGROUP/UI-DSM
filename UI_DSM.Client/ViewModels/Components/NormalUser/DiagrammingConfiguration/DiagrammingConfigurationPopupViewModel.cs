@@ -11,14 +11,12 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
+namespace UI_DSM.Client.ViewModels.Components.NormalUser.DiagrammingConfiguration
 {
     using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Client.Components.NormalUser.ProjectReview;
-    using UI_DSM.Client.Enumerator;
-    using UI_DSM.Client.Services.Administration.ProjectService;
-    using UI_DSM.Shared.Models;
+    using UI_DSM.Client.Components.NormalUser.DiagrammingConfiguration;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
 
     /// <summary>
     ///     View model for the <see cref="DiagrammingConfigurationPopup" /> component
@@ -28,12 +26,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         /// <summary>
         ///     The name of configuration to save
         /// </summary>
-        public String ConfigurationName { get; set; } = "";
+        public string ConfigurationName { get; set; } = "";
 
         /// <summary>
         ///     The <see cref="EventCallback" /> to call for data submit
         /// </summary>
         public EventCallback OnValidSubmit { get; set; }
-
     }
 }

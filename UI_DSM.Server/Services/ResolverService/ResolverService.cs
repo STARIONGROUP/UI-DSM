@@ -201,12 +201,18 @@ namespace UI_DSM.Server.Services.ResolverService
             {
                 if (await this.thingManager.GetThing(commonBaseSearchDto, model) is { } thing)
                 {
+                    var modelDto = await this.modelManager.GetSearchResult(model.Id);
+
                     results.Add(new SearchResultDto
                     {
-                        BaseUrl = (await this.modelManager.GetSearchResult(model.Id)).BaseUrl,
+                        BaseUrl = modelDto.BaseUrl,
                         SpecificCategory = thing.GetSpecificCategoryForThing(),
                         ObjectKind = thing.GetType().Name,
-                        DisplayText = thing.GetSpecificNameForThing()
+                        DisplayText = thing.GetSpecificNameForThing(),
+                        AvailableViews = thing.GetAvailableViews(),
+                        ItemId = thing.Iid,
+                        IterationId = model.IterationId,
+                        Location = $"{modelDto.Location} > {model.ModelName}"
                     });
                 }
             }
@@ -228,11 +234,6 @@ namespace UI_DSM.Server.Services.ResolverService
             switch (commonBaseSearchDto.Type.Split(".").Last())
             {
                 case nameof(ProjectDto):
-                    if (loggedUser.IsAdmin)
-                    {
-                        return await this.projectManager.GetSearchResult(commonBaseSearchDto.Id);
-                    }
-
                     if (projects.Any(x => x.Id == commonBaseSearchDto.Id))
                     {
                         return await this.projectManager.GetSearchResult(commonBaseSearchDto.Id);

@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.Components.NormalUser.Views
 {
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
 
     /// <summary>
@@ -35,7 +36,12 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
             this.ViewModel = productBreakdown.ViewModel;
             this.IsLoading = false;
-            await Task.CompletedTask;
+
+            if (this.ViewModel.SelectedElement is ElementBaseRowViewModel row)
+            {
+                await this.TryNavigateToItem(row.Id);
+            }
+
             return true;
         }
 

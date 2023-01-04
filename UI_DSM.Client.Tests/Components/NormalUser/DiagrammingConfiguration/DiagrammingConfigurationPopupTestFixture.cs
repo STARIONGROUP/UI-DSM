@@ -11,7 +11,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
+namespace UI_DSM.Client.Tests.Components.NormalUser.DiagrammingConfiguration
 {
     using Bunit;
 
@@ -21,12 +21,12 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
     using Microsoft.AspNetCore.Components.Forms;
 
     using NUnit.Framework;
+
     using UI_DSM.Client.Components.NormalUser.DiagrammingConfiguration;
-    using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.DiagrammingConfiguration;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
-    using UI_DSM.Shared.Models;
 
     using TestContext = Bunit.TestContext;
 
@@ -69,7 +69,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ProjectReview
 
                 var textBox = renderer.FindComponent<DxTextBox>();
 
-                Assert.Equals(textBox.Instance.Text, String.Empty);
+                Assert.Equals(textBox.Instance.Text, string.Empty);
 
                 this.diagrammingConfigurationPopupViewModel.ConfigurationName = "test";
 

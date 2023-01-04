@@ -17,6 +17,7 @@ namespace UI_DSM.Server.Tests.Services
 
     using NUnit.Framework;
 
+    using UI_DSM.Server.Managers.ModelManager;
     using UI_DSM.Server.Managers.ProjectManager;
     using UI_DSM.Server.Managers.ReviewManager;
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
@@ -36,6 +37,7 @@ namespace UI_DSM.Server.Tests.Services
         private Mock<IReviewTaskManager> reviewTaskManager;
         private Mock<IUserManager> userManager;
         private Mock<IRoleManager> roleManager;
+        private Mock<IModelManager> modelManager;
 
         [SetUp]
         public void Setup()
@@ -46,9 +48,10 @@ namespace UI_DSM.Server.Tests.Services
             this.reviewTaskManager = new Mock<IReviewTaskManager>();
             this.userManager = new Mock<IUserManager>();
             this.roleManager = new Mock<IRoleManager>();
+            this.modelManager = new Mock<IModelManager>();
 
             this.service = new RouteParserService(this.projectManager.Object, this.reviewManager.Object, this.reviewObjectiveManager.Object,
-                this.reviewTaskManager.Object, this.userManager.Object, this.roleManager.Object);
+                this.reviewTaskManager.Object, this.userManager.Object, this.roleManager.Object, this.modelManager.Object);
         }
 
         [Test]
@@ -271,6 +274,27 @@ namespace UI_DSM.Server.Tests.Services
                 Assert.That(result, Has.Count.EqualTo(1));
                 Assert.That(result[0].DisplayName, Is.EqualTo("Home"));
                 Assert.That(result[0].Url, Is.EqualTo("/"));
+            });
+
+            var modelId = Guid.NewGuid();
+            url = $"/Project/{projectId}/Model/{modelId}?view=TrlView";
+            result = await this.service.ParseUrl(url);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Has.Count.EqualTo(1));
+                Assert.That(result[0].DisplayName, Is.EqualTo("Home"));
+                Assert.That(result[0].Url, Is.EqualTo("/"));
+            });
+
+            this.modelManager.Setup(x => x.FindEntity(modelId)).ReturnsAsync(new Model() { ModelName = "UI-DSM - Iteration 5" });
+
+            result = await this.service.ParseUrl(url);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Has.Count.EqualTo(3));
+                Assert.That(result[2].DisplayName, Is.EqualTo("UI-DSM - Iteration 5"));
             });
         }
     }

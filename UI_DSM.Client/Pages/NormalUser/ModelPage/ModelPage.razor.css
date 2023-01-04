@@ -1,0 +1,37 @@
+﻿.model-page {
+    height: 100%;
+    display: grid;
+    grid-template-areas: "a b";
+    grid-template-columns: calc(100% - 320px);
+}
+
+.model-page__body {
+    grid-area: a;
+    padding: var(--spacing-8);
+    height: calc(100vh - 114px);
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.model-page__sidebar__right {
+    grid-area: b;
+    border-left: 1px solid var(--colors-gray-100);
+    height: calc(100vh - 114px);
+    overflow: auto;
+}
+
+.model-page__body-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    height: 100%;
+}
+
+.model-page__header {
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--colors-gray-100);
+    display: grid;
+    gap: var(--spacing-8);
+    grid-template-columns: 1fr auto;
+}

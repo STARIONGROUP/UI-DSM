@@ -18,6 +18,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
     using CDP4Common.CommonData;
 
+    using UI_DSM.Client.Components.NormalUser.DiagrammingConfiguration;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;

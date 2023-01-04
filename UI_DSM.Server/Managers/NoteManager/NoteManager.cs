@@ -104,7 +104,8 @@ namespace UI_DSM.Server.Managers.NoteManager
             {
                 ObjectKind = nameof(Note),
                 BaseUrl = $"Project/{note.EntityContainer.Id}/Note/{note.Id}",
-                DisplayText = note.Content
+                DisplayText = note.Content,
+                Location = ((Project)note.EntityContainer).ProjectName
             };
         }
 

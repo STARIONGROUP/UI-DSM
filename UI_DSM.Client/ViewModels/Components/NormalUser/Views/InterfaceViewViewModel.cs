@@ -18,29 +18,36 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
 
+    using Microsoft.AspNetCore.Components;
+
     using ReactiveUI;
 
+    using UI_DSM.Client.Components.NormalUser.DiagrammingConfiguration;
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Model;
-    using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Services.DiagrammingConfigurationService;
+    using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.DiagrammingConfiguration;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
-    using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
 
     using Model = Blazor.Diagrams.Core.Models.Base.Model;
-    using UI_DSM.Shared.DTO.Common;
-    using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
-    using Microsoft.AspNetCore.Components;
 
     /// <summary>
     ///     View model for the <see cref="Client.Components.NormalUser.Views.InterfaceView" /> component
     /// </summary>
     public class InterfaceViewViewModel : BaseViewViewModel, IInterfaceViewViewModel
     {
+        /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationService" />
+        /// </summary>
+        private readonly IDiagrammingConfigurationService diagrammingConfigurationService;
+
         /// <summary>
         ///     A collection of all <see cref="InterfaceRowViewModel" />
         /// </summary>
@@ -62,9 +69,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         private List<ProductRowViewModel> filteredProducts;
 
         /// <summary>
-        ///     Backing field for <see cref="ShouldShowProducts" />
+        ///     Backing field for <see cref="IsOnSavingMode" />
         /// </summary>
-        private bool shouldShowProducts;
+        private bool isOnSavingMode;
 
         /// <summary>
         ///     Backing field for <see cref="IsViewSettingsVisible" />
@@ -72,15 +79,16 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         private bool isViewSettingsVisible;
 
         /// <summary>
-        ///     The <see cref="IDiagrammingConfigurationService" />
+        ///     Backing field for <see cref="ShouldShowProducts" />
         /// </summary>
-        private readonly IDiagrammingConfigurationService diagrammingConfigurationService;
+        private bool shouldShowProducts;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
         /// <param name="filterViewModel">The <see cref="IFilterViewModel" /></param>
+        /// <param name="diagrammingConfigurationService">The <see cref="IDiagrammingConfigurationService"/></param>
         public InterfaceViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel, IDiagrammingConfigurationService diagrammingConfigurationService) : base(reviewItemService)
         {
             this.FilterViewModel = filterViewModel;
@@ -207,8 +215,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Initialize this view model properties
         /// </summary>
         /// <param name="things">A collection of <see cref="Thing" /></param>
-        /// <param name="projectId">The <see cref="UI_DSM.Shared.Models.Project" /> id</param>
-        /// <param name="reviewId">The <see cref="UI_DSM.Shared.Models.Review" /> id</param>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="reviewTaskId">The <see cref="ReviewTask"/> id</param>
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
         /// <returns>A <see cref="Task" /></returns>
@@ -243,7 +252,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 .Select(x => new ProductRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));
 
             this.allInterfaces = new List<InterfaceRowViewModel>(interfaces
-                .Select(x => new InterfaceRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid), 
+                .Select(x => new InterfaceRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid),
                     this.allPorts.First(source => source.ThingId == x.Source.Iid),
                     this.allPorts.First(target => target.ThingId == x.Target.Iid))));
 
@@ -663,6 +672,38 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationPopupViewModel" />
+        /// </summary>
+        public IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; private set; }
+
+        /// <summary>
+        ///     Value indicating the user is currently saving the diagramming configuration
+        /// </summary>
+        public bool IsOnSavingMode
+        {
+            get => this.isOnSavingMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnSavingMode, value);
+        }
+
+        /// <summary>
+        ///     Opens the <see cref="DiagrammingConfigurationPopup" />
+        /// </summary>
+        public void OpenSavingPopup()
+        {
+            this.IsOnSavingMode = true;
+        }
+
+        /// <summary>
+        ///     Saves current diagram layout
+        /// </summary>
+        public async void SaveCurrentDiagramLayout()
+        {
+            var layoutInformationDtos = this.ProductNodes.Select(x => new DiagramLayoutInformationDto { ThingId = x.ThingId, xPosition = x.Position.X, yPosition = x.Position.Y });
+            var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationPopupViewModel.ConfigurationName, layoutInformationDtos);
+            this.IsOnSavingMode = !response;
+        }
+
+        /// <summary>
         ///     Verifies that a <see cref="IHaveThingRowViewModel" /> has ports has children
         /// </summary>
         /// <param name="row">The <see cref="IHaveThingRowViewModel" /></param>
@@ -742,44 +783,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             });
 
             this.FilterViewModel.InitializeProperties(availableRowFilters);
-        }
-
-        /// <summary>
-        ///     The <see cref="IDiagrammingConfigurationPopupViewModel" />
-        /// </summary>
-        public IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; private set; }
-
-        /// <summary>
-        ///     Backing field for <see cref="IsOnCreationMode" />
-        /// </summary>
-        private bool isOnSavingMode;
-
-        /// <summary>
-        ///     Value indicating the user is currently saving the diagramming configuration
-        /// </summary>
-        public bool IsOnSavingMode
-        {
-            get => this.isOnSavingMode;
-            set => this.RaiseAndSetIfChanged(ref this.isOnSavingMode, value);
-        }
-
-        /// <summary>
-        ///     Opens the <see cref="DiagrammingConfigurationPopup" />
-        /// </summary>
-        public void OpenSavingPopup()
-        {
-            this.IsOnSavingMode = true;
-        }
-
-
-        /// <summary>
-        ///     Saves current diagram layout
-        /// </summary>
-        public async void SaveCurrentDiagramLayout()
-        {
-            IEnumerable<DiagramLayoutInformationDto> layoutInformationDtos = this.ProductNodes.Select(x => new DiagramLayoutInformationDto { ThingId = x.ThingId, xPosition = x.Position.X, yPosition = x.Position.Y });
-            var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationPopupViewModel.ConfigurationName, layoutInformationDtos);
-            this.IsOnSavingMode = !response;
         }
     }
 }

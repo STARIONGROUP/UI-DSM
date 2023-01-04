@@ -18,6 +18,9 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
 
+    using Microsoft.AspNetCore.Components;
+    using Microsoft.JSInterop;
+
     using Radzen;
     using Radzen.Blazor;
 
@@ -56,6 +59,12 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public RadzenDataGrid<ElementBaseRowViewModel> Grid { get; set; }
 
         /// <summary>
+        ///     The <see cref="IJSRuntime" />
+        /// </summary>
+        [Inject]
+        public IJSRuntime JsRuntime { get; set; }
+
+        /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
@@ -68,9 +77,17 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// </summary>
         /// <param name="itemName">The name of the item to navigate to</param>
         /// <returns>A <see cref="Task" /></returns>
-        public override Task TryNavigateToItem(string itemName)
+        public override async Task TryNavigateToItem(string itemName)
         {
-            return Task.CompletedTask;
+            var existingItem = this.ViewModel.GetAvailablesRows().OfType<ElementBaseRowViewModel>()
+                .FirstOrDefault(x => x.Id == itemName);
+
+            if (existingItem != null)
+            {
+                var path = this.ComputeTreePath(existingItem);
+                await this.ExpandAllRows(path);
+                await this.JsRuntime.InvokeVoidAsync("scrollToElement", $"row_{itemName}", "center", "center");
+            }
         }
 
         /// <summary>
@@ -88,6 +105,15 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.hasAlreadyExpandOnce = false;
             await base.InitializeViewModel(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart);
             this.IsLoading = false;
+        }
+
+        /// <summary>
+        ///     Handle the on expand event
+        /// </summary>
+        /// <param name="row">The <see cref="ElementBaseRowViewModel" /></param>
+        public void OnRowExpand(ElementBaseRowViewModel row)
+        {
+            row.IsExpanded = !row.IsExpanded;
         }
 
         /// <summary>
@@ -160,6 +186,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             row.Expandable = this.ViewModel.HasChildren(row.Data);
             row.Attributes["class"] = this.ViewModel.IsVisible(row.Data) ? string.Empty : "invisible-row";
+            row.Attributes["id"] = $"row_{row.Data.Id}";
         }
 
         /// <summary>
@@ -184,6 +211,52 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     Hides columns on start
         /// </summary>
         protected abstract void HideColumnsAtStart();
+
+        /// <summary>
+        ///     Computes the path inside the tree to access to the <see cref="ElementBaseRowViewModel" />
+        /// </summary>
+        /// <param name="item">The <see cref="ElementBaseRowViewModel" /></param>
+        /// <returns>A collection of <see cref="ElementBaseRowViewModel" /> to have the path</returns>
+        private IEnumerable<ElementBaseRowViewModel> ComputeTreePath(ElementBaseRowViewModel item)
+        {
+            var path = new List<ElementBaseRowViewModel>();
+            var currentItem = item;
+
+            while (currentItem.ContainerId != Guid.Empty)
+            {
+                var existingParent = this.ViewModel.GetAvailablesRows().OfType<ElementBaseRowViewModel>()
+                    .FirstOrDefault(x => x.ThingId == currentItem.ContainerId || x.ElementDefinitionId == currentItem.ContainerId);
+
+                if (existingParent != null)
+                {
+                    path.Add(existingParent);
+                    currentItem = existingParent;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            path.Reverse();
+            return path;
+        }
+
+        /// <summary>
+        ///     Expands all rows that are contained into the collection
+        /// </summary>
+        /// <param name="rows">The collection <see cref="ElementBaseRowViewModel" />"/></param>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task ExpandAllRows(IEnumerable<ElementBaseRowViewModel> rows)
+        {
+            foreach (var row in rows)
+            {
+                if (!row.IsExpanded)
+                {
+                    await this.Grid.ExpandRow(row);
+                }
+            }
+        }
 
         /// <summary>
         ///     Apply the filtering on rows

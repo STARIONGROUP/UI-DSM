@@ -18,6 +18,8 @@ namespace UI_DSM.Client.Extensions
     using CDP4Common.SiteDirectoryData;
     using CDP4Common.Types;
 
+    using UI_DSM.Shared.Enumerator;
+
     /// <summary>
     ///     Extension class for <see cref="Thing" />
     /// </summary>
@@ -156,6 +158,11 @@ namespace UI_DSM.Client.Extensions
                 return false;
             }
 
+            if (!prefilters.Any())
+            {
+                return true;
+            }
+
             var values = parameter.QueryParameterBaseValueSet(null, null);
             return values.ActualValue.Any(x => prefilters.Any(prefilter => prefilter == x));
         }
@@ -174,6 +181,11 @@ namespace UI_DSM.Client.Extensions
             if (parameter == null)
             {
                 return false;
+            }
+
+            if (!prefilters.Any())
+            {
+                return true;
             }
 
             var values = parameter.Value;
@@ -385,6 +397,80 @@ namespace UI_DSM.Client.Extensions
         public static bool ShouldHaveTrlParameter(this ElementBase elementBase)
         {
             return elementBase.IsCategorizedBy(MandatoryCategoriesForTrl);
+        }
+
+        /// <summary>
+        ///     Gets the collection of <see cref="View" /> where the current <see cref="Thing" /> can be visible
+        /// </summary>
+        /// <param name="thing">The <see cref="Thing" /></param>
+        /// <returns>A collection of <see cref="View" /></returns>
+        public static IEnumerable<View> GetAvailableViews(this Thing thing)
+        {
+            return thing switch
+            {
+                Requirement => new List<View>
+                {
+                    View.RequirementBreakdownStructureView,
+                    View.RequirementVerificationControlView,
+                    View.RequirementTraceabilityToRequirementView,
+                    View.RequirementTraceabilityToFunctionView,
+                    View.RequirementTraceabilityToProductView
+                },
+                ElementBase elementBase when elementBase.IsProduct() => new List<View>
+                {
+                    View.ProductBreakdownStructureView,
+                    View.TrlView,
+                    View.RequirementTraceabilityToProductView,
+                    View.FunctionalTraceabilityToProductView,
+                    View.InterfaceView
+                },
+                ElementBase elementBase when elementBase.IsFunction() => new List<View>
+                {
+                    View.FunctionalBreakdownStructureView,
+                    View.RequirementTraceabilityToFunctionView,
+                    View.FunctionalTraceabilityToProductView
+                },
+                ElementBase elementBase when elementBase.IsPort() => new List<View>
+                {
+                    View.InterfaceView
+                },
+                ElementBase elementBase when !elementBase.IsPort() && !elementBase.IsFunction() && !elementBase.IsProduct() => new List<View>
+                {
+                    View.FunctionalBreakdownStructureView,
+                    View.ProductBreakdownStructureView
+                },
+                BinaryRelationship binaryRelationship when binaryRelationship.IsInterface() => new List<View>
+                {
+                    View.InterfaceView
+                },
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(DeriveCategoryName) => new List<View>
+                {
+                    View.RequirementBreakdownStructureView,
+                    View.RequirementVerificationControlView
+                },
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(TraceCategoryName) => new List<View>
+                {
+                    View.RequirementTraceabilityToRequirementView
+                },
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(ImplementCategoryName) => new List<View>
+                {
+                    View.FunctionalTraceabilityToProductView
+                },
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(SatisfyCategoryName)
+                                                           && binaryRelationship.Source is ElementBase elementBase
+                                                           && elementBase.IsProduct() => new List<View>
+                {
+                    View.RequirementTraceabilityToProductView
+                },
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(SatisfyCategoryName)
+                                                           && binaryRelationship.Source is ElementBase elementBase
+                                                           && elementBase.IsFunction() => new List<View>
+                {
+                    View.RequirementTraceabilityToFunctionView
+                },
+                HyperLink => new List<View> { View.DocumentBased },
+                _ => Enumerable.Empty<View>()
+            };
         }
 
         /// <summary>

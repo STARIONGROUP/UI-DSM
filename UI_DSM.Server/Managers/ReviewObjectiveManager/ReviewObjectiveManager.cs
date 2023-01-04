@@ -284,7 +284,8 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
             {
                 BaseUrl = route,
                 ObjectKind = nameof(ReviewObjective),
-                DisplayText = reviewObjective.Title
+                DisplayText = reviewObjective.Title,
+                Location = $"{((Project)reviewObjective.EntityContainer.EntityContainer).ProjectName} > {((Review)reviewObjective.EntityContainer).Title}"
             };
         }
 
@@ -297,8 +298,7 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         {
             var reviewObjective = await this.EntityDbSet.Where(x => x.Id == entityId)
                 .Include(x => x.Annotations)
-                .Include(x => x.Annotations.OfType<Comment>())
-                .ThenInclude(x => x.Replies)
+                .ThenInclude(x => (x as Comment).Replies)
                 .Include(x => x.ReviewTasks)
                 .FirstOrDefaultAsync();
 
