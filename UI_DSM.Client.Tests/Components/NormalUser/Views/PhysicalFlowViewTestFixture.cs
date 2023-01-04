@@ -364,7 +364,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var newViewModel = this.renderer.Instance.ViewModel;
 
                 Assert.That(oldViewModel, Is.EqualTo(newViewModel));
-                Assert.IsTrue(result.Result);
+                Assert.That(result.Result, Is.True);
             }
             catch
             {
@@ -386,7 +386,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             var newViewModel = this.renderer.Instance.ViewModel;
 
             Assert.That(oldViewModel, Is.Not.EqualTo(newViewModel));
-            Assert.IsFalse(result.Result);
+            Assert.That(result.Result, Is.False);
         }
 
         [Test]
@@ -401,12 +401,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var productRow = this.viewModel.SelectFirstProductByCloserSelectedItem(product);
                 var portRow = this.viewModel.SelectFirstProductByCloserSelectedItem(port);
                 var interfaceRow = this.viewModel.SelectFirstProductByCloserSelectedItem(interf);
+                var nullRow = this.viewModel.SelectFirstProductByCloserSelectedItem(null);
 
                 Assert.Multiple(() =>
                 {
                     Assert.That(productRow, Is.Not.Null);
                     Assert.That(portRow, Is.Not.Null);
                     Assert.That(interfaceRow, Is.Not.Null);
+                    Assert.That(nullRow, Is.Not.Null);
                 });
             }
             catch
@@ -442,9 +444,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             Assert.That(this.viewModel.ProductsMap, Has.Count.GreaterThan(0));
 
             var link = this.viewModel.InterfacesMap.Keys.Last();
-            Assert.That(link.Vertices.Count == 0);
+            Assert.That(link.Vertices.Count, Is.EqualTo(0));
             await this.renderer.InvokeAsync(() => this.renderer.Instance.MouseDoubleClickOnModel(link, new Blazor.Diagrams.Core.Geometry.Point(0, 0)));
-            Assert.That(link.Vertices.Count > 0);
+            Assert.That(link.Vertices.Count, Is.GreaterThan(0));
         }
 
         [Test]
