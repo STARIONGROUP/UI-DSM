@@ -104,6 +104,7 @@ namespace UI_DSM.Client.Components.Widgets
         {
             this.Points.Clear();
             this.CalculateRectangularDistance();
+            this.Node.RefreshAll();
             this.StateHasChanged();
         }
 
@@ -131,7 +132,6 @@ namespace UI_DSM.Client.Components.Widgets
 
                 t += tDelta;
             }
-            this.Node.RefreshAll();
         }
 
     }

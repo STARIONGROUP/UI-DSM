@@ -1,8 +1,8 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="InterfaceViewTestFixture.cs" company="RHEA System S.A.">
+// <copyright file="PhysicalFlowViewTestFixture.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
-//  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+//  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar, Jaime Bernar
 // 
 //  This file is part of UI-DSM.
 //  The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
@@ -16,20 +16,23 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using Blazor.Diagrams.Core.Geometry;
     using Blazor.Diagrams.Core.Models;
     using Blazor.Diagrams.Core.Models.Base;
+
     using Bunit;
 
     using CDP4Common.DTO;
     using CDP4Common.EngineeringModelData;
+    
     using CDP4Dal;
+    
     using CDP4JsonSerializer;
+    
     using Microsoft.Extensions.DependencyInjection;
-   
+
     using Moq;
-   
+
     using NUnit.Framework;
 
     using UI_DSM.Client.Components.NormalUser.Views;
-    using UI_DSM.Client.Model;
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
@@ -37,7 +40,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
+    
     using UI_DSM.Serializer.Json;
+    
     using UI_DSM.Shared.Models;
 
     using BinaryRelationship = CDP4Common.DTO.BinaryRelationship;
