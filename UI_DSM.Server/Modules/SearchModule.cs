@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Server.Modules
 {
+    using System.Diagnostics.CodeAnalysis;
+
     using Carter.Response;
 
     using Microsoft.AspNetCore.Authorization;
@@ -37,6 +39,7 @@ namespace UI_DSM.Server.Modules
         ///     Adds routes to the <see cref="IEndpointRouteBuilder" />
         /// </summary>
         /// <param name="app">The <see cref="IEndpointRouteBuilder" /></param>
+        [ExcludeFromCodeCoverage]
         public override void AddRoutes(IEndpointRouteBuilder app)
         {
             app.MapGet(this.MainRoute, this.Search)
@@ -62,7 +65,7 @@ namespace UI_DSM.Server.Modules
         {
             try
             {
-                await this.IndexPredefinedData(searchService, roleManager, userManager);
+                await IndexPredefinedData(searchService, roleManager, userManager);
                 var response = await searchService.SearchAfter(keyword);
 
                 if (response.Length > 0)
@@ -89,7 +92,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="roleManager">The <see cref="IRoleManager" /></param>
         /// <param name="userManager">The <see cref="IUserManager" /></param>
         /// <returns>A <see cref="Task" /></returns>
-        private async Task IndexPredefinedData(ISearchService searchService, IRoleManager roleManager, IUserManager userManager)
+        private static async Task IndexPredefinedData(ISearchService searchService, IRoleManager roleManager, IUserManager userManager)
         {
             var adminUser = await userManager.FindEntity(Guid.Parse(UserEntityConfiguration.EntityId));
 

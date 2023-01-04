@@ -243,5 +243,143 @@ namespace UI_DSM.Client.Tests.Extension
                 Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, "req", false), Throws.Nothing);
             });
         }
+
+        [Test]
+        public void VerifyGetAvailableViews()
+        {
+            var views = new Requirement().GetAvailableViews();
+            Assert.That(views.ToList(), Has.Count.EqualTo(5));
+            var elementUsage = new ElementUsage();
+            views = elementUsage.GetAvailableViews();
+            Assert.That(views.ToList(), Has.Count.EqualTo(2));
+
+            elementUsage.Category = new List<Category>
+            {
+                new()
+                {
+                    Name = ThingExtension.ProductCategoryName
+                }
+            };
+
+            views = elementUsage.GetAvailableViews();
+            Assert.That(views.ToList(), Has.Count.EqualTo(5));
+
+            elementUsage.Category = new List<Category>
+            {
+                new()
+                {
+                    Name = ThingExtension.FunctionCategoryName
+                }
+            };
+
+            views = elementUsage.GetAvailableViews();
+            Assert.That(views.ToList(), Has.Count.EqualTo(3));
+
+            elementUsage.Category = new List<Category>
+            {
+                new()
+                {
+                    Name = ThingExtension.PortCategoryName
+                }
+            };
+
+            views = elementUsage.GetAvailableViews();
+            Assert.That(views.ToList(), Has.Count.EqualTo(1));
+
+            views = new HyperLink().GetAvailableViews();
+            Assert.That(views.ToList(), Has.Count.EqualTo(1));
+
+            var relationship = new BinaryRelationship()
+            {
+                Category = new List<Category>
+                {
+                    new()
+                    {
+                        Name = ThingExtension.InterfaceCategoryName
+                    }
+                }, 
+                Source = new ElementUsage()
+                {
+                    Category = new List<Category>
+                    {
+                        new()
+                        {
+                            Name = ThingExtension.PortCategoryName
+                        }
+                    }
+                },
+                Target = new ElementUsage()
+                {
+                    Category = new List<Category>
+                    {
+                        new()
+                        {
+                            Name = ThingExtension.PortCategoryName
+                        }
+                    }
+                }
+            };
+
+            views = relationship.GetAvailableViews();
+            Assert.That(views.ToList(), Has.Count.EqualTo(1));
+
+            relationship.Category = new List<Category>
+            {
+                new()
+                {
+                    Name = ThingExtension.DeriveCategoryName
+                }
+            };
+
+            views = relationship.GetAvailableViews();
+            Assert.That(views.ToList(), Has.Count.EqualTo(2));
+
+            relationship.Category = new List<Category>
+            {
+                new()
+                {
+                    Name = ThingExtension.TraceCategoryName
+                }
+            };
+
+            views = relationship.GetAvailableViews();
+            Assert.That(views.ToList(), Has.Count.EqualTo(1));
+
+            relationship.Category = new List<Category>
+            {
+                new()
+                {
+                    Name = ThingExtension.SatisfyCategoryName
+                }
+            };
+
+            relationship.Source = new ElementDefinition()
+            {
+                Category = new List<Category>
+                {
+                    new()
+                    {
+                        Name = ThingExtension.ProductCategoryName
+                    }
+                }
+            };
+
+            views = relationship.GetAvailableViews();
+            Assert.That(views.ToList(), Has.Count.EqualTo(1));
+
+            relationship.Source = new ElementDefinition()
+            {
+                Category = new List<Category>
+                {
+                    new()
+                    {
+                        Name = ThingExtension.FunctionCategoryName
+                    }
+                }
+            };
+
+            views = relationship.GetAvailableViews();
+            Assert.That(views.ToList(), Has.Count.EqualTo(1));
+        }
     }
 }

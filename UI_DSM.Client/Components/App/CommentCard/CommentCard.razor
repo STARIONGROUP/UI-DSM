@@ -101,7 +101,7 @@
 			<AppAccordion Label="Linked Items" Variant="AppAccordion.VariantValue.Reply" @bind-PanelOpen="@this.IsPanelOpen">
 				@foreach (var linkedItem in this.ViewModel.LinkedRows.DistinctBy(x => x.Id).OrderBy(x => x.Id))
 				{
-					<p @ondblclick="() => this.OnDoubleClick(linkedItem.Id)">@linkedItem.Id</p>
+					<button @ondblclick="() => this.OnDoubleClick(linkedItem.Id)">@linkedItem.Id</button>
 				}
 			</AppAccordion>
 		</div>
