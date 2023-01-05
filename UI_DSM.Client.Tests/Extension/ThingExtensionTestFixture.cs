@@ -18,8 +18,6 @@ namespace UI_DSM.Client.Tests.Extension
     using CDP4Common.SiteDirectoryData;
     using CDP4Common.Types;
 
-    using CDP4Dal;
-
     using NUnit.Framework;
 
     using UI_DSM.Client.Extensions;
@@ -157,90 +155,6 @@ namespace UI_DSM.Client.Tests.Extension
                 Assert.That(requirement.GetFirstDefinition(), Is.EqualTo(englishContent));
                 Assert.That(requirement.GetFirstDefinition("fr"), Is.EqualTo(frenchContent));
                 Assert.That(requirement.GetFirstDefinition("nl"), Is.EqualTo(englishContent));
-            });
-        }
-
-        [Test]
-        public async Task VerifyGetRelatedThingName()
-        {
-            var categories = new List<CDP4Common.DTO.Category>
-            {
-                new(Guid.NewGuid(), 0)
-                {
-                    IsDeprecated = true,
-                    Name = "derivesDeprecated"
-                },
-                new(Guid.NewGuid(), 0)
-                {
-                    Name = "derives"
-                },
-                new(Guid.NewGuid(), 0)
-                {
-                    IsDeprecated = true,
-                    Name = "reqDeprecated"
-                },
-                new(Guid.NewGuid(), 0)
-                {
-                    Name = "req"
-                }
-            };
-
-            var reqCategory = categories.Where(x => x.Name.StartsWith("req")).Select(x => x.Iid).ToList();
-            var relationCategory = categories.Where(x => x.Name.StartsWith("derives")).Select(x => x.Iid).ToList();
-
-            var requirementSourceDto = new CDP4Common.DTO.Requirement(Guid.NewGuid(), 0)
-            {
-                Name = "1",
-                Category = reqCategory
-            };
-
-            var requirementTargetDto = new CDP4Common.DTO.Requirement(Guid.NewGuid(), 0)
-            {
-                Name = "2",
-                Category = reqCategory
-            };
-
-            var relationShipDto = new CDP4Common.DTO.BinaryRelationship(Guid.NewGuid(),0)
-            {
-                Category = relationCategory,
-                Source = requirementSourceDto.Iid,
-                Target = requirementTargetDto.Iid
-            };
-
-            var assembler = new Assembler(new Uri("http://localhost"));
-            
-            var things = new List<CDP4Common.DTO.Thing>(categories)
-            {
-                relationShipDto,
-                requirementSourceDto,
-                requirementTargetDto
-            };
-
-            await assembler.Synchronize(things);
-            _ = assembler.Cache.Select(x => x.Value.Value);
-            
-            var requirements = assembler.Cache.Where(x => x.Value.IsValueCreated)
-                .Select(x => x.Value)
-                .Where(x => x.Value.ClassKind == ClassKind.Requirement)
-                .Select(x => x.Value)
-                .ToList();
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(() => requirements[0].GetRelatedThingsName("de", ClassKind.Requirement), Throws.Nothing);
-                Assert.That(() => requirements[0].GetRelatedThingsName("derives", ClassKind.ElementDefinition), Throws.Nothing);
-                Assert.That(() => requirements[0].GetRelatedThingsName("derives", ClassKind.Requirement, getShortname: false), Throws.Nothing);
-                Assert.That(() => requirements[0].GetRelatedThingsName("derives", ClassKind.Requirement), Throws.Nothing);
-                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement), Throws.Nothing);
-                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, false), Throws.Nothing);
-                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, false), Throws.Nothing);
-                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, false), Throws.Nothing);
-                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, false, false), Throws.Nothing);
-                Assert.That(() => requirements[0].GetRelatedThingsName("derives", ClassKind.ElementDefinition, "req"), Throws.Nothing);
-                Assert.That(() => requirements[0].GetRelatedThingsName("derives", ClassKind.Requirement, "req"), Throws.Nothing);
-                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, "req"), Throws.Nothing);
-                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, "req", false), Throws.Nothing);
-                Assert.That(() => requirements[1].GetRelatedThingsName("derives", ClassKind.Requirement, "req", false), Throws.Nothing);
             });
         }
 

@@ -35,6 +35,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
             this.Thing = thing;
             this.UpdateReviewItem(reviewItem);
             this.IsVisible = true;
+            this.Initializes();
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="HaveThingRowViewModel{TThing}" /> class.
+        /// </summary>
+        protected HaveThingRowViewModel()
+        {
         }
 
         /// <summary>
@@ -63,6 +71,22 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
             {
                 this.ReviewItem = item;
             }
+        }
+
+        /// <summary>
+        ///     Updates the current <see cref="CDP4Common.CommonData.Thing" />
+        /// </summary>
+        /// <param name="thing">The <see cref="CDP4Common.CommonData.Thing" /></param>
+        /// <returns>True if the <see cref="Thing" /> as been updated</returns>
+        public bool UpdateThing(Thing thing)
+        {
+            if (thing is TThing tthing)
+            {
+                this.Thing = tthing;
+                this.InitializesProperties();
+            }
+
+            return this.Thing != null;
         }
 
         /// <summary>
@@ -110,6 +134,21 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public override int GetHashCode()
         {
             return this.ThingId.GetHashCode();
+        }
+
+        /// <summary>
+        ///     Initializes this row view model properties
+        /// </summary>
+        protected virtual void InitializesProperties()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes this <see cref="HaveThingRowViewModel{TThing}" />
+        /// </summary>
+        private void Initializes()
+        {
+            this.InitializesProperties();
         }
     }
 }

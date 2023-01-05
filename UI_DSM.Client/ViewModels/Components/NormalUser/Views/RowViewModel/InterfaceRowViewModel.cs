@@ -30,17 +30,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         private ElementUsage source;
 
         /// <summary>
+        ///     The container of the source
+        /// </summary>
+        private ElementDefinition sourceContainer;
+
+        /// <summary>
         ///     The target of the <see cref="BinaryRelationship" />
         /// </summary>
         private ElementUsage target;
 
         /// <summary>
-        /// The container of the source
-        /// </summary>
-        private ElementDefinition sourceContainer;
-
-        /// <summary>
-        /// The container of the target
+        ///     The container of the target
         /// </summary>
         private ElementDefinition targetContainer;
 
@@ -51,10 +51,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <param name="reviewItem">The associated <see cref="HaveThingRowViewModel{TThing}.ReviewItem" /></param>
         /// <param name="sourceRow">The <see cref="IHaveThingRowViewModel" /> for the source</param>
         /// <param name="targetRow">The <see cref="IHaveThingRowViewModel" /> for the target</param>
-        public InterfaceRowViewModel(BinaryRelationship thing, ReviewItem reviewItem, 
+        public InterfaceRowViewModel(BinaryRelationship thing, ReviewItem reviewItem,
             IHaveThingRowViewModel sourceRow, IHaveThingRowViewModel targetRow) : base(thing, reviewItem, sourceRow, targetRow)
         {
-            this.InitializesProperties();
         }
 
         /// <summary>
@@ -100,7 +99,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     Initiliazes this row properties
         /// </summary>
-        private void InitializesProperties()
+        protected override void InitializesProperties()
         {
             this.source = this.Thing.Source as ElementUsage;
             this.target = this.Thing.Target as ElementUsage;

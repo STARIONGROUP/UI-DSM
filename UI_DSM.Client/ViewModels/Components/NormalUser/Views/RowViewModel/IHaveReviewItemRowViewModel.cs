@@ -20,7 +20,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
     /// <summary>
     ///     Interface that defines that a row view model is linked to a <see cref="Thing" />
     /// </summary>
-    public interface IHaveThingRowViewModel: IHaveAnnotatableItemRowViewModel
+    public interface IHaveThingRowViewModel : IHaveAnnotatableItemRowViewModel
     {
         /// <summary>
         ///     The <see cref="UI_DSM.Shared.Models.ReviewItem" /> Id
@@ -38,5 +38,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// </summary>
         /// <param name="item">The new <see cref="ReviewItem" /></param>
         void UpdateReviewItem(ReviewItem item);
+
+        /// <summary>
+        ///     Updates the current <see cref="Thing" />
+        /// </summary>
+        /// <param name="thing">The <see cref="Thing" /></param>
+        /// <returns>True if the <see cref="Thing" /> as been updated</returns>
+        bool UpdateThing(Thing thing);
     }
 }

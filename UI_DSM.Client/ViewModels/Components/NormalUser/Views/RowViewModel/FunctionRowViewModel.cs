@@ -31,7 +31,13 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <param name="reviewItem">The associated <see cref="HaveThingRowViewModel{TThing}.ReviewItem" /></param>
         public FunctionRowViewModel(ElementBase thing, ReviewItem reviewItem) : base(thing, reviewItem)
         {
-            this.InitalizeProperties();
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="FunctionRowViewModel" /> class.
+        /// </summary>
+        public FunctionRowViewModel()
+        {
         }
 
         /// <summary>
@@ -55,15 +61,15 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public List<(string, string)> LinkedCostValues { get; private set; } = new();
 
         /// <summary>
-        ///     The names of <see cref="Requirement"/> that are satisfied by the function
+        ///     The collection of <see cref="Requirement" /> that are satisfied by the function
         /// </summary>
-        public IEnumerable<string> SatisfiedRequirements => this.Thing.GetRelatedThingsName(ThingExtension.SatisfyCategoryName, ClassKind.Requirement);
+        public IEnumerable<Requirement> SatisfiedRequirements => this.Thing.GetRelatedThings<Requirement>(ThingExtension.SatisfyCategoryName, ClassKind.Requirement);
 
         /// <summary>
-        ///     The names of products that implements the function
+        ///     The collection of products that implements the function
         /// </summary>
-        public IEnumerable<string> ProductsImplement => this.Thing.GetRelatedThingsName(ThingExtension.ImplementCategoryName, ClassKind.ElementUsage,
-            ThingExtension.ProductCategoryName, false, false);
+        public IEnumerable<ElementUsage> ProductsImplement => this.Thing.GetRelatedThings<ElementUsage>(ThingExtension.ImplementCategoryName, ClassKind.ElementUsage,
+            ThingExtension.ProductCategoryName, false);
 
         /// <summary>
         ///     Updates the <see cref="ElementBaseRowViewModel.CurrentOption" /> property
@@ -76,26 +82,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         }
 
         /// <summary>
-        ///     Updates the collection of <see cref="LinkedCostValues" /> based on an option
-        /// </summary>
-        private void UpdateCostValues()
-        {
-            var linkedProducts = this.Thing.GetLinkedProducts();
-            this.LinkedCostValues.Clear();
-
-            foreach (var product in linkedProducts.OrderBy(x => x.Name))
-            {
-                this.LinkedCostValues.Add(product.TryGetParameterValue("cost", this.CurrentOption, null, out var cost)
-                    ? (product.Name, cost)
-                    : (product.Name, "-"));
-            }
-        }
-
-        /// <summary>
         ///     Initializes this row view model properties
         /// </summary>
-        private void InitalizeProperties()
+        protected override void InitializesProperties()
         {
+            base.InitializesProperties();
+
             var linkedProducts = this.Thing.GetLinkedProducts();
 
             foreach (var linkedProduct in linkedProducts.OrderBy(x => x.Name))
@@ -119,6 +111,22 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
                         this.LinkedTrlValues.Add((linkedProduct.Name, null));
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        ///     Updates the collection of <see cref="LinkedCostValues" /> based on an option
+        /// </summary>
+        private void UpdateCostValues()
+        {
+            var linkedProducts = this.Thing.GetLinkedProducts();
+            this.LinkedCostValues.Clear();
+
+            foreach (var product in linkedProducts.OrderBy(x => x.Name))
+            {
+                this.LinkedCostValues.Add(product.TryGetParameterValue("cost", this.CurrentOption, null, out var cost)
+                    ? (product.Name, cost)
+                    : (product.Name, "-"));
             }
         }
     }
