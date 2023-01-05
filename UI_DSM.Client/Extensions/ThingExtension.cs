@@ -254,6 +254,58 @@ namespace UI_DSM.Client.Extensions
         /// <param name="thing">The <see cref="Thing" /></param>
         /// <param name="categoryName">The name of the <see cref="Category" /></param>
         /// <param name="classKind">The <see cref="ClassKind" /> of the related <see cref="Thing" /></param>
+        /// <param name="isSource">If the <see cref="Thing" /> should be the source</param>
+        /// <typeparam name="TThing">A <see cref="Thing"/></typeparam>
+        /// <returns>A collection of <see cref="TThing" />s</returns>
+        public static IEnumerable<TThing> GetRelatedThings<TThing>(this Thing thing, string categoryName, ClassKind classKind, bool isSource = true) where TThing : Thing
+        {
+            Func<BinaryRelationship, bool> filter = isSource
+                ? x => x.Source.Iid == thing.Iid && x.Target.ClassKind == classKind
+                : x => x.Target.Iid == thing.Iid && x.Source.ClassKind == classKind;
+
+            var binaryRelationships = thing.QueryRelationships(categoryName).Where(filter);
+
+            return binaryRelationships.Select(x => GetRelatedThing<TThing>(x, !isSource))
+                .Where(x => x != null);
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Thing" />s where the current <see cref="Thing" /> has a <see cref="BinaryRelationship" />
+        ///     categorized by the given <see cref="categoryName" />
+        /// </summary>
+        /// <param name="thing">The <see cref="Thing" /></param>
+        /// <param name="categoryName">The name of the <see cref="Category" /></param>
+        /// <param name="classKind">The <see cref="ClassKind" /> of the related <see cref="Thing" /></param>
+        /// <param name="filterCategory">The name of the <see cref="Category" /> that the related <see cref="Thing" /> should belongs</param>
+        /// <param name="isSource">If the <see cref="Thing" /> should be the source</param>
+        /// <typeparam name="TThing">A <see cref="Thing"/></typeparam>
+        /// <returns>A collection of <see cref="TThing" />s</returns>
+        public static IEnumerable<TThing> GetRelatedThings<TThing>(this Thing thing, string categoryName, ClassKind classKind, string filterCategory,
+            bool isSource = true) where TThing : Thing
+        {
+            Func<BinaryRelationship, bool> filter = isSource
+                ? x => x.Source.Iid == thing.Iid
+                       && x.Target.ClassKind == classKind
+                       && x.Target is ICategorizableThing categorizable
+                       && categorizable.IsCategorizedBy(filterCategory)
+                : x => x.Target.Iid == thing.Iid
+                       && x.Source.ClassKind == classKind
+                       && x.Source is ICategorizableThing categorizable
+                       && categorizable.IsCategorizedBy(filterCategory);
+
+            var binaryRelationships = thing.QueryRelationships(categoryName).Where(filter);
+
+            return binaryRelationships.Select(x => GetRelatedThing<TThing>(x, !isSource))
+                .Where(x => x != null);
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Thing" />s where the current <see cref="Thing" /> has a <see cref="BinaryRelationship" />
+        ///     categorized by the given <see cref="categoryName" />
+        /// </summary>
+        /// <param name="thing">The <see cref="Thing" /></param>
+        /// <param name="categoryName">The name of the <see cref="Category" /></param>
+        /// <param name="classKind">The <see cref="ClassKind" /> of the related <see cref="Thing" /></param>
         /// <returns>A collection of name of related <see cref="Thing" />s</returns>
         public static IEnumerable<string> GetRelatedThings(this Thing thing, string categoryName, ClassKind classKind)
         {
@@ -301,7 +353,8 @@ namespace UI_DSM.Client.Extensions
         ///     <see cref="Thing" />
         /// </param>
         /// <returns>A collection of name of related <see cref="Thing" />s</returns>
-        public static IEnumerable<string> GetRelatedThingsName(this Thing thing, string categoryName, ClassKind classKind, string filterCategory, bool isSource = true, bool getShortname = true)
+        public static IEnumerable<string> GetRelatedThingsName(this Thing thing, string categoryName, ClassKind classKind, string filterCategory, 
+            bool isSource = true, bool getShortname = true)
         {
             Func<BinaryRelationship, bool> filter = isSource
                 ? x => x.Source.Iid == thing.Iid
@@ -514,14 +567,14 @@ namespace UI_DSM.Client.Extensions
         }
 
         /// <summary>
-        ///     Gets the name of the <see cref="Thing.Container" /> if the current <see cref="ElementBase" /> is an
+        ///     Gets the <see cref="Thing.Container" /> if the current <see cref="ElementBase" /> is an
         ///     <see cref="ElementUsage" />
         /// </summary>
         /// <param name="element">The <see cref="ElementBase" /></param>
-        /// <returns>A name</returns>
-        public static string GetElementContainer(this ElementBase element)
+        /// <returns>A <see cref="ElementDefinition"/> container</returns>
+        public static ElementDefinition GetElementContainer(this ElementBase element)
         {
-            return element.GetContainerOfType<ElementDefinition>()?.Name ?? "-";
+            return element.GetContainerOfType<ElementDefinition>();
         }
 
         /// <summary>
@@ -857,6 +910,26 @@ namespace UI_DSM.Client.Extensions
             }
 
             return relatedThing.UserFriendlyShortName;
+        }
+
+        /// <summary>
+        ///     Gets the a <see cref="Thing" /> that define a <see cref="BinaryRelationship" />
+        /// </summary>
+        /// <param name="binaryRelationship">The <see cref="BinaryRelationship" /></param>
+        /// <param name="sourceThing">
+        ///     If the <see cref="Thing" /> to retrieve is the source of the target of the
+        ///     <see cref="BinaryRelationship" />
+        /// </param>
+        /// <returns>The <see cref="Thing" /></returns>
+        private static TThing GetRelatedThing<TThing>(BinaryRelationship binaryRelationship, bool sourceThing) where TThing: Thing
+        {
+            if (binaryRelationship == null)
+            {
+                return null;
+            }
+
+            var relatedThing= sourceThing ? binaryRelationship.Source : binaryRelationship.Target;
+            return relatedThing as TThing;
         }
     }
 }

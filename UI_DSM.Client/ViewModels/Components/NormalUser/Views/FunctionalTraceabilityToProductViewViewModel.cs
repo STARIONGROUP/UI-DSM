@@ -103,11 +103,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
             var rows = new List<IHaveThingRowViewModel>(products
                 .Select(x =>  new ProductRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid)))
-                .OrderBy(x => x.Container).ThenBy(x => x.Name));
+                .OrderBy(x => x.Container.Name).ThenBy(x => x.Name));
 
             var columns = new List<IHaveThingRowViewModel>(functions
                 .Select(x => new FunctionRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid)))
-                .OrderBy(x => x.Container).ThenBy(x => x.Name));
+                .OrderBy(x => x.Container.Name).ThenBy(x => x.Name));
             
             var reviewItemsForRelationships = reviewItems.Where(x => relationships.Any(rel => x.ThingId == rel.Iid)).ToList();
 

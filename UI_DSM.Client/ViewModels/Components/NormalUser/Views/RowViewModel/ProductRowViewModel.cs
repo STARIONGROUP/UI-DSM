@@ -19,8 +19,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
     using UI_DSM.Client.Extensions;
     using UI_DSM.Shared.Models;
 
-    using ThingExtension = UI_DSM.Client.Extensions.ThingExtension;
-
     /// <summary>
     ///     Row view model to display content for a <see cref="ElementBase" /> that are Product
     /// </summary>
@@ -33,17 +31,13 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <param name="reviewItem">The associated <see cref="HaveThingRowViewModel{TThing}.ReviewItem" /></param>
         public ProductRowViewModel(ElementBase thing, ReviewItem reviewItem) : base(thing, reviewItem)
         {
-            this.InitializesProperties();
         }
 
         /// <summary>
-        ///     Updates the <see cref="ElementBaseRowViewModel.CurrentOption" /> property
+        ///     Initializes a new instance of the <see cref="ProductRowViewModel" /> class.
         /// </summary>
-        /// <param name="selectedOption">The new <see cref="Option" /></param>
-        public override void UpdateOption(Option selectedOption)
+        public ProductRowViewModel()
         {
-            base.UpdateOption(selectedOption);
-            this.CostValue = this.Thing.TryGetParameterValue("cost", this.CurrentOption, null, out var retrievedValue) ? retrievedValue : "-";
         }
 
         /// <summary>
@@ -75,6 +69,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         ///     The cost value
         /// </summary>
         public string CostValue { get; private set; } = string.Empty;
+
+        /// <summary>
+        ///     The collection of <see cref="Requirement" /> that are satisfied by the product
+        /// </summary>
+        public IEnumerable<Requirement> SatisfiedRequirements => this.Thing.GetRelatedThings<Requirement>(ThingExtension.SatisfyCategoryName, ClassKind.Requirement);
+
+        /// <summary>
+        ///     The colection of functions that are implemented by the product
+        /// </summary>
+        public IEnumerable<ElementUsage> ImplementedFunctions => this.Thing.GetRelatedThings<ElementUsage>(ThingExtension.ImplementCategoryName, ClassKind.ElementUsage,
+            ThingExtension.FunctionCategoryName);
 
         /// <summary>
         ///     Gets the Id of the current <see cref="IHaveThingRowViewModel" />
@@ -117,15 +122,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public string Nature => null;
 
         /// <summary>
-        ///     The names of <see cref="Requirement"/> that are satisfied by the product
+        ///     Updates the <see cref="ElementBaseRowViewModel.CurrentOption" /> property
         /// </summary>
-        public IEnumerable<string> SatisfiedRequirements => this.Thing.GetRelatedThingsName(ThingExtension.SatisfyCategoryName, ClassKind.Requirement);
-
-        /// <summary>
-        ///     The names of functions that are implemented by the product
-        /// </summary>
-        public IEnumerable<string> ImplementedFunctions => this.Thing.GetRelatedThingsName(ThingExtension.ImplementCategoryName, ClassKind.ElementUsage,
-            ThingExtension.FunctionCategoryName, true, false);
+        /// <param name="selectedOption">The new <see cref="Option" /></param>
+        public override void UpdateOption(Option selectedOption)
+        {
+            base.UpdateOption(selectedOption);
+            this.CostValue = this.Thing.TryGetParameterValue("cost", this.CurrentOption, null, out var retrievedValue) ? retrievedValue : "-";
+        }
 
         /// <summary>
         ///     Compute the <see cref="ComputedId" />
@@ -146,8 +150,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     Initializes this row view model properties
         /// </summary>
-        private void InitializesProperties()
+        protected override void InitializesProperties()
         {
+            base.InitializesProperties();
+
             if (!this.Thing.ShouldHaveTechnologyParameter())
             {
                 this.HasValidTechnology = true;

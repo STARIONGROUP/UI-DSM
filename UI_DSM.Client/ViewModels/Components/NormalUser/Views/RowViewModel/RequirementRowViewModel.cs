@@ -35,7 +35,13 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <param name="reviewItem">The <see cref="ReviewItem" /></param>
         public RequirementRowViewModel(Requirement thing, ReviewItem reviewItem) : base(thing, reviewItem)
         {
-            this.InitializesProperties();
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="RequirementRowViewModel" /> class.
+        /// </summary>
+        public RequirementRowViewModel()
+        {
         }
 
         /// <summary>
@@ -94,19 +100,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public string VerificationStage => this.Thing.GetSimpleParameterValue("verification stage");
 
         /// <summary>
-        ///     The names of the <see cref="Thing" />s from which the <see cref="Requirement" /> derives
+        ///     The collection of <see cref="Requirement" />s from which the <see cref="Requirement" /> derives
         /// </summary>
-        public IEnumerable<string> DerivesFrom => this.Thing.GetRelatedThingsName(ThingExtension.DeriveCategoryName, ClassKind.Requirement, false);
-
+        public IEnumerable<Requirement> DerivesFrom => this.Thing.GetRelatedThings<Requirement>(ThingExtension.DeriveCategoryName, ClassKind.Requirement, false);
+        
         /// <summary>
         ///     The collection of the names of the <see cref="Thing" /> from which the <see cref="Requirement" /> derives separated by a ','
         /// </summary>
         public string CommaDerivesFrom { get; private set; }
 
         /// <summary>
-        ///     The names of the <see cref="Thing" />s to which the <see cref="Requirement" /> derives
+        ///     The collection of <see cref="Requirement" />s to which the <see cref="Requirement" /> derives
         /// </summary>
-        public IEnumerable<string> DerivesTo => this.Thing.GetRelatedThingsName(ThingExtension.DeriveCategoryName, ClassKind.Requirement);
+        public IEnumerable<Requirement> DerivesTo => this.Thing.GetRelatedThings<Requirement>(ThingExtension.DeriveCategoryName, ClassKind.Requirement);
 
         /// <summary>
         ///     The collection of the names of the <see cref="Thing" /> to which the <see cref="Requirement" /> derives separated by a ','
@@ -114,10 +120,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public string CommaDerivesTo { get; private set; }
 
         /// <summary>
-        ///     The names of functions that satisfies the <see cref="Requirement" />
+        ///     The collection of functions that satisfies the <see cref="Requirement" />
         /// </summary>
-        public IEnumerable<string> SatisfyByFunction => this.Thing.GetRelatedThingsName(ThingExtension.SatisfyCategoryName, ClassKind.ElementUsage,
-            ThingExtension.FunctionCategoryName, false, false);
+        public IEnumerable<ElementUsage> SatisfyByFunction => this.Thing.GetRelatedThings<ElementUsage>(ThingExtension.SatisfyCategoryName, ClassKind.ElementUsage,
+            ThingExtension.FunctionCategoryName, false);
 
         /// <summary>
         ///     The collection of the name of functions that satisfies the <see cref="Requirement" /> separated by a ','
@@ -125,9 +131,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public string CommaSatisfyByFunction { get; private set; }
 
         /// <summary>
-        ///     The names of products that satisfies the <see cref="Requirement" />
+        ///     The collection of products that satisfies the <see cref="Requirement" />
         /// </summary>
-        public IEnumerable<string> SatisfyByProduct => this.Thing.GetRelatedThingsName(ThingExtension.DeriveCategoryName, ClassKind.ElementUsage, ThingExtension.ProductCategoryName, false, false);
+        public IEnumerable<ElementUsage> SatisfyByProduct => this.Thing.GetRelatedThings<ElementUsage>(ThingExtension.DeriveCategoryName, ClassKind.ElementUsage, ThingExtension.ProductCategoryName, false);
 
         /// <summary>
         ///     The collection of the name of products that satisfies the <see cref="Requirement" /> separated by a ','
@@ -145,25 +151,25 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public string Group => this.Thing.Group?.Name;
 
         /// <summary>
-        ///     A collection of name for <see cref="Requirement" />s that trace this <see cref="Requirement" />
+        ///     A collection of <see cref="Requirement" />s that trace this <see cref="Requirement" />
         /// </summary>
-        public IEnumerable<string> Traces => this.Thing.GetRelatedThingsName(ThingExtension.TraceCategoryName, ClassKind.Requirement);
+        public IEnumerable<Requirement> Traces => this.Thing.GetRelatedThings<Requirement>(ThingExtension.TraceCategoryName, ClassKind.Requirement);
 
         /// <summary>
-        ///     A collection of name for <see cref="Requirement" />s that trace this <see cref="Requirement" />
+        ///     A collection of <see cref="Requirement" />s that trace this <see cref="Requirement" />
         /// </summary>
-        public IEnumerable<string> TracedBy => this.Thing.GetRelatedThingsName(ThingExtension.TraceCategoryName, ClassKind.Requirement, false);
+        public IEnumerable<Requirement> TracedBy => this.Thing.GetRelatedThings<Requirement>(ThingExtension.TraceCategoryName, ClassKind.Requirement, false);
 
         /// <summary>
         ///     Initializes this row view model properties
         /// </summary>
-        private void InitializesProperties()
+        protected override void InitializesProperties()
         {
             this.CommaCategories = this.Categories.AsCommaSeparated();
-            this.CommaDerivesFrom = this.DerivesFrom.AsCommaSeparated();
-            this.CommaDerivesTo = this.DerivesTo.AsCommaSeparated();
-            this.CommaSatisfyByFunction = this.SatisfyByFunction.AsCommaSeparated();
-            this.CommaSatisfyByProduct = this.SatisfyByProduct.AsCommaSeparated();
+            this.CommaDerivesFrom = this.DerivesFrom.Select(x => x.ShortName).AsCommaSeparated();
+            this.CommaDerivesTo = this.DerivesTo.Select(x => x.ShortName).AsCommaSeparated();
+            this.CommaSatisfyByFunction = this.SatisfyByFunction.Select(x => x.Name).AsCommaSeparated();
+            this.CommaSatisfyByProduct = this.SatisfyByProduct.Select(x => x.Name).AsCommaSeparated();
         }
     }
 }

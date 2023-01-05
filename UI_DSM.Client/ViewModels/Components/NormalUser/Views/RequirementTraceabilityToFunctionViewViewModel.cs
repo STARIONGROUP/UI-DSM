@@ -96,7 +96,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
             var rows = new List<IHaveThingRowViewModel>(functions
                 .Select(x => new FunctionRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid)))
-                .OrderBy(x => x.Container).ThenBy(x => x.Name));
+                .OrderBy(x => x.Container.Name).ThenBy(x => x.Name));
 
             var columns = new List<IHaveThingRowViewModel>(requirements
                 .Select(x => new RequirementRowViewModel(x, reviewItems.FirstOrDefault(ri => ri.ThingId == x.Iid))));

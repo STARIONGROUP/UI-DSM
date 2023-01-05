@@ -32,7 +32,13 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <param name="reviewItem">The associated <see cref="HaveThingRowViewModel{TThing}.ReviewItem" /></param>
         public ElementBaseRowViewModel(ElementBase thing, ReviewItem reviewItem) : base(thing, reviewItem)
         {
-            this.InitializesProperties();
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ElementBaseRowViewModel" /> class.
+        /// </summary>
+        public ElementBaseRowViewModel()
+        {
         }
 
         /// <summary>
@@ -68,7 +74,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     The name of the container of the <see cref="ElementBase" />
         /// </summary>
-        public string Container => this.Thing.GetElementContainer();
+        public ElementDefinition Container => this.Thing.GetElementContainer();
 
         /// <summary>
         ///     The <see cref="Guid" /> of the container of the <see cref="ElementBase" />
@@ -117,7 +123,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     Initializes this row view model properties
         /// </summary>
-        private void InitializesProperties()
+        protected override void InitializesProperties()
         {
             this.ElementDefinitionId = this.Thing is ElementUsage usage ? usage.ElementDefinition.Iid : this.ThingId;
             this.CommaCategories = this.Categories.AsCommaSeparated();

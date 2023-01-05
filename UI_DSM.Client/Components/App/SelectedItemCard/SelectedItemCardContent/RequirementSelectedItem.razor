@@ -9,6 +9,7 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
 @inherits SelectedItemBase<UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel.RequirementRowViewModel>
 <AppKeyValue Key="ID" Value="@(this.RowViewModel.Id)" OnItemDoubleClick="this.OnItemDoubleClick"/>
 <AppKeyValue Key="Name" Value="@(this.RowViewModel.Name)"/>
@@ -20,11 +21,11 @@
 <AppKeyValue Key="Verification method" Value="@(this.RowViewModel.VerificationMethod)"/>
 <AppKeyValue Key="Verification stage" Value="@(this.RowViewModel.VerificationStage)"/>
 <AppKeyValue Key="Justification" Value="@(this.RowViewModel.Justification)"/>
-<AppKeyValues Key="Derivation from" Items="@(this.RowViewModel.DerivesFrom)" OnItemDoubleClick="this.OnItemDoubleClick"/>
-<AppKeyValues Key="Derivation to" Items="@(this.RowViewModel.DerivesTo)" OnItemDoubleClick="this.OnItemDoubleClick" />
-<AppKeyValues Key="Traces" Items="@(this.RowViewModel.Traces)" OnItemDoubleClick="this.OnItemDoubleClick"/>
-<AppKeyValues Key="Traced by" Items="@(this.RowViewModel.TracedBy)" OnItemDoubleClick="this.OnItemDoubleClick" />
-<AppKeyValues Key="Satisfied by function(s)" Items="@(this.RowViewModel.SatisfyByFunction)" OnItemDoubleClick="this.OnItemDoubleClick"/>
-<AppKeyValues Key="Satisfied by product(s)" Items="@(this.RowViewModel.SatisfyByProduct)" OnItemDoubleClick="this.OnItemDoubleClick"/>
+<HaveThingRowsLinked THaveThingRowViewModel="RequirementRowViewModel" Label="Derivation from" Items="@(this.RowViewModel.DerivesFrom)" OnItemDoubleClick="this.OnItemDoubleClick"/>
+<HaveThingRowsLinked THaveThingRowViewModel="RequirementRowViewModel" Label="Derivation to" Items="@(this.RowViewModel.DerivesTo)" OnItemDoubleClick="this.OnItemDoubleClick" />
+<HaveThingRowsLinked THaveThingRowViewModel="RequirementRowViewModel"  Label="Traces" Items="@(this.RowViewModel.Traces)" OnItemDoubleClick="this.OnItemDoubleClick"/>
+<HaveThingRowsLinked THaveThingRowViewModel="RequirementRowViewModel"  Label="Traced by" Items="@(this.RowViewModel.TracedBy)" OnItemDoubleClick="this.OnItemDoubleClick" />
+<HaveThingRowsLinked THaveThingRowViewModel="FunctionRowViewModel"  Label="Satisfied by function(s)" Items="@(this.RowViewModel.SatisfyByFunction)" OnItemDoubleClick="this.OnItemDoubleClick"/>
+<HaveThingRowsLinked THaveThingRowViewModel="ProductRowViewModel" Label="Satisfied by product(s)" Items="@(this.RowViewModel.SatisfyByProduct)" OnItemDoubleClick="this.OnItemDoubleClick" />
 <AppKeyValues Key="Parametric Constraints" Items="@(this.RowViewModel.ParametricConstraints)" />
 <AppKeyValues Key="Associated Categories" Items="@(this.RowViewModel.Categories)"/>

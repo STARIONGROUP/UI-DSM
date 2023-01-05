@@ -30,7 +30,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <param name="reviewItem">The associated <see cref="HaveThingRowViewModel{TThing}.ReviewItem" /></param>
         public PortRowViewModel(ElementUsage thing, ReviewItem reviewItem) : base(thing, reviewItem)
         {
-            this.InitializesProperties();
         }
 
         /// <summary>
@@ -91,7 +90,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     Initiliazes this row properties
         /// </summary>
-        private void InitializesProperties()
+        protected override void InitializesProperties()
         {
             var elementUsage = this.Thing as ElementUsage;
             this.IsConnected = elementUsage.GetInterfacesOfPort().Any();
