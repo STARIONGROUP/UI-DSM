@@ -103,7 +103,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         ///     The collection of <see cref="Requirement" />s from which the <see cref="Requirement" /> derives
         /// </summary>
         public IEnumerable<Requirement> DerivesFrom => this.Thing.GetRelatedThings<Requirement>(ThingExtension.DeriveCategoryName, ClassKind.Requirement, false);
-        
+
         /// <summary>
         ///     The collection of the names of the <see cref="Thing" /> from which the <see cref="Requirement" /> derives separated by a ','
         /// </summary>

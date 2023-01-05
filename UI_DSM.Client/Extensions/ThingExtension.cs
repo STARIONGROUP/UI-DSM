@@ -300,78 +300,6 @@ namespace UI_DSM.Client.Extensions
         }
 
         /// <summary>
-        ///     Gets all <see cref="Thing" />s where the current <see cref="Thing" /> has a <see cref="BinaryRelationship" />
-        ///     categorized by the given <see cref="categoryName" />
-        /// </summary>
-        /// <param name="thing">The <see cref="Thing" /></param>
-        /// <param name="categoryName">The name of the <see cref="Category" /></param>
-        /// <param name="classKind">The <see cref="ClassKind" /> of the related <see cref="Thing" /></param>
-        /// <returns>A collection of name of related <see cref="Thing" />s</returns>
-        public static IEnumerable<string> GetRelatedThings(this Thing thing, string categoryName, ClassKind classKind)
-        {
-            var binaryRelationship = thing.QueryRelationships(categoryName).Where(x => (x.Source.Iid == thing.Iid && x.Target.ClassKind == classKind)
-                                                                                       || (x.Target.Iid == thing.Iid && x.Source.ClassKind == classKind));
-
-            return binaryRelationship.Select(x => RelatedThingShortName(x, x.Source.Iid == thing.Iid));
-        }
-
-        /// <summary>
-        ///     Gets all <see cref="Thing" />s where the current <see cref="Thing" /> has a <see cref="BinaryRelationship" />
-        ///     categorized by the given <see cref="categoryName" />
-        /// </summary>
-        /// <param name="thing">The <see cref="Thing" /></param>
-        /// <param name="categoryName">The name of the <see cref="Category" /></param>
-        /// <param name="classKind">The <see cref="ClassKind" /> of the related <see cref="Thing" /></param>
-        /// <param name="isSource">If the <see cref="Thing" /> should be the source</param>
-        /// <param name="getShortname">
-        ///     Value indicating if the retrieved value should be the name or the shortname of the
-        ///     <see cref="Thing" />
-        /// </param>
-        /// <returns>A collection of name of related <see cref="Thing" />s</returns>
-        public static IEnumerable<string> GetRelatedThingsName(this Thing thing, string categoryName, ClassKind classKind, bool isSource = true, bool getShortname = true)
-        {
-            Func<BinaryRelationship, bool> filter = isSource
-                ? x => x.Source.Iid == thing.Iid && x.Target.ClassKind == classKind
-                : x => x.Target.Iid == thing.Iid && x.Source.ClassKind == classKind;
-
-            var binaryRelationship = thing.QueryRelationships(categoryName).Where(filter);
-
-            return RelatedThingsName(binaryRelationship, !isSource, getShortname);
-        }
-
-        /// <summary>
-        ///     Gets all <see cref="Thing" />s where the current <see cref="Thing" /> has a <see cref="BinaryRelationship" />
-        ///     categorized by the given <see cref="categoryName" />
-        /// </summary>
-        /// <param name="thing">The <see cref="Thing" /></param>
-        /// <param name="categoryName">The name of the <see cref="Category" /></param>
-        /// <param name="classKind">The <see cref="ClassKind" /> of the related <see cref="Thing" /></param>
-        /// <param name="filterCategory">The name of the <see cref="Category" /> that the related <see cref="Thing" /> should belongs</param>
-        /// <param name="isSource">If the <see cref="Thing" /> should be the source</param>
-        /// <param name="getShortname">
-        ///     Value indicating if the retrieved value should be the name or the shortname of the
-        ///     <see cref="Thing" />
-        /// </param>
-        /// <returns>A collection of name of related <see cref="Thing" />s</returns>
-        public static IEnumerable<string> GetRelatedThingsName(this Thing thing, string categoryName, ClassKind classKind, string filterCategory, 
-            bool isSource = true, bool getShortname = true)
-        {
-            Func<BinaryRelationship, bool> filter = isSource
-                ? x => x.Source.Iid == thing.Iid
-                       && x.Target.ClassKind == classKind
-                       && x.Target is ICategorizableThing categorizable
-                       && categorizable.IsCategorizedBy(filterCategory)
-                : x => x.Target.Iid == thing.Iid
-                       && x.Source.ClassKind == classKind
-                       && x.Source is ICategorizableThing categorizable
-                       && categorizable.IsCategorizedBy(filterCategory);
-
-            var binaryRelationship = thing.QueryRelationships(categoryName).Where(filter);
-
-            return RelatedThingsName(binaryRelationship, !isSource, getShortname);
-        }
-
-        /// <summary>
         ///     Gets the <see cref="BinaryRelationship" /> that linked two <see cref="Thing" />
         /// </summary>
         /// <param name="thing">The <see cref="Thing" /></param>
@@ -700,16 +628,6 @@ namespace UI_DSM.Client.Extensions
         }
 
         /// <summary>
-        ///     Gets the proper shortname of a <see cref="Thing" />
-        /// </summary>
-        /// <param name="thing">The <see cref="Thing" /></param>
-        /// <returns>The name</returns>
-        public static string GetShortName(this Thing thing)
-        {
-            return thing is IShortNamedThing namedThing ? namedThing.ShortName : thing.UserFriendlyShortName;
-        }
-
-        /// <summary>
         ///     Gets a collection of <see cref="ElementBase" /> that are product linked to the current <see cref="ElementBase" />
         /// </summary>
         /// <param name="function">The <see cref="ElementBase" /></param>
@@ -736,21 +654,6 @@ namespace UI_DSM.Client.Extensions
         {
             return port.QueryRelationships.OfType<BinaryRelationship>().Where(x => x.IsInterface())
                 .ToList();
-        }
-
-        /// <summary>
-        ///     Verifies that a port is linked to another port or not
-        /// </summary>
-        /// <param name="port">The <see cref="ElementUsage" /></param>
-        /// <returns>True if the current port is linked</returns>
-        public static bool IsLinkedPort(this ElementUsage port)
-        {
-            if (!port.IsPort())
-            {
-                return false;
-            }
-
-            return port.GetInterfacesOfPort().Any();
         }
 
         /// <summary>
@@ -839,79 +742,7 @@ namespace UI_DSM.Client.Extensions
             return thing.QueryRelationships.OfType<BinaryRelationship>().Where(x => x.Category.Any(cat => !cat.IsDeprecated
                                                                                                           && string.Equals(cat.Name, categoryName, StringComparison.InvariantCultureIgnoreCase)));
         }
-
-        /// <summary>
-        ///     Retrieves names of <see cref="Thing" />s that defines the <see cref="BinaryRelationship" />
-        /// </summary>
-        /// <param name="relationships">The <see cref="BinaryRelationship" /></param>
-        /// <param name="sourceThing">
-        ///     If the <see cref="Thing" /> to retrieve is the source of the target of the
-        ///     <see cref="BinaryRelationship" />
-        /// </param>
-        /// <param name="getShortname">
-        ///     Value indicating if the retrieved value should be the name or the shortname of the
-        ///     <see cref="Thing" />
-        /// </param>
-        /// <returns>The name of the <see cref="Thing" /></returns>
-        private static IEnumerable<string> RelatedThingsName(IEnumerable<BinaryRelationship> relationships, bool sourceThing, bool getShortname)
-        {
-            return relationships.Select(binaryRelationship => getShortname
-                ? RelatedThingShortName(binaryRelationship, sourceThing)
-                : RelatedThingName(binaryRelationship, sourceThing)).ToList();
-        }
-
-        /// <summary>
-        ///     Retrieves the name of one of the <see cref="Thing" /> that defines the <see cref="BinaryRelationship" />
-        /// </summary>
-        /// <param name="binaryRelationship">The <see cref="BinaryRelationship" /></param>
-        /// <param name="sourceThing">
-        ///     If the <see cref="Thing" /> to retrieve is the source of the target of the
-        ///     <see cref="BinaryRelationship" />
-        /// </param>
-        /// <returns>The name of the <see cref="Thing" /></returns>
-        private static string RelatedThingName(BinaryRelationship binaryRelationship, bool sourceThing)
-        {
-            if (binaryRelationship == null)
-            {
-                return string.Empty;
-            }
-
-            var relatedThing = sourceThing ? binaryRelationship.Source : binaryRelationship.Target;
-
-            if (relatedThing is INamedThing namedThing)
-            {
-                return namedThing.Name;
-            }
-
-            return relatedThing.UserFriendlyName;
-        }
-
-        /// <summary>
-        ///     Retrieves the shortname of one of the <see cref="Thing" /> that defines the <see cref="BinaryRelationship" />
-        /// </summary>
-        /// <param name="binaryRelationship">The <see cref="BinaryRelationship" /></param>
-        /// <param name="sourceThing">
-        ///     If the <see cref="Thing" /> to retrieve is the source of the target of the
-        ///     <see cref="BinaryRelationship" />
-        /// </param>
-        /// <returns>The shortname of the <see cref="Thing" /></returns>
-        private static string RelatedThingShortName(BinaryRelationship binaryRelationship, bool sourceThing)
-        {
-            if (binaryRelationship == null)
-            {
-                return string.Empty;
-            }
-
-            var relatedThing = sourceThing ? binaryRelationship.Source : binaryRelationship.Target;
-
-            if (relatedThing is IShortNamedThing shortNamedThing)
-            {
-                return shortNamedThing.ShortName;
-            }
-
-            return relatedThing.UserFriendlyShortName;
-        }
-
+        
         /// <summary>
         ///     Gets the a <see cref="Thing" /> that define a <see cref="BinaryRelationship" />
         /// </summary>
