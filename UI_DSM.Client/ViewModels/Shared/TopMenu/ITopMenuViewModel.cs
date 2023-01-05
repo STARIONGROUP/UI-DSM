@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.ViewModels.Shared.TopMenu
 {
+    using UI_DSM.Shared.Models;
+
     /// <summary>
     ///     Interface definition for <see cref="TopMenuViewModel" />
     /// </summary>
@@ -34,5 +36,12 @@ namespace UI_DSM.Client.ViewModels.Shared.TopMenu
         /// </summary>
         /// <returns>The assert</returns>
         bool HasAccessToProjectManagement();
+
+        /// <summary>
+        ///     Gets the <see cref="Role" /> name for the <see cref="Participant" /> for a <see cref="Project" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <returns>The name of the <see cref="Role" /></returns>
+        string GetRoleForProject(Guid projectId);
     }
 }

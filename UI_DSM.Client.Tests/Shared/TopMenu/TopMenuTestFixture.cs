@@ -34,6 +34,7 @@ namespace UI_DSM.Client.Tests.Shared.TopMenu
     using UI_DSM.Client.Shared.TopMenu;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Shared.TopMenu;
+    using UI_DSM.Shared.Models;
 
     using TestContext = Bunit.TestContext;
 
@@ -87,6 +88,38 @@ namespace UI_DSM.Client.Tests.Shared.TopMenu
             await renderer.Instance.ViewModel.InitializesViewModel();
             renderer.Render();
             Assert.That(renderer.FindComponents<UserAvatar>(), Is.Not.Empty);
+
+            var projectId = Guid.NewGuid();
+
+            this.userService.Setup(x => x.GetParticipantsForUser()).ReturnsAsync(new List<Participant>
+            {
+                new ()
+                {
+                    Role = new Role()
+                    {
+                        RoleName = "Project Manager"
+                    },
+                    EntityContainer = new Project(projectId)
+                }
+            });
+
+            await renderer.InvokeAsync(renderer.Instance.OpenUserMenu);
+            renderer.Render();
+            Assert.That(() => renderer.Find("#roleName"), Throws.Exception);
+
+            await renderer.InvokeAsync(renderer.Instance.OpenUserMenu);
+            renderer.Render();
+            renderer.Instance.NavigationManager.NavigateTo($"/Project/{Guid.NewGuid()}");
+
+            await renderer.InvokeAsync(renderer.Instance.OpenUserMenu);
+            renderer.Render();
+            Assert.That(() => renderer.Find("#roleName"), Throws.Exception);
+            
+            await renderer.InvokeAsync(renderer.Instance.OpenUserMenu);
+            renderer.Render();
+            renderer.Instance.NavigationManager.NavigateTo($"/Project/{projectId}");
+
+            Assert.That(renderer.Instance.GetRoleName(), Is.Not.Empty);
         }
     }
 }

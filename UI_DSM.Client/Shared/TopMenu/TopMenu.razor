@@ -37,7 +37,7 @@
 			<div id="user-icon-button">
 				@if (this.ViewModel.UserName != null)
 				{
-					<button @onclick="() => this.IsUserMenuOpen = !this.IsUserMenuOpen">
+					<button @onclick="this.OpenUserMenu">
 						<UserAvatar UserInitials="@this.ViewModel.UserName[0].ToString()"/>
 					</button>
 				}
@@ -49,6 +49,14 @@
 					CloseMode="DropDownCloseMode.Close"
 					PreventCloseOnPositionTargetClick="true"
 					BodyCssClass="account-dropdown">
+					@{
+						var roleName = this.GetRoleName();
+
+						if (!string.IsNullOrEmpty(roleName))
+						{
+							<p id="roleName">Role: @roleName</p>
+						}
+					}
 					<ul>
 						<AuthorizeView Roles="Administrator">
 							<Authorized>
