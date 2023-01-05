@@ -74,6 +74,12 @@ namespace UI_DSM.Client.Components.App.ReviewTaskCard
         public AdditionalComputedProperties CommentsCount { get; set; }
 
         /// <summary>
+        ///     The name of the current logged user
+        /// </summary>
+        [Parameter]
+        public string UserName { get; set; }
+
+        /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
         /// </summary>

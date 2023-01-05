@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewObjectivePage
 {
+    using System.Security.Claims;
+
     using Bunit;
 
     using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +37,8 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewObjectivePage
 
     using AppComponents;
 
+    using Microsoft.AspNetCore.Components.Authorization;
+
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Types;
     using UI_DSM.Shared.Enumerator;
@@ -48,6 +52,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewObjectivePage
         private Mock<IReviewObjectiveService> reviewObjectiveService;
         private Mock<IParticipantService> participantService;
         private Mock<IReviewTaskService> reviewTaskService;
+        private Mock<AuthenticationStateProvider> stateProvider;
 
         [SetUp]
         public void Setup()
@@ -58,7 +63,20 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewObjectivePage
             this.reviewObjectiveService = new Mock<IReviewObjectiveService>();
             this.participantService = new Mock<IParticipantService>();
             this.reviewTaskService = new Mock<IReviewTaskService>();
-            this.viewModel = new ReviewObjectivePageViewModel(this.reviewObjectiveService.Object, this.participantService.Object, this.reviewTaskService.Object);
+            this.stateProvider = new Mock<AuthenticationStateProvider>();
+
+            this.stateProvider.Setup(x => x.GetAuthenticationStateAsync())
+                .ReturnsAsync(new AuthenticationState(new ClaimsPrincipal(new List<ClaimsIdentity>()
+                {
+                    new(new List<Claim>()
+                    {
+                        new(ClaimTypes.Name, "user")
+                    }, "mock")
+                })));
+
+            this.viewModel = new ReviewObjectivePageViewModel(this.reviewObjectiveService.Object, this.participantService.Object, this.reviewTaskService.Object
+            , this.stateProvider.Object);
+
             this.context.Services.AddSingleton(this.viewModel);
         }
 
@@ -132,8 +150,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewObjectivePage
                         UserName = "user"
                     }
                 };
-
-
+                
                 var renderer = this.context.RenderComponent<ReviewTaskCard>(parameters =>
                     {
                         parameters.Add(p => p.ProjectId, projectGuid.ToString());

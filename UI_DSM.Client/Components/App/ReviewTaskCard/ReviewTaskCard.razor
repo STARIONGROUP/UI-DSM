@@ -15,6 +15,19 @@
 	<button class="task-item__button"  @onclick="this.Navigate">
 		<span class="h4">@(this.ReviewTask.Description)</span>
 	</button>
+	
+	@if (!string.IsNullOrEmpty(this.UserName))
+	{
+		if (this.ReviewTask.IsAssignedTo.Any(x => string.Equals(this.UserName, x.ParticipantName, StringComparison.InvariantCultureIgnoreCase)))
+		{
+			<UserAvatar UserName="@this.UserName" IsCurrentUser="true" UserInitials="@this.UserName[0].ToString()"/>
+		}
+
+		foreach (var participant in this.ReviewTask.IsAssignedTo.Where(x => !string.Equals(this.UserName, x.ParticipantName, StringComparison.InvariantCultureIgnoreCase)))
+		{
+			<UserAvatar UserName="@participant.ParticipantName" UserInitials="@participant.ParticipantName[0].ToString()" />
+		}
+	}
 
 	<div class="task-item__actions">
 		@if (this.ReviewTask.Status == StatusKind.Done)

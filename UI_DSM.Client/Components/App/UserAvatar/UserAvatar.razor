@@ -9,25 +9,15 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-
-@namespace AppComponents
-
-<figure class="user-avatar"  aria-label="User avatar">
-  @if (HasImage){
-    <img class="user-avatar__image" src="@UserImage" />
-  }
-  else
-  {
-    <span class="user-avatar__initials">@UserInitials</span>
-  }
-</figure>
-
-@code {
-  [Parameter]
-  public string UserInitials { get; set; }
-
-  [Parameter]
-  public string UserImage { get; set; }
-
-  private bool HasImage => !String.IsNullOrEmpty(UserImage);
-}
+<Tooltip Text="@(this.UserName)">
+	<figure class="user-avatar" aria-label="User avatar">
+		@if (this.HasImage)
+		{
+			<img class="user-avatar__image" alt="User image" src="@(this.UserImage)"/>
+		}
+		else
+		{
+			<span class="user-avatar__initials">@(this.UserInitials)</span>
+		}
+	</figure>
+</Tooltip>

@@ -15,8 +15,6 @@ namespace UI_DSM.Client.Tests.Shared.TopMenu
 {
     using System.Security.Claims;
 
-    using AppComponents;
-
     using Blazored.SessionStorage;
 
     using Bunit;
@@ -29,6 +27,7 @@ namespace UI_DSM.Client.Tests.Shared.TopMenu
 
     using NUnit.Framework;
 
+    using UI_DSM.Client.Components.App.UserAvatar;
     using UI_DSM.Client.Services.Administration.UserService;
     using UI_DSM.Client.Services.AuthenticationService;
     using UI_DSM.Client.Shared.TopMenu;
