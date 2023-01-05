@@ -16,6 +16,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
     using DynamicData;
 
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Authorization;
 
     using ReactiveUI;
 
@@ -50,6 +51,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         private readonly IReviewTaskService reviewTaskService;
 
         /// <summary>
+        ///     The <see cref="AuthenticationStateProvider" />
+        /// </summary>
+        private readonly AuthenticationStateProvider stateProvier;
+
+        /// <summary>
         ///     Backing field for <see cref="IsOnAssignmentMode" />
         /// </summary>
         private bool isOnAssignmentMode;
@@ -60,17 +66,25 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         /// <param name="reviewObjectiveService">The <see cref="IReviewObjectiveService" /></param>
         /// <param name="participantService">The <see cref="IParticipantService" /></param>
         /// <param name="reviewTaskService">The <see cref="IReviewTaskService" /></param>
-        public ReviewObjectivePageViewModel(IReviewObjectiveService reviewObjectiveService, IParticipantService participantService, IReviewTaskService reviewTaskService)
+        /// <param name="stateProvider">The <see cref="AuthenticationStateProvider" /></param>
+        public ReviewObjectivePageViewModel(IReviewObjectiveService reviewObjectiveService, IParticipantService participantService,
+            IReviewTaskService reviewTaskService, AuthenticationStateProvider stateProvider)
         {
             this.reviewObjectiveService = reviewObjectiveService;
             this.participantService = participantService;
             this.reviewTaskService = reviewTaskService;
+            this.stateProvier = stateProvider;
 
             this.TaskAssignmentViewModel = new TaskAssignmentViewModel
             {
                 OnValidSubmit = new EventCallbackFactory().Create(this, this.AssignParticipant)
             };
         }
+
+        /// <summary>
+        ///     The name of the logged user
+        /// </summary>
+        public string UserName { get; set; }
 
         /// <summary>
         ///     A <see cref="Dictionary{Guid, AdditionalComputedProperties}" /> for the <see cref="Comment" /> count
@@ -153,6 +167,13 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
             this.ProjectParticipants = (await this.participantService.GetParticipantsOfProject(projectGuid)).Where(x => x.Role.AccessRights.Contains(AccessRight.ReviewTask)).ToList();
             this.Participant = await this.participantService.GetCurrentParticipant(projectGuid);
             this.CommentsCount = await this.reviewTaskService.GetCommmentsCount(projectGuid, reviewGuid, reviewObjectiveId);
+
+            var state = await this.stateProvier.GetAuthenticationStateAsync();
+
+            if (state.User.Identity is { IsAuthenticated: true })
+            {
+                this.UserName = state.User.Identity.Name;
+            }
         }
 
         /// <summary>

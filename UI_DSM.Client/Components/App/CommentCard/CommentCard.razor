@@ -53,6 +53,10 @@
 					<FeatherChevronDown Size="20" Color="currentColor" StrokeWidth="2" />
 				</button>
 			}
+			else
+			{
+				@this.ViewModel.Comment.Status
+			}
 		</span>
 		<span class="app-comment__description">@((MarkupString)this.ViewModel.Comment.Content)</span>
 	</div>

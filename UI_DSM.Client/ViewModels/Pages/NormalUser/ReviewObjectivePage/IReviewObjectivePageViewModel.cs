@@ -80,6 +80,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         Dictionary<Guid, AdditionalComputedProperties> CommentsCount { get; set; }
 
         /// <summary>
+        ///     The name of the logged user
+        /// </summary>
+        string UserName { get; set; }
+
+        /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
         ///     Override this method if you will perform an asynchronous operation and

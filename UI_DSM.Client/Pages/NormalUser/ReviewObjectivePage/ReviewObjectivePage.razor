@@ -43,12 +43,14 @@ else{
 						{
 							<ReviewTaskCard ReviewTask="@task" ProjectId="@this.ProjectId" ReviewId="@this.ReviewId" 
 							                ReviewObjectiveId="@this.ReviewObjectiveId" ViewModel="this.ViewModel" 
-							                CommentsCount="@this.ViewModel.CommentsCount[task.Id]" />
+							                CommentsCount="@this.ViewModel.CommentsCount[task.Id]" 
+							                UserName="@this.ViewModel.UserName"/>
 						}
 						else
 						{
 							<ReviewTaskCard ReviewTask="@task" ProjectId="@this.ProjectId" ReviewId="@this.ReviewId" 
-							                ReviewObjectiveId="@this.ReviewObjectiveId" ViewModel="this.ViewModel" />
+							                ReviewObjectiveId="@this.ReviewObjectiveId" ViewModel="this.ViewModel"
+								UserName="@this.ViewModel.UserName" />
 						}
 					}
 				</div>
