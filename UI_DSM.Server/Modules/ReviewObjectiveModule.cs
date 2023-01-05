@@ -92,7 +92,7 @@ namespace UI_DSM.Server.Modules
                 .WithName($"{this.EntityName}/CreateTemplates");
 
             app.MapGet($"{this.MainRoute}/OpenTasksAndComments", this.GetOpenTasksAndComments)
-                .Produces<Dictionary<Guid, ComputedProjectProperties>>()
+                .Produces<Dictionary<Guid, AdditionalComputedProperties>>()
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/GetOpenTasksAndComments");
         }
@@ -420,10 +420,10 @@ namespace UI_DSM.Server.Modules
         }
 
         /// <summary>
-        ///     Gets, for all <see cref="Review" />, the number of open <see cref="ReviewTask" /> and <see cref="Comment" />
-        ///     related to the <see cref="Review" />
+        ///     Gets, for all <see cref="ReviewObjective" />, the number of open <see cref="ReviewTask" /> and <see cref="Comment" />
+        ///     related to the <see cref="ReviewObjective" />
         /// </summary>
-        /// <param name="reviewObjectiveManager">The <see cref="IReviewManager"/></param>
+        /// <param name="reviewObjectiveManager">The <see cref="IReviewObjectiveManager"/></param>
         /// <param name="reviewId"> The <see cref="Guid"/> of the <see cref="Review" /></param>
         /// <param name="projectId"> The <see cref="Guid"/> of the <see cref="Project" /></param>
         /// <param name="context">The <see cref="HttpContext"/></param>

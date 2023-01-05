@@ -62,6 +62,6 @@ namespace UI_DSM.Client.Services.Administration.ProjectService
         ///     related to the <see cref="Project" />
         /// </summary>
         /// <returns>A <see cref="Task" /> with a <see cref="Dictionary{Guid, ComputedProjectProperties}" /></returns>
-        Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments();
+        Task<Dictionary<Guid, AdditionalComputedProperties>> GetOpenTasksAndComments();
     }
 }

@@ -35,11 +35,13 @@
 			<NavLink href="@this.ViewModel.GetNavLink(reviewObjective)">
 				@if (this.ViewModel.CommentsAndTasks.ContainsKey(reviewObjective.Id))
 				{
-					<AppObjectiveItem Tasks="@this.ViewModel.CommentsAndTasks[reviewObjective.Id].TaskCount" ReviewObjective="@reviewObjective"/>
+					<AppObjectiveItem Tasks="@this.ViewModel.CommentsAndTasks[reviewObjective.Id].TaskCount" ReviewObjective="@reviewObjective"
+					                  OpenComments="@this.ViewModel.CommentsAndTasks[reviewObjective.Id].OpenCommentCount"
+							  TotalComments="@this.ViewModel.CommentsAndTasks[reviewObjective.Id].TotalCommentCount" />
 				}
 				else
 				{
-					<AppObjectiveItem Tasks="-1" ReviewObjective="@reviewObjective"/>
+					<AppObjectiveItem Tasks="-1" ReviewObjective="@reviewObjective" OpenComments="-1"/>
 				}
 			</NavLink>
 		}

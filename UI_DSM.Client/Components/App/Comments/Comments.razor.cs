@@ -63,10 +63,11 @@ namespace UI_DSM.Client.Components.App.Comments
         /// <param name="currentView">The current <see cref="View" /></param>
         /// <param name="participant">The <see cref="Participant" /></param>
         /// <param name="onLinkCallback">The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element</param>
+        /// <param name="reviewTask">The <see cref="ReviewTask" /></param>
         /// <returns>A <see cref="Task" /></returns>
-        public Task InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant participant, EventCallback<Comment> onLinkCallback)
+        public Task InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant participant, EventCallback<Comment> onLinkCallback, ReviewTask reviewTask)
         {
-            this.ViewModel.InitializesProperties(projectId, reviewId, currentView, participant, onLinkCallback);
+            this.ViewModel.InitializesProperties(projectId, reviewId, currentView, participant, onLinkCallback, reviewTask);
             return this.InvokeAsync(this.StateHasChanged);
         }
 

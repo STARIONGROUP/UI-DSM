@@ -37,7 +37,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         /// <summary>
         ///     A collection of comments and tasks of a <see cref="ReviewObjective" /> for the user
         /// </summary>
-        Dictionary<Guid, ComputedProjectProperties> CommentsAndTasks { get; set; }
+        Dictionary<Guid, AdditionalComputedProperties> CommentsAndTasks { get; set; }
 
         /// <summary>
         ///     Value indicating the user is currently creating a new <see cref="ReviewObjective" />(s)

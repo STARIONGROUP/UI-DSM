@@ -32,8 +32,10 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewObjectivePage
     using UI_DSM.Shared.Models;
 
     using TestContext = Bunit.TestContext;
+
     using AppComponents;
-    using UI_DSM.Client.Components.NormalUser.ProjectReview;
+
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Types;
     using UI_DSM.Shared.Enumerator;
 
@@ -88,6 +90,13 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewObjectivePage
             };
 
             this.reviewObjectiveService.Setup(x => x.GetReviewObjectiveOfReview(projectGuid, reviewGuid, reviewObjectiveGuid, 1)).ReturnsAsync(reviewObjective);
+
+            this.reviewTaskService.Setup(x => x.GetCommmentsCount(projectGuid, reviewGuid, reviewObjectiveGuid))
+                .ReturnsAsync(new Dictionary<Guid, AdditionalComputedProperties>
+                    {
+                        [reviewObjective.ReviewTasks[0].Id] = new ()
+                    }
+                );
 
             await this.viewModel.OnInitializedAsync(projectGuid, reviewGuid, reviewObjectiveGuid);
             renderer.Render();

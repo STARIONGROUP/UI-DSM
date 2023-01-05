@@ -90,6 +90,6 @@ namespace UI_DSM.Client.Services.ReviewObjectiveService
         ///     related to the <see cref="ReviewObjective" />
         /// </summary>
         /// <returns>A <see cref="Task" /> with a <see cref="Dictionary{Guid, ComputedProjectProperties}" /></returns>
-        Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(Guid projectId, Guid reviewId);
+        Task<Dictionary<Guid, AdditionalComputedProperties>> GetOpenTasksAndComments(Guid projectId, Guid reviewId);
     }
 }

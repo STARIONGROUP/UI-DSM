@@ -251,11 +251,11 @@ namespace UI_DSM.Client.Tests.Services.ReviewService
                 Guid.NewGuid()
             };
 
-            var requestResults = new Dictionary<Guid, ComputedProjectProperties>
+            var requestResults = new Dictionary<Guid, AdditionalComputedProperties>
             {
                 [guids[0]] = new()
                 {
-                    CommentCount = 15,
+                    OpenCommentCount = 15,
                     TaskCount = 12
                 }
             };

@@ -292,10 +292,11 @@ namespace UI_DSM.Server.Tests.Managers
             guids.Add(Guid.NewGuid());
             var computedProjectProperties =await this.manager.GetOpenTasksAndComments(guids, participant.User.UserName);
 
-            var expectedComputed = new ComputedProjectProperties
+            var expectedComputed = new AdditionalComputedProperties
             {
-                    CommentCount = 8,
-                    TaskCount = 8
+                    OpenCommentCount = 8,
+                    TaskCount = 8,
+                    TotalCommentCount = 8
             };
 
             Assert.Multiple(() =>
@@ -306,10 +307,11 @@ namespace UI_DSM.Server.Tests.Managers
 
             computedProjectProperties = await this.manager.GetOpenTasksAndComments(guids, participant2.User.UserName);
 
-            expectedComputed = new ComputedProjectProperties
+            expectedComputed = new AdditionalComputedProperties
             {
-                CommentCount = 8,
-                TaskCount = 16
+                OpenCommentCount = 8,
+                TaskCount = 16,
+                TotalCommentCount = 8
             };
 
             Assert.That(computedProjectProperties[project.Id], Is.EqualTo(expectedComputed));

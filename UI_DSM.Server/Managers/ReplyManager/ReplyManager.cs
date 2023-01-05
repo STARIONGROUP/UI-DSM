@@ -87,7 +87,11 @@ namespace UI_DSM.Server.Managers.ReplyManager
         public override async Task<SearchResultDto> GetSearchResult(Guid entityId)
         {
             var reply = await this.EntityDbSet.Where(x => x.Id == entityId)
+                .Include(x => x.Author)
                 .Include(x => x.EntityContainer)
+                .ThenInclude(x => (x as Comment).CreatedInside)
+                .ThenInclude(x => x.EntityContainer)
+                .ThenInclude(x => x.EntityContainer)
                 .ThenInclude(x => x.EntityContainer).FirstOrDefaultAsync();
 
             if (reply == null)
@@ -95,14 +99,20 @@ namespace UI_DSM.Server.Managers.ReplyManager
                 return null;
             }
 
-            var route = $"Project/{reply.EntityContainer.EntityContainer.Id}/Comment/{reply.EntityContainer.Id}/Reply/{reply.Id}";
+            var comment = (Comment)reply.EntityContainer;
+            var reviewTask = comment.CreatedInside;
+            var reviewObjective = (ReviewObjective)reviewTask.EntityContainer;
+            var review = (Review)reviewObjective.EntityContainer;
+            var project = (Project)review.EntityContainer;
+
+            var route = $"Project/{project.Id}/Review/{review.Id}/ReviewObjective/{reviewObjective.Id}/ReviewTask/{reviewTask.Id}";
 
             return new SearchResultDto
             {
                 BaseUrl = route,
                 ObjectKind = nameof(Reply),
-                DisplayText = reply.Content,
-                Location = $"{((Project)reply.EntityContainer.EntityContainer).ProjectName}"
+                DisplayText = $"{reply.Author.ParticipantName}: {reply.Content}",
+                Location = $"{project.ProjectName} > {review.Title} > {reviewObjective.Title} > {reviewTask.Description}"
             };
         }
 

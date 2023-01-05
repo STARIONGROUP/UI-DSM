@@ -102,11 +102,11 @@ namespace UI_DSM.Client.Tests.Pages
             }, "basic")));
 
             var guids = availableProject.Select(x => x.Id).ToList();
-            var result = new Dictionary<Guid, ComputedProjectProperties>
+            var result = new Dictionary<Guid, AdditionalComputedProperties>
             {
                 [guids[0]] = new()
                 {
-                    CommentCount = 15,
+                    OpenCommentCount = 15,
                     TaskCount = 12
                 }
             };

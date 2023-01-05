@@ -191,7 +191,10 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 var projectId = new Guid(this.ProjectId);
                 var reviewId = new Guid(this.ReviewId);
                 var reviewTaskId = new Guid(this.ReviewTaskId);
-                await this.Comments.InitializesProperties(projectId, reviewId, this.ViewModel.CurrentView, this.ViewModel.Participant, this.ViewModel.OnLinkCallback);
+
+                await this.Comments.InitializesProperties(projectId, reviewId, this.ViewModel.CurrentView,
+                    this.ViewModel.Participant, this.ViewModel.OnLinkCallback, this.ViewModel.ReviewTask);
+
                 this.SelectedItemCard.InitializeViewModel(this.ViewModel.Participant);
 
                 if (baseView is not IReusableView reusableView || !await reusableView.CopyComponents(this.ViewModel.CurrentBaseViewInstance))

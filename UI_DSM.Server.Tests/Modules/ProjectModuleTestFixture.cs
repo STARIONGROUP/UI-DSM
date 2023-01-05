@@ -224,11 +224,11 @@ namespace UI_DSM.Server.Tests.Modules
 
             var guids = this.projects.Select(x => x.Id).ToList();
 
-            var result = new Dictionary<Guid, ComputedProjectProperties>
+            var result = new Dictionary<Guid, AdditionalComputedProperties>
             {
                 [guids[0]] = new()
                 {
-                    CommentCount = 15,
+                    OpenCommentCount = 15,
                     TaskCount = 12
                 }
             };

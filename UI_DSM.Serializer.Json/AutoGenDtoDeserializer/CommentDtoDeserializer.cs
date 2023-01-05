@@ -70,6 +70,16 @@ namespace UI_DSM.Serializer.Json
                 }
             }
 
+            if (jsonElement.TryGetProperty("createdInside", out var createdInsideProperty))
+            {
+                var propertyValue = createdInsideProperty.GetString();
+
+                if (propertyValue != null)
+                {
+                    dto.CreatedInside = Guid.Parse(propertyValue);
+                }
+            }
+
             if (jsonElement.TryGetProperty("view", out var viewProperty))
             {
                 var propertyValue = viewProperty.GetString();

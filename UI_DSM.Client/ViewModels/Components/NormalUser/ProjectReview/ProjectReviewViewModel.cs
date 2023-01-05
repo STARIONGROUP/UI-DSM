@@ -73,7 +73,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         /// <summary>
         ///     A collection of comments and tasks <see cref="Review" /> for the user
         /// </summary>
-        public Dictionary<Guid, ComputedProjectProperties> CommentsAndTasks { get; set; } = new();
+        public Dictionary<Guid, AdditionalComputedProperties> CommentsAndTasks { get; set; } = new();
 
         /// <summary>
         ///     Gets or sets the <see cref="NavigationManager" />
@@ -146,7 +146,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 
                 if (creationResult.IsRequestSuccessful)
                 {
-                    this.CommentsAndTasks[creationResult.Entity.Id] = new ComputedProjectProperties();
+                    this.CommentsAndTasks[creationResult.Entity.Id] = new AdditionalComputedProperties();
                     this.Project.Reviews.Add(creationResult.Entity);
                     this.ReviewCreationViewModel.CreationStatus = CreationStatus.Done;
                 }

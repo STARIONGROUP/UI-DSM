@@ -276,5 +276,48 @@ namespace UI_DSM.Server.Tests.Managers
             var result = await this.manager.GetExtraEntitiesToUnindex(Guid.NewGuid());
             Assert.That(result, Is.Empty);
         }
+
+        [Test]
+        public async Task VerifyGetCommentsCount()
+        {
+            this.context.CreateDbSetForContext(out Mock<DbSet<Comment>> commentDbSet);
+            this.context.Setup(x => x.Comments).Returns(commentDbSet.Object);
+            var reviewTask = new ReviewTask(Guid.NewGuid());
+            this.reviewTaskDbSet.UpdateDbSetCollection(new List<ReviewTask>{reviewTask});
+            
+            var guids = new List<Guid>
+            {
+                Guid.NewGuid(),
+                reviewTask.Id
+            };
+
+            var comments = new List<Comment>
+            {
+                new(Guid.NewGuid())
+                {
+                    CreatedInside = new ReviewTask(Guid.NewGuid())
+                },
+                new(Guid.NewGuid())
+                {
+                    CreatedInside = reviewTask
+                },
+                new(Guid.NewGuid())
+                {
+                    CreatedInside = reviewTask,
+                    Status = StatusKind.Closed
+                },
+            };
+
+            commentDbSet.UpdateDbSetCollection(comments);
+            
+            var result = await this.manager.GetCommentsCount(guids);
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.Keys, Has.Count.EqualTo(1));
+                Assert.That(result.Values.First().TotalCommentCount, Is.EqualTo(2));
+                Assert.That(result.Values.First().OpenCommentCount, Is.EqualTo(1));
+            });
+        }
     }
 }

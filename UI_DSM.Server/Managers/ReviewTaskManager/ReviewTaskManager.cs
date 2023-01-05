@@ -137,7 +137,7 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
         }
 
         /// <summary>
-        ///     Gets the <see cref="SearchResultDto"/> based on a <see cref="Guid"/>
+        ///     Gets the <see cref="SearchResultDto" /> based on a <see cref="Guid" />
         /// </summary>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="ReviewTask" /></param>
         /// <returns>A URL</returns>
@@ -154,9 +154,9 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
                 return null;
             }
 
-            var route= $"Project/{reviewTask.EntityContainer.EntityContainer.EntityContainer.Id}/Review/{reviewTask.EntityContainer.EntityContainer.Id}/ReviewObjective/{reviewTask.EntityContainer.Id}/ReviewTask/{reviewTask.Id}";
-            
-            return new SearchResultDto()
+            var route = $"Project/{reviewTask.EntityContainer.EntityContainer.EntityContainer.Id}/Review/{reviewTask.EntityContainer.EntityContainer.Id}/ReviewObjective/{reviewTask.EntityContainer.Id}/ReviewTask/{reviewTask.Id}";
+
+            return new SearchResultDto
             {
                 BaseUrl = route,
                 ObjectKind = nameof(ReviewTask),
@@ -179,6 +179,28 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
         }
 
         /// <summary>
+        ///     Gets the number of comments that are associated to <see cref="ReviewTask" />s
+        /// </summary>
+        /// <param name="reviewTasksId">A collection of <see cref="Guid" /> for <see cref="ReviewTask" /></param>
+        /// <returns>A <see cref="Dictionary{Guid, AdditionalComputedProperties}" /></returns>
+        public async Task<Dictionary<Guid, AdditionalComputedProperties>> GetCommentsCount(IEnumerable<Guid> reviewTasksId)
+        {
+            var dictionary = new Dictionary<Guid, AdditionalComputedProperties>();
+
+            foreach (var reviewTaskId in reviewTasksId)
+            {
+                var computedProperties = await this.GetCommentsCount(reviewTaskId);
+
+                if (computedProperties != null)
+                {
+                    dictionary[reviewTaskId] = computedProperties;
+                }
+            }
+
+            return dictionary;
+        }
+
+        /// <summary>
         ///     Sets specific properties before the creation of the <see cref="ReviewTask" />
         /// </summary>
         /// <param name="entity">The <see cref="ReviewTask" /></param>
@@ -186,6 +208,29 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
         {
             entity.CreatedOn = DateTime.UtcNow;
             entity.Status = StatusKind.Open;
+        }
+
+        /// <summary>
+        ///     Gets the number of comments that are associated to a <see cref="ReviewTask" />
+        /// </summary>
+        /// <param name="reviewTasksId">The <see cref="Guid" /> for <see cref="ReviewTask" /></param>
+        /// <returns>A <see cref="Dictionary{Guid, AdditionalComputedProperties}" /></returns>
+        private async Task<AdditionalComputedProperties> GetCommentsCount(Guid reviewTasksId)
+        {
+            if (this.EntityDbSet.All(x => x.Id != reviewTasksId))
+            {
+                return null;
+            }
+
+            var comments = await this.Context.Comments.Where(x => x.CreatedInside.Id == reviewTasksId)
+                .ToListAsync();
+
+            return new AdditionalComputedProperties
+            {
+                TaskCount = 0,
+                OpenCommentCount = comments.Count(x => x.Status == StatusKind.Open),
+                TotalCommentCount = comments.Count
+            };
         }
     }
 }

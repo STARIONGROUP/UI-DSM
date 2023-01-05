@@ -65,5 +65,15 @@ namespace UI_DSM.Client.Services.ReviewTaskService
         /// <param name="reviewTask">The <see cref="ReviewTask" /> to delete</param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /></returns>
         Task<RequestResponseDto> DeleteReviewTask(Guid projectId, Guid reviewId, ReviewTask reviewTask);
+
+        /// <summary>
+        ///     Gets, for all <see cref="ReviewTask" /> inside a <see cref="ReviewObjective"/>, the number of <see cref="Comment" />
+        ///     related to the <see cref="ReviewTask" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid"/> of the <see cref="Project"/></param>
+        /// <param name="reviewId">The <see cref="Guid"/> of the <see cref="Review"/></param>
+        /// <param name="reviewObjectiveId">The <see cref="Guid"/> of the <see cref="ReviewObjective"/></param>
+        /// <returns>A <see cref="Task" /> with a <see cref="Dictionary{Guid, ComputedProjectProperties}" /></returns>
+        Task<Dictionary<Guid, AdditionalComputedProperties>> GetCommmentsCount(Guid projectId, Guid reviewId, Guid reviewObjectiveId);
     }
 }

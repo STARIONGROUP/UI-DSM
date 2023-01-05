@@ -13,6 +13,10 @@
 
 namespace UI_DSM.Server.Modules
 {
+    using System.Diagnostics.CodeAnalysis;
+
+    using Carter.Response;
+
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Components;
 
@@ -41,6 +45,38 @@ namespace UI_DSM.Server.Modules
         ///     The route key for the Review Id
         /// </summary>
         private const string ReviewKey = "reviewId";
+
+        /// <summary>
+        ///     Adds routes to the <see cref="IEndpointRouteBuilder" />
+        /// </summary>
+        /// <param name="app">The <see cref="IEndpointRouteBuilder" /></param>
+        [ExcludeFromCodeCoverage]
+        public override void AddRoutes(IEndpointRouteBuilder app)
+        {
+            base.AddRoutes(app);
+
+            app.MapGet($"{this.MainRoute}/CommentsCount", this.GetCommentsCount)
+                .Produces<Dictionary<Guid, AdditionalComputedProperties>>()
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/GetCommentsCount");
+        }
+
+        /// <summary>
+        ///     Gets, for all <see cref="ReviewTask" /> inside a <see cref="ReviewObjective" />, the number of
+        ///     <see cref="Comment" />
+        ///     related to the <see cref="ReviewTask" />
+        /// </summary>
+        /// <param name="reviewTaskManager">The <see cref="IReviewTaskManager" /></param>
+        /// <param name="reviewObjectiveId"> The <see cref="Guid" /> of the <see cref="ReviewObjective" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        public async Task GetCommentsCount(IReviewTaskManager reviewTaskManager, Guid reviewObjectiveId, HttpContext context)
+        {
+            var reviewTasksId = (await reviewTaskManager.GetContainedEntities(reviewObjectiveId)).Select(x => x.Id);
+
+            var computedProperties = await reviewTaskManager.GetCommentsCount(reviewTasksId);
+            await context.Response.Negotiate(computedProperties);
+        }
 
         /// <summary>
         ///     Gets a collection of all <see cref="Entity" />
@@ -88,7 +124,7 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="dto">The <see cref="ReviewTaskDto" /></param>
-        /// <param name="searchService">The <see cref="ISearchService"/></param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
@@ -104,7 +140,7 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="ReviewObjective" /> to delete</param>
-        /// <param name="searchService">The <see cref="ISearchService"/></param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
         [Authorize]
@@ -126,7 +162,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="ReviewTask" /></param>
         /// <param name="dto">The <see cref="ReviewTaskDto" /></param>
-        /// <param name="searchService">The <see cref="ISearchService"/></param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" />as result</returns>

@@ -23,3 +23,17 @@
     background: var(--colors-primary-50);
     border-radius: var(--radius-1);
 }
+
+.stat__body {
+    display: grid;
+}
+
+.stat__label {
+    color: var(--colors-gray-600);
+    font-size: var(--text-sm);
+}
+
+.stat__amount {
+    margin: 0;
+    font-weight: 700;
+}

@@ -171,9 +171,9 @@ namespace UI_DSM.Server.Managers.ProjectManager
         /// <param name="projectsId">A collection of <see cref="Guid" /> for <see cref="Project" />s</param>
         /// <param name="userName">The name of the current logged user</param>
         /// <returns>A <see cref="Task" /> with the <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
-        public async Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> projectsId, string userName)
+        public async Task<Dictionary<Guid, AdditionalComputedProperties>> GetOpenTasksAndComments(IEnumerable<Guid> projectsId, string userName)
         {
-            var dictionary = new Dictionary<Guid, ComputedProjectProperties>();
+            var dictionary = new Dictionary<Guid, AdditionalComputedProperties>();
 
             foreach (var projectId in projectsId)
             {
@@ -217,8 +217,8 @@ namespace UI_DSM.Server.Managers.ProjectManager
         /// </summary>
         /// <param name="projectId">A <see cref="Guid" /> for <see cref="Project" /></param>
         /// <param name="userName">The name of the current logged user</param>
-        /// <returns>A <see cref="Task" />with the <see cref="ComputedProjectProperties" /></returns>
-        private async Task<ComputedProjectProperties> GetOpenTasksAndComments(Guid projectId, string userName)
+        /// <returns>A <see cref="Task" />with the <see cref="AdditionalComputedProperties" /></returns>
+        private async Task<AdditionalComputedProperties> GetOpenTasksAndComments(Guid projectId, string userName)
         {
             if (this.EntityDbSet.All(x => x.Id != projectId))
             {
@@ -244,13 +244,13 @@ namespace UI_DSM.Server.Managers.ProjectManager
             var comments = this.EntityDbSet
                 .Where(x => x.Id == projectId)
                 .SelectMany(x => x.Annotations)
-                .OfType<Comment>()
-                .Count();
+                .OfType<Comment>();
 
-            return new ComputedProjectProperties
+            return new AdditionalComputedProperties
             {
                 TaskCount = tasks,
-                CommentCount = comments
+                OpenCommentCount = comments.Count(x => x.Status == StatusKind.Open),
+                TotalCommentCount = comments.Count()
             };
         }
     }

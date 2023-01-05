@@ -14,18 +14,20 @@
 namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
 {
     using DynamicData;
+
+    using Microsoft.AspNetCore.Components;
+
     using ReactiveUI;
 
+    using UI_DSM.Client.Components.NormalUser.ReviewTask;
+    using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.ReviewObjectiveService;
     using UI_DSM.Client.Services.ReviewTaskService;
     using UI_DSM.Client.ViewModels.Components;
-    using UI_DSM.Client.Components.NormalUser.ReviewTask;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ReviewTask;
-    using UI_DSM.Shared.Models;
-    using UI_DSM.Client.Services.Administration.ParticipantService;
-    using Microsoft.AspNetCore.Components;
-
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     View model for the <see cref="ReviewObjectivePageViewModel" /> page
@@ -33,15 +35,10 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
     public class ReviewObjectivePageViewModel : ReactiveObject, IReviewObjectivePageViewModel
     {
         /// <summary>
-        ///     The <see cref="Project" /> id
+        ///     The <see cref="IParticipantService" />
         /// </summary>
-        public Guid ProjectId { get;  set; }
+        private readonly IParticipantService participantService;
 
-        /// <summary>
-        ///     The <see cref="Review" /> id
-        /// </summary>
-        public Guid ReviewId { get;  set; }
-        
         /// <summary>
         ///     The <see cref="IReviewObjectiveService" />
         /// </summary>
@@ -51,11 +48,6 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         ///     The <see cref="IReviewObjectiveService" />
         /// </summary>
         private readonly IReviewTaskService reviewTaskService;
-
-        /// <summary>
-        ///     The <see cref="IParticipantService" />
-        /// </summary>
-        private readonly IParticipantService participantService;
 
         /// <summary>
         ///     Backing field for <see cref="IsOnAssignmentMode" />
@@ -81,14 +73,29 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         }
 
         /// <summary>
+        ///     A <see cref="Dictionary{Guid, AdditionalComputedProperties}" /> for the <see cref="Comment" /> count
+        /// </summary>
+        public Dictionary<Guid, AdditionalComputedProperties> CommentsCount { get; set; }
+
+        /// <summary>
+        ///     The <see cref="Project" /> id
+        /// </summary>
+        public Guid ProjectId { get; set; }
+
+        /// <summary>
+        ///     The <see cref="Review" /> id
+        /// </summary>
+        public Guid ReviewId { get; set; }
+
+        /// <summary>
         ///     The <see cref="IReviewObjectivePageViewModel.ReviewObjective" /> of the page
         /// </summary>
-        public ReviewObjective ReviewObjective { get; private set; } 
+        public ReviewObjective ReviewObjective { get; private set; }
 
         /// <summary>
         ///     The <see cref="Participant" />s of the project
         /// </summary>
-        public List<Participant> ProjectParticipants { get; set; } = new List<Participant>();
+        public List<Participant> ProjectParticipants { get; set; } = new();
 
         /// <summary>
         ///     Value indicating the user is currently assigning a <see cref="Participant" /> to a task
@@ -123,12 +130,30 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         /// <summary>
         ///     The current <see cref="Participant" />
         /// </summary>
-        public Participant Participant { get; set; } = new Participant();
+        public Participant Participant { get; set; } = new();
 
         /// <summary>
-        ///     The selected <see cref="ReviewTask" /> 
+        ///     The selected <see cref="ReviewTask" />
         /// </summary>
-        public ReviewTask SelectedReviewTask { get; set; } = new ReviewTask();
+        public ReviewTask SelectedReviewTask { get; set; } = new();
+
+        /// <summary>
+        ///     Method invoked when the component is ready to start, having received its
+        ///     initial parameters from its parent in the render tree.
+        ///     Override this method if you will perform an asynchronous operation and
+        ///     want the component to refresh when that operation is completed.
+        /// </summary>
+        /// <param name="projectGuid">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="reviewGuid">The <see cref="Guid" /> of the <see cref="Review" /></param>
+        /// <param name="reviewObjectiveId">The <see cref="Guid" /> of the <see cref="ReviewObjective" /></param>
+        /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
+        public async Task OnInitializedAsync(Guid projectGuid, Guid reviewGuid, Guid reviewObjectiveId)
+        {
+            this.ReviewObjective = await this.reviewObjectiveService.GetReviewObjectiveOfReview(projectGuid, reviewGuid, reviewObjectiveId, 1);
+            this.ProjectParticipants = (await this.participantService.GetParticipantsOfProject(projectGuid)).Where(x => x.Role.AccessRights.Contains(AccessRight.ReviewTask)).ToList();
+            this.Participant = await this.participantService.GetCurrentParticipant(projectGuid);
+            this.CommentsCount = await this.reviewTaskService.GetCommmentsCount(projectGuid, reviewGuid, reviewObjectiveId);
+        }
 
         /// <summary>
         ///     Tries to assign a <see cref="Participant" />s to a task
@@ -159,23 +184,6 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
                 this.ErrorMessageViewModel.Errors.Clear();
                 this.ErrorMessageViewModel.Errors.Add(exception.Message);
             }
-        }
-
-        /// <summary>
-        ///     Method invoked when the component is ready to start, having received its
-        ///     initial parameters from its parent in the render tree.
-        ///     Override this method if you will perform an asynchronous operation and
-        ///     want the component to refresh when that operation is completed.
-        /// </summary>
-        /// <param name="projectGuid">The <see cref="Guid" /> of the <see cref="Project" /></param>
-        /// <param name="reviewGuid">The <see cref="Guid" /> of the <see cref="Review" /></param>
-        /// <param name="reviewObjectiveId">The <see cref="Guid" /> of the <see cref="ReviewObjective" /></param>
-        /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
-        public async Task OnInitializedAsync(Guid projectGuid, Guid reviewGuid, Guid reviewObjectiveId)
-        {
-            this.ReviewObjective = await this.reviewObjectiveService.GetReviewObjectiveOfReview(projectGuid, reviewGuid, reviewObjectiveId, 1);
-            this.ProjectParticipants = (await this.participantService.GetParticipantsOfProject(projectGuid)).Where(x => x.Role.AccessRights.Contains(AccessRight.ReviewTask)).ToList();
-            this.Participant = await this.participantService.GetCurrentParticipant(projectGuid);
         }
     }
 }

@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Components.App.TextEditor
 {
+    using DevExpress.Blazor;
+
     using Microsoft.AspNetCore.Components;
 
     /// <summary>
@@ -44,11 +46,18 @@ namespace UI_DSM.Client.Components.App.TextEditor
         public string SubmitText { get; set; }
 
         /// <summary>
+        /// Value indicating if the submit button is enabled or not
+        /// </summary>
+        public bool SubmitEnabled { get; set; } = true;
+
+        /// <summary>
         ///     Handle the update of the current content
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>
         private async Task OnSubmit()
         {
+            this.SubmitEnabled = false;
+
             if (this.Content == "<p><br></p>" || string.IsNullOrEmpty(this.Content))
             {
                 this.ErrorMessage.ViewModel.HandleErrors(new List<string> { "The content cannot be empty" });
@@ -57,6 +66,8 @@ namespace UI_DSM.Client.Components.App.TextEditor
             {
                 await this.InvokeAsync(() => this.OnValidSubmit.InvokeAsync(this.Content));
             }
+
+            this.SubmitEnabled = true;
         }
     }
 }

@@ -140,7 +140,7 @@ namespace UI_DSM.Client.Services.ReviewService
         ///     related to the <see cref="Review" />
         /// </summary>
         /// <returns>A <see cref="Task" /> with a <see cref="Dictionary{Guid, ComputedProjectProperties}" /></returns>
-        public async Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(Guid projectId)
+        public async Task<Dictionary<Guid, AdditionalComputedProperties>> GetOpenTasksAndComments(Guid projectId)
         {
             this.ComputeMainRoute(projectId);
             var response = await this.HttpClient.GetAsync($"{this.MainRoute}/OpenTasksAndComments");
@@ -150,7 +150,7 @@ namespace UI_DSM.Client.Services.ReviewService
                 throw new HttpRequestException(response.ReasonPhrase);
             }
 
-            return this.jsonService.Deserialize<Dictionary<Guid, ComputedProjectProperties>>(await response.Content.ReadAsStreamAsync());
+            return this.jsonService.Deserialize<Dictionary<Guid, AdditionalComputedProperties>>(await response.Content.ReadAsStreamAsync());
         }
     }
 }

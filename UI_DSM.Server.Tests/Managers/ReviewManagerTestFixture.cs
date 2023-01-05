@@ -280,9 +280,10 @@ namespace UI_DSM.Server.Tests.Managers
             var guids = project.Reviews.Select(x => x.Id).ToList();
             var computedProjectProperties = await this.manager.GetOpenTasksAndComments(guids, project.Id, participant.User.UserName);
 
-            var expectedComputed = new ComputedProjectProperties
+            var expectedComputed = new AdditionalComputedProperties
             {
-                CommentCount = 8,
+                OpenCommentCount = 8,
+                TotalCommentCount = 8,
                 TaskCount = 3
             };
 

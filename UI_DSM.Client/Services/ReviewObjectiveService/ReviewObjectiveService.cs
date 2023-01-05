@@ -187,6 +187,7 @@ namespace UI_DSM.Client.Services.ReviewObjectiveService
             {
                 throw new HttpRequestException(response.ReasonPhrase);
             }
+
             var content = this.jsonService.Deserialize<List<ReviewObjectiveCreationDto>>(await response.Content.ReadAsStreamAsync());
             return content;
         }
@@ -195,8 +196,10 @@ namespace UI_DSM.Client.Services.ReviewObjectiveService
         ///     Gets, for all <see cref="ReviewObjective" />, the number of open <see cref="ReviewTask" /> and <see cref="Comment" />
         ///     related to the <see cref="ReviewObjective" />
         /// </summary>
+        /// <param name="projectId">The <see cref="Guid"/> of the <see cref="Project"/></param>
+        /// <param name="reviewId">The <see cref="Guid"/> of the <see cref="Review"/></param>
         /// <returns>A <see cref="Task" /> with a <see cref="Dictionary{Guid, ComputedProjectProperties}" /></returns>
-        public async Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(Guid projectId, Guid reviewId)
+        public async Task<Dictionary<Guid, AdditionalComputedProperties>> GetOpenTasksAndComments(Guid projectId, Guid reviewId)
         {
             this.ComputeMainRoute(projectId, reviewId);
             var response = await this.HttpClient.GetAsync($"{this.MainRoute}/OpenTasksAndComments");
@@ -206,7 +209,7 @@ namespace UI_DSM.Client.Services.ReviewObjectiveService
                 throw new HttpRequestException(response.ReasonPhrase);
             }
 
-            return this.jsonService.Deserialize<Dictionary<Guid, ComputedProjectProperties>>(await response.Content.ReadAsStreamAsync());
+            return this.jsonService.Deserialize<Dictionary<Guid, AdditionalComputedProperties>>(await response.Content.ReadAsStreamAsync());
         }
     }
 }

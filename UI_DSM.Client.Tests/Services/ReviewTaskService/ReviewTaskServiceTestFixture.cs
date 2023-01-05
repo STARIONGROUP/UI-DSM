@@ -198,5 +198,39 @@ namespace UI_DSM.Client.Tests.Services.ReviewTaskService
             httpResponse.Content = new StringContent(string.Empty);
             Assert.That(async () => await this.service.UpdateReviewTask(this.projectId, this.reviewId, reviewTask), Throws.Exception);
         }
+
+        [Test]
+        public async Task VerifyGetCommentsCount()
+        {
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.BadRequest;
+
+            var project = new Project(Guid.NewGuid());
+            var review = new Review(Guid.NewGuid());
+
+            var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Project/{project.Id}/Review/{review.Id}/ReviewObjective/{this.reviewObjectiveId}/ReviewTask/CommentsCount");
+            request.Respond(_ => httpResponse);
+
+            Assert.That(async () => await this.service.GetCommmentsCount(project.Id, review.Id, this.reviewObjectiveId), Throws.Exception);
+
+            httpResponse.StatusCode = HttpStatusCode.OK;
+
+            var guids = new List<Guid>
+            {
+                Guid.NewGuid()
+            };
+
+            var requestResults = new Dictionary<Guid, AdditionalComputedProperties>
+            {
+                [guids[0]] = new()
+                {
+                    OpenCommentCount = 15,
+                    TaskCount = 0
+                }
+            };
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResults));
+            Assert.That(await this.service.GetCommmentsCount(project.Id, review.Id, this.reviewObjectiveId), Is.EquivalentTo(requestResults));
+        }
     }
 }

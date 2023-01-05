@@ -16,6 +16,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ReviewTask;
     using UI_DSM.Client.Components.NormalUser.ReviewTask;
+    using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -72,6 +73,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         ///     The selected <see cref="ReviewTask" /> 
         /// </summary>
         ReviewTask SelectedReviewTask { get; set; }
+
+        /// <summary>
+        ///     A <see cref="Dictionary{Guid, AdditionalComputedProperties}" /> for the <see cref="Comment" /> count
+        /// </summary>
+        Dictionary<Guid, AdditionalComputedProperties> CommentsCount { get; set; }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its

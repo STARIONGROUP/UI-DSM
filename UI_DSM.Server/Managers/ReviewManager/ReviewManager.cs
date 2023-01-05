@@ -96,9 +96,9 @@ namespace UI_DSM.Server.Managers.ReviewManager
         /// <param name="projectId">A <see cref="Guid" /> of <see cref="Project" />s</param>
         /// <param name="userName">The name of the current logged user</param>
         /// <returns> A <see cref="Dictionary{Guid,ComputedProjectProperties}" /></returns>
-        public async Task<Dictionary<Guid, ComputedProjectProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewsId, Guid projectId, string userName)
+        public async Task<Dictionary<Guid, AdditionalComputedProperties>> GetOpenTasksAndComments(IEnumerable<Guid> reviewsId, Guid projectId, string userName)
         {
-            var dictionary = new Dictionary<Guid, ComputedProjectProperties>();
+            var dictionary = new Dictionary<Guid, AdditionalComputedProperties>();
 
             foreach (var reviewId in reviewsId)
             {
@@ -194,8 +194,8 @@ namespace UI_DSM.Server.Managers.ReviewManager
         /// <param name="reviewId">A <see cref="Guid" /> for <see cref="Review" /></param>
         /// <param name="projectId">A <see cref="Guid" /> of <see cref="Project" />s</param>
         /// <param name="userName">The name of the current logged user</param>
-        /// <returns> A <see cref="ComputedProjectProperties" /></returns>
-        private async Task<ComputedProjectProperties> GetOpenTasksAndComments(Guid reviewId, Guid projectId, string userName)
+        /// <returns> A <see cref="AdditionalComputedProperties" /></returns>
+        private async Task<AdditionalComputedProperties> GetOpenTasksAndComments(Guid reviewId, Guid projectId, string userName)
         {
             if (this.EntityDbSet.All(x => x.Id != reviewId))
             {
@@ -224,12 +224,13 @@ namespace UI_DSM.Server.Managers.ReviewManager
                 .OfType<Comment>()
                 .ToList()
                 .DistinctBy(x => x.Id)
-                .Count();
+                .ToList();
 
-            return new ComputedProjectProperties
+            return new AdditionalComputedProperties
             {
                 TaskCount = tasks,
-                CommentCount = comments
+                OpenCommentCount = comments.Count(x => x.Status == StatusKind.Open),
+                TotalCommentCount = comments.Count
             };
         }
     }
