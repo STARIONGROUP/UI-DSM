@@ -15,12 +15,9 @@ namespace UI_DSM.Client.Components.App.HaveThingRowLinked
 {
     using CDP4Common.CommonData;
 
-    using DevExpress.Blazor;
-
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Client.Components.App.AppKeyValue;
-    using UI_DSM.Client.ViewModels.App.SelectedItemCard;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>
@@ -29,6 +26,11 @@ namespace UI_DSM.Client.Components.App.HaveThingRowLinked
     /// </summary>
     public partial class HaveThingRowLinked<THaveThingRowViewModel> where THaveThingRowViewModel : IHaveThingRowViewModel, new()
     {
+        /// <summary>
+        ///     String value conversion based on <see cref="AppKeyValue.VariantValue" />
+        /// </summary>
+        private string componentVariant;
+
         /// <summary>
         ///     The <see cref="THaveThingRowViewModel" />
         /// </summary>
@@ -39,11 +41,6 @@ namespace UI_DSM.Client.Components.App.HaveThingRowLinked
         /// </summary>
         [Parameter]
         public AppKeyValue.VariantValue Variant { get; set; } = AppKeyValue.VariantValue.Horizontal;
-
-        /// <summary>
-        ///     String value conversion based on <see cref="AppKeyValue.VariantValue" />
-        /// </summary>
-        private string componentVariant;
 
         /// <summary>
         ///     A <see cref="Thing" />

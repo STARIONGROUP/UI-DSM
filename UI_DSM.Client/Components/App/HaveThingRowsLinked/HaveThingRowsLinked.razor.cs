@@ -15,11 +15,8 @@ namespace UI_DSM.Client.Components.App.HaveThingRowsLinked
 {
     using CDP4Common.CommonData;
 
-    using DevExpress.Blazor;
-
     using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Client.ViewModels.App.SelectedItemCard;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
     /// <summary>

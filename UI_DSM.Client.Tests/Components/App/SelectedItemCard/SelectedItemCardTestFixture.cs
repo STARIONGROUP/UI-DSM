@@ -44,7 +44,6 @@ namespace UI_DSM.Client.Tests.Components.App.SelectedItemCard
     {
         private ISelectedItemCardViewModel viewModel;
         private TestContext context;
-        private string callbackCalled;
 
         [SetUp]
         public void Setup()
@@ -66,7 +65,7 @@ namespace UI_DSM.Client.Tests.Components.App.SelectedItemCard
         {
             var renderer = this.context.RenderComponent<SelectedItemCard>(paramaters =>
             {
-                paramaters.Add(p => p.OnItemDoubleClick, new EventCallbackFactory().Create<string>(this, (x) => this.callbackCalled = x));
+                paramaters.Add(p => p.OnItemDoubleClick, new EventCallbackFactory().Create<string>(this, (x) => _ = x));
             });
 
             Assert.That(renderer.FindComponents<DynamicComponent>(), Is.Empty);
