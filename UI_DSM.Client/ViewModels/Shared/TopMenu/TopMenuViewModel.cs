@@ -98,6 +98,17 @@ namespace UI_DSM.Client.ViewModels.Shared.TopMenu
         }
 
         /// <summary>
+        ///     Gets the <see cref="Role" /> name for the <see cref="Participant" /> for a <see cref="Project" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <returns>The name of the <see cref="Role" /></returns>
+        public string GetRoleForProject(Guid projectId)
+        {
+            var participant = this.participants.FirstOrDefault(x => x.EntityContainer.Id == projectId);
+            return participant?.Role.RoleName;
+        }
+
+        /// <summary>
         ///     Handle the change of authentication state
         /// </summary>
         /// <param name="state">The <see cref="AuthenticationState" /> Task</param>

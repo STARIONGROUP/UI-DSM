@@ -96,8 +96,10 @@ namespace UI_DSM.Server.Modules
         [Authorize]
         public async Task GetLinkedParticipants(IParticipantManager participantManager, HttpContext context)
         {
-            var participants = await participantManager.GetParticipants(context.User!.Identity!.Name);
-            await context.Response.Negotiate(participants.SelectMany(x => x.GetAssociatedEntities()).DistinctBy(x => x.Id).ToDtos());
+            var participants = (await participantManager.GetParticipants(context.User!.Identity!.Name)).ToList();
+            var entities = participants.SelectMany(x => x.GetAssociatedEntities()).ToList();
+            entities.AddRange(participants.Select(x => x.EntityContainer));
+            await context.Response.Negotiate(entities.DistinctBy(x => x.Id).ToDtos());
         }
 
         /// <summary>
