@@ -33,6 +33,11 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ParticipantManageme
         IEnumerable<UserEntity> AvailableUsers { get; set; }
 
         /// <summary>
+        ///     A collection of available <see cref="CDP4Common.SiteDirectoryData.DomainOfExpertise" /> names
+        /// </summary>
+        IEnumerable<string> AvailableDomains { get; set; }
+
+        /// <summary>
         ///     An <see cref="EventCallback" /> to invoke on form submit
         /// </summary>
         EventCallback OnValidSubmit { get; set; }
@@ -43,10 +48,15 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ParticipantManageme
         Participant Participant { get; set; }
 
         /// <summary>
+        ///     The collection of selected <see cref="CDP4Common.SiteDirectoryData.DomainOfExpertise" />
+        /// </summary>
+        IEnumerable<string> SelectedDomains { get; set; }
+
+        /// <summary>
         ///     Updates this view model properties
         /// </summary>
-        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="project">The <see cref="Project" /></param>
         /// <returns>A <see cref="Task" /></returns>
-        Task UpdateProperties(Guid projectId);
+        Task UpdateProperties(Project project);
     }
 }

@@ -16,6 +16,8 @@ namespace UI_DSM.Shared.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
+    using CDP4Common.SiteDirectoryData;
+
     using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
@@ -79,6 +81,11 @@ namespace UI_DSM.Shared.Models
         public List<Annotation> Annotations { get; set; }
 
         /// <summary>
+        ///     A collection of <see cref="DomainOfExpertise" /> shortnames
+        /// </summary>
+        public List<string> DomainsOfExpertise { get; set; }
+
+        /// <summary>
         ///     Instantiate a <see cref="ParticipantDto" /> from a <see cref="Participant" />
         /// </summary>
         /// <returns>A new <see cref="ParticipantDto" /></returns>
@@ -88,6 +95,7 @@ namespace UI_DSM.Shared.Models
             {
                 User = this.User?.Id ?? Guid.Empty,
                 Role = this.Role?.Id ?? Guid.Empty,
+                DomainsOfExpertise = this.DomainsOfExpertise ?? new List<string>()
             };
 
             return dto;
@@ -107,6 +115,7 @@ namespace UI_DSM.Shared.Models
 
             this.Role = this.GetEntity<Role>(participantDto.Role, resolvedEntity);
             this.User = this.GetEntity<UserEntity>(participantDto.User, resolvedEntity);
+            this.DomainsOfExpertise = participantDto.DomainsOfExpertise;
         }
 
         /// <summary>
@@ -127,6 +136,7 @@ namespace UI_DSM.Shared.Models
             this.AssignedTasks = new List<ReviewTask>();
             this.Annotations = new List<Annotation>();
             this.Replies = new List<Reply>();
+            this.DomainsOfExpertise = new List<string>();
         }
     }
 }

@@ -15,6 +15,9 @@ namespace UI_DSM.Client.Tests.Components.Administration.ProjectManagement
 {
     using Bunit;
 
+    using CDP4Common.CommonData;
+    using CDP4Common.SiteDirectoryData;
+
     using DevExpress.Blazor;
 
     using Moq;
@@ -24,12 +27,15 @@ namespace UI_DSM.Client.Tests.Components.Administration.ProjectManagement
     using UI_DSM.Client.Components.Administration.ProjectManagement;
     using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.Administration.RoleService;
+    using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
     using UI_DSM.Shared.Types;
+
+    using Participant = UI_DSM.Shared.Models.Participant;
     using TestContext = Bunit.TestContext;
 
     [TestFixture]
@@ -39,6 +45,7 @@ namespace UI_DSM.Client.Tests.Components.Administration.ProjectManagement
         private IProjectDetailsViewModel viewModel;
         private Mock<IParticipantService> participantService;
         private Mock<IRoleService> roleService;
+        private Mock<IThingService> thingService;
 
         [SetUp]
         public void Setup()
@@ -47,8 +54,24 @@ namespace UI_DSM.Client.Tests.Components.Administration.ProjectManagement
             this.context.ConfigureDevExpressBlazor();
             this.participantService = new Mock<IParticipantService>();
             this.roleService = new Mock<IRoleService>();
+            this.thingService = new Mock<IThingService>();
 
-            this.viewModel = new ProjectDetailsViewModel(this.participantService.Object, this.roleService.Object)
+            this.thingService.Setup(x => x.GetThings(It.IsAny<Guid>(), It.IsAny<IEnumerable<Guid>>(), ClassKind.DomainOfExpertise))
+                .ReturnsAsync(new List<Thing>
+                {
+                    new DomainOfExpertise()
+                    {
+                        Iid = Guid.NewGuid(),
+                        ShortName = "SYS"
+                    },
+                    new DomainOfExpertise()
+                    {
+                        Iid = Guid.NewGuid(),
+                        ShortName = "THE"
+                    }
+                });
+
+            this.viewModel = new ProjectDetailsViewModel(this.participantService.Object, this.roleService.Object, this.thingService.Object)
             {
                 Project = new Project(Guid.NewGuid())
                 {

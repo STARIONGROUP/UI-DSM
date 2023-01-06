@@ -32,6 +32,7 @@ namespace UI_DSM.Shared.DTO.Models
         /// </summary>
         public ParticipantDto()
         {
+            this.DomainsOfExpertise = new List<string>();
         }
 
         /// <summary>
@@ -40,6 +41,7 @@ namespace UI_DSM.Shared.DTO.Models
         /// <param name="id">The <see cref="Guid" /> of the represented <see cref="Entity" /></param>
         public ParticipantDto(Guid id) : base(id)
         {
+            this.DomainsOfExpertise = new List<string>();
         }
 
         /// <summary>
@@ -56,6 +58,11 @@ namespace UI_DSM.Shared.DTO.Models
         ///    Gets or sets the Role of the Participant
         /// </summary>
         public Guid Role { get; set; }
+
+        /// <summary>
+        ///    Gets or sets the DomainsOfExpertise of the Participant
+        /// </summary>
+        public List<string> DomainsOfExpertise { get; set; }
 
         /// <summary>
         ///    Instantiate a <see cref="Entity" /> from a <see cref="EntityDto" />

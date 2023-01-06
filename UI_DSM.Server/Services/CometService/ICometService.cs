@@ -90,5 +90,12 @@ namespace UI_DSM.Server.Services.CometService
         /// <param name="model">The <see cref="Model" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="Iteration" /></returns>
         Task<Iteration> GetIteration(Model model);
+
+        /// <summary>
+        ///     Gets all <see cref="DomainOfExpertise" /> that are contained inside a Model
+        /// </summary>
+        /// <param name="iteration">The <see cref="Iteration" /></param>
+        /// <returns>The collection of <see cref="DomainOfExpertise" /></returns>
+        IEnumerable<DomainOfExpertise> GetDomainOfExpertises(Iteration iteration);
     }
 }

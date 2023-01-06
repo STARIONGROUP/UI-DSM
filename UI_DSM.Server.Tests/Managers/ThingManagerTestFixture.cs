@@ -136,5 +136,19 @@ namespace UI_DSM.Server.Tests.Managers
                 Assert.That(requirementsSpecification.Where(x => x is Category {IsDeprecated: true}), Is.Not.Empty);
             });
         }
+
+        [Test]
+        public async Task VerifyGetDomainsOfExpertise()
+        {
+            this.cometService.Setup(x => x.GetDomainOfExpertises(this.iteration))
+                .Returns(new List<DomainOfExpertise>
+                {
+                    new (){Iid = Guid.NewGuid()},
+                    new (){Iid = Guid.NewGuid()}
+                });
+
+            var domains = await this.thingManager.GetDomainOfExpertises(new List<Model> { this.model, new() });
+            Assert.That(domains.ToList(), Has.Count.EqualTo(2));
+        }
     }
 }

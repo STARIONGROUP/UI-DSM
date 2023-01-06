@@ -52,6 +52,15 @@ namespace UI_DSM.Serializer.Json
             writer.WritePropertyName("role");
             writer.WriteStringValue(dto.Role);
 
+            writer.WriteStartArray("domainsOfExpertise");
+
+            foreach (var item in dto.DomainsOfExpertise)
+            {
+                writer.WriteStringValue(item);
+            }
+
+            writer.WriteEndArray();
+
             writer.WritePropertyName("id");
             writer.WriteStringValue(dto.Id);
 

@@ -26,7 +26,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ReviewTask
         /// <summary>
         ///     The <see cref="Participant" />s to assign
         /// </summary>
-        public IEnumerable<Participant> SelectedParticipants { get; set; }
+        public List<Participant> SelectedParticipants { get; set; }
 
         /// <summary>
         ///     The <see cref="EventCallback" /> to call for data submit

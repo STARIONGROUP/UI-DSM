@@ -16,6 +16,9 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
     using Bunit;
     using Bunit.TestDoubles;
 
+    using CDP4Common.CommonData;
+    using CDP4Common.SiteDirectoryData;
+
     using Microsoft.Extensions.DependencyInjection;
 
     using Moq;
@@ -28,6 +31,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
     using UI_DSM.Client.Services.Administration.ProjectService;
     using UI_DSM.Client.Services.Administration.RoleService;
     using UI_DSM.Client.Services.ArtifactService;
+    using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components.Administration.ModelManagement;
     using UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages;
@@ -35,6 +39,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
     using UI_DSM.Shared.Models;
     using UI_DSM.Shared.Types;
 
+    using Participant = UI_DSM.Shared.Models.Participant;
     using TestContext = Bunit.TestContext;
 
     [TestFixture]
@@ -47,6 +52,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
         private Mock<IRoleService> roleService;
         private Mock<IArtifactService> artifactService;
         private Mock<ICometUploadViewModel> cometConnexionViewModel;
+        private Mock<IThingService> thingService;
 
         [SetUp]
         public void Setup()
@@ -58,9 +64,10 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
             this.roleService = new Mock<IRoleService>();
             this.cometConnexionViewModel = new Mock<ICometUploadViewModel>();
             this.artifactService = new Mock<IArtifactService>();
+            this.thingService = new Mock<IThingService>();
 
             this.viewModel = new ProjectPageViewModel(this.projectService.Object, this.participantService.Object, this.roleService.Object, 
-                this.cometConnexionViewModel.Object, this.artifactService.Object);
+                this.cometConnexionViewModel.Object, this.artifactService.Object, this.thingService.Object);
 
             this.context.AddTestAuthorization();
             this.context.Services.AddSingleton(this.viewModel);
@@ -77,6 +84,14 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
         {
             var projectGuid = Guid.NewGuid();
             this.projectService.Setup(x => x.GetProject(projectGuid, 0)).ReturnsAsync((Project)null);
+
+            this.thingService.Setup(x => x.GetThings(It.IsAny<Guid>(), It.IsAny<IEnumerable<Guid>>(), ClassKind.DomainOfExpertise))
+                .ReturnsAsync(new List<Thing>
+                {
+                        new DomainOfExpertise(){Iid = Guid.NewGuid(), ShortName = "AOGNC"},
+                        new DomainOfExpertise(){Iid = Guid.NewGuid(), ShortName = "THE"},
+                        new DomainOfExpertise(){Iid = Guid.NewGuid(), ShortName = "SYS"}
+                });
 
             var renderer = this.context.RenderComponent<ProjectPage>(parameters => { parameters.Add(p => p.ProjectId, projectGuid.ToString()); });
 

@@ -57,7 +57,7 @@ namespace UI_DSM.Shared.Extensions
         /// <summary>
         ///     Resolve the <see cref="List{TEntity}" /> from the <see cref="IEnumerable{Guid}" />
         /// </summary>
-        /// <param name="collection">The <see cref="EntityContainerList{TEntity}"/> of <see cref="TEntity" /></param>
+        /// <param name="collection">The <see cref="EntityContainerList{TEntity}" /> of <see cref="TEntity" /></param>
         /// <param name="guids">A collection of <see cref="Guid" /> of <see cref="Entity" /> to find</param>
         /// <param name="resolvedEntity">A <see cref="Dictionary{TKey,TValue}" /> of all <see cref="Entity" /></param>
         /// <typeparam name="TEntity">An <see cref="Entity" /></typeparam>
@@ -85,14 +85,35 @@ namespace UI_DSM.Shared.Extensions
         }
 
         /// <summary>
-        ///     Converts a <see cref="IEnumerable{T}"/> to a comma seperated string
+        ///     Converts a <see cref="IEnumerable{T}" /> to a comma seperated string
         /// </summary>
-        /// <param name="elements">The <see cref="IEnumerable{T}"/></param>
+        /// <param name="elements">The <see cref="IEnumerable{T}" /></param>
         /// <returns>A string</returns>
         public static string AsCommaSeparated(this IEnumerable<string> elements)
         {
             elements = elements.ToList();
             return elements.Any() ? string.Join(", ", elements) : string.Empty;
+        }
+
+        /// <summary>
+        ///     Computes the custom grouping by <see cref="CDP4Common.SiteDirectoryData.DomainOfExpertise" /> for
+        ///     <see cref="Participant" />
+        /// </summary>
+        /// <param name="availableParticipants"></param>
+        /// <returns>A <see cref="Dictionary{TKey,TValue}" /> with <see cref="CDP4Common.SiteDirectoryData.DomainOfExpertise" /> as key</returns>
+        public static Dictionary<string, IEnumerable<Participant>> GroupByDomainOfExpertise(this IEnumerable<Participant> availableParticipants)
+        {
+            var group = new Dictionary<string, IEnumerable<Participant>>();
+
+            availableParticipants = availableParticipants.ToList();
+            var domains = availableParticipants.SelectMany(x => x.DomainsOfExpertise).Distinct().ToList();
+
+            foreach (var domain in domains)
+            {
+                group[domain] = availableParticipants.Where(x => x.DomainsOfExpertise.Contains(domain));
+            }
+
+            return group;
         }
     }
 }

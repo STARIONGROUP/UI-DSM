@@ -266,6 +266,17 @@ namespace UI_DSM.Server.Services.CometService
         }
 
         /// <summary>
+        ///     Gets all <see cref="DomainOfExpertise" /> that are contained inside a Model
+        /// </summary>
+        /// <param name="iteration">The <see cref="Iteration" /></param>
+        /// <returns>The collection of <see cref="DomainOfExpertise" /></returns>
+        public IEnumerable<DomainOfExpertise> GetDomainOfExpertises(Iteration iteration)
+        {
+            var session = this.GetSession(iteration.Iid);
+            return session.QueryDomainOfExpertise(iteration);
+        }
+
+        /// <summary>
         ///     Tries to open an <see cref="ISession" /> from an Annex C3 file
         /// </summary>
         /// <param name="filePath">The file path </param>
