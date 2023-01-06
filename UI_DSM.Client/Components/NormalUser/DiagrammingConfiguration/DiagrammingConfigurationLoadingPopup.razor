@@ -1,5 +1,5 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
-// DiagrammingConfigurationPopup.razor
+// DiagrammingConfigurationLoadingPopup.razor
 // Copyright (c) 2022 RHEA System S.A.
 //
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -9,11 +9,17 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Shared.Models
+
 <DxFormLayout>
-	<DxFormLayoutItem Caption="Configuration Name:" ColSpanMd="12">
-		<DxTextBox @bind-Text="@this.ViewModel.ConfigurationName" NullText="Enter the name of the configuration to save" />
+	<DxFormLayoutItem Caption="Configurations :" ColSpanMd="12">
+		<DxListBox Data="@this.ViewModel.ConfigurationsName"
+				   @bind-Value="@this.ViewModel.SelectedConfiguration"
+				   SelectionMode="ListBoxSelectionMode.Single" />
 	</DxFormLayoutItem>
 </DxFormLayout>
+
 <div class="modal-footer m-top-10px">
-	<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Save" Click="@this.ViewModel.OnValidSubmit" Enabled="@(!(string.IsNullOrEmpty(this.ViewModel.ConfigurationName)))"/>
+	<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Load" Click="@this.ViewModel.OnValidSubmit" Enabled="@(!(string.IsNullOrEmpty(this.ViewModel.SelectedConfiguration)))" />
 </div>
+

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IDiagrammingConfigurationPopupViewModel.cs" company="RHEA System S.A.">
+// <copyright file="DiagrammingConfigurationLoadingPopup.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,27 +11,21 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
+namespace UI_DSM.Client.Components.NormalUser.DiagrammingConfiguration
 {
     using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Client.Enumerator;
-    using UI_DSM.Client.ViewModels.Components.NormalUser.DiagrammingConfiguration;
-    using UI_DSM.Shared.Models;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
 
     /// <summary>
-    ///     Interface definition for <see cref="DiagrammingConfigurationPopupViewModel" />
+    ///     This component is used to load a diagramming configuration
     /// </summary>
-    public interface IDiagrammingConfigurationPopupViewModel
+    public partial class DiagrammingConfigurationLoadingPopup
     {
         /// <summary>
-        ///     The name of configuration to save
+        ///     The <see cref="DiagrammingConfigurationLoadingPopupViewModel" /> for the component
         /// </summary>
-        string ConfigurationName { get; set; }
-
-        /// <summary>
-        ///     The <see cref="EventCallback" /> to call for data submit
-        /// </summary>
-        EventCallback OnValidSubmit { get; set; }
+        [Parameter]
+        public IDiagrammingConfigurationLoadingPopupViewModel ViewModel { get; set; }
     }
 }

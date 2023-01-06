@@ -76,6 +76,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         private bool isOnSavingMode;
 
         /// <summary>
+        ///     Backing field for <see cref="IsOnLoadingMode" />
+        /// </summary>
+        private bool isOnLoadingMode;
+
+        /// <summary>
         ///     Backing field for <see cref="IsViewSettingsVisible" />
         /// </summary>
         private bool isViewSettingsVisible;
@@ -253,6 +258,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.DiagrammingConfigurationPopupViewModel = new DiagrammingConfigurationPopupViewModel
             {
                 OnValidSubmit = new EventCallbackFactory().Create(this, this.SaveCurrentDiagramLayout)
+            };
+
+            this.DiagrammingConfigurationLoadingPopupViewModel = new DiagrammingConfigurationLoadingPopupViewModel
+            {
+                OnValidSubmit = new EventCallbackFactory().Create(this, this.LoadDiagramLayout)
             };
         }
 
@@ -693,38 +703,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     The <see cref="IDiagrammingConfigurationPopupViewModel" />
-        /// </summary>
-        public IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; private set; }
-
-        /// <summary>
-        ///     Value indicating the user is currently saving the diagramming configuration
-        /// </summary>
-        public bool IsOnSavingMode
-        {
-            get => this.isOnSavingMode;
-            set => this.RaiseAndSetIfChanged(ref this.isOnSavingMode, value);
-        }
-
-        /// <summary>
-        ///     Opens the <see cref="DiagrammingConfigurationPopup" />
-        /// </summary>
-        public void OpenSavingPopup()
-        {
-            this.IsOnSavingMode = true;
-        }
-
-        /// <summary>
-        ///     Saves current diagram layout
-        /// </summary>
-        public async void SaveCurrentDiagramLayout()
-        {
-            var layoutInformationDtos = this.ProductsMap.Keys.Select(x => new DiagramLayoutInformationDto { ThingId = x.ThingId, xPosition = x.Position.X, yPosition = x.Position.Y });
-            var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationPopupViewModel.ConfigurationName, layoutInformationDtos);
-            this.IsOnSavingMode = !response;
-        }
-
-        /// <summary>
         ///     Verifies that a <see cref="IHaveThingRowViewModel" /> has ports has children
         /// </summary>
         /// <param name="row">The <see cref="IHaveThingRowViewModel" /></param>
@@ -804,6 +782,83 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             });
 
             this.FilterViewModel.InitializeProperties(availableRowFilters);
+        }
+
+        /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationPopupViewModel" />
+        /// </summary>
+        public IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; private set; }
+
+        /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationLoadingPopupViewModel" />
+        /// </summary>
+        public IDiagrammingConfigurationLoadingPopupViewModel DiagrammingConfigurationLoadingPopupViewModel { get; private set; }
+
+        /// <summary>
+        ///     Value indicating the user is currently saving the diagramming configuration
+        /// </summary>
+        public bool IsOnSavingMode
+        {
+            get => this.isOnSavingMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnSavingMode, value);
+        }
+
+        /// <summary>
+        ///     Value indicating the user is currently loading the diagramming configuration
+        /// </summary>
+        public bool IsOnLoadingMode
+        {
+            get => this.isOnLoadingMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnLoadingMode, value);
+        }
+
+        /// <summary>
+        ///     Opens the <see cref="DiagrammingConfigurationPopup" />
+        /// </summary>
+        public void OpenSavingPopup()
+        {
+            this.IsOnSavingMode = true;
+        }
+
+        /// <summary>
+        ///     Opens the <see cref="DiagrammingConfigurationLoadingPopup" />
+        /// </summary>
+        public async void OpenLoadingConfigurationPopup()
+        {
+            this.DiagrammingConfigurationLoadingPopupViewModel.ConfigurationsName = await this.diagrammingConfigurationService.LoadDiagramLayoutConfigurationNames(this.ProjectId, this.ReviewTaskId);
+            this.IsOnLoadingMode = true;
+        }
+
+        /// <summary>
+        ///     Saves current diagram layout
+        /// </summary>
+        public async void SaveCurrentDiagramLayout()
+        {
+            var layoutInformationDtos = this.ProductsMap.Keys.Select(x => new DiagramLayoutInformationDto { ThingId = x.ThingId, xPosition = x.Position.X, yPosition = x.Position.Y });
+            var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationPopupViewModel.ConfigurationName, layoutInformationDtos);
+            this.IsOnSavingMode = !response;
+        }
+
+        /// <summary>
+        ///     Load choosen diagram layout
+        /// </summary>
+        public async void LoadDiagramLayout()
+        {
+            var response = await this.diagrammingConfigurationService.LoadDiagramLayoutConfiguration(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationLoadingPopupViewModel.SelectedConfiguration);
+
+            this.ProductsMap.Clear();
+            this.PortsMap.Clear();
+            this.InterfacesMap.Clear();
+
+            foreach (var diagrammingInformationDto in response) 
+            {
+                var productRowView = allProducts.FirstOrDefault(x => x.ThingId == diagrammingInformationDto.ThingId);
+                var node = CreateNewNodeFromProduct(productRowView);
+                node.SetPosition(diagrammingInformationDto.xPosition, diagrammingInformationDto.yPosition);
+            }
+            this.CreateInterfacesLinks();
+
+            this.IsOnLoadingMode = false;
         }
     }
 }

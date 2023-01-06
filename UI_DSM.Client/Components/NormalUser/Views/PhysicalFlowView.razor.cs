@@ -49,12 +49,19 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public ElementReference DiagramReference { get; set; }
 
         /// <summary>
+        ///     A collection of <see cref="IDisposable" />
+        /// </summary>
+        private readonly List<IDisposable> disposables = new();
+
+        /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
             this.Diagram.MouseUp -= this.Diagram_MouseUp;
             this.Diagram.MouseDoubleClick -= this.Diagram_MouseDoubleClick;
+            this.disposables.ForEach(x => x.Dispose());
+            this.disposables.Clear();
         }
 
         /// <summary>
@@ -156,6 +163,28 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.Diagram.RegisterModelComponent<DiagramLink, DiagramLinkWidget>();
             this.Diagram.MouseDoubleClick += Diagram_MouseDoubleClick;
             this.Diagram.MouseUp += this.Diagram_MouseUp;
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnSavingMode)
+                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnLoadingMode)
+                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnLoadingMode)
+                .Subscribe(async x => await this.OnIsOnLoadingModeChanged(x)));
+        }
+
+        /// <summary>
+        ///     Handle the change of the <see cref="IsOnLoadingMode" /> variable
+        /// </summary>
+        /// <param name="value">The IsOnLoadingMode</param>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task OnIsOnLoadingModeChanged(bool value)
+        {
+            if (!value)
+            {
+                this.RefreshDiagram();
+            }
+
+            await this.InvokeAsync(this.StateHasChanged);
         }
 
         /// <summary>

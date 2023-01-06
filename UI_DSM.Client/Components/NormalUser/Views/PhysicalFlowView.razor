@@ -21,6 +21,12 @@
     </Content>
 </DxPopup>
 
+<DxPopup CloseOnOutsideClick="false" HeaderText="Load Configuration" @bind-Visible="@this.ViewModel.IsOnLoadingMode">
+    <Content>
+        <DiagrammingConfigurationLoadingPopup ViewModel="@this.ViewModel.DiagrammingConfigurationLoadingPopupViewModel" />
+    </Content>
+</DxPopup>
+
 <CascadingValue Value="this.Diagram">
     <div id="diagram-parent" @ref="this.DiagramReference">
         <LoadingComponent IsLoading="@this.IsLoading">
@@ -28,6 +34,9 @@
             <DiagramLegendWidget></DiagramLegendWidget>
             <AppButton Label="Save layout" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="@this.ViewModel.OpenSavingPopup">
                 <FeatherSave Size="20" Color="currentColor" StrokeWidth="2" /> <span>Save</span>
+            </AppButton>
+            <AppButton Label="Load layout" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="@this.ViewModel.OpenLoadingConfigurationPopup">
+                <FeatherUpload Size="20" Color="currentColor" StrokeWidth="2" /> <span>Load</span>
             </AppButton>
         </LoadingComponent>
     </div>

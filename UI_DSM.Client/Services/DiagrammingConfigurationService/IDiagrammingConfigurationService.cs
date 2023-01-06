@@ -29,6 +29,23 @@ namespace UI_DSM.Client.Services.DiagrammingConfigurationService
         /// <param name="configurationName">The name of the configuration
         /// <param name="diagramLayoutInformation">The <see cref="IEnumerable{DiagramNode}" />to create</param>
         /// <returns>A <see cref="Task" /> 
-        Task<bool> SaveDiagramLayout(Guid projectId, Guid reviewTaskId, String configurationName, IEnumerable<DiagramLayoutInformationDto> diagramLayoutInformation);
+        Task<bool> SaveDiagramLayout(Guid projectId, Guid reviewTaskId, string configurationName, IEnumerable<DiagramLayoutInformationDto> diagramLayoutInformation);
+
+        /// <summary>
+        ///     Loads diagram configurations name
+        /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" />
+        /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" />
+        /// <returns>A <see cref="Task" /> with the <see cref="List{string}" /></returns>
+        Task<List<string>> LoadDiagramLayoutConfigurationNames(Guid projectId, Guid reviewTaskId);
+
+        /// <summary>
+        ///     Loads <see cref="ReviewTask" /> diagram configuration
+        /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" />
+        /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" />
+        /// <param name="configurationName">The name of the selected configuration
+        /// <returns>A <see cref="Task" /> with the <see cref="List{DiagramLayoutInformationDto}" /></returns>
+        Task<List<DiagramLayoutInformationDto>> LoadDiagramLayoutConfiguration(Guid projectId, Guid reviewTaskId, string configurationName);
     }
 }

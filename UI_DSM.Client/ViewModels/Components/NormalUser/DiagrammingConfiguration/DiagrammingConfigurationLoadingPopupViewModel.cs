@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IDiagrammingConfigurationPopupViewModel.cs" company="RHEA System S.A.">
+// <copyright file="DiagrammingConfigurationLoadingPopupViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -15,23 +15,30 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 {
     using Microsoft.AspNetCore.Components;
 
+    using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.Enumerator;
-    using UI_DSM.Client.ViewModels.Components.NormalUser.DiagrammingConfiguration;
+    using UI_DSM.Client.Services.Administration.ProjectService;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     Interface definition for <see cref="DiagrammingConfigurationPopupViewModel" />
+    ///     View model for the <see cref="DiagrammingConfigurationLoadingPopup" /> component
     /// </summary>
-    public interface IDiagrammingConfigurationPopupViewModel
+    public class DiagrammingConfigurationLoadingPopupViewModel : IDiagrammingConfigurationLoadingPopupViewModel
     {
         /// <summary>
-        ///     The name of configuration to save
+        ///     The list of available configurations
         /// </summary>
-        string ConfigurationName { get; set; }
+        public IEnumerable<string> ConfigurationsName { get; set; }
+
+        /// <summary>
+        ///     The name of the selected configuration
+        /// </summary>
+        public string SelectedConfiguration { get; set; } 
 
         /// <summary>
         ///     The <see cref="EventCallback" /> to call for data submit
         /// </summary>
-        EventCallback OnValidSubmit { get; set; }
+        public EventCallback OnValidSubmit { get; set; }
+
     }
 }

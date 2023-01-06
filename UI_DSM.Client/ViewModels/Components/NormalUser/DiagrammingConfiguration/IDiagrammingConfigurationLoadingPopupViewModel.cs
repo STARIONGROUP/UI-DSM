@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IDiagrammingConfigurationPopupViewModel.cs" company="RHEA System S.A.">
+// <copyright file="IDiagrammingConfigurationLoadingPopupViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -16,18 +16,22 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Client.Enumerator;
-    using UI_DSM.Client.ViewModels.Components.NormalUser.DiagrammingConfiguration;
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     Interface definition for <see cref="DiagrammingConfigurationPopupViewModel" />
+    ///     Interface definition for <see cref="DiagrammingConfigurationLoadingPopupViewModel" />
     /// </summary>
-    public interface IDiagrammingConfigurationPopupViewModel
+    public interface IDiagrammingConfigurationLoadingPopupViewModel
     {
         /// <summary>
-        ///     The name of configuration to save
+        ///     The list of available configurations
         /// </summary>
-        string ConfigurationName { get; set; }
+        IEnumerable<string> ConfigurationsName { get; set; }
+
+        /// <summary>
+        ///     The name of the selected configuration
+        /// </summary>
+        string SelectedConfiguration { get; set; }
 
         /// <summary>
         ///     The <see cref="EventCallback" /> to call for data submit
