@@ -24,6 +24,7 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.Models;
 
     [TestFixture]
     public class DiagrammingConfigurationServiceTestFixture
@@ -68,6 +69,57 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
 
             httpResponse.StatusCode = HttpStatusCode.OK;
             Assert.That(await this.service.SaveDiagramLayout(projectId, reviewTaskId, configurationName, diagramLayoutInformationDtos), Is.True);
+        }
+
+        [Test]
+        public async Task VerifyLoadDiagramLayoutConfigurationNames()
+        {
+            var projectId = Guid.NewGuid();
+            var reviewTaskId = Guid.NewGuid();
+
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.NotFound;
+            var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Layout/{projectId}/{reviewTaskId}/Load");
+            request.Respond(_ => httpResponse);
+
+            Assert.That(async () => await this.service.LoadDiagramLayoutConfigurationNames(projectId, reviewTaskId), Throws.Exception);
+
+            httpResponse.StatusCode = HttpStatusCode.OK;
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(new List<string> { "config1", "config2" }));
+            
+            var configurationsName = await this.service.LoadDiagramLayoutConfigurationNames(projectId, reviewTaskId);
+
+            Assert.That(configurationsName, Has.Count.EqualTo(2));
+        }
+
+        [Test]
+        public async Task VerifyLoadDiagramLayoutConfiguration()
+        {
+            var projectId = Guid.NewGuid();
+            var reviewTaskId = Guid.NewGuid();
+            var configurationName = "config1";
+
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.NotFound;
+            var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Layout/{projectId}/{reviewTaskId}/{configurationName}/Load");
+            request.Respond(_ => httpResponse);
+
+            Assert.That(async () => await this.service.LoadDiagramLayoutConfiguration(projectId, reviewTaskId, configurationName), Throws.Exception);
+
+            httpResponse.StatusCode = HttpStatusCode.OK;
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(new List<DiagramLayoutInformationDto>
+            {
+                new DiagramLayoutInformationDto
+                {
+                    ThingId = Guid.NewGuid(),
+                    xPosition = 650,
+                    yPosition = 447
+                }
+            }));
+
+            var configurationsName = await this.service.LoadDiagramLayoutConfiguration(projectId, reviewTaskId, configurationName);
+
+            Assert.That(configurationsName, Has.Count.EqualTo(1));
         }
     }
 }

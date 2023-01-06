@@ -14,6 +14,7 @@
 namespace UI_DSM.Server.Modules
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.Text.Json;
     using Carter.Response;
 
@@ -26,7 +27,7 @@ namespace UI_DSM.Server.Modules
     /// <summary>
     ///     This module saves the product diagram layout
     /// </summary>
-    [Route("api/Layout/{projectId:guid}/{reviewTaskId:guid}/{configurationName}")]
+    [Route("api/Layout/{projectId:guid}/{reviewTaskId:guid}")]
     public class DiagrammingConfigurationModule : ModuleBase
     {
         /// <summary>
@@ -50,10 +51,18 @@ namespace UI_DSM.Server.Modules
         [ExcludeFromCodeCoverage]
         public override void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost($"{this.MainRoute}/Save", this.SaveLayoutConfiguration)
+            app.MapPost($"{this.MainRoute}/{{configurationName}}/Save", this.SaveLayoutConfiguration)
                 .Accepts<List<DiagramLayoutInformationDto>>("application/json")
                 .WithTags("Layout")
                 .WithName("Layout/Save");
+
+            app.MapGet($"{this.MainRoute}/Load", this.LoadLayoutConfigurationNames)
+                .WithTags("Layout")
+                .WithName("Layout/Load");
+
+            app.MapGet($"{this.MainRoute}/{{configurationName}}/Load", this.LoadLayoutConfiguration)
+                .WithTags("Layout")
+                .WithName("Layout/LoadConfig");
         }
 
         /// <summary>
@@ -89,6 +98,83 @@ namespace UI_DSM.Server.Modules
             var configurationPath = Path.Combine("Diagram configuration", reviewTaskId.ToString());
             var pathOfSavedConfig = this.fileService.MoveFile(fileName, configurationPath);
             await context.Response.Negotiate(pathOfSavedConfig);
+        }
+
+        /// <summary>
+        ///     Load the product diagram layout
+        /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" />
+        /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" />
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        [Authorize]
+        public async Task LoadLayoutConfigurationNames(Guid projectId, Guid reviewTaskId, HttpContext context)
+        {
+            var participantManager = context.RequestServices.GetService<IParticipantManager>();
+
+            if (participantManager == null)
+            {
+                return;
+            }
+
+            var participant = await participantManager.GetParticipantForProject(projectId, context.User.Identity?.Name);
+
+            if (participant == null)
+            {
+                return;
+            }
+            
+            var folderPath = Path.Combine(fileService.GetFullPath("Diagram Configuration"), reviewTaskId.ToString());
+            try
+            {
+                var configurationsfiles = Directory.EnumerateFiles(folderPath).Select(x => Path.GetFileNameWithoutExtension(x));
+                await context.Response.Negotiate(configurationsfiles);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                await context.Response.Negotiate(new List<string>());
+            }
+        }
+
+        /// <summary>
+        ///     Load the product diagram layout
+        /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" />
+        /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" />
+        /// <param name="configurationName">The name of the configuration
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        [Authorize]
+        public async Task LoadLayoutConfiguration(Guid projectId, Guid reviewTaskId, string configurationName, HttpContext context)
+        {
+            var participantManager = context.RequestServices.GetService<IParticipantManager>();
+
+            if (participantManager == null)
+            {
+                return;
+            }
+
+            var participant = await participantManager.GetParticipantForProject(projectId, context.User.Identity?.Name);
+
+            if (participant == null)
+            {
+                return;
+            }
+
+            var folderPath = Path.Combine(fileService.GetFullPath("Diagram Configuration"), reviewTaskId.ToString());
+            try
+            {
+                var configurationfile = Directory.EnumerateFiles(folderPath).FirstOrDefault(x => Path.GetFileNameWithoutExtension(x) == configurationName);
+                using (FileStream stream = File.OpenRead(configurationfile))
+                {
+                    List<DiagramLayoutInformationDto> dtos = await JsonSerializer.DeserializeAsync<List<DiagramLayoutInformationDto>>(stream);
+                    await context.Response.Negotiate(dtos);
+                }
+            }
+            catch (DirectoryNotFoundException)
+            {
+                await context.Response.Negotiate(new List<string>());
+            }
         }
     }
 }

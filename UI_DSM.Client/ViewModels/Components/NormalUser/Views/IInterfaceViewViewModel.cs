@@ -199,9 +199,19 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         bool IsOnSavingMode { get; set; }
 
         /// <summary>
+        ///     Value indicating the user is currently loading a diagramming configuration
+        /// </summary>
+        bool IsOnLoadingMode { get; set; }
+
+        /// <summary>
         ///     The <see cref="IDiagrammingConfigurationPopupViewModel" />
         /// </summary>
         IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; }
+
+        /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationLoadingPopupViewModel" />
+        /// </summary>
+        IDiagrammingConfigurationLoadingPopupViewModel DiagrammingConfigurationLoadingPopupViewModel { get; }
 
         /// <summary>
         ///     Opens the <see cref="DiagrammingConfigurationPopup" />
@@ -209,8 +219,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         void OpenSavingPopup();
 
         /// <summary>
-        ///     Saves current diagram layout
+        ///     Opens the <see cref="DiagrammingConfigurationLoadingPopup" />
         /// </summary>
-        void SaveCurrentDiagramLayout();
+        void OpenLoadingConfigurationPopup();
     }
 }

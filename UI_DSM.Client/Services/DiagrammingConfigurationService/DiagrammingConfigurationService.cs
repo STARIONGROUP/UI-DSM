@@ -42,7 +42,7 @@ namespace UI_DSM.Client.Services.DiagrammingConfigurationService
         /// <param name="configurationName">The name of the configuration
         /// <param name="diagramLayoutInformation">The <see cref="IEnumerable{DiagramNode}" />to create</param>
         /// <returns>A <see cref="Task" /> 
-        public async Task<bool> SaveDiagramLayout(Guid projectId, Guid reviewTaskId, String configurationName, IEnumerable<DiagramLayoutInformationDto> diagramLayoutInformation)
+        public async Task<bool> SaveDiagramLayout(Guid projectId, Guid reviewTaskId, string configurationName, IEnumerable<DiagramLayoutInformationDto> diagramLayoutInformation)
         {
             try
             {
@@ -55,6 +55,43 @@ namespace UI_DSM.Client.Services.DiagrammingConfigurationService
             {
                 throw new HttpRequestException(exception.Message);
             }
+        }
+
+        /// <summary>
+        ///     Loads diagram configurations name
+        /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" />
+        /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" />
+        /// <returns>A <see cref="Task" /> with the <see cref="List{string}" /></returns>
+        public async Task<List<string>> LoadDiagramLayoutConfigurationNames(Guid projectId, Guid reviewTaskId)
+        {
+            var response = await this.HttpClient.GetAsync($"{this.MainRoute}/{projectId}/{reviewTaskId}/Load");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(response.ReasonPhrase);
+            }
+            var content = this.jsonService.Deserialize<List<String>>(await response.Content.ReadAsStreamAsync());
+            return content;
+        }
+
+        /// <summary>
+        ///     Loads <see cref="ReviewTask" /> diagram configuration
+        /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" />
+        /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" />
+        /// <param name="configurationName">The name of the selected configuration
+        /// <returns>A <see cref="Task" /> with the <see cref="List{DiagramLayoutInformationDto}" /></returns>
+        public async Task<List<DiagramLayoutInformationDto>> LoadDiagramLayoutConfiguration(Guid projectId, Guid reviewTaskId, string configurationName )
+        {
+            var response = await this.HttpClient.GetAsync($"{this.MainRoute}/{projectId}/{reviewTaskId}/{configurationName}/Load");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(response.ReasonPhrase);
+            }
+            var content = this.jsonService.Deserialize<List<DiagramLayoutInformationDto>>(await response.Content.ReadAsStreamAsync());
+            return content;
         }
     }
 }

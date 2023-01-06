@@ -101,5 +101,44 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.fileService.Verify(x => x.MoveFile(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
         }
+
+        [Test]
+        public async Task VerifyLoadLayoutConfigurationNames()
+        {
+            this.fileService.Setup(x => x.GetFullPath("Diagram Configuration")).Returns(TestContext.CurrentContext.TestDirectory);
+
+    
+            this.serviceProvider.Setup(x => x.GetService(typeof(IParticipantManager))).Returns(this.participantManager.Object);
+            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
+
+
+            await this.module.LoadLayoutConfigurationNames(this.projectId, reviewTaskId, this.context.Object);
+            this.fileService.Verify(x => x.GetFullPath(It.IsAny<string>()), Times.Never());
+
+            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(this.participant);
+            await this.module.LoadLayoutConfigurationNames(this.projectId, reviewTaskId, this.context.Object);
+
+            this.fileService.Verify(x => x.GetFullPath(It.IsAny<string>()), Times.Once());
+        }
+
+        [Test]
+        public async Task VerifyLoadLayoutConfiguration()
+        {
+            var configName = "config1";
+            this.fileService.Setup(x => x.GetFullPath("Diagram Configuration")).Returns(TestContext.CurrentContext.TestDirectory);
+
+
+            this.serviceProvider.Setup(x => x.GetService(typeof(IParticipantManager))).Returns(this.participantManager.Object);
+            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
+
+
+            await this.module.LoadLayoutConfiguration(this.projectId, reviewTaskId, configName, this.context.Object);
+            this.fileService.Verify(x => x.GetFullPath(It.IsAny<string>()), Times.Never());
+
+            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(this.participant);
+            await this.module.LoadLayoutConfiguration(this.projectId, reviewTaskId, configName, this.context.Object);
+
+            this.fileService.Verify(x => x.GetFullPath(It.IsAny<string>()), Times.Once());
+        }
     }
 }
