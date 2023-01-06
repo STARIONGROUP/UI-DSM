@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.ViewModels.Components.Administration.ParticipantManagement
 {
     using Microsoft.AspNetCore.Components;
+
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -35,5 +36,15 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ParticipantManageme
         ///     The <see cref="EventCallback" /> to call for data submit
         /// </summary>
         EventCallback OnValidSubmit { get; set; }
+
+        /// <summary>
+        ///     A collection of selected <see cref="CDP4Common.DTO.DomainOfExpertise" /> names
+        /// </summary>
+        IEnumerable<string> SelectedDomains { get; set; }
+
+        /// <summary>
+        ///     A collection of available <see cref="CDP4Common.SiteDirectoryData.DomainOfExpertise" /> names
+        /// </summary>
+        IEnumerable<string> AvailableDomains { get; set; }
     }
 }

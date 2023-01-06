@@ -13,11 +13,20 @@
 
 <DxFormLayout>
 	<DxFormLayoutItem Caption="Participants :" ColSpanMd="12">
-           <DxListBox Data="@this.ProjectParticipants"
-				   @bind-Values="@this.ViewModel.SelectedParticipants"
-				   TextFieldName="@nameof(Participant.ParticipantName)"
-				   ShowCheckboxes="true" 
-				   SelectionMode="ListBoxSelectionMode.Multiple" />
+		<div class="formlayout">
+			@foreach (var group in this.groupedParticipants.Keys)
+			{
+				<AppAccordion Label="@group" @bind-PanelOpen="@this.openedPanels[group]" Variant="AppAccordion.VariantValue.Small">
+					<DxListBox Data="@this.groupedParticipants[group]"
+					           Values="@this.selectedParticipants[group]"
+					           ValuesExpression="@(() => this.selectedParticipants[group])"
+					           ValuesChanged="@((IEnumerable<Participant> participants) => this.OnValuesChanged(participants, group))"
+					           TextFieldName="@nameof(Participant.ParticipantName)"
+					           ShowCheckboxes="true"
+					           SelectionMode="ListBoxSelectionMode.Multiple"/>
+				</AppAccordion>
+			}
+		</div>
 	</DxFormLayoutItem>
 </DxFormLayout>
 <div class="modal-footer m-top-10px">

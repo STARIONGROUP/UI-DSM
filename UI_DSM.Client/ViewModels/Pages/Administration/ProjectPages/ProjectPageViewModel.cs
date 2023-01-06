@@ -31,6 +31,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
     using UI_DSM.Client.Services.Administration.ProjectService;
     using UI_DSM.Client.Services.Administration.RoleService;
     using UI_DSM.Client.Services.ArtifactService;
+    using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.Administration.ModelManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.ParticipantManagement;
@@ -81,19 +82,20 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         /// <param name="roleService">The <see cref="IRoleService" /></param>
         /// <param name="cometUploadViewModel">The <see cref="ICometUploadViewModel" /></param>
         /// <param name="artifactService">The <see cref="IArtifactService" /></param>
+        /// <param name="thingService">The <see cref="IThingService"/></param>
         public ProjectPageViewModel(IProjectService projectService, IParticipantService participantService, IRoleService roleService,
-            ICometUploadViewModel cometUploadViewModel, IArtifactService artifactService)
+            ICometUploadViewModel cometUploadViewModel, IArtifactService artifactService, IThingService thingService)
         {
             this.projectService = projectService;
             this.participantService = participantService;
             this.artifactService = artifactService;
 
-            this.ParticipantCreationViewModel = new ParticipantCreationViewModel(this.participantService, roleService)
+            this.ParticipantCreationViewModel = new ParticipantCreationViewModel(this.participantService, roleService, thingService)
             {
                 OnValidSubmit = new EventCallbackFactory().Create(this, this.CreateParticipant)
             };
 
-            this.ProjectDetailsViewModel = new ProjectDetailsViewModel(this.participantService, roleService);
+            this.ProjectDetailsViewModel = new ProjectDetailsViewModel(this.participantService, roleService, thingService);
 
             this.CometUploadViewModel = cometUploadViewModel;
             this.CometUploadViewModel.OnEventCallback = new EventCallbackFactory().Create(this, _ => this.UploadIteration());
@@ -180,7 +182,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         /// </summary>
         public async Task OpenCreateParticipantPopup()
         {
-            await this.ParticipantCreationViewModel.UpdateProperties(this.ProjectDetailsViewModel.Project.Id);
+            await this.ParticipantCreationViewModel.UpdateProperties(this.ProjectDetailsViewModel.Project);
             this.IsOnCreationMode = true;
         }
 
@@ -236,6 +238,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         /// <returns>A <see cref="Task" /></returns>
         private async Task CreateParticipant()
         {
+            this.ParticipantCreationViewModel.Participant.DomainsOfExpertise = this.ParticipantCreationViewModel.SelectedDomains.ToList();
             var requestResponse = await this.participantService.CreateParticipant(this.ProjectDetailsViewModel.Project.Id, this.ParticipantCreationViewModel.Participant);
 
             if (requestResponse.IsRequestSuccessful)

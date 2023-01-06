@@ -82,6 +82,19 @@ namespace UI_DSM.Serializer.Json
                 }
             }
 
+            if (jsonElement.TryGetProperty("domainsOfExpertise", out var domainsOfExpertiseProperty))
+            {
+                foreach (var item in domainsOfExpertiseProperty.EnumerateArray())
+                {
+                    var propertyValue = item.GetString();
+
+                    if (propertyValue != null)
+                    {
+                        dto.DomainsOfExpertise.Add(propertyValue);
+                    }
+                }
+            }
+
             return dto;
         }
     }

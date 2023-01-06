@@ -15,6 +15,7 @@ namespace UI_DSM.Server.Managers.ThingManager
 {
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
+    using CDP4Common.SiteDirectoryData;
 
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
@@ -49,5 +50,19 @@ namespace UI_DSM.Server.Managers.ThingManager
         /// <param name="model">A <see cref="Model" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="Thing" /></returns>
         Task<Thing> GetThing(CommonBaseSearchDto commonBaseSearchDto, Model model);
+
+        /// <summary>
+        ///     Gets all <see cref="DomainOfExpertise" /> that are contained inside a <see cref="Model" />
+        /// </summary>
+        /// <param name="model">The <see cref="Model" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="DomainOfExpertise" /></returns>
+        Task<IEnumerable<Thing>> GetDomainOfExpertises(Model model);
+
+        /// <summary>
+        ///     Gets all <see cref="DomainOfExpertise" /> that are contained inside <see cref="Model" />s
+        /// </summary>
+        /// <param name="models">A collection of <see cref="Model" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="DomainOfExpertise" /></returns>
+        Task<IEnumerable<Thing>> GetDomainOfExpertises(IEnumerable<Model> models);
     }
 }

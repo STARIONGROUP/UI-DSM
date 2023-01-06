@@ -64,7 +64,7 @@
 <RadzenDataGrid @ref="@this.Grid" TItem="IBelongsToInterfaceView" Data="@(this.ViewModel.Data)" ExpandMode="DataGridExpandMode.Single"
                 RowRender="@this.RowRender" LoadChildData="@this.LoadChildren" SelectionMode="DataGridSelectionMode.Single"
 				RowSelect="@this.SelectRow" AllowFiltering="true" FilterMode="FilterMode.SimpleWithMenu" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                LogicalFilterOperator="LogicalFilterOperator.Or" AllowPaging="true" PageSize="10">
+					LogicalFilterOperator="LogicalFilterOperator.Or" AllowPaging="true" PageSize="10"AllowColumnResize="true">
 	<Columns>
 			<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.Id)" Pickable="false" Title="Name">
 				<Template Context="data">

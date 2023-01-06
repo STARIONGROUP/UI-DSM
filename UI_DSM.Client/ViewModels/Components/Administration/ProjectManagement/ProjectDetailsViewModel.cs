@@ -13,36 +13,31 @@
 
 namespace UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement
 {
+    using CDP4Common.CommonData;
+    using CDP4Common.SiteDirectoryData;
+
     using DevExpress.Blazor;
+
     using DynamicData;
+
     using Microsoft.AspNetCore.Components;
+
     using ReactiveUI;
 
     using UI_DSM.Client.Components.Administration.ProjectManagement;
     using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.Administration.RoleService;
+    using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.ViewModels.Components.Administration.ParticipantManagement;
     using UI_DSM.Shared.Models;
+
+    using Participant = UI_DSM.Shared.Models.Participant;
 
     /// <summary>
     ///     View model for the <see cref="ProjectDetails" /> component
     /// </summary>
     public class ProjectDetailsViewModel : ReactiveObject, IProjectDetailsViewModel
     {
-        /// <summary>
-        ///     Backing field for <see cref="Project" />
-        /// </summary>
-        private Project project;
-
-        /// <summary>
-        ///     The <see cref="Project" />
-        /// </summary>
-        public Project Project
-        {
-            get => this.project;
-            set => this.RaiseAndSetIfChanged(ref this.project, value);
-        }
-
         /// <summary>
         ///     The <see cref="IParticipantService" />
         /// </summary>
@@ -54,9 +49,9 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement
         private readonly IRoleService roleService;
 
         /// <summary>
-        ///     The <see cref="IParticipantDetailsViewModel" />
+        ///     The <see cref="IThingService" />
         /// </summary>
-        public IParticipantDetailsViewModel ParticipantDetailsViewModel { get; private set; } = new ParticipantDetailsViewModel();
+        private readonly IThingService thingService;
 
         /// <summary>
         ///     Backing field for <see cref="IsOnUpdateViewMode" />
@@ -69,12 +64,21 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement
         private Participant participantToDelete;
 
         /// <summary>
+        ///     Backing field for <see cref="Project" />
+        /// </summary>
+        private Project project;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectDetailsViewModel" /> class.
         /// </summary>
-        public ProjectDetailsViewModel(IParticipantService participantService, IRoleService roleService)
+        /// <param name="participantService">The <see cref="IParticipantService" /></param>
+        /// <param name="roleService">The <see cref="IRoleService" /></param>
+        /// <param name="thingService">The <see cref="IThingService" /></param>
+        public ProjectDetailsViewModel(IParticipantService participantService, IRoleService roleService, IThingService thingService)
         {
             this.participantService = participantService;
             this.roleService = roleService;
+            this.thingService = thingService;
 
             this.ParticipantDetailsViewModel = new ParticipantDetailsViewModel
             {
@@ -90,6 +94,20 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement
                 HeaderText = "Are you sure ?"
             };
         }
+
+        /// <summary>
+        ///     The <see cref="Project" />
+        /// </summary>
+        public Project Project
+        {
+            get => this.project;
+            set => this.RaiseAndSetIfChanged(ref this.project, value);
+        }
+
+        /// <summary>
+        ///     The <see cref="IParticipantDetailsViewModel" />
+        /// </summary>
+        public IParticipantDetailsViewModel ParticipantDetailsViewModel { get; private set; }
 
         /// <summary>
         ///     The <see cref="IConfirmCancelPopupViewModel" />
@@ -114,18 +132,30 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement
         public async Task OpenUpdatePopup(Participant participant)
         {
             this.ParticipantDetailsViewModel.Participant = participant;
-            this.ParticipantDetailsViewModel.AvailableRoles = await roleService.GetRoles();
+            this.ParticipantDetailsViewModel.AvailableRoles = await this.roleService.GetRoles();
+
+            var domains = (await this.thingService.GetThings(this.Project.Id, this.Project.Artifacts.OfType<Model>().Select(x => x.Id), ClassKind.DomainOfExpertise))
+                .OfType<DomainOfExpertise>().Select(x => x.ShortName).Distinct().ToList();
+
+            domains.Sort();
+            this.ParticipantDetailsViewModel.AvailableDomains = domains;
+            this.ParticipantDetailsViewModel.SelectedDomains = new List<string>(participant.DomainsOfExpertise);
             this.IsOnUpdateViewMode = true;
         }
 
         /// <summary>
-        ///     Value indicating the administrator is currently updating roles of a  <see cref="Participant"/>
+        ///     Value indicating the administrator is currently updating roles of a  <see cref="Participant" />
         /// </summary>
         public bool IsOnUpdateViewMode
         {
             get => this.isOnUpdateViewMode;
             set => this.RaiseAndSetIfChanged(ref this.isOnUpdateViewMode, value);
         }
+
+        /// <summary>
+        ///     The <see cref="IErrorMessageViewModel" />
+        /// </summary>
+        public IErrorMessageViewModel ErrorMessageViewModel { get; } = new ErrorMessageViewModel();
 
         /// <summary>
         ///     Callback used when the confirmation dialog has confirmed the deletion
@@ -153,11 +183,6 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement
         }
 
         /// <summary>
-        ///     The <see cref="IErrorMessageViewModel" />
-        /// </summary>
-        public IErrorMessageViewModel ErrorMessageViewModel { get; } = new ErrorMessageViewModel();
-
-        /// <summary>
         ///     Tries to update a <see cref="Participant" />
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>
@@ -165,6 +190,7 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement
         {
             try
             {
+                this.ParticipantDetailsViewModel.Participant.DomainsOfExpertise = this.ParticipantDetailsViewModel.SelectedDomains.ToList();
                 var updateResult = await this.participantService.UpdateParticipant(this.ParticipantDetailsViewModel.Participant, this.project.Id);
                 this.ErrorMessageViewModel.Errors.Clear();
 
@@ -177,9 +203,8 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement
                 {
                     this.ParticipantDetailsViewModel.Participant = updateResult.Entity;
                 }
-                
+
                 this.IsOnUpdateViewMode = !updateResult.IsRequestSuccessful;
-            
             }
             catch (Exception exception)
             {

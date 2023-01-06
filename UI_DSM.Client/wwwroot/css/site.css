@@ -338,3 +338,8 @@ div.invisible {
   color: var(--colors-primary-700);
   background-color: var(--colors-primary-25);
 }
+
+.dxbl-listbox {
+    height: auto;
+    max-height: 150px;
+}

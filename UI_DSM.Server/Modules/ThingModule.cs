@@ -153,6 +153,7 @@ namespace UI_DSM.Server.Modules
             var things = classKindValue switch
             {
                 ClassKind.Iteration => await thingManager.GetIterations(models),
+                ClassKind.DomainOfExpertise => await thingManager.GetDomainOfExpertises(models),
                 _ => await thingManager.GetThings(models, classKindValue)
             };
 

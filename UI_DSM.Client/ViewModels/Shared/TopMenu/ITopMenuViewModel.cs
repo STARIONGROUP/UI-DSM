@@ -38,10 +38,10 @@ namespace UI_DSM.Client.ViewModels.Shared.TopMenu
         bool HasAccessToProjectManagement();
 
         /// <summary>
-        ///     Gets the <see cref="Role" /> name for the <see cref="Participant" /> for a <see cref="Project" />
+        ///     Gets the <see cref="Participant" /> for a <see cref="Project" />
         /// </summary>
         /// <param name="projectId">The <see cref="Project" /> id</param>
-        /// <returns>The name of the <see cref="Role" /></returns>
-        string GetRoleForProject(Guid projectId);
+        /// <returns>The <see cref="Participant"/></returns>
+        Participant GetParticipantForProject(Guid projectId);
     }
 }

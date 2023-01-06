@@ -13,12 +13,16 @@
 
 namespace UI_DSM.Client.Shared.TopMenu
 {
+    using CDP4Common.SiteDirectoryData;
+
     using Microsoft.AspNetCore.Components;
 
     using ReactiveUI;
 
     using UI_DSM.Client.ViewModels.Shared.TopMenu;
     using UI_DSM.Shared.Models;
+
+    using Participant = UI_DSM.Shared.Models.Participant;
 
     /// <summary>
     ///     The TopMenu component
@@ -85,13 +89,13 @@ namespace UI_DSM.Client.Shared.TopMenu
         }
 
         /// <summary>
-        ///     Gets the name of the current <see cref="Role" /> for the current <see cref="Project" />
+        ///     Gets the <see cref="Participant"/> for the current <see cref="Project" />
         /// </summary>
-        /// <returns>The name of the <see cref="Role" /></returns>
-        public string GetRoleName()
+        /// <returns>The retrieved <see cref="Participant" /></returns>
+        public Participant GetParticipant()
         {
             var projectId = this.GetProjectId();
-            return projectId != Guid.Empty ? this.ViewModel.GetRoleForProject(projectId) : string.Empty;
+            return projectId != Guid.Empty ? this.ViewModel.GetParticipantForProject(projectId) : null;
         }
 
         /// <summary>

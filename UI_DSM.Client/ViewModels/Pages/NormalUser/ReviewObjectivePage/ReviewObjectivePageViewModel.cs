@@ -184,7 +184,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         {
             try
             {
-                this.SelectedReviewTask.IsAssignedTo = this.TaskAssignmentViewModel.SelectedParticipants.ToList();
+                this.SelectedReviewTask.IsAssignedTo = this.TaskAssignmentViewModel.SelectedParticipants;
                 var reviewTaskResult = await this.reviewTaskService.UpdateReviewTask(this.ProjectId, this.ReviewId, this.SelectedReviewTask);
                 this.ErrorMessageViewModel.Errors.Clear();
 

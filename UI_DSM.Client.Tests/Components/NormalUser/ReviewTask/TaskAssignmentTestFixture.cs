@@ -18,7 +18,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ReviewTask
     using DevExpress.Blazor;
 
     using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.Components.Forms;
 
     using NUnit.Framework;
 
@@ -26,7 +25,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ReviewTask
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ReviewTask;
-    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     using TestContext = Bunit.TestContext;
@@ -48,7 +46,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ReviewTask
             this.taskAssignmentViewModel = new TaskAssignmentViewModel()
             {
                 SelectedParticipants = new List<Participant>(),
-                OnValidSubmit = new EventCallbackFactory().Create(this, () => this.taskAssignmentViewModel.SelectedParticipants = new List<Participant>())
+                OnValidSubmit = new EventCallbackFactory().Create(this, () =>
+                    this.taskAssignmentViewModel.SelectedParticipants = null)
             };
         }
 
@@ -63,34 +62,58 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.ReviewTask
         {
             try
             {
+                var participants = new List<Participant>
+                {
+                    new(Guid.NewGuid())
+                    {
+                        User = new UserEntity(Guid.NewGuid())
+                        {
+                            UserName = "user"
+                        },
+                        DomainsOfExpertise =
+                        {
+                            "SYS", "THE"
+                        }
+                    },
+                    new(Guid.NewGuid())
+                    {
+                        User = new UserEntity(Guid.NewGuid())
+                        {
+                            UserName = "user2"
+                        },
+                        DomainsOfExpertise =
+                        {
+                            "SYS", "AOGNC"
+                        }
+                    },
+                    new(Guid.NewGuid())
+                    {
+                        User = new UserEntity(Guid.NewGuid())
+                        {
+                            UserName = "user3"
+                        }
+                    }
+                };
+
                 var renderer = this.context.RenderComponent<TaskAssignment>(parameters =>
                 {
                     parameters.AddCascadingValue(this.errorMessageViewModel);
                     parameters.Add(p => p.ViewModel, this.taskAssignmentViewModel);
-                    parameters.Add(p => p.ProjectParticipants, new List<Participant>());
+                    parameters.Add(p => p.ProjectParticipants, participants);
                 });
 
-                var listBox = renderer.FindComponent<DxListBox<Participant, Participant>>();
+                await renderer.InvokeAsync(() => renderer.Instance.OnValuesChanged(participants
+                    .Where(x => x.DomainsOfExpertise.Contains("SYS")), "SYS"));
 
+                Assert.That(this.taskAssignmentViewModel.SelectedParticipants, Has.Count.EqualTo(2));
 
-                Assert.That(listBox.Instance.Values, Is.Empty);
+                await renderer.InvokeAsync(() => renderer.Instance.OnValuesChanged(new List<Participant>(), "SYS"));
+                Assert.That(this.taskAssignmentViewModel.SelectedParticipants, Is.Empty);
 
-                var participant = new Participant(Guid.NewGuid())
-                {
-                    User = new UserEntity(Guid.NewGuid())
-                    {
-                        UserName = "user"
-                    }
-                };
+                var dxButton = renderer.FindComponent<DxButton>();
+                await renderer.InvokeAsync(dxButton.Instance.Click.InvokeAsync);
 
-                this.taskAssignmentViewModel.SelectedParticipants.ToList().Add(participant);
-
-                renderer.Render();
-
-                var dxButton = renderer.FindComponent<EditForm>();
-                await renderer.InvokeAsync(dxButton.Instance.OnValidSubmit.InvokeAsync);
-
-                Assert.That(this.taskAssignmentViewModel.SelectedParticipants.First().User, Is.Null);
+                Assert.That(this.taskAssignmentViewModel.SelectedParticipants, Is.Null);
             }
             catch
             {

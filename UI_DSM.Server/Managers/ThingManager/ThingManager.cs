@@ -15,6 +15,7 @@ namespace UI_DSM.Server.Managers.ThingManager
 {
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
+    using CDP4Common.SiteDirectoryData;
 
     using UI_DSM.Server.Services.CometService;
     using UI_DSM.Shared.DTO.Common;
@@ -72,11 +73,11 @@ namespace UI_DSM.Server.Managers.ThingManager
 
             return commonBaseSearchDto.Type.Split(".").Last() switch
             {
-                (nameof(ElementDefinition)) => iteration.Element.FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
-                (nameof(Requirement)) => iteration.RequirementsSpecification.SelectMany(x => x.Requirement).FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
-                (nameof(ElementUsage)) => iteration.Element.SelectMany(x => x.ContainedElement).FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
-                (nameof(BinaryRelationship)) => iteration.Relationship.OfType<BinaryRelationship>().FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
-                (nameof(HyperLink)) => hyperLinks.FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
+                nameof(ElementDefinition) => iteration.Element.FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
+                nameof(Requirement) => iteration.RequirementsSpecification.SelectMany(x => x.Requirement).FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
+                nameof(ElementUsage) => iteration.Element.SelectMany(x => x.ContainedElement).FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
+                nameof(BinaryRelationship) => iteration.Relationship.OfType<BinaryRelationship>().FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
+                nameof(HyperLink) => hyperLinks.FirstOrDefault(x => x.Iid == commonBaseSearchDto.Id),
                 _ => null
             };
         }
@@ -99,6 +100,34 @@ namespace UI_DSM.Server.Managers.ThingManager
             }
 
             return things.DistinctById();
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="DomainOfExpertise" /> that are contained inside a <see cref="Model" />
+        /// </summary>
+        /// <param name="model">The <see cref="Model" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="DomainOfExpertise" /></returns>
+        public async Task<IEnumerable<Thing>> GetDomainOfExpertises(Model model)
+        {
+            var iteration = await this.cometService.GetIteration(model);
+            return this.cometService.GetDomainOfExpertises(iteration);
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="DomainOfExpertise" /> that are contained inside <see cref="Model" />s
+        /// </summary>
+        /// <param name="models">A collection of <see cref="Model" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="DomainOfExpertise" /></returns>
+        public async Task<IEnumerable<Thing>> GetDomainOfExpertises(IEnumerable<Model> models)
+        {
+            var domains = new List<Thing>();
+
+            foreach (var model in models)
+            {
+                domains.AddRange(await this.GetDomainOfExpertises(model));
+            }
+
+            return domains;
         }
 
         /// <summary>
@@ -137,7 +166,7 @@ namespace UI_DSM.Server.Managers.ThingManager
         private async Task<IEnumerable<Thing>> GetIteration(Model model)
         {
             var iteration = await this.cometService.GetIteration(model);
-            
+
             return iteration == null ? Enumerable.Empty<Thing>() : iteration.GetContainedAndReferencedThings();
         }
     }
