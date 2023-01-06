@@ -832,7 +832,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     Saves current diagram layout
         /// </summary>
-        public async void SaveCurrentDiagramLayout()
+        public async Task SaveCurrentDiagramLayout()
         {
             var layoutInformationDtos = this.ProductsMap.Keys.Select(x => new DiagramLayoutInformationDto { ThingId = x.ThingId, xPosition = x.Position.X, yPosition = x.Position.Y });
             var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationPopupViewModel.ConfigurationName, layoutInformationDtos);
