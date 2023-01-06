@@ -222,10 +222,5 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Opens the <see cref="DiagrammingConfigurationLoadingPopup" />
         /// </summary>
         void OpenLoadingConfigurationPopup();
-
-        /// <summary>
-        ///     Saves current diagram layout
-        /// </summary>
-        void SaveCurrentDiagramLayout();
     }
 }

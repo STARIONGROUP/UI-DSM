@@ -842,7 +842,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     Load choosen diagram layout
         /// </summary>
-        public async void LoadDiagramLayout()
+        public async Task LoadDiagramLayout()
         {
             var response = await this.diagrammingConfigurationService.LoadDiagramLayoutConfiguration(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationLoadingPopupViewModel.SelectedConfiguration);
 
