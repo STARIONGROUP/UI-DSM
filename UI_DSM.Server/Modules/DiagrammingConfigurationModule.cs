@@ -162,12 +162,19 @@ namespace UI_DSM.Server.Modules
             }
 
             var folderPath = Path.Combine(fileService.GetFullPath("Diagram Configuration"), reviewTaskId.ToString());
-            var configurationfile = Directory.EnumerateFiles(folderPath).FirstOrDefault(x => Path.GetFileNameWithoutExtension(x) == configurationName);
-            using (FileStream stream = File.OpenRead(configurationfile))
+            try
             {
-                List<DiagramLayoutInformationDto> dtos = await JsonSerializer.DeserializeAsync<List<DiagramLayoutInformationDto>>(stream);
-                await context.Response.Negotiate(dtos);
-            }  
+                var configurationfile = Directory.EnumerateFiles(folderPath).FirstOrDefault(x => Path.GetFileNameWithoutExtension(x) == configurationName);
+                using (FileStream stream = File.OpenRead(configurationfile))
+                {
+                    List<DiagramLayoutInformationDto> dtos = await JsonSerializer.DeserializeAsync<List<DiagramLayoutInformationDto>>(stream);
+                    await context.Response.Negotiate(dtos);
+                }
+            }
+            catch (DirectoryNotFoundException)
+            {
+                await context.Response.Negotiate(new List<string>());
+            }
         }
     }
 }
