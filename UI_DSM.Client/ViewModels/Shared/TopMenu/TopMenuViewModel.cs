@@ -102,10 +102,9 @@ namespace UI_DSM.Client.ViewModels.Shared.TopMenu
         /// </summary>
         /// <param name="projectId">The <see cref="Project" /> id</param>
         /// <returns>The name of the <see cref="Role" /></returns>
-        public string GetRoleForProject(Guid projectId)
+        public Participant GetParticipantForProject(Guid projectId)
         {
-            var participant = this.participants.FirstOrDefault(x => x.EntityContainer.Id == projectId);
-            return participant?.Role.RoleName;
+            return this.participants.FirstOrDefault(x => x.EntityContainer.Id == projectId);
         }
 
         /// <summary>

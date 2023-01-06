@@ -50,11 +50,21 @@
 					PreventCloseOnPositionTargetClick="true"
 					BodyCssClass="account-dropdown">
 					@{
-						var roleName = this.GetRoleName();
+						var participant = this.GetParticipant();
 
-						if (!string.IsNullOrEmpty(roleName))
+						if (participant != null)
 						{
-							<p id="roleName">Role: @roleName</p>
+							<p id="roleName">Role: @participant.Role.RoleName</p>
+							@if (participant.DomainsOfExpertise.Any())
+							{
+							<p>Domain(s):</p>
+								<ul>
+									@foreach (var domain in participant.DomainsOfExpertise)
+									{
+										<li>@domain</li>
+									}
+								</ul>
+							}
 						}
 					}
 					<ul>

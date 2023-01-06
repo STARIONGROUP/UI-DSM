@@ -118,7 +118,7 @@ namespace UI_DSM.Client.Tests.Shared.TopMenu
             renderer.Render();
             renderer.Instance.NavigationManager.NavigateTo($"/Project/{projectId}");
 
-            Assert.That(renderer.Instance.GetRoleName(), Is.Not.Empty);
+            Assert.That(renderer.Instance.GetParticipant(), Is.Not.Null);
         }
     }
 }
