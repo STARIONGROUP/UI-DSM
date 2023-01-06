@@ -113,6 +113,11 @@ namespace UI_DSM.Shared.Extensions
                 group[domain] = availableParticipants.Where(x => x.DomainsOfExpertise.Contains(domain));
             }
 
+            if (availableParticipants.Any(x => !x.DomainsOfExpertise.Any()))
+            {
+                group["No Domain"] = availableParticipants.Where(x => !x.DomainsOfExpertise.Any());
+            }
+
             return group;
         }
     }

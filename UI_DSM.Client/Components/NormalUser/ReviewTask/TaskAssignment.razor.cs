@@ -75,7 +75,7 @@ namespace UI_DSM.Client.Components.NormalUser.ReviewTask
         /// </summary>
         /// <param name="participants">The new selected <see cref="Participant" /></param>
         /// <param name="group">The name of the modified group</param>
-        private async Task OnValuesChanged(IEnumerable<Participant> participants, string group)
+        public async Task OnValuesChanged(IEnumerable<Participant> participants, string group)
         {
             participants = participants.ToList();
             var availableParticipants = this.groupedParticipants[group];
