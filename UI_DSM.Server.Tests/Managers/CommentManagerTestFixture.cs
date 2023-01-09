@@ -339,5 +339,33 @@ namespace UI_DSM.Server.Tests.Managers
             result = await this.manager.GetExtraEntitiesToUnindex(comment.Id);
             Assert.That(result, Is.Not.Empty);
         }
+
+        [Test]
+        public async Task VerifyGetCommentsForReviewTask()
+        {
+            var reviewTask = new ReviewTask(Guid.NewGuid());
+            
+            var comment = new Comment(Guid.NewGuid())
+            {
+                CreatedInside = reviewTask
+            };
+
+            var project = new Project(Guid.NewGuid())
+            {
+                Annotations = { comment, new Comment(Guid.NewGuid()){CreatedInside = new ReviewTask(Guid.NewGuid())}, new Comment(Guid.NewGuid()) }
+            };
+
+            var comments = new List<Comment>(project.Annotations.OfType<Comment>())
+            {
+                new (Guid.NewGuid())
+                {
+                    EntityContainer = new Project(Guid.NewGuid())
+                }
+            };
+
+            this.commentDbSet.UpdateDbSetCollection(comments);
+            var result = await this.manager.GetCommentsForReviewTask(project.Id, reviewTask.Id);
+            Assert.That(result.OfType<Comment>().ToList(), Has.Count.EqualTo(1));
+        }
     }
 }

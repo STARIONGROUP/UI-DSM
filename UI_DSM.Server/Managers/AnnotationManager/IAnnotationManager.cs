@@ -34,5 +34,13 @@ namespace UI_DSM.Server.Managers.AnnotationManager
         /// <param name="annotatableItemId">The <see cref="Guid" /> of the <see cref="AnnotatableItem" /></param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
         Task<IEnumerable<Entity>> GetAnnotationsOfAnnotatableItem(Guid projectId, Guid annotatableItemId);
+
+        /// <summary>
+        ///     Gets all <see cref="Annotation" /> that are linked to a <see cref="ReviewTask" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
+        Task<IEnumerable<Entity>> GetAnnotationsForReviewTask(Guid projectId, Guid reviewTaskId);
     }
 }

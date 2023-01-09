@@ -63,7 +63,7 @@ namespace UI_DSM.Server.Tests.Managers
         {
             var comments = new List<Comment>
             {
-                new (Guid.NewGuid())
+                new(Guid.NewGuid())
                 {
                     AnnotatableItems = this.annotatableItems,
                     Author = this.participant
@@ -72,7 +72,7 @@ namespace UI_DSM.Server.Tests.Managers
 
             var feedbacks = new List<Feedback>
             {
-                new (Guid.NewGuid())
+                new(Guid.NewGuid())
                 {
                     AnnotatableItems = this.annotatableItems,
                     Author = this.participant
@@ -98,7 +98,7 @@ namespace UI_DSM.Server.Tests.Managers
             foreach (var comment in comments)
             {
                 this.commentManager.Setup(x => x.FindEntity(comment.Id)).ReturnsAsync(comment);
-                this.commentManager.Setup(x => x.GetEntity(comment.Id,0)).ReturnsAsync(comment.GetAssociatedEntities());
+                this.commentManager.Setup(x => x.GetEntity(comment.Id, 0)).ReturnsAsync(comment.GetAssociatedEntities());
             }
 
             foreach (var feedback in feedbacks)
@@ -126,12 +126,12 @@ namespace UI_DSM.Server.Tests.Managers
             Assert.That(getEntitiesResult, Is.Empty);
 
             var allEntities = new List<Guid>();
-            allEntities.AddRange(comments.Select(x=> x.Id));
-            allEntities.AddRange(feedbacks.Select(x=> x.Id));
-            allEntities.AddRange(notes.Select(x=> x.Id));
+            allEntities.AddRange(comments.Select(x => x.Id));
+            allEntities.AddRange(feedbacks.Select(x => x.Id));
+            allEntities.AddRange(notes.Select(x => x.Id));
             allEntities.Add(Guid.NewGuid());
 
-            var findEntitiesResult =await this.manager.FindEntities(allEntities);
+            var findEntitiesResult = await this.manager.FindEntities(allEntities);
             Assert.That(findEntitiesResult.ToList(), Has.Count.EqualTo(3));
         }
 
@@ -254,7 +254,7 @@ namespace UI_DSM.Server.Tests.Managers
                 AnnotatableItems = this.annotatableItems,
                 Author = this.participant
             };
-            
+
             var feedback = new Feedback(Guid.NewGuid())
             {
                 AnnotatableItems = this.annotatableItems,
@@ -310,6 +310,15 @@ namespace UI_DSM.Server.Tests.Managers
             this.commentManager.Verify(x => x.GetExtraEntitiesToUnindex(id), Times.Once);
             this.noteManager.Verify(x => x.GetExtraEntitiesToUnindex(id), Times.Once);
             this.feedbackManager.Verify(x => x.GetExtraEntitiesToUnindex(id), Times.Once);
+        }
+
+        [Test]
+        public async Task VerfiyGetAnnotationsForReviewTask()
+        {
+            var projectId = Guid.NewGuid();
+            var reviewTaskId = Guid.NewGuid();
+            await this.manager.GetAnnotationsForReviewTask(projectId, reviewTaskId);
+            this.commentManager.Verify(x => x.GetCommentsForReviewTask(projectId, reviewTaskId), Times.Once);
         }
     }
 
