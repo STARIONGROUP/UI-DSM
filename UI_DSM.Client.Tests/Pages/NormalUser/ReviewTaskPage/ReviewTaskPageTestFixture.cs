@@ -40,6 +40,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.App.OptionChooser;
     using UI_DSM.Client.ViewModels.App.SelectedItemCard;
+    using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage;
@@ -116,7 +117,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
                 new ProductBreakdownStructureViewViewModel(new Mock<IReviewItemService>().Object, new FilterViewModel(), new OptionChooserViewModel());
 
             IInterfaceViewViewModel interfaceView =
-                new InterfaceViewViewModel(new Mock<IReviewItemService>().Object, new FilterViewModel(), null);
+                new InterfaceViewViewModel(new Mock<IReviewItemService>().Object, new FilterViewModel(), null, new ErrorMessageViewModel());
 
             this.context.Services.AddSingleton(breakdown);
             this.context.Services.AddSingleton(productBreakdown);

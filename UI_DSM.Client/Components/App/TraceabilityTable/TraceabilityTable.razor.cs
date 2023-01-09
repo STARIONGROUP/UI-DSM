@@ -105,6 +105,8 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
         public async Task Update()
         {
             this.ViewModel.UpdateTable();
+            await this.UpdateRowsToDisplay();
+            await this.UpdateColumnsToDisplay();
             await this.InvokeAsync(this.StateHasChanged);
         }
 

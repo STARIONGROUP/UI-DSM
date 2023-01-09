@@ -40,6 +40,7 @@ namespace UI_DSM.Serializer.Json
                 "DELETEREVIEWOBJECTIVE" => AccessRight.DeleteReviewObjective,
                 "ASSIGNTASK" => AccessRight.AssignTask,
                 "PROJECTMANAGEMENT" => AccessRight.ProjectManagement,
+                "CREATEDIAGRAMCONFIGURATION" => AccessRight.CreateDiagramConfiguration,
                 _ => throw new ArgumentException($"{value} is not a valid AccessRight", nameof(value))
             };
         }

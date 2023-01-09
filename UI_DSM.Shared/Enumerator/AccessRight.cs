@@ -57,6 +57,11 @@ namespace UI_DSM.Shared.Enumerator
         /// <summary>
         ///     This right provide the capability to manage participants and models inside a project
         /// </summary>
-        [Display(Name = "Manage Project")] ProjectManagement = 6
+        [Display(Name = "Manage Project")] ProjectManagement = 6,
+
+        /// <summary>
+        ///     This right provide the capability to save a diagram configuration
+        /// </summary>
+        [Display(Name = "Save Diagram Configuration")] CreateDiagramConfiguration = 7
     }
 }

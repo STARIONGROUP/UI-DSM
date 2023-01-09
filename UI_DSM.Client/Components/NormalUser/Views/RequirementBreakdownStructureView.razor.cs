@@ -86,10 +86,11 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
+        /// <param name="participant">The current <see cref="Participant"/></param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
+        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart, Participant participant)
         {
-            await base.InitializeViewModel(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart);
+            await base.InitializeViewModel(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart, participant);
             this.IsLoading = false;
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.FilterViewModel.IsFilterVisible)

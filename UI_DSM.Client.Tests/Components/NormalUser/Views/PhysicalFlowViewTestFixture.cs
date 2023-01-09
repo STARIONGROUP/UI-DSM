@@ -38,16 +38,18 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
+    using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     
     using UI_DSM.Serializer.Json;
-    
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     using BinaryRelationship = CDP4Common.DTO.BinaryRelationship;
     using ElementDefinition = CDP4Common.DTO.ElementDefinition;
     using ElementUsage = CDP4Common.DTO.ElementUsage;
+    using Participant = UI_DSM.Shared.Models.Participant;
     using TestContext = Bunit.TestContext;
 
     [TestFixture]
@@ -56,9 +58,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         private IInterfaceViewViewModel viewModel;
         private Mock<IReviewItemService> reviewItemService;
         private TestContext context;
-
-        private readonly Uri uri = new Uri("http://test.com");
-
         private IRenderedComponent<PhysicalFlowView> renderer;
 
         [SetUp]
@@ -70,7 +69,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 this.context.AddDevExpressBlazorTesting();
                 this.context.ConfigureDevExpressBlazor();
                 this.reviewItemService = new Mock<IReviewItemService>();
-                this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel(), null);
+                this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel(), null, new ErrorMessageViewModel());
                 this.context.Services.AddSingleton(this.viewModel);
 
                 this.context.Services.AddSingleton(this.viewModel);
@@ -220,9 +219,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     .Select(x => x.Value)
                     .ToList();
 
-                var reviewItem = new ReviewItem(Guid.NewGuid());
-
-                this.renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, Guid.Empty, new List<string>(), new List<string>()).RunSynchronously();
+                this.renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, Guid.Empty, new List<string>(), 
+                    new List<string>(), new Participant() { Role = new Role() { AccessRights = { AccessRight.CreateDiagramConfiguration } } }).RunSynchronously();
             }
             catch
             {
@@ -360,9 +358,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var anotherView = component.Instance;
 
                 var oldViewModel = anotherView.ViewModel;
-                this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new int[] { 100, 80 });
+                this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new [] { 100, 80 });
 
-                Task<bool> result = Task.FromResult(false);
+                var result = Task.FromResult(false);
                 await this.renderer.InvokeAsync(() => result = this.renderer.Instance.CopyComponents(anotherView));
                 var newViewModel = this.renderer.Instance.ViewModel;
 
@@ -385,9 +383,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             var anotherView = component.Instance;
 
             var oldViewModel = anotherView.ViewModel;
-            this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new int[] { 100, 80 });
+            this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new [] { 100, 80 });
 
-            Task<bool> result = Task.FromResult(false);
+            var result = Task.FromResult(false);
             await this.renderer.InvokeAsync(() => result = this.renderer.Instance.CopyComponents(anotherView));
             var newViewModel = this.renderer.Instance.ViewModel;
 

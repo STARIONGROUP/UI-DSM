@@ -34,6 +34,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Models;
 
+    using Participant = UI_DSM.Shared.Models.Participant;
     using TestContext = Bunit.TestContext;
 
     [TestFixture]
@@ -111,7 +112,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     .ReturnsAsync(reviewItems);
 
                 await renderer.InvokeAsync(() => renderer.Instance.InitializeViewModel(things, Guid.NewGuid(), Guid.NewGuid(), Guid.Empty,
-                    new List<string>{"space_debris"}, new List<string>()));
+                    new List<string>{"space_debris"}, new List<string>(), new Participant()));
 
                 Assert.Multiple(() =>
                 {

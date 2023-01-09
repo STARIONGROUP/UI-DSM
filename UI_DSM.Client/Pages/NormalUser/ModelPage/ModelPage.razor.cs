@@ -152,7 +152,9 @@ namespace UI_DSM.Client.Pages.NormalUser.ModelPage
                 this.ViewModel.CurrentBaseViewInstance = baseView;
                 this.DisposeViewDisposables();
                 var projectId = new Guid(this.ProjectId);
-                await baseView.InitializeViewModel(this.ViewModel.Things, projectId, Guid.Empty, Guid.Empty, new List<string>(), new List<string>());
+
+                await baseView.InitializeViewModel(this.ViewModel.Things, projectId, Guid.Empty, 
+                    Guid.Empty, new List<string>(), new List<string>(), null);
 
                 if (Guid.TryParse(this.Id, out var itemId))
                 {

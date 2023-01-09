@@ -36,6 +36,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Shared.Models;
 
+    using Participant = UI_DSM.Shared.Models.Participant;
     using TestContext = Bunit.TestContext;
 
     [TestFixture]
@@ -153,7 +154,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     });
 
                 var renderer = this.context.RenderComponent<RequirementTraceabilityToRequirementView>();
-                await renderer.Instance.InitializeViewModel(requirementsSpecification, projectId, reviewId, Guid.Empty, new List<string>(), new List<string>());
+
+                await renderer.Instance.InitializeViewModel(requirementsSpecification, projectId, reviewId, Guid.Empty, new List<string>(), 
+                    new List<string>(), new Participant());
 
                 Assert.Multiple(() =>
                 {

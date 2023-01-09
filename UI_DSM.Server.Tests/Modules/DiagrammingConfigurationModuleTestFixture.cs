@@ -26,6 +26,7 @@ namespace UI_DSM.Server.Tests.Modules
     using UI_DSM.Server.Services.FileService;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     [TestFixture]
@@ -37,11 +38,9 @@ namespace UI_DSM.Server.Tests.Modules
         private Mock<HttpResponse> response;
         private Mock<IServiceProvider> serviceProvider;
         private Mock<IParticipantManager> participantManager;
-        private Mock<HttpRequest> request;
         private Guid projectId;
         private Guid reviewTaskId;
         private Participant participant;
-
 
         [SetUp]
         public void Setup()
@@ -53,7 +52,7 @@ namespace UI_DSM.Server.Tests.Modules
             this.participantManager = new Mock<IParticipantManager>();
 
             ModuleTestHelper.Setup<DiagrammingConfigurationModule, DiagramLayoutInformationDto>(null, out this.context,
-                out this.response, out this.request, out this.serviceProvider);
+                out this.response, out _, out this.serviceProvider);
 
             this.serviceProvider.Setup(x => x.GetService(typeof(IParticipantManager))).Returns(this.participantManager.Object);
 
@@ -92,12 +91,16 @@ namespace UI_DSM.Server.Tests.Modules
             this.serviceProvider.Setup(x => x.GetService(typeof(IParticipantManager))).Returns(this.participantManager.Object);
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
 
-
-            await this.module.SaveLayoutConfiguration(this.projectId, reviewTaskId, "config1", diagramLayoutInformationDtos, this.context.Object);
-            this.fileService.Verify(x => x.MoveFile(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, "config1", diagramLayoutInformationDtos, this.context.Object);
+            this.response.VerifySet( x => x.StatusCode = 403, Times.Once);
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(this.participant);
-            await this.module.SaveLayoutConfiguration(this.projectId, reviewTaskId, "config1", diagramLayoutInformationDtos, this.context.Object);
+            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, "config1", diagramLayoutInformationDtos, this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 403, Times.Exactly(2));
+
+            this.participant.Role = new Role() { AccessRights = { AccessRight.CreateDiagramConfiguration } };
+
+            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, "config1", diagramLayoutInformationDtos, this.context.Object);
 
             this.fileService.Verify(x => x.MoveFile(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
         }
@@ -107,16 +110,14 @@ namespace UI_DSM.Server.Tests.Modules
         {
             this.fileService.Setup(x => x.GetFullPath("Diagram Configuration")).Returns(TestContext.CurrentContext.TestDirectory);
 
-    
             this.serviceProvider.Setup(x => x.GetService(typeof(IParticipantManager))).Returns(this.participantManager.Object);
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
 
-
-            await this.module.LoadLayoutConfigurationNames(this.projectId, reviewTaskId, this.context.Object);
+            await this.module.LoadLayoutConfigurationNames(this.projectId, this.reviewTaskId, this.context.Object);
             this.fileService.Verify(x => x.GetFullPath(It.IsAny<string>()), Times.Never());
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(this.participant);
-            await this.module.LoadLayoutConfigurationNames(this.projectId, reviewTaskId, this.context.Object);
+            await this.module.LoadLayoutConfigurationNames(this.projectId, this.reviewTaskId, this.context.Object);
 
             this.fileService.Verify(x => x.GetFullPath(It.IsAny<string>()), Times.Once());
         }
@@ -124,19 +125,17 @@ namespace UI_DSM.Server.Tests.Modules
         [Test]
         public async Task VerifyLoadLayoutConfiguration()
         {
-            var configName = "config1";
+            const string configName = "config1";
             this.fileService.Setup(x => x.GetFullPath("Diagram Configuration")).Returns(TestContext.CurrentContext.TestDirectory);
-
 
             this.serviceProvider.Setup(x => x.GetService(typeof(IParticipantManager))).Returns(this.participantManager.Object);
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
 
-
-            await this.module.LoadLayoutConfiguration(this.projectId, reviewTaskId, configName, this.context.Object);
+            await this.module.LoadLayoutConfiguration(this.projectId, this.reviewTaskId, configName, this.context.Object);
             this.fileService.Verify(x => x.GetFullPath(It.IsAny<string>()), Times.Never());
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(this.participant);
-            await this.module.LoadLayoutConfiguration(this.projectId, reviewTaskId, configName, this.context.Object);
+            await this.module.LoadLayoutConfiguration(this.projectId, this.reviewTaskId, configName, this.context.Object);
 
             this.fileService.Verify(x => x.GetFullPath(It.IsAny<string>()), Times.Once());
         }

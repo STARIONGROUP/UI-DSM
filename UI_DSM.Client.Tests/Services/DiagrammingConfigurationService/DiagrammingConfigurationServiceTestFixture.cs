@@ -16,7 +16,9 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
     using System.Net;
 
     using CDP4JsonSerializer;
+    
     using NUnit.Framework;
+    
     using RichardSzalay.MockHttp;
 
     using UI_DSM.Client.Services;
@@ -24,7 +26,6 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Serializer.Json;
     using UI_DSM.Shared.DTO.Common;
-    using UI_DSM.Shared.Models;
 
     [TestFixture]
     public class DiagrammingConfigurationServiceTestFixture
@@ -50,25 +51,32 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
         {
             var projectId = Guid.NewGuid();
             var reviewTaskId = Guid.NewGuid();
+
             IEnumerable<DiagramLayoutInformationDto> diagramLayoutInformationDtos = new List<DiagramLayoutInformationDto>
             {
-                new DiagramLayoutInformationDto
+                new()
                 {
                     ThingId = Guid.NewGuid(),
                     xPosition = 650,
                     yPosition = 447
                 }
             };
-            var configurationName = "config1";
+
+            const string configurationName = "config1";
             var httpResponse = new HttpResponseMessage();
             httpResponse.StatusCode = HttpStatusCode.NotFound;
+            var errors = new List<string> { "Already exist" };
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(errors));
             var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Layout/{projectId}/{reviewTaskId}/{configurationName}/Save");
             request.Respond(_ => httpResponse);
-            
-            Assert.That(await this.service.SaveDiagramLayout(projectId, reviewTaskId, configurationName, diagramLayoutInformationDtos), Is.False);
+
+            var result = await this.service.SaveDiagramLayout(projectId, reviewTaskId, configurationName, diagramLayoutInformationDtos);
+            Assert.That(result.result, Is.False);
 
             httpResponse.StatusCode = HttpStatusCode.OK;
-            Assert.That(await this.service.SaveDiagramLayout(projectId, reviewTaskId, configurationName, diagramLayoutInformationDtos), Is.True);
+            result = await this.service.SaveDiagramLayout(projectId, reviewTaskId, configurationName, diagramLayoutInformationDtos);
+            Assert.That(result.result, Is.True);
         }
 
         [Test]
@@ -107,9 +115,10 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
             Assert.That(async () => await this.service.LoadDiagramLayoutConfiguration(projectId, reviewTaskId, configurationName), Throws.Exception);
 
             httpResponse.StatusCode = HttpStatusCode.OK;
+            
             httpResponse.Content = new StringContent(this.jsonService.Serialize(new List<DiagramLayoutInformationDto>
             {
-                new DiagramLayoutInformationDto
+                new()
                 {
                     ThingId = Guid.NewGuid(),
                     xPosition = 650,

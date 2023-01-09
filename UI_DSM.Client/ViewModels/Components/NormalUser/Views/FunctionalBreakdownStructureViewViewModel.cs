@@ -50,10 +50,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
+        /// <param name="participant"></param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
+        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart, Participant participant)
         {
-            await base.InitializeProperties(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart);
+            await base.InitializeProperties(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart, participant);
 
             var topElement = this.Things.OfType<Iteration>()
                 .SingleOrDefault()?.TopElement;
