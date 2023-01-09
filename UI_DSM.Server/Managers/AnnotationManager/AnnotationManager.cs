@@ -296,6 +296,17 @@ namespace UI_DSM.Server.Managers.AnnotationManager
         }
 
         /// <summary>
+        ///     Gets all <see cref="Annotation" /> that are linked to a <see cref="ReviewTask" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
+        public Task<IEnumerable<Entity>> GetAnnotationsForReviewTask(Guid projectId, Guid reviewTaskId)
+        {
+            return this.commentManager.GetCommentsForReviewTask(projectId, reviewTaskId);
+        }
+
+        /// <summary>
         ///     Finds an <see cref="Annotation" /> and includes his <see cref="Entity" /> container
         /// </summary>
         /// <param name="entityId">The <see cref="Entity" /> id</param>

@@ -162,7 +162,26 @@ namespace UI_DSM.Server.Managers.CommentManager
                 .ThenInclude(x => x.Author);
 
             var list = await comments.ToListAsync();
+            return list.SelectMany(x => x.GetAssociatedEntities(1)).DistinctBy(x => x.Id);
+        }
 
+        /// <summary>
+        ///     Gets all <see cref="Comment" /> that are linked to a <see cref="ReviewTask" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
+        public async Task<IEnumerable<Entity>> GetCommentsForReviewTask(Guid projectId, Guid reviewTaskId)
+        {
+            var comments = this.EntityDbSet.Where(x => x.EntityContainer.Id == projectId 
+                                                       && x.CreatedInside != null && x.CreatedInside.Id == reviewTaskId)
+                .Include(x => x.Author)
+                .ThenInclude(x => x.User)
+                .Include(x => x.AnnotatableItems)
+                .Include(x => x.Replies)
+                .ThenInclude(x => x.Author);
+
+            var list = await comments.ToListAsync();
             return list.SelectMany(x => x.GetAssociatedEntities(1)).DistinctBy(x => x.Id);
         }
 

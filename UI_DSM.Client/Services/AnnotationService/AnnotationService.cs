@@ -160,5 +160,32 @@ namespace UI_DSM.Client.Services.AnnotationService
                 throw new HttpRequestException(exception.Message);
             }
         }
+
+        /// <summary>
+        ///     Gets all <see cref="Annotation" /> that are linked to a <see cref="ReviewTask" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
+        public async Task<List<Annotation>> GetAnnotationsForReviewTask(Guid projectId, Guid reviewTaskId)
+        {
+            try
+            {
+                this.ComputeMainRoute(projectId);
+                var response = await this.HttpClient.GetAsync($"{this.MainRoute}/ReviewTask/{reviewTaskId}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new List<Annotation>();
+                }
+
+                var dtos = this.jsonService.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync()).ToList();
+                return Assembler.CreateEntities<Annotation>(dtos).ToList();
+            }
+            catch (Exception exception)
+            {
+                throw new HttpRequestException(exception.Message);
+            }
+        }
     }
 }

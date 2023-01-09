@@ -630,6 +630,13 @@ namespace UI_DSM.Client.ViewModels.App.Comments
 
                 this.Comments.AddRange(annotations.OfType<Comment>());
             }
+
+            if (this.SelectedItem is ReviewTask task)
+            {
+                var annotations = await this.annotationService.GetAnnotationsForReviewTask(this.ProjectId, task.Id);
+
+                this.Comments.AddRange(annotations.OfType<Comment>());
+            }
         }
     }
 }

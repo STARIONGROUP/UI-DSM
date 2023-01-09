@@ -34,5 +34,13 @@ namespace UI_DSM.Server.Managers.CommentManager
         /// <param name="annotatableItemId">The <see cref="Guid" /> of the <see cref="AnnotatableItem" /></param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
         Task<IEnumerable<Entity>> GetCommentsOfAnnotatableItem(Guid projectId, Guid annotatableItemId);
+
+        /// <summary>
+        ///     Gets all <see cref="Comment" /> that are linked to a <see cref="ReviewTask" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
+        Task<IEnumerable<Entity>> GetCommentsForReviewTask(Guid projectId, Guid reviewTaskId);
     }
 }

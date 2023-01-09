@@ -13,8 +13,6 @@
 
 namespace UI_DSM.Client.Tests.Components.App.Comments
 {
-    using AppComponents;
-
     using Bunit;
 
     using CDP4Common.EngineeringModelData;
@@ -68,6 +66,10 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
                 User = new UserEntity(Guid.NewGuid())
                 {
                     UserName = "user"
+                },
+                Role = new Role(Guid.NewGuid())
+                {
+                    AccessRights = { AccessRight.ReviewTask }
                 }
             };
 
@@ -87,8 +89,11 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
             try
             {
                 var renderer = this.context.RenderComponent<Comments>();
+                
                 await renderer.Instance.InitializesProperties(Guid.NewGuid(), Guid.NewGuid(), View.RequirementBreakdownStructureView, 
                     this.participant, EventCallback<Comment>.Empty, new ReviewTask());
+
+                this.viewModel.AvailableRows = new List<IHaveAnnotatableItemRowViewModel>();
 
                 var commentsCard = renderer.FindComponents<CommentCard>();
 
@@ -98,8 +103,9 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
                 var row = new RequirementRowViewModel(new Requirement(requirementId, null, null), null);
                 this.viewModel.SelectedItem = row;
 
-                var button = renderer.FindComponent<AppButton>();
-                await renderer.InvokeAsync(button.Instance.Click.InvokeAsync);
+                renderer.Render();
+                var button = renderer.Find(".comments__add-button");
+                await renderer.InvokeAsync(() => button.Click(new MouseEventArgs()));
                 Assert.That(this.viewModel.IsOnCommentCreationMode, Is.True);
 
                 this.viewModel.CommentCreationViewModel.Comment.Content = "new content";
@@ -137,23 +143,23 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
                     }));
 
                 await renderer.InvokeAsync(this.viewModel.CommentCreationViewModel.OnValidSubmit.InvokeAsync);
-                commentsCard = renderer.FindComponents<CommentCard>();
 
                 Assert.Multiple(() =>
                 {
-                    Assert.That(commentsCard, Has.Count.EqualTo(1));
+                    Assert.That(this.viewModel.Comments, Has.Count.EqualTo(1));
                     Assert.That(this.viewModel.IsOnCommentCreationMode, Is.False);
                 });
 
                 this.viewModel.SelectedItem = null;
                 Assert.That(this.viewModel.Comments, Is.Empty);
 
-                this.reviewItemService.Setup(x => x.GetReviewItemOfReview(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>()))
-                    .ReturnsAsync(row.ReviewItem);
+                this.annotationService.Setup(x => x.GetAnnotationsOfAnnotatableItem(It.IsAny<Guid>(), row.ReviewItem.Id))
+                    .ReturnsAsync(row.ReviewItem.Annotations);
 
                 this.viewModel.SelectedItem = row;
                 Assert.That(this.viewModel.Comments, Has.Count.EqualTo(1));
 
+                renderer.Render();
                 var commentCard = renderer.FindComponent<CommentCard>();
 
                 Assert.That(commentCard.Instance.ViewModel.IsAllowedToEdit, Is.True);
@@ -173,7 +179,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
                 await renderer.InvokeAsync(this.viewModel.CommentCreationViewModel.OnValidSubmit.InvokeAsync);
                 Assert.That(this.viewModel.Comments, Has.Count.EqualTo(1));
 
-                var dropdownButton = renderer.Find("#dropdownButton");
+                var dropdownButton = renderer.Find($"#comment_{this.viewModel.Comments.Items.First().Id}");
                 await renderer.InvokeAsync(() => dropdownButton.ClickAsync(new MouseEventArgs()));
                 Assert.That(commentCard.Instance.IsOnStatusUpdateMode, Is.True);
 
@@ -185,6 +191,12 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
 
                 await renderer.InvokeAsync(this.viewModel.CommentConfirmCancelPopupViewModel.OnConfirm.InvokeAsync);
                 Assert.That(this.viewModel.Comments, Is.Empty);
+
+                this.annotationService.Setup(x => x.GetAnnotationsForReviewTask(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                    .ReturnsAsync(new List<Annotation> { new Comment(Guid.NewGuid()) });
+
+                this.viewModel.SelectedItem = new ReviewTask(Guid.NewGuid());
+                Assert.That(this.viewModel.Comments, Has.Count.EqualTo(1));
             }
             catch
             {

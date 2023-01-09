@@ -71,6 +71,32 @@ namespace UI_DSM.Server.Modules
                 .Produces<IEnumerable<EntityDto>>()
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/GetAnnotationsOfAnnotatableItem");
+
+            app.MapGet(this.MainRoute + "/ReviewTask/{reviewTaskId:guid}", this.GetAnnotationsForReviewTask)
+                .Produces<IEnumerable<EntityDto>>()
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/GetAnnotationsForReviewTask");
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Annotation" /> that are linked to a <see cref="ReviewTask" />
+        /// </summary>
+        /// <param name="annotationManager">The <see cref="IAnnotationManager" /></param>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        public async Task GetAnnotationsForReviewTask(IAnnotationManager annotationManager, Guid projectId, Guid reviewTaskId, HttpContext context)
+        {
+            var participant = await this.GetParticipantBasedOnRequest(context, this.ContainerRouteKey);
+
+            if (participant == null)
+            {
+                return;
+            }
+
+            var annotations = await annotationManager.GetAnnotationsForReviewTask(projectId, reviewTaskId);
+            await context.Response.Negotiate(annotations.ToDtos());
         }
 
         /// <summary>
@@ -99,7 +125,7 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="dto">The <see cref="AnnotationDto" /></param>
-        /// <param name="searchService">The <see cref="ISearchService"/></param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" /></returns>
@@ -128,7 +154,7 @@ namespace UI_DSM.Server.Modules
         /// </summary>
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Annotation" /> to delete</param>
-        /// <param name="searchService">The <see cref="ISearchService"/></param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /> with the <see cref="RequestResponseDto" /> as result</returns>
         [Authorize]
@@ -162,7 +188,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Annotation" /></param>
         /// <param name="dto">The <see cref="AnnotationDto" /></param>
-        /// <param name="searchService">The <see cref="ISearchService"/></param>
+        /// <param name="searchService">The <see cref="ISearchService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <param name="deepLevel">An optional parameters for the deep level</param>
         /// <returns>A <see cref="Task" />as result</returns>
@@ -189,27 +215,6 @@ namespace UI_DSM.Server.Modules
         }
 
         /// <summary>
-        ///     Adds the <see cref="Annotation" /> into the corresponding collection of the <see cref="Project" />
-        /// </summary>
-        /// <param name="entity">The <see cref="Annotation" /></param>
-        /// <param name="container">The <see cref="Project" /></param>
-        protected override void AddEntityIntoContainerCollection(Annotation entity, Project container)
-        {
-            container.Annotations.Add(entity);
-        }
-
-        /// <summary>
-        ///     Verifies if the provided routes is correctly formatted with all containment
-        /// </summary>
-        /// <param name="context">The <see cref="HttpContext" /></param>
-        /// <returns>A <see cref="Task" /> with the result of the check</returns>
-        protected override async Task<bool> AdditionalRouteValidation(HttpContext context)
-        {
-            await Task.CompletedTask;
-            return true;
-        }
-
-        /// <summary>
         ///     Gets all <see cref="Annotation" /> that are linked to the a <see cref="AnnotatableItem" />
         /// </summary>
         /// <param name="manager">The <see cref="IAnnotationManager" /></param>
@@ -229,6 +234,27 @@ namespace UI_DSM.Server.Modules
 
             var annotations = await manager.GetAnnotationsOfAnnotatableItem(projectId, annotatableItemId);
             await context.Response.Negotiate(annotations.ToDtos());
+        }
+
+        /// <summary>
+        ///     Adds the <see cref="Annotation" /> into the corresponding collection of the <see cref="Project" />
+        /// </summary>
+        /// <param name="entity">The <see cref="Annotation" /></param>
+        /// <param name="container">The <see cref="Project" /></param>
+        protected override void AddEntityIntoContainerCollection(Annotation entity, Project container)
+        {
+            container.Annotations.Add(entity);
+        }
+
+        /// <summary>
+        ///     Verifies if the provided routes is correctly formatted with all containment
+        /// </summary>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns>A <see cref="Task" /> with the result of the check</returns>
+        protected override async Task<bool> AdditionalRouteValidation(HttpContext context)
+        {
+            await Task.CompletedTask;
+            return true;
         }
     }
 }

@@ -110,11 +110,19 @@ namespace UI_DSM.Client.Components.App.Comments
         {
             var rows = new List<IHaveAnnotatableItemRowViewModel>();
 
-            if (this.ViewModel.SelectedItem is IHaveAnnotatableItemRowViewModel row)
+            switch (this.ViewModel.SelectedItem)
             {
-                rows.AddRange(this.ViewModel.AvailableRows
-                    .Where(x => comment.AnnotatableItems.Any(ai => ai.Id == x.AnnotatableItemId)
-                                && x.AnnotatableItemId != row.AnnotatableItemId));
+                case IHaveAnnotatableItemRowViewModel row:
+                    rows.AddRange(this.ViewModel.AvailableRows
+                        .Where(x => comment.AnnotatableItems.Any(ai => ai.Id == x.AnnotatableItemId)
+                                    && x.AnnotatableItemId != row.AnnotatableItemId));
+
+                    break;
+                case ReviewTask:
+                    rows.AddRange(this.ViewModel.AvailableRows
+                        .Where(x => comment.AnnotatableItems.Any(ai => ai.Id == x.AnnotatableItemId)));
+
+                    break;
             }
 
             return new CommentCardViewModel(comment, this.ViewModel.Participant, this.ViewModel.OnCommentEditCallback, this.ViewModel.OnDeleteCallback,
