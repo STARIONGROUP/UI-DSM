@@ -23,3 +23,8 @@
   color: var(--colors-gray-700);
   font-weight: 500;
 }
+
+
+.app-key-value--horizontal .app-key-value__value {
+  text-align: right;
+}

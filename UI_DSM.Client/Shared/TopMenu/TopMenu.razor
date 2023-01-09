@@ -1,14 +1,16 @@
 <!--------------------------------------------------------------------------------------------------------
 // TopMenu.razor
 // Copyright (c) 2022 RHEA System S.A.
-// 
+//
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
-// 
-// This file is part of UI-DSM. 
+//
+// This file is part of UI-DSM.
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+
+@using UI_DSM.Shared.Extensions
 
 <nav class="top-menu">
 	<div class="top-menu__left">
@@ -51,20 +53,15 @@
 					BodyCssClass="account-dropdown">
 					@{
 						var participant = this.GetParticipant();
-
 						if (participant != null)
 						{
-							<p id="roleName">Role: @participant.Role.RoleName</p>
-							@if (participant.DomainsOfExpertise.Any())
-							{
-							<p>Domain(s):</p>
-								<ul>
-									@foreach (var domain in participant.DomainsOfExpertise)
-									{
-										<li>@domain</li>
-									}
-								</ul>
-							}
+							<div class="participant-widget">
+								<AppKeyValue Key="Role" Value="@participant.Role.RoleName"/>
+								@if (participant.DomainsOfExpertise.Any())
+								{
+									<AppKeyValue Key="Domain(s):" Value="@participant.DomainsOfExpertise.AsCommaSeparated()" />
+								}
+							</div>
 						}
 					}
 					<ul>
