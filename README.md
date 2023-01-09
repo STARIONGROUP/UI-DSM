@@ -18,22 +18,29 @@ The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
 
 The web application is distributed using docker containers and docker-compose.
 
-In the first stage the application is built using the private DevExpress nuget feed. In order to access this nuget feed, it is required to EXPORT the API-KEY to an environment variable.
+In the first stage the application is built using the private DevExpress nuget feed and the private Generic Platform feed. In order to access this nuget feed, it is required to EXPORT the API-KEYs to an environment variable through secret file.
 
 ### Build
 
+#### Secret File
+Create a file `.env` with the following content
+```
+DEVEXPRESS_NUGET_KEY=<YOUR-DEVEXPRESS-KEY>
+GP_NUGET_USER=<YOUR-GP-USER>
+GP_NUGET_TOKEN=<YOUR-GP-TOKEN>
+```
+
 #### Linux
 ```
-$ ./solutionFolder# export DEVEXPRESS_NUGET_KEY=<YOUR-API-KEY>
 $ ./solutionFolder# export BUILDKIT=1
-$ ./solutionFolder# docker build --secret id=DEVEXPRESS_NUGET_KEY,env=DEVEXPRESS_NUGET_KEY -f Dockerfile -t rheagroup/ui-dsm:latest -t rheagroup/ui-dsm:<version> .
+$ ./solutionFolder# docker build --secret id=envConfig,src=.env -f Dockerfile -t rheagroup/ui-dsm:latest -t rheagroup/ui-dsm:%1 .
 ```
 
 #### Windows
 ```
 $ ./solutionFolder# set DEVEXPRESS_NUGET_KEY=<YOUR-API-KEY>
 $ ./solutionFolder# set BUILDKIT=1
-$ ./solutionFolder# docker build --secret id=DEVEXPRESS_NUGET_KEY,env=DEVEXPRESS_NUGET_KEY -f Dockerfile -t rheagroup/ui-dsm:latest -t rheagroup/ui-dsm:<version> .
+$ ./solutionFolder# docker build --secret id=envConfig,src=.env -f Dockerfile -t rheagroup/ui-dsm:latest -t rheagroup/ui-dsm:%1 .
 ```
 
 ### Deploy

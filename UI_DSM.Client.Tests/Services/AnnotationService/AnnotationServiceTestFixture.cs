@@ -295,5 +295,29 @@ namespace UI_DSM.Client.Tests.Services.AnnotationService
             httpResponse.Content = new StringContent(string.Empty);
             Assert.That(async () => await this.service.GetAnnotationsOfAnnotatableItem(projectId, this.annotatableItemId), Throws.Exception);
         }
+
+        [Test]
+        public async Task VerifyGetAnnotationsOfReviewTask()
+        {
+            var projectId = Guid.NewGuid();
+            var reviewTaskId = Guid.NewGuid();
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.NotFound;
+
+            var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Project/{projectId}/Annotation/ReviewTask/{reviewTaskId}");
+            request.Respond(_ => httpResponse);
+            var annotations = await this.service.GetAnnotationsForReviewTask(projectId, reviewTaskId);
+
+            Assert.That(annotations, Is.Empty);
+
+            httpResponse.StatusCode = HttpStatusCode.OK;
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(this.entitiesDto));
+            annotations = await this.service.GetAnnotationsForReviewTask(projectId, reviewTaskId);
+            Assert.That(annotations, Is.Not.Empty);
+
+            httpResponse.Content = new StringContent(string.Empty);
+            Assert.That(async () => await this.service.GetAnnotationsForReviewTask(projectId, reviewTaskId), Throws.Exception);
+        }
     }
 }
