@@ -98,8 +98,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
         /// <param name="filterViewModel">The <see cref="IFilterViewModel" /></param>
         /// <param name="diagrammingConfigurationService">The <see cref="IDiagrammingConfigurationService" /></param>
-        /// <param name="errorMessageViewModel">The <see cref="IErrorMessageViewModel"/></param>
-        public InterfaceViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel, 
+        /// <param name="errorMessageViewModel">The <see cref="IErrorMessageViewModel" /></param>
+        public InterfaceViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel,
             IDiagrammingConfigurationService diagrammingConfigurationService, IErrorMessageViewModel errorMessageViewModel) : base(reviewItemService)
         {
             this.FilterViewModel = filterViewModel;
@@ -270,6 +270,48 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             {
                 OnValidSubmit = new EventCallbackFactory().Create(this, this.LoadDiagramLayout)
             };
+        }
+
+        /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationPopupViewModel" />
+        /// </summary>
+        public IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; private set; }
+
+        /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationLoadingPopupViewModel" />
+        /// </summary>
+        public IDiagrammingConfigurationLoadingPopupViewModel DiagrammingConfigurationLoadingPopupViewModel { get; private set; }
+
+        /// <summary>
+        ///     The <see cref="IErrorMessageViewModel" />
+        /// </summary>
+        public IErrorMessageViewModel ErrorMessageViewModel { get; }
+
+        /// <summary>
+        ///     Value indicating the user is currently saving the diagramming configuration
+        /// </summary>
+        public bool IsOnSavingMode
+        {
+            get => this.isOnSavingMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnSavingMode, value);
+        }
+
+        /// <summary>
+        ///     Value indicating the user is currently loading the diagramming configuration
+        /// </summary>
+        public bool IsOnLoadingMode
+        {
+            get => this.isOnLoadingMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnLoadingMode, value);
+        }
+
+        /// <summary>
+        ///     Opens the <see cref="DiagrammingConfigurationPopup" />
+        /// </summary>
+        public void OpenSavingPopup()
+        {
+            this.ErrorMessageViewModel.Errors.Clear();
+            this.IsOnSavingMode = true;
         }
 
         /// <summary>
@@ -669,48 +711,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             }
 
             return false;
-        }
-
-        /// <summary>
-        ///     The <see cref="IDiagrammingConfigurationPopupViewModel" />
-        /// </summary>
-        public IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; private set; }
-
-        /// <summary>
-        ///     The <see cref="IDiagrammingConfigurationLoadingPopupViewModel" />
-        /// </summary>
-        public IDiagrammingConfigurationLoadingPopupViewModel DiagrammingConfigurationLoadingPopupViewModel { get; private set; }
-
-        /// <summary>
-        ///     The <see cref="IErrorMessageViewModel" />
-        /// </summary>
-        public IErrorMessageViewModel ErrorMessageViewModel { get; }
-
-        /// <summary>
-        ///     Value indicating the user is currently saving the diagramming configuration
-        /// </summary>
-        public bool IsOnSavingMode
-        {
-            get => this.isOnSavingMode;
-            set => this.RaiseAndSetIfChanged(ref this.isOnSavingMode, value);
-        }
-
-        /// <summary>
-        ///     Value indicating the user is currently loading the diagramming configuration
-        /// </summary>
-        public bool IsOnLoadingMode
-        {
-            get => this.isOnLoadingMode;
-            set => this.RaiseAndSetIfChanged(ref this.isOnLoadingMode, value);
-        }
-
-        /// <summary>
-        ///     Opens the <see cref="DiagrammingConfigurationPopup" />
-        /// </summary>
-        public void OpenSavingPopup()
-        {
-            this.ErrorMessageViewModel.Errors.Clear();
-            this.IsOnSavingMode = true;
         }
 
         /// <summary>

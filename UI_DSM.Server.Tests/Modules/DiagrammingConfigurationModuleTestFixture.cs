@@ -71,6 +71,17 @@ namespace UI_DSM.Server.Tests.Modules
             };
         }
 
+        [TearDown]
+        public void Teardown()
+        {
+            var basePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Diagram Configuration");
+
+            if (Directory.Exists(basePath))
+            {
+                Directory.Delete(basePath, true);
+            }
+        }
+
         [Test]
         public async Task VerifySaveLayoutConfiguration()
         {
@@ -88,21 +99,40 @@ namespace UI_DSM.Server.Tests.Modules
                 diagramLayoutInformationDto
             };
 
+            const string configFileName = "config1";
             this.serviceProvider.Setup(x => x.GetService(typeof(IParticipantManager))).Returns(this.participantManager.Object);
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
 
-            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, "config1", diagramLayoutInformationDtos, this.context.Object);
+            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, configFileName, diagramLayoutInformationDtos, this.context.Object);
             this.response.VerifySet( x => x.StatusCode = 403, Times.Once);
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(this.participant);
-            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, "config1", diagramLayoutInformationDtos, this.context.Object);
+            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, configFileName, diagramLayoutInformationDtos, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 403, Times.Exactly(2));
 
             this.participant.Role = new Role() { AccessRights = { AccessRight.CreateDiagramConfiguration } };
 
-            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, "config1", diagramLayoutInformationDtos, this.context.Object);
+            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, configFileName, diagramLayoutInformationDtos, this.context.Object);
 
             this.fileService.Verify(x => x.MoveFile(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
+
+            var basePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Diagram Configuration");
+            this.fileService.Setup(x => x.GetFullPath("Diagram Configuration")).Returns(basePath);
+            var path = Path.Combine(basePath, this.reviewTaskId.ToString());
+            Directory.CreateDirectory(path);
+            var filePath = Path.Combine(path, configFileName);
+            await using var _ =File.Create(filePath);
+            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, configFileName, diagramLayoutInformationDtos, this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 300, Times.Once);
+
+            for (var fileCount = 0; fileCount < 5; fileCount++)
+            {
+                filePath = Path.Combine(path, $"{configFileName}{fileCount}");
+                await using var tmp = File.Create(filePath);
+            }
+
+            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, "newConfig", diagramLayoutInformationDtos, this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 300, Times.Exactly(2));
         }
 
         [Test]
