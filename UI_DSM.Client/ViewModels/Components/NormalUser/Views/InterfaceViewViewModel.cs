@@ -19,7 +19,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
+
     using DynamicData;
+
     using Microsoft.AspNetCore.Components;
 
     using ReactiveUI;
@@ -71,14 +73,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         private List<ProductRowViewModel> filteredProducts;
 
         /// <summary>
-        ///     Backing field for <see cref="IsOnSavingMode" />
-        /// </summary>
-        private bool isOnSavingMode;
-
-        /// <summary>
         ///     Backing field for <see cref="IsOnLoadingMode" />
         /// </summary>
         private bool isOnLoadingMode;
+
+        /// <summary>
+        ///     Backing field for <see cref="IsOnSavingMode" />
+        /// </summary>
+        private bool isOnSavingMode;
 
         /// <summary>
         ///     Backing field for <see cref="IsViewSettingsVisible" />
@@ -95,11 +97,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
         /// <param name="filterViewModel">The <see cref="IFilterViewModel" /></param>
-        /// <param name="diagrammingConfigurationService">The <see cref="IDiagrammingConfigurationService"/></param>
-        public InterfaceViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel, IDiagrammingConfigurationService diagrammingConfigurationService) : base(reviewItemService)
+        /// <param name="diagrammingConfigurationService">The <see cref="IDiagrammingConfigurationService" /></param>
+        /// <param name="errorMessageViewModel">The <see cref="IErrorMessageViewModel" /></param>
+        public InterfaceViewViewModel(IReviewItemService reviewItemService, IFilterViewModel filterViewModel,
+            IDiagrammingConfigurationService diagrammingConfigurationService, IErrorMessageViewModel errorMessageViewModel) : base(reviewItemService)
         {
             this.FilterViewModel = filterViewModel;
             this.diagrammingConfigurationService = diagrammingConfigurationService;
+            this.ErrorMessageViewModel = errorMessageViewModel;
         }
 
         /// <summary>
@@ -166,9 +171,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public Dictionary<DiagramLink, InterfaceRowViewModel> InterfacesMap { get; } = new();
 
         /// <summary>
-        /// Gets or sets the center of the diagram.
+        ///     Gets or sets the center of the diagram.
         /// </summary>
-        public Point DiagramCenter { get; set; } = new Point(800, 800);
+        public Point DiagramCenter { get; set; } = new(800, 800);
 
         /// <summary>
         ///     Filters current rows
@@ -209,13 +214,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="things">A collection of <see cref="Thing" /></param>
         /// <param name="projectId">The <see cref="Project" /> id</param>
         /// <param name="reviewId">The <see cref="Review" /> id</param>
-        /// <param name="reviewTaskId">The <see cref="ReviewTask"/> id</param>
+        /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
+        /// <param name="participant"></param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
+        public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart, Participant participant)
         {
-            await base.InitializeProperties(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart);
+            await base.InitializeProperties(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart, participant);
 
             var products = this.Things.OfType<ElementDefinition>()
                 .Where(x => x.IsProduct())
@@ -264,6 +270,48 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             {
                 OnValidSubmit = new EventCallbackFactory().Create(this, this.LoadDiagramLayout)
             };
+        }
+
+        /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationPopupViewModel" />
+        /// </summary>
+        public IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; private set; }
+
+        /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationLoadingPopupViewModel" />
+        /// </summary>
+        public IDiagrammingConfigurationLoadingPopupViewModel DiagrammingConfigurationLoadingPopupViewModel { get; private set; }
+
+        /// <summary>
+        ///     The <see cref="IErrorMessageViewModel" />
+        /// </summary>
+        public IErrorMessageViewModel ErrorMessageViewModel { get; }
+
+        /// <summary>
+        ///     Value indicating the user is currently saving the diagramming configuration
+        /// </summary>
+        public bool IsOnSavingMode
+        {
+            get => this.isOnSavingMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnSavingMode, value);
+        }
+
+        /// <summary>
+        ///     Value indicating the user is currently loading the diagramming configuration
+        /// </summary>
+        public bool IsOnLoadingMode
+        {
+            get => this.isOnLoadingMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnLoadingMode, value);
+        }
+
+        /// <summary>
+        ///     Opens the <see cref="DiagrammingConfigurationPopup" />
+        /// </summary>
+        public void OpenSavingPopup()
+        {
+            this.ErrorMessageViewModel.Errors.Clear();
+            this.IsOnSavingMode = true;
         }
 
         /// <summary>
@@ -368,10 +416,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
-        /// Selects the first central product depending on the selected element.
+        ///     Selects the first central product depending on the selected element.
         /// </summary>
         /// <param name="selectedElement">the selected element</param>
-        /// <returns>the selected <see cref="ProductRowViewModel"/></returns>
+        /// <returns>the selected <see cref="ProductRowViewModel" /></returns>
         /// <exception cref="ArgumentException">if the selected element is not null and is not of correct type</exception>
         public ProductRowViewModel SelectFirstProductByCloserSelectedItem(object selectedElement)
         {
@@ -379,30 +427,31 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             {
                 return productRowViewModel;
             }
-            else if (selectedElement is PortRowViewModel portRowViewModel)
+
+            if (selectedElement is PortRowViewModel portRowViewModel)
             {
                 return this.Products.FirstOrDefault(x => x.ThingId == portRowViewModel.ContainerId, this.Products.First());
             }
-            else if (selectedElement is InterfaceRowViewModel interfaceRowViewModel)
+
+            if (selectedElement is InterfaceRowViewModel interfaceRowViewModel)
             {
                 var source = this.allPorts.FirstOrDefault(x => x.ThingId == interfaceRowViewModel.SourceId, this.allPorts.First());
                 return this.Products.FirstOrDefault(x => x.ThingId == source.ContainerId, this.Products.First());
             }
-            else if (selectedElement is null)
+
+            if (selectedElement is null)
             {
                 return this.Products.First();
             }
-            else
-            {
-                throw new ArgumentException($"the {selectedElement} is not a valid argument");
-            }
+
+            throw new ArgumentException($"the {selectedElement} is not a valid argument");
         }
 
         /// <summary>
-        /// Tries to get all the neighbours of a <see cref="ProductRowViewModel"/>
+        ///     Tries to get all the neighbours of a <see cref="ProductRowViewModel" />
         /// </summary>
         /// <param name="productRow">the product to get the neighbours from</param>
-        /// <returns>A <see cref="IEnumerable{ProductRowViewModel}"/> with the neighbours, or null if the product don't have neighbours</returns>
+        /// <returns>A <see cref="IEnumerable{ProductRowViewModel}" /> with the neighbours, or null if the product don't have neighbours</returns>
         /// <exception cref="Exception">if the source and target of a interface it's the same port</exception>
         public IEnumerable<ProductRowViewModel> GetNeighbours(ProductRowViewModel productRow)
         {
@@ -413,14 +462,15 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
                 foreach (var port in ports)
                 {
-                    var sourceInterface = this.Interfaces.FirstOrDefault(x => (x.SourceId == port.ThingId) && x.IsVisible, null);
-                    var targetInterface = this.Interfaces.FirstOrDefault(x => (x.TargetId == port.ThingId) && x.IsVisible, null);
+                    var sourceInterface = this.Interfaces.FirstOrDefault(x => x.SourceId == port.ThingId && x.IsVisible, null);
+                    var targetInterface = this.Interfaces.FirstOrDefault(x => x.TargetId == port.ThingId && x.IsVisible, null);
 
                     if (sourceInterface != null && targetInterface != null)
                     {
                         throw new Exception("Source and Target of an interface shall be a different port");
                     }
-                    else if (sourceInterface != null)
+
+                    if (sourceInterface != null)
                     {
                         var targetPort = this.allPorts.FirstOrDefault(p => p.ThingId == sourceInterface.TargetId, null);
 
@@ -437,6 +487,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                     else if (targetInterface != null)
                     {
                         var sourcePort = this.allPorts.FirstOrDefault(p => p.ThingId == targetInterface.SourceId, null);
+
                         if (sourcePort != null)
                         {
                             var sourcePortContainer = this.Products.FirstOrDefault(pr => pr.ThingId == sourcePort.ContainerId, null);
@@ -478,23 +529,23 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     Creates a central node and his neighbours
         /// </summary>
-        /// <param name="centerNode">the center node</param>
+        /// <param name="centerProduct">the center node</param>
         public void CreateCentralNodeAndNeighbours(ProductRowViewModel centerProduct)
         {
             this.ProductsMap.Clear();
             this.PortsMap.Clear();
             this.InterfacesMap.Clear();
 
-            var node = CreateNewNodeFromProduct(centerProduct);
+            var node = this.CreateNewNodeFromProduct(centerProduct);
             node.SetPosition(this.DiagramCenter.X, this.DiagramCenter.Y);
 
             this.CreateNeighboursAndPositionAroundProduct(centerProduct);
         }
 
         /// <summary>
-        /// Creates neighbours for a product a place them in circle 
+        ///     Creates neighbours for a product a place them in circle
         /// </summary>
-        /// <param name="productRowViewModel">the <see cref="ProductRowViewModel"/></param>
+        /// <param name="productRowViewModel">the <see cref="ProductRowViewModel" /></param>
         public void CreateNeighboursAndPositionAroundProduct(ProductRowViewModel productRowViewModel)
         {
             if (this.ProductsMap.ContainsValue(productRowViewModel))
@@ -508,19 +559,20 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 if (neighbours != null && neighbours.Any())
                 {
                     var angle = Math.PI / 2.0;
-                    var angleIncrement = (2.0 * Math.PI) / neighbours.Count();
+                    var angleIncrement = 2.0 * Math.PI / neighbours.Count();
 
                     foreach (var neighbour in neighbours)
                     {
                         var x = node.Position.X - r * Math.Cos(angle);
                         var y = node.Position.Y - r * Math.Sin(angle);
 
-                        var neighbourNode = CreateNewNodeFromProduct(neighbour);
+                        var neighbourNode = this.CreateNewNodeFromProduct(neighbour);
                         neighbourNode.SetPosition(x, y);
 
                         angle += angleIncrement;
                     }
                 }
+
                 this.CreateInterfacesLinks();
             }
         }
@@ -549,6 +601,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             if (this.HasChildren(product) && nodeCanBeAdded)
             {
                 var ports = this.LoadChildren(product);
+
                 foreach (var port in ports)
                 {
                     var index = ports.IndexOf(port);
@@ -573,56 +626,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
                     this.PortsMap.TryAdd(portNode, port);
                 }
-            }        
+            }
 
             return node;
-        }
-
-        /// <summary>
-        /// Gets the aproximate alignment of the port depending its position in the node
-        /// </summary>
-        /// <param name="indexOfPort">the index of the port</param>
-        /// <param name="totalPortsInNode"></param>
-        /// <returns>the aproximate alignment of the port</returns>
-        private static PortAlignment GetAproximateAlignment(int indexOfPort, int totalPortsInNode)
-        {
-            var increment = (360.0) / totalPortsInNode;
-            var angle = increment * indexOfPort;
-
-            if (angle >= 0 && angle < 22.5 || angle >= 337.5 && angle < 360.0)
-            {
-                return PortAlignment.Right;
-            }
-            else if (angle >= 22.5 && angle < 67.5)
-            {
-                return PortAlignment.TopRight;
-            }
-            else if (angle >= 67.5 && angle < 112.5)
-            {
-                return PortAlignment.Top;
-            }
-            else if (angle >= 112.5 && angle < 157.5)
-            {
-                return PortAlignment.TopLeft;
-            }
-            else if (angle >= 157.5 && angle < 202.5)
-            {
-                return PortAlignment.Left;
-            }
-            else if (angle >= 202.5 && angle < 247.5)
-            {
-                return PortAlignment.BottomLeft;
-            }
-            else if (angle >= 247.5 && angle < 292.5)
-            {
-                return PortAlignment.Bottom;
-            }
-            else if (angle >= 292.5 && angle < 337.5)
-            {
-                return PortAlignment.BottomRight;
-            }
-
-            return PortAlignment.Top;
         }
 
         /// <summary>
@@ -631,6 +637,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public void CreateInterfacesLinks()
         {
             this.InterfacesMap.Clear();
+
             foreach (var interf in this.Interfaces)
             {
                 var sourcePortRowVM = this.PortsMap.Values.FirstOrDefault(port => port.ThingId == interf.SourceId);
@@ -644,13 +651,15 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
                 if (source != null && target != null)
                 {
-                    var link = new DiagramLink(source, target);
-                    link.Locked = true;
-                    link.Router = Routers.Orthogonal;
-                    link.PathGenerator = PathGenerators.Smooth;
-                    link.SourceMarker = LinkMarker.Square;
-                    link.TargetMarker = LinkMarker.Arrow;
-                    link.HasComments = interf.HasComment();
+                    var link = new DiagramLink(source, target)
+                    {
+                        Locked = true,
+                        Router = Routers.Orthogonal,
+                        PathGenerator = PathGenerators.Smooth,
+                        SourceMarker = LinkMarker.Square,
+                        TargetMarker = LinkMarker.Arrow,
+                        HasComments = interf.HasComment()
+                    };
 
                     if (!this.InterfacesMap.Keys.Any(x => x.TargetPort == link.TargetPort && x.SourcePort == link.SourcePort))
                     {
@@ -676,7 +685,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 node.HasComments = hasComments;
                 return true;
             }
-            else if (updatedObject is PortRowViewModel portRowViewModel && this.allPorts.Contains(portRowViewModel))
+
+            if (updatedObject is PortRowViewModel portRowViewModel && this.allPorts.Contains(portRowViewModel))
             {
                 var indexOfPort = this.allPorts.IndexOf(portRowViewModel);
                 var keyValuePair = this.PortsMap.First(x => x.Value == portRowViewModel);
@@ -687,7 +697,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 port.HasComments = hasComments;
                 return true;
             }
-            else if (updatedObject is InterfaceRowViewModel interfaceRowViewModel && this.Interfaces.Contains(interfaceRowViewModel))
+
+            if (updatedObject is InterfaceRowViewModel interfaceRowViewModel && this.Interfaces.Contains(interfaceRowViewModel))
             {
                 var indexOfInterface = this.Interfaces.IndexOf(interfaceRowViewModel);
                 var keyValuePair = this.InterfacesMap.First(x => x.Value == interfaceRowViewModel);
@@ -700,6 +711,110 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             }
 
             return false;
+        }
+
+        /// <summary>
+        ///     Opens the <see cref="DiagrammingConfigurationLoadingPopup" />
+        /// </summary>
+        public async void OpenLoadingConfigurationPopup()
+        {
+            this.DiagrammingConfigurationLoadingPopupViewModel.ConfigurationsName = await this.diagrammingConfigurationService.LoadDiagramLayoutConfigurationNames(this.ProjectId, this.ReviewTaskId);
+            this.IsOnLoadingMode = true;
+        }
+
+        /// <summary>
+        ///     Saves current diagram layout
+        /// </summary>
+        public async Task SaveCurrentDiagramLayout()
+        {
+            var layoutInformationDtos = this.ProductsMap.Keys.Select(x => new DiagramLayoutInformationDto { ThingId = x.ThingId, xPosition = x.Position.X, yPosition = x.Position.Y });
+            var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationPopupViewModel.ConfigurationName, layoutInformationDtos);
+
+            this.ErrorMessageViewModel.Errors.Clear();
+
+            if (!response.result)
+            {
+                this.ErrorMessageViewModel.HandleErrors(response.errors);
+            }
+
+            this.IsOnSavingMode = !response.result;
+        }
+
+        /// <summary>
+        ///     Load choosen diagram layout
+        /// </summary>
+        public async Task LoadDiagramLayout()
+        {
+            var response = await this.diagrammingConfigurationService.LoadDiagramLayoutConfiguration(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationLoadingPopupViewModel.SelectedConfiguration);
+
+            this.ProductsMap.Clear();
+            this.PortsMap.Clear();
+            this.InterfacesMap.Clear();
+
+            foreach (var diagrammingInformationDto in response)
+            {
+                var productRowView = this.allProducts.FirstOrDefault(x => x.ThingId == diagrammingInformationDto.ThingId);
+                var node = this.CreateNewNodeFromProduct(productRowView);
+                node.SetPosition(diagrammingInformationDto.xPosition, diagrammingInformationDto.yPosition);
+            }
+
+            this.CreateInterfacesLinks();
+
+            this.IsOnLoadingMode = false;
+        }
+
+        /// <summary>
+        ///     Gets the aproximate alignment of the port depending its position in the node
+        /// </summary>
+        /// <param name="indexOfPort">the index of the port</param>
+        /// <param name="totalPortsInNode"></param>
+        /// <returns>the aproximate alignment of the port</returns>
+        private static PortAlignment GetAproximateAlignment(int indexOfPort, int totalPortsInNode)
+        {
+            var increment = 360.0 / totalPortsInNode;
+            var angle = increment * indexOfPort;
+
+            if (angle is >= 0 and < 22.5 or >= 337.5 and < 360.0)
+            {
+                return PortAlignment.Right;
+            }
+
+            if (angle is >= 22.5 and < 67.5)
+            {
+                return PortAlignment.TopRight;
+            }
+
+            if (angle is >= 67.5 and < 112.5)
+            {
+                return PortAlignment.Top;
+            }
+
+            if (angle is >= 112.5 and < 157.5)
+            {
+                return PortAlignment.TopLeft;
+            }
+
+            if (angle is >= 157.5 and < 202.5)
+            {
+                return PortAlignment.Left;
+            }
+
+            if (angle is >= 202.5 and < 247.5)
+            {
+                return PortAlignment.BottomLeft;
+            }
+
+            if (angle is >= 247.5 and < 292.5)
+            {
+                return PortAlignment.Bottom;
+            }
+
+            if (angle is >= 292.5 and < 337.5)
+            {
+                return PortAlignment.BottomRight;
+            }
+
+            return PortAlignment.Top;
         }
 
         /// <summary>
@@ -782,83 +897,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             });
 
             this.FilterViewModel.InitializeProperties(availableRowFilters);
-        }
-
-        /// <summary>
-        ///     The <see cref="IDiagrammingConfigurationPopupViewModel" />
-        /// </summary>
-        public IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; private set; }
-
-        /// <summary>
-        ///     The <see cref="IDiagrammingConfigurationLoadingPopupViewModel" />
-        /// </summary>
-        public IDiagrammingConfigurationLoadingPopupViewModel DiagrammingConfigurationLoadingPopupViewModel { get; private set; }
-
-        /// <summary>
-        ///     Value indicating the user is currently saving the diagramming configuration
-        /// </summary>
-        public bool IsOnSavingMode
-        {
-            get => this.isOnSavingMode;
-            set => this.RaiseAndSetIfChanged(ref this.isOnSavingMode, value);
-        }
-
-        /// <summary>
-        ///     Value indicating the user is currently loading the diagramming configuration
-        /// </summary>
-        public bool IsOnLoadingMode
-        {
-            get => this.isOnLoadingMode;
-            set => this.RaiseAndSetIfChanged(ref this.isOnLoadingMode, value);
-        }
-
-        /// <summary>
-        ///     Opens the <see cref="DiagrammingConfigurationPopup" />
-        /// </summary>
-        public void OpenSavingPopup()
-        {
-            this.IsOnSavingMode = true;
-        }
-
-        /// <summary>
-        ///     Opens the <see cref="DiagrammingConfigurationLoadingPopup" />
-        /// </summary>
-        public async void OpenLoadingConfigurationPopup()
-        {
-            this.DiagrammingConfigurationLoadingPopupViewModel.ConfigurationsName = await this.diagrammingConfigurationService.LoadDiagramLayoutConfigurationNames(this.ProjectId, this.ReviewTaskId);
-            this.IsOnLoadingMode = true;
-        }
-
-        /// <summary>
-        ///     Saves current diagram layout
-        /// </summary>
-        public async Task SaveCurrentDiagramLayout()
-        {
-            var layoutInformationDtos = this.ProductsMap.Keys.Select(x => new DiagramLayoutInformationDto { ThingId = x.ThingId, xPosition = x.Position.X, yPosition = x.Position.Y });
-            var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationPopupViewModel.ConfigurationName, layoutInformationDtos);
-            this.IsOnSavingMode = !response;
-        }
-
-        /// <summary>
-        ///     Load choosen diagram layout
-        /// </summary>
-        public async Task LoadDiagramLayout()
-        {
-            var response = await this.diagrammingConfigurationService.LoadDiagramLayoutConfiguration(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationLoadingPopupViewModel.SelectedConfiguration);
-
-            this.ProductsMap.Clear();
-            this.PortsMap.Clear();
-            this.InterfacesMap.Clear();
-
-            foreach (var diagrammingInformationDto in response) 
-            {
-                var productRowView = allProducts.FirstOrDefault(x => x.ThingId == diagrammingInformationDto.ThingId);
-                var node = CreateNewNodeFromProduct(productRowView);
-                node.SetPosition(diagrammingInformationDto.xPosition, diagrammingInformationDto.yPosition);
-            }
-            this.CreateInterfacesLinks();
-
-            this.IsOnLoadingMode = false;
         }
     }
 }

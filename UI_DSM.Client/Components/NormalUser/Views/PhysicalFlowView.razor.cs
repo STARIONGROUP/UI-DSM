@@ -16,16 +16,22 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using Blazor.Diagrams.Core;
     using Blazor.Diagrams.Core.Geometry;
     using Blazor.Diagrams.Core.Models;
-    using Blazor.Diagrams.Core.Models.Base;
+
     using CDP4Common.CommonData;
+
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.JSInterop;
+
     using ReactiveUI;
+
     using UI_DSM.Client.Components.Widgets;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Models;
+
+    using Model = Blazor.Diagrams.Core.Models.Base.Model;
 
     /// <summary>
     ///     Component for the <see cref="View.PhysicalFlowView" />
@@ -33,25 +39,25 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     public partial class PhysicalFlowView : GenericBaseView<IInterfaceViewViewModel>, IReusableView, IDisposable
     {
         /// <summary>
+        ///     A collection of <see cref="IDisposable" />
+        /// </summary>
+        private readonly List<IDisposable> disposables = new();
+
+        /// <summary>
         ///     Gets or sets the diagram component.
         /// </summary>
         public Diagram Diagram { get; set; }
 
         /// <summary>
-        /// Gets or sets the JSRuntime to invoke JS 
+        ///     Gets or sets the JSRuntime to invoke JS
         /// </summary>
         [Inject]
         public IJSRuntime JSRuntime { get; set; }
 
         /// <summary>
-        /// The reference of the diagram
+        ///     The reference of the diagram
         /// </summary>
         public ElementReference DiagramReference { get; set; }
-
-        /// <summary>
-        ///     A collection of <see cref="IDisposable" />
-        /// </summary>
-        private readonly List<IDisposable> disposables = new();
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -79,7 +85,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             var dimensions = await this.JSRuntime.InvokeAsync<int[]>("GetNodeDimensions", this.DiagramReference);
             var centerX = Math.Round(dimensions[0] / 2.0);
             var centerY = Math.Round(dimensions[1] / 2.0);
-            this.ViewModel.DiagramCenter = new Blazor.Diagrams.Core.Geometry.Point(centerX, centerY);
+            this.ViewModel.DiagramCenter = new Point(centerX, centerY);
             this.ViewModel = interfaceView.ViewModel;
             await this.HasChanged();
 
@@ -109,10 +115,11 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <param name="reviewTaskId">The <see cref="UI_DSM.Shared.Models.ReviewTask" /> id</param>
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
+        /// <param name="participant">The current <see cref="Participant"/></param>
         /// <returns>A <see cref="Task" /></returns>
-        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart)
+        public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart, Participant participant)
         {
-            await base.InitializeViewModel(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart);
+            await base.InitializeViewModel(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart, participant);
             this.ViewModel.InitializeDiagram();
             this.RefreshDiagram();
             this.IsLoading = false;
@@ -135,10 +142,52 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public void RefreshDiagram()
         {
             this.Diagram.Nodes.Clear();
-            this.ViewModel.ProductsMap.Keys.ToList().ForEach(node => { node.RefreshAll(); this.Diagram.Nodes.Add(node); });
-            this.ViewModel.InterfacesMap.Keys.ToList().ForEach(link => { link.Refresh(); this.Diagram.Links.Add(link); });
+
+            this.ViewModel.ProductsMap.Keys.ToList().ForEach(node =>
+            {
+                node.RefreshAll();
+                this.Diagram.Nodes.Add(node);
+            });
+
+            this.ViewModel.InterfacesMap.Keys.ToList().ForEach(link =>
+            {
+                link.Refresh();
+                this.Diagram.Links.Add(link);
+            });
+
             this.Diagram.Refresh();
             this.StateHasChanged();
+        }
+
+        /// <summary>
+        ///     Mouse double click on a diagram's model
+        /// </summary>
+        /// <param name="model">the model double clicked</param>
+        /// <param name="point">The <see cref="Point"/></param>
+        public void MouseDoubleClickOnModel(Model model, Point point)
+        {
+            if (model is DiagramNode diagramNode && this.ViewModel.ProductsMap.ContainsKey(diagramNode))
+            {
+                var productRowViewModel = this.ViewModel.ProductsMap[diagramNode];
+                this.ViewModel.CreateNeighboursAndPositionAroundProduct(productRowViewModel);
+                this.RefreshDiagram();
+            }
+            else if (model is DiagramLink diagramLink)
+            {
+                var vertex = new LinkVertexModel(diagramLink, point);
+                diagramLink.Vertices.Add(vertex);
+                this.ViewModel.CreateInterfacesLinks();
+                this.Diagram.Refresh();
+            }
+        }
+
+        /// <summary>
+        ///     Mouse up on a diagram's model
+        /// </summary>
+        /// <param name="model">the model clicked</param>
+        public void MouseUpOnComponent(Model model)
+        {
+            this.ViewModel.SetSelectedModel(model);
         }
 
         /// <summary>
@@ -161,13 +210,15 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             };
 
             this.Diagram.RegisterModelComponent<DiagramLink, DiagramLinkWidget>();
-            this.Diagram.MouseDoubleClick += Diagram_MouseDoubleClick;
+            this.Diagram.MouseDoubleClick += this.Diagram_MouseDoubleClick;
             this.Diagram.MouseUp += this.Diagram_MouseUp;
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnSavingMode)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnLoadingMode)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnLoadingMode)
                 .Subscribe(async x => await this.OnIsOnLoadingModeChanged(x)));
         }
@@ -212,36 +263,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             {
                 this.MouseDoubleClickOnModel(model, new Point(args.OffsetX, args.OffsetY));
             }
-        }
-
-        /// <summary>
-        /// Mouse double click on a diagram's model
-        /// </summary>
-        /// <param name="model">the model double clicked</param>
-        public void MouseDoubleClickOnModel(Model model, Point point)
-        {
-            if (model is DiagramNode diagramNode && this.ViewModel.ProductsMap.ContainsKey(diagramNode))
-            {
-                var productRowViewModel = this.ViewModel.ProductsMap[diagramNode];
-                this.ViewModel.CreateNeighboursAndPositionAroundProduct(productRowViewModel);
-                this.RefreshDiagram();
-            }
-            else if (model is DiagramLink diagramLink)
-            {
-                var vertex = new LinkVertexModel(diagramLink, point);
-                diagramLink.Vertices.Add(vertex);
-                this.ViewModel.CreateInterfacesLinks();
-                this.Diagram.Refresh();
-            }
-        }
-
-        /// <summary>
-        /// Mouse up on a diagram's model
-        /// </summary>
-        /// <param name="model">the model clicked</param>
-        public void MouseUpOnComponent(Model model)
-        {
-            this.ViewModel.SetSelectedModel(model);
         }
     }
 }

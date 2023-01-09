@@ -53,10 +53,12 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <param name="things">The collection of <see cref="Thing" /></param>
         /// <param name="projectId">The <see cref="Project" /> id</param>
         /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="reviewTaskId">The <see cref="ReviewTask"/> id</param>
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
+        /// <param name="participant">The current <see cref="Participant"/></param>
         /// <returns>A <see cref="Task" /></returns>
-        public abstract Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart);
+        public abstract Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart, Participant participant);
 
         /// <summary>
         ///     Handle the fact that something has changed and needs to update the view

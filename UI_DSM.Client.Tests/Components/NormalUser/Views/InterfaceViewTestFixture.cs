@@ -37,13 +37,16 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
     using UI_DSM.Client.ViewModels.App.OptionChooser;
+    using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     using BinaryRelationship = CDP4Common.DTO.BinaryRelationship;
     using ElementDefinition = CDP4Common.DTO.ElementDefinition;
     using ElementUsage = CDP4Common.DTO.ElementUsage;
+    using Participant = UI_DSM.Shared.Models.Participant;
     using Requirement = CDP4Common.EngineeringModelData.Requirement;
     using TestContext = Bunit.TestContext;
 
@@ -60,7 +63,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.context = new TestContext();
             this.context.ConfigureDevExpressBlazor();
             this.reviewItemService = new Mock<IReviewItemService>();
-            this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel(), null);
+            this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel(), null, new ErrorMessageViewModel());
             var trlViewModel = new ProductBreakdownStructureViewViewModel(this.reviewItemService.Object, new FilterViewModel(), new OptionChooserViewModel());
             this.context.Services.AddSingleton(this.viewModel);
             this.context.Services.AddTransient<IConnectionVisibilitySelectorViewModel, ConnectionVisibilitySelectorViewModel>();
@@ -203,7 +206,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     .Select(x => x.Value)
                     .ToList();
 
-                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, Guid.Empty, new List<string>(), new List<string>());
+                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, Guid.Empty, new List<string>(), 
+                    new List<string>(), new Participant(){Role = new Role(){AccessRights = { AccessRight.CreateDiagramConfiguration }}});
+
                 Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
 
                 await renderer.InvokeAsync(() =>renderer.Instance.OnProductVisibilityChanged(true));

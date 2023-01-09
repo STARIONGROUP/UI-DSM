@@ -40,6 +40,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using ElementDefinition = CDP4Common.DTO.ElementDefinition;
     using ElementUsage = CDP4Common.DTO.ElementUsage;
     using Iteration = CDP4Common.DTO.Iteration;
+    using Participant = UI_DSM.Shared.Models.Participant;
     using Requirement = CDP4Common.EngineeringModelData.Requirement;
     using TestContext = Bunit.TestContext;
 
@@ -223,7 +224,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     .Select(x => x.Value)
                     .ToList();
 
-                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, Guid.Empty, new List<string>(), new List<string>());
+                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, Guid.Empty, new List<string>(), 
+                    new List<string>(), new Participant());
 
                 Assert.Multiple(() =>
                 {

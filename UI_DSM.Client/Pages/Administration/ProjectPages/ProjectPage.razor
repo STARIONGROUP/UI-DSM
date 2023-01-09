@@ -46,9 +46,9 @@
 		<ModelsDetails  ViewModel="@this.ViewModel.ProjectDetailsViewModel"/>		
 		<div>
 			<AppButton Click="@this.ViewModel.OpenCometConnectionPopup" Type="button">
-				<FeatherUpload Size="20" Color="currentColor" StrokeWidth="2"/> <span>Add COMET Model</span>
+				<FeatherUpload Size="20" Color="currentColor" StrokeWidth="2"/> <span>Connect to COMET</span>
 			</AppButton>
-			<DxPopup CloseOnOutsideClick="false" HeaderText="Upload an Iteration" @bind-Visible="@this.ViewModel.IsOnCometConnectionMode">
+			<DxPopup CloseOnOutsideClick="false" HeaderText="Connect to COMET" @bind-Visible="@this.ViewModel.IsOnCometConnectionMode">
 				<Content>
 					<CometUpload ViewModel="@this.ViewModel.CometUploadViewModel"/>
 				</Content>

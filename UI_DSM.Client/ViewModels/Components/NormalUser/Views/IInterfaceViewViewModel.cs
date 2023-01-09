@@ -13,9 +13,9 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
-    using Blazor.Diagrams.Core;
     using Blazor.Diagrams.Core.Geometry;
     using Blazor.Diagrams.Core.Models;
+    using Blazor.Diagrams.Core.Models.Base;
 
     using CDP4Common.CommonData;
 
@@ -42,7 +42,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         List<ProductRowViewModel> Products { get; }
 
         /// <summary>
-        /// Gets or sets the center point of the diagram
+        ///     Gets or sets the center point of the diagram
         /// </summary>
         Point DiagramCenter { get; set; }
 
@@ -72,17 +72,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         bool IsViewSettingsVisible { get; set; }
 
         /// <summary>
-        /// The map collection from <see cref="NodeModel"/> ID to <see cref="ProductRowViewModel"/>
+        ///     The map collection from <see cref="NodeModel" /> ID to <see cref="ProductRowViewModel" />
         /// </summary>
         Dictionary<DiagramNode, ProductRowViewModel> ProductsMap { get; }
 
         /// <summary>
-        /// The map collection from <see cref="PortModel"/> ID to <see cref="PortRowViewModel"/>
+        ///     The map collection from <see cref="PortModel" /> ID to <see cref="PortRowViewModel" />
         /// </summary>
         Dictionary<DiagramPort, PortRowViewModel> PortsMap { get; }
 
         /// <summary>
-        /// The map collection from <see cref="LinkModel"/> ID to <see cref="InterfaceRowViewModel"/>
+        ///     The map collection from <see cref="LinkModel" /> ID to <see cref="InterfaceRowViewModel" />
         /// </summary>
         Dictionary<DiagramLink, InterfaceRowViewModel> InterfacesMap { get; }
 
@@ -90,6 +90,31 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     The <see cref="IFilterViewModel" />
         /// </summary>
         IFilterViewModel FilterViewModel { get; }
+
+        /// <summary>
+        ///     Value indicating the user is currently saving the diagramming configuration
+        /// </summary>
+        bool IsOnSavingMode { get; set; }
+
+        /// <summary>
+        ///     Value indicating the user is currently loading a diagramming configuration
+        /// </summary>
+        bool IsOnLoadingMode { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationPopupViewModel" />
+        /// </summary>
+        IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; }
+
+        /// <summary>
+        ///     The <see cref="IDiagrammingConfigurationLoadingPopupViewModel" />
+        /// </summary>
+        IDiagrammingConfigurationLoadingPopupViewModel DiagrammingConfigurationLoadingPopupViewModel { get; }
+
+        /// <summary>
+        ///     The <see cref="IErrorMessageViewModel" />
+        /// </summary>
+        IErrorMessageViewModel ErrorMessageViewModel { get; }
 
         /// <summary>
         ///     Filters current rows
@@ -137,81 +162,64 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         void SetProductsVisibility(bool visibility);
 
         /// <summary>
-        /// Initializes the diagram with the selected element as a center node.
+        ///     Initializes the diagram with the selected element as a center node.
         /// </summary>
         void InitializeDiagram();
 
         /// <summary>
-        /// Selects the first central product depending on the selected element.
+        ///     Selects the first central product depending on the selected element.
         /// </summary>
         /// <param name="selectedElement">the selected element</param>
-        /// <returns>the selected <see cref="ProductRowViewModel"/></returns>
-        /// <exception cref="ArgumentException">if the selected element is not null and is not of type <see cref="ElementBaseRowViewModel"/></exception>
+        /// <returns>the selected <see cref="ProductRowViewModel" /></returns>
+        /// <exception cref="ArgumentException">
+        ///     if the selected element is not null and is not of type
+        ///     <see cref="ElementBaseRowViewModel" />
+        /// </exception>
         ProductRowViewModel SelectFirstProductByCloserSelectedItem(object selectedElement);
 
         /// <summary>
-        /// Tries to get all the neighbours of a <see cref="ProductRowViewModel"/>
+        ///     Tries to get all the neighbours of a <see cref="ProductRowViewModel" />
         /// </summary>
         /// <param name="productRow">the product to get the neighbours from</param>
-        /// <returns>A <see cref="IEnumerable{ProductRowViewModel}"/> with the neighbours, or null if the product don't have neighbours</returns>
+        /// <returns>A <see cref="IEnumerable{ProductRowViewModel}" /> with the neighbours, or null if the product don't have neighbours</returns>
         /// <exception cref="Exception">if the source and target of a interface it's the same port</exception>
         IEnumerable<ProductRowViewModel> GetNeighbours(ProductRowViewModel productRow);
 
         /// <summary>
-        /// Creates a central node and his neighbours
+        ///     Creates a central node and his neighbours
         /// </summary>
         /// <param name="centerNode">the center node</param>
         void CreateCentralNodeAndNeighbours(ProductRowViewModel centerNode);
 
         /// <summary>
-        /// Creates neighbours for a product a place them in circle 
+        ///     Creates neighbours for a product a place them in circle
         /// </summary>
-        /// <param name="productRowViewModel">the <see cref="ProductRowViewModel"/></param>
+        /// <param name="productRowViewModel">the <see cref="ProductRowViewModel" /></param>
         void CreateNeighboursAndPositionAroundProduct(ProductRowViewModel productRowViewModel);
 
         /// <summary>
-        /// Creates a new node from a <see cref="ProductRowViewModel"/>. The product is added to the Diagram an the corresponding maps are filled.
+        ///     Creates a new node from a <see cref="ProductRowViewModel" />. The product is added to the Diagram an the corresponding maps are filled.
         /// </summary>
         /// <param name="product">the product for which the node will be created</param>
-        /// <returns>the created <see cref="NodeModel"/></returns>
+        /// <returns>the created <see cref="NodeModel" /></returns>
         DiagramNode CreateNewNodeFromProduct(ProductRowViewModel product);
 
         /// <summary>
-        /// Creates the links for the <see cref="InterfaceRowViewModel"/>
+        ///     Creates the links for the <see cref="InterfaceRowViewModel" />
         /// </summary>
         void CreateInterfacesLinks();
 
         /// <summary>
-        /// Sets the selected model for this <see cref="IInterfaceViewViewModel"/>
+        ///     Sets the selected model for this <see cref="IInterfaceViewViewModel" />
         /// </summary>
         /// <param name="model">the model to select</param>
-        void SetSelectedModel(Blazor.Diagrams.Core.Models.Base.Model model);
+        void SetSelectedModel(Model model);
 
         /// <summary>
-        /// Upgrades the nodes with the actual data
+        ///     Upgrades the nodes with the actual data
         /// </summary>
         /// <returns>true if the object was updated, false otherwise</returns>
         bool TryUpdate(object updatedObject, bool hasComments);
-
-        /// <summary>
-        ///     Value indicating the user is currently saving the diagramming configuration
-        /// </summary>
-        bool IsOnSavingMode { get; set; }
-
-        /// <summary>
-        ///     Value indicating the user is currently loading a diagramming configuration
-        /// </summary>
-        bool IsOnLoadingMode { get; set; }
-
-        /// <summary>
-        ///     The <see cref="IDiagrammingConfigurationPopupViewModel" />
-        /// </summary>
-        IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; }
-
-        /// <summary>
-        ///     The <see cref="IDiagrammingConfigurationLoadingPopupViewModel" />
-        /// </summary>
-        IDiagrammingConfigurationLoadingPopupViewModel DiagrammingConfigurationLoadingPopupViewModel { get; }
 
         /// <summary>
         ///     Opens the <see cref="DiagrammingConfigurationPopup" />

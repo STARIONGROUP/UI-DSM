@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 {
+    using AppComponents;
+
     using Blazor.Diagrams.Core.Geometry;
     using Blazor.Diagrams.Core.Models;
     using Blazor.Diagrams.Core.Models.Base;
@@ -25,29 +27,33 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using CDP4Dal;
     
     using CDP4JsonSerializer;
-    
+
     using Microsoft.Extensions.DependencyInjection;
 
     using Moq;
 
     using NUnit.Framework;
 
+    using UI_DSM.Client.Components.NormalUser.DiagrammingConfiguration;
     using UI_DSM.Client.Components.NormalUser.Views;
+    using UI_DSM.Client.Services.DiagrammingConfigurationService;
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Client.Services.ReviewItemService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
+    using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
-    
     using UI_DSM.Serializer.Json;
-    
+    using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     using BinaryRelationship = CDP4Common.DTO.BinaryRelationship;
     using ElementDefinition = CDP4Common.DTO.ElementDefinition;
     using ElementUsage = CDP4Common.DTO.ElementUsage;
+    using Participant = UI_DSM.Shared.Models.Participant;
     using TestContext = Bunit.TestContext;
 
     [TestFixture]
@@ -56,10 +62,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         private IInterfaceViewViewModel viewModel;
         private Mock<IReviewItemService> reviewItemService;
         private TestContext context;
-
-        private readonly Uri uri = new Uri("http://test.com");
-
         private IRenderedComponent<PhysicalFlowView> renderer;
+        private Mock<IDiagrammingConfigurationService> diagramService;
 
         [SetUp]
         public void Setup()
@@ -70,7 +74,11 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 this.context.AddDevExpressBlazorTesting();
                 this.context.ConfigureDevExpressBlazor();
                 this.reviewItemService = new Mock<IReviewItemService>();
-                this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel(), null);
+                this.diagramService = new Mock<IDiagrammingConfigurationService>();
+
+                this.viewModel = new InterfaceViewViewModel(this.reviewItemService.Object, new FilterViewModel(), this.diagramService.Object,
+                    new ErrorMessageViewModel());
+
                 this.context.Services.AddSingleton(this.viewModel);
 
                 this.context.Services.AddSingleton(this.viewModel);
@@ -220,9 +228,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     .Select(x => x.Value)
                     .ToList();
 
-                var reviewItem = new ReviewItem(Guid.NewGuid());
-
-                this.renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, Guid.Empty, new List<string>(), new List<string>()).RunSynchronously();
+                this.renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, Guid.Empty, new List<string>(), 
+                    new List<string>(), new Participant() { Role = new Role() { AccessRights = { AccessRight.CreateDiagramConfiguration } } });
             }
             catch
             {
@@ -360,9 +367,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var anotherView = component.Instance;
 
                 var oldViewModel = anotherView.ViewModel;
-                this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new int[] { 100, 80 });
+                this.context.JSInterop.Mode = JSRuntimeMode.Strict;
+                this.context.JSInterop.Setup<int[]>("GetNodeDimensions", _ => true).SetResult(new [] { 100, 80 });
 
-                Task<bool> result = Task.FromResult(false);
+                var result = Task.FromResult(false);
                 await this.renderer.InvokeAsync(() => result = this.renderer.Instance.CopyComponents(anotherView));
                 var newViewModel = this.renderer.Instance.ViewModel;
 
@@ -385,9 +393,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             var anotherView = component.Instance;
 
             var oldViewModel = anotherView.ViewModel;
-            this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new int[] { 100, 80 });
+            this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new [] { 100, 80 });
 
-            Task<bool> result = Task.FromResult(false);
+            var result = Task.FromResult(false);
             await this.renderer.InvokeAsync(() => result = this.renderer.Instance.CopyComponents(anotherView));
             var newViewModel = this.renderer.Instance.ViewModel;
 
@@ -463,6 +471,66 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             this.renderer.Instance.MouseUpOnComponent(diagramNode);
             var lastSelectedElement = this.renderer.Instance.ViewModel.SelectedElement;
             Assert.That(lastSelectedElement, Is.Not.EqualTo(previousSelectedElement));
+        }
+
+        [Test]
+        public async Task VerifySaveDiagram()
+        {
+            this.renderer.Instance.IsLoading = false;
+            this.renderer.Render();
+            var buttons = this.renderer.FindComponents<AppButton>();
+            Assert.That(this.viewModel.IsOnSavingMode, Is.False);
+
+            await this.renderer.InvokeAsync(buttons[0].Instance.Click.InvokeAsync);
+            Assert.That(this.viewModel.IsOnSavingMode, Is.True);
+
+            this.diagramService.Setup(x => x.SaveDiagramLayout(It.IsAny<Guid>(), It.IsAny<Guid>(),
+                It.IsAny<string>(), It.IsAny<IEnumerable<DiagramLayoutInformationDto>>())).ReturnsAsync((false,new List<string>{"Alreayd exist"}));
+
+            var creationDialog = this.renderer.FindComponent<DiagrammingConfigurationPopup>();
+            creationDialog.Instance.ViewModel.ConfigurationName = "a config";
+            await this.renderer.InvokeAsync(creationDialog.Instance.ViewModel.OnValidSubmit.InvokeAsync);
+            Assert.That(this.viewModel.IsOnSavingMode, Is.True);
+
+            this.diagramService.Setup(x => x.SaveDiagramLayout(It.IsAny<Guid>(), It.IsAny<Guid>(),
+                It.IsAny<string>(), It.IsAny<IEnumerable<DiagramLayoutInformationDto>>())).ReturnsAsync((true, new List<string>()));
+
+            await this.renderer.InvokeAsync(creationDialog.Instance.ViewModel.OnValidSubmit.InvokeAsync);
+            Assert.That(this.viewModel.IsOnSavingMode, Is.False);
+        }
+
+        [Test]
+        public async Task VerifyLoadDiagram()
+        {
+            this.renderer.Instance.IsLoading = false;
+            this.renderer.Render();
+            var buttons = this.renderer.FindComponents<AppButton>();
+            Assert.That(this.viewModel.IsOnLoadingMode, Is.False);
+
+            this.diagramService.Setup(x => x.LoadDiagramLayoutConfigurationNames(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(new List<string> { "A config" });
+
+            await this.renderer.InvokeAsync(buttons[1].Instance.Click.InvokeAsync);
+            Assert.That(this.viewModel.IsOnLoadingMode, Is.True);
+
+            var creationDialog = this.renderer.FindComponent<DiagrammingConfigurationLoadingPopup>();
+            Assert.That(creationDialog.Instance.ViewModel.ConfigurationsName.ToList(), Has.Count.EqualTo(1));
+
+            creationDialog.Instance.ViewModel.SelectedConfiguration = "A config";
+
+            this.diagramService.Setup(x => x.LoadDiagramLayoutConfiguration(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>()))
+                .ReturnsAsync(new List<DiagramLayoutInformationDto>
+                {
+                    new()
+                    {
+                        ThingId = this.viewModel.Products.First().ThingId,
+                        xPosition = 100,
+                        yPosition = 50
+                    }
+                });
+
+            await this.renderer.InvokeAsync(creationDialog.Instance.ViewModel.OnValidSubmit.InvokeAsync);
+            this.diagramService.Verify(x => x.LoadDiagramLayoutConfiguration(It.IsAny<Guid>(), It.IsAny<Guid>(), "A config"), Times.Once);
         }
     }
 }

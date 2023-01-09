@@ -45,6 +45,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using ElementUsage = CDP4Common.DTO.ElementUsage;
     using Parameter = CDP4Common.DTO.Parameter;
     using ParameterValueSet = CDP4Common.DTO.ParameterValueSet;
+    using Participant = UI_DSM.Shared.Models.Participant;
     using Requirement = CDP4Common.DTO.Requirement;
     using RequirementsSpecification = CDP4Common.DTO.RequirementsSpecification;
     using TestContext = Bunit.TestContext;
@@ -290,7 +291,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     .Select(x => x.Value)
                     .ToList();
 
-                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, Guid.Empty, new List<string>(), new List<string>());
+                await renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, Guid.Empty, new List<string>(), 
+                    new List<string>(), new Participant());
 
                 Assert.Multiple(() =>
                 {
@@ -315,7 +317,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 Assert.Multiple(() =>
                 {
                     Assert.That(renderer.FindComponents<FeatherCheck>(), Has.Count.EqualTo(0));
-                    Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(1));
+                    Assert.That(renderer.FindComponents<FeatherMessageCircle>(), Has.Count.EqualTo(0));
                 });
 
                 this.viewModel.TraceabilityTableViewModel.RowVisibilityState.CurrentState = ConnectionToVisibilityState.All;

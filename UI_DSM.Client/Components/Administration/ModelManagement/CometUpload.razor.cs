@@ -103,10 +103,10 @@ namespace UI_DSM.Client.Components.Administration.ModelManagement
             switch (this.ViewModel.IterationUploadStatus)
             {
                 case UploadStatus.None:
-                    this.UploadText = "Upload";
+                    this.UploadText = "Connect";
                     break;
                 case UploadStatus.Uploading:
-                    this.UploadText = "Uploading";
+                    this.UploadText = "Connecting";
                     break;
                 case UploadStatus.Fail:
                     this.UploadText = "Retry...";
