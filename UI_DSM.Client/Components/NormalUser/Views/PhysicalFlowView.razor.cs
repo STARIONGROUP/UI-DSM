@@ -120,7 +120,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart, Participant participant)
         {
             await base.InitializeViewModel(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart, participant);
-            this.ViewModel.InitializeDiagram();
             this.RefreshDiagram();
             this.IsLoading = false;
         }
@@ -137,11 +136,13 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Method that handles the on central node changed event.
+        ///     Method that handles the refresh of the diagram
         /// </summary>
         public void RefreshDiagram()
         {
             this.Diagram.Nodes.Clear();
+            this.Diagram.Links.Clear();
+            this.ViewModel.CreateInterfacesLinks();
 
             this.ViewModel.ProductsMap.Keys.ToList().ForEach(node =>
             {

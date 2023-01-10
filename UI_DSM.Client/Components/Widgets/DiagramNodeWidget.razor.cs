@@ -14,10 +14,10 @@
 namespace UI_DSM.Client.Components.Widgets
 {
     using Blazor.Diagrams.Core.Geometry;
+    
     using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.Components.Web;
     using Microsoft.JSInterop;
-    using UI_DSM.Client.Enumerator;
+    
     using UI_DSM.Client.Model;
 
     /// <summary>
@@ -104,7 +104,9 @@ namespace UI_DSM.Client.Components.Widgets
         {
             this.Points.Clear();
             this.CalculateRectangularDistance();
+            this.Node.ReinitializePorts();
             this.Node.RefreshAll();
+            this.Node.RefreshLinks();
             this.StateHasChanged();
         }
 
