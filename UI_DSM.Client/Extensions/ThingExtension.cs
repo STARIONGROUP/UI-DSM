@@ -18,6 +18,7 @@ namespace UI_DSM.Client.Extensions
     using CDP4Common.SiteDirectoryData;
     using CDP4Common.Types;
 
+    using UI_DSM.Client.Enumerator;
     using UI_DSM.Shared.Enumerator;
 
     /// <summary>
@@ -654,6 +655,21 @@ namespace UI_DSM.Client.Extensions
         {
             return port.QueryRelationships.OfType<BinaryRelationship>().Where(x => x.IsInterface())
                 .ToList();
+        }
+
+        /// <summary>
+        ///     Convert the <see cref="Category"/> to an <see cref="InterfaceCategory"/>
+        /// </summary>
+        /// <param name="category">the <see cref="Category"/> to convert</param>
+        /// <returns>The <see cref="InterfaceCategory"/></returns>
+        public static InterfaceCategory ToInterfaceCategory(this Category category)
+        {
+            if (!Enum.TryParse(typeof(InterfaceCategory), category.ShortName, true, out var value))
+            {
+                return InterfaceCategory.Other;
+            }
+
+            return (InterfaceCategory)value!;
         }
 
         /// <summary>

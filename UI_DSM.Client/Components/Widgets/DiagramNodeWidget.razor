@@ -9,52 +9,48 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-@using Blazor.Diagrams.Components.Renderers
-@using Blazor.Diagrams.Core.Models
-
 @using UI_DSM.Client.Model
+@using Blazor.Diagrams.Components.Renderers
+<div @ref="this.DivReference" class="default-node custom-node @(this.OverClass) @(this.Node.IsExpanded ? "expanded" : "") @(!this.Node.IsVisible? "hidden": "")"
+     @onmouseover="@(e => this.OverClass = "over")"
+     @onmouseout="@(e => this.OverClass = "")">
 
-<div @ref="this.DivReference" class="default-node custom-node @this.OverClass @(this.Node.IsExpanded ? "expanded": "")"
-     @onmouseover="@((e) => this.OverClass = "over")"
-     @onmouseout="@((e) =>  this.OverClass = "")">
+	@(this.Node?.Title ?? "Title")
 
-    @(this.Node?.Title ?? "Title")
+	@{
+		var nodePorts = this.Node.Ports.Cast<DiagramPort>();
+		var i = 0;
+		if (this.points.Count == nodePorts.Count())
+		{
+			foreach (var port in nodePorts)
+			{
+				var posx = this.points[i].X + "px";
+				var posy = this.points[i].Y + "px";
 
-    @{
-        var nodePorts = this.Node.Ports.Cast<DiagramPort>();
-        var i = 0;
-        if (this.Points.Count == nodePorts.Count())
-        {
-            foreach (var port in nodePorts)
-            {
-                var posx = this.Points[i].X.ToString() + "px";
-                var posy = this.Points[i].Y.ToString() + "px";
+				<div style="left: @posx; position: absolute; top: @posy;">
+					<PortRenderer Port="port"
+					              Class="@(port.HasComments ? "port-comment custom-port" : "custom-port")">
+						<div class="@(port.Direction.ToString())"></div>
+					</PortRenderer>
+				</div>
 
-                <div style="left:@posx; top:@posy; position:absolute;">
-                    <PortRenderer Port="port"
-                      Class="@(port.HasComments ? "port-comment custom-port" : "custom-port")">
-                        <div class="@(port.Direction.ToString())"></div>
-                    </PortRenderer>
-                </div>
+				i++;
+			}
+		}
+		else
+		{
+			foreach (var port in nodePorts)
+			{
+				<PortRenderer Port="port"
+				              Class="@(port.HasComments ? "port-comment custom-port" : "custom-port")">
+					<div class="@(port.Direction.ToString())"></div>
+				</PortRenderer>
+			}
+		}
+	}
 
-                i++;
-            }
-        }
-        else
-        {
-
-            foreach (var port in nodePorts)
-            {
-                <PortRenderer Port="port"
-                  Class="@(port.HasComments ? "port-comment custom-port" : "custom-port")">
-                    <div class="@(port.Direction.ToString())"></div>
-                </PortRenderer>
-            }
-        }
-    }
-
-    @if (this.Node.HasComments)
-    {
-        <div class="node-comment"></div>
-    }
+	@if (this.Node.HasComments)
+	{
+		<div class="node-comment"></div>
+	}
 </div>

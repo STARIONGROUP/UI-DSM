@@ -485,7 +485,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             Assert.That(this.viewModel.IsOnSavingMode, Is.True);
 
             this.diagramService.Setup(x => x.SaveDiagramLayout(It.IsAny<Guid>(), It.IsAny<Guid>(),
-                It.IsAny<string>(), It.IsAny<IEnumerable<DiagramLayoutInformationDto>>())).ReturnsAsync((false,new List<string>{"Alreayd exist"}));
+                It.IsAny<string>(), It.IsAny<IEnumerable<DiagramNodeDto>>())).ReturnsAsync((false,new List<string>{"Alreayd exist"}));
 
             var creationDialog = this.renderer.FindComponent<DiagrammingConfigurationPopup>();
             creationDialog.Instance.ViewModel.ConfigurationName = "a config";
@@ -493,7 +493,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             Assert.That(this.viewModel.IsOnSavingMode, Is.True);
 
             this.diagramService.Setup(x => x.SaveDiagramLayout(It.IsAny<Guid>(), It.IsAny<Guid>(),
-                It.IsAny<string>(), It.IsAny<IEnumerable<DiagramLayoutInformationDto>>())).ReturnsAsync((true, new List<string>()));
+                It.IsAny<string>(), It.IsAny<IEnumerable<DiagramNodeDto>>())).ReturnsAsync((true, new List<string>()));
 
             await this.renderer.InvokeAsync(creationDialog.Instance.ViewModel.OnValidSubmit.InvokeAsync);
             Assert.That(this.viewModel.IsOnSavingMode, Is.False);
@@ -519,7 +519,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             creationDialog.Instance.ViewModel.SelectedConfiguration = "A config";
 
             this.diagramService.Setup(x => x.LoadDiagramLayoutConfiguration(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>()))
-                .ReturnsAsync(new List<DiagramLayoutInformationDto>
+                .ReturnsAsync(new List<DiagramNodeDto>
                 {
                     new()
                     {

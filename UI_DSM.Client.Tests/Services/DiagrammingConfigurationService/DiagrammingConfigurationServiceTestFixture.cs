@@ -52,7 +52,7 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
             var projectId = Guid.NewGuid();
             var reviewTaskId = Guid.NewGuid();
 
-            IEnumerable<DiagramLayoutInformationDto> diagramLayoutInformationDtos = new List<DiagramLayoutInformationDto>
+            IEnumerable<DiagramNodeDto> diagramLayoutInformationDtos = new List<DiagramNodeDto>
             {
                 new()
                 {
@@ -116,7 +116,7 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
 
             httpResponse.StatusCode = HttpStatusCode.OK;
             
-            httpResponse.Content = new StringContent(this.jsonService.Serialize(new List<DiagramLayoutInformationDto>
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(new List<DiagramNodeDto>
             {
                 new()
                 {

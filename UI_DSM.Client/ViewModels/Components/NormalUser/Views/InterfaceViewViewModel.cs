@@ -185,7 +185,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             var selectedCategories = selectedFilters[ClassKind.Category];
             var selectedComponents = selectedFilters[ClassKind.ElementDefinition];
 
-            this.filteredProducts = this.allProducts.Where(x => selectedComponents.Any(component => component.DefinedThing.Iid == x.ThingId))
+            this.filteredProducts = this.allProducts.Where(x => selectedComponents.Any(component => component.DefinedThing.Iid == x.Thing.Owner.Iid))
                 .OrderBy(x => x.Thing.Name)
                 .ToList();
 
@@ -636,9 +636,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         public void CreateInterfacesLinks()
         {
-            this.InterfacesMap.Clear();
-
-            foreach (var interf in this.Interfaces)
+            foreach (var interf in this.Interfaces.Where(x => !this.InterfacesMap.ContainsValue(x)).ToList())
             {
                 var sourcePortRowVM = this.PortsMap.Values.FirstOrDefault(port => port.ThingId == interf.SourceId);
                 var targetPortRowVM = this.PortsMap.Values.FirstOrDefault(port => port.ThingId == interf.TargetId);
@@ -658,7 +656,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                         PathGenerator = PathGenerators.Smooth,
                         SourceMarker = LinkMarker.Square,
                         TargetMarker = LinkMarker.Arrow,
-                        HasComments = interf.HasComment()
+                        HasComments = interf.HasComment(),
+                        ThingId = interf.ThingId,
+                        InterfaceCategory = interf.NatureCategory.ToInterfaceCategory()
                     };
 
                     if (!this.InterfacesMap.Keys.Any(x => x.TargetPort == link.TargetPort && x.SourcePort == link.SourcePort))
@@ -723,12 +723,51 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
+        ///     Filters current rows for the diagram
+        /// </summary>
+        /// <param name="selectedFilters">The selected filters</param>
+        public void FilterRowsForDiagram(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
+        {
+            if (selectedFilters.Keys.Any())
+            {
+                var selectedOwners = selectedFilters[ClassKind.DomainOfExpertise];
+                var selectedCategories = selectedFilters[ClassKind.Category];
+                var selectedComponents = selectedFilters[ClassKind.ElementDefinition];
+
+                var products = this.allProducts.Where(x => selectedComponents.Any(component => component.DefinedThing.Iid == x.Thing.Owner.Iid))
+                    .ToList();
+
+                var interfaces = this.allInterfaces.Where(x => selectedOwners.Any(owner => x.InterfaceOwner.Iid == owner.DefinedThing.Iid)
+                                                               && selectedCategories.Any(cat => x.NatureCategory.Iid == cat.DefinedThing.Iid))
+                    .ToList();
+
+                foreach (var node in this.ProductsMap.Keys)
+                {
+                    node.IsVisible = products.Any(x => x.ThingId == node.ThingId);
+                }
+
+                foreach (var interfaceLink in this.InterfacesMap.Keys)
+                {
+                    interfaceLink.IsVisible = interfaces.Any(x => x.ThingId == interfaceLink.ThingId && interfaceLink.SourceNode is DiagramNode { IsVisible: true }
+                                                                                                     && interfaceLink.TargetNode is DiagramNode { IsVisible : true });
+                }
+            }
+        }
+
+        /// <summary>
         ///     Saves current diagram layout
         /// </summary>
         public async Task SaveCurrentDiagramLayout()
         {
-            var layoutInformationDtos = this.ProductsMap.Keys.Select(x => new DiagramLayoutInformationDto { ThingId = x.ThingId, xPosition = x.Position.X, yPosition = x.Position.Y });
-            var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationPopupViewModel.ConfigurationName, layoutInformationDtos);
+            var diagramDto = new DiagramDto()
+            {
+                Nodes = this.ProductsMap.Keys.Select(x => new DiagramNodeDto { ThingId = x.ThingId, Point = new PointDto(){X =x.Position.X, Y = x.Position.Y }}).ToList(),
+                Links = this.InterfacesMap.Keys.Select(x => new DiagramLinkDto{ThingId = x.ThingId, Vertices = x.Vertices.Select(v =>new PointDto() { X = v.Position.X, Y= v.Position.Y}).ToList() }).ToList(),
+                Filters = this.FilterViewModel.GetSelectedFilters().Select(selectedFilter => new FilterDto() { ClassKind = selectedFilter.Key, SelectedFilters = selectedFilter.Value.Select(x => x.DefinedThing.Iid).ToList() }).ToList()
+            };
+
+            var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, 
+                this.DiagrammingConfigurationPopupViewModel.ConfigurationName, diagramDto);
 
             this.ErrorMessageViewModel.Errors.Clear();
 
@@ -751,12 +790,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.PortsMap.Clear();
             this.InterfacesMap.Clear();
 
-            foreach (var diagrammingInformationDto in response)
+            /*foreach (var diagrammingInformationDto in response)
             {
                 var productRowView = this.allProducts.FirstOrDefault(x => x.ThingId == diagrammingInformationDto.ThingId);
                 var node = this.CreateNewNodeFromProduct(productRowView);
                 node.SetPosition(diagrammingInformationDto.xPosition, diagrammingInformationDto.yPosition);
-            }
+            }*/
 
             this.CreateInterfacesLinks();
 
@@ -885,15 +924,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             });
 
             var availableProducts = new List<DefinedThing>(this.allProducts
-                    .Select(x => x.Thing))
-                .OrderBy(x => x.Name)
+                    .Select(x => x.Thing.Owner))
+                .DistinctBy(x => x.Iid)
+                .OrderBy(x => x.ShortName)
                 .ToList();
 
             availableRowFilters.Add(new FilterModel
             {
                 ClassKind = ClassKind.ElementDefinition,
-                DisplayName = "Product",
-                Values = availableProducts
+                DisplayName = "Product Owner",
+                Values = availableProducts,
+                UseShortName = true
             });
 
             this.FilterViewModel.InitializeProperties(availableRowFilters);

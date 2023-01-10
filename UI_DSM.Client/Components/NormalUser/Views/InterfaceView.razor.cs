@@ -76,7 +76,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
             this.ViewModel = interfaceView.ViewModel;
             this.IsLoading = false;
-            this.isFullyInitialized = true;
+            this.isFullyInitialized = false;
             await Task.CompletedTask;
             return true;
         }
@@ -146,7 +146,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             base.OnAfterRender(firstRender);
 
-            if (!this.IsLoading && !this.isFullyInitialized)
+            if (!this.IsLoading && !this.isFullyInitialized && this.Grid != null && this.columnChooser != null)
             {
                 this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.PortVisibilityState.CurrentState)
                     .Subscribe(_ => this.InvokeAsync(this.OnVisibilityStateChanged)));

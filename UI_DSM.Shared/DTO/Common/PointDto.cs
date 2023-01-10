@@ -1,8 +1,8 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="EntityRequestResponseDto.cs" company="RHEA System S.A.">
-//  Copyright (c) 2022 RHEA System S.A.
+// <copyright file="PointDto.cs" company="RHEA System S.A.">
+//  Copyright (c) 2023 RHEA System S.A.
 // 
-//  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+//  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
 // 
 //  This file is part of UI-DSM.
 //  The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
@@ -13,16 +13,19 @@
 
 namespace UI_DSM.Shared.DTO.Common
 {
-    using UI_DSM.Shared.DTO.Models;
-
     /// <summary>
-    ///     Common DTO used to respond to all basic operation (creation/update/delete) request on <see cref="EntityDto" />
+    ///     Data Transfer Object that represent a Point, with x and y position
     /// </summary>
-    public class EntityRequestResponseDto : RequestResponseDto
+    public class PointDto
     {
         /// <summary>
-        ///     Gets or sets the collection of <see cref="EntityDto" />
+        ///     The x position
         /// </summary>
-        public IEnumerable<EntityDto> Entities { get; set; } = new List<EntityDto>();
+        public double X { get; set; }
+
+        /// <summary>
+        ///     The y position
+        /// </summary>
+        public double Y { get; set; }
     }
 }

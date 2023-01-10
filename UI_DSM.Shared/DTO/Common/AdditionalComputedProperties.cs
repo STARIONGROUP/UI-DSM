@@ -27,12 +27,12 @@ namespace UI_DSM.Shared.DTO.Common
         public int TaskCount { get; set; }
 
         /// <summary>
-        ///     The number of contained <see cref="Comment" /> with an <see cref="StatusKind.Open"/> status
+        ///     The number of contained <see cref="Comment" /> with an <see cref="StatusKind.Open" /> status
         /// </summary>
         public int OpenCommentCount { get; set; }
 
         /// <summary>
-        ///      The number of contained <see cref="Comment" />
+        ///     The number of contained <see cref="Comment" />
         /// </summary>
         public int TotalCommentCount { get; set; }
 

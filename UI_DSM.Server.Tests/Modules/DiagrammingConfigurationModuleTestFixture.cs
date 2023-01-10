@@ -51,7 +51,7 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.participantManager = new Mock<IParticipantManager>();
 
-            ModuleTestHelper.Setup<DiagrammingConfigurationModule, DiagramLayoutInformationDto>(null, out this.context,
+            ModuleTestHelper.Setup<DiagrammingConfigurationModule, DiagramNodeDto>(null, out this.context,
                 out this.response, out _, out this.serviceProvider);
 
             this.serviceProvider.Setup(x => x.GetService(typeof(IParticipantManager))).Returns(this.participantManager.Object);
@@ -87,14 +87,14 @@ namespace UI_DSM.Server.Tests.Modules
         {
             this.fileService.Setup(x => x.GetTempFolder()).Returns(TestContext.CurrentContext.TestDirectory);
 
-            var diagramLayoutInformationDto = new DiagramLayoutInformationDto
+            var diagramLayoutInformationDto = new DiagramNodeDto
             {
                 ThingId = Guid.NewGuid(),
                 xPosition = 650,
                 yPosition = 447
             };
 
-            var diagramLayoutInformationDtos = new List<DiagramLayoutInformationDto>
+            var diagramLayoutInformationDtos = new List<DiagramNodeDto>
             {
                 diagramLayoutInformationDto
             };

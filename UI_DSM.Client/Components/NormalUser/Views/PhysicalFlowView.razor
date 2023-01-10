@@ -43,6 +43,11 @@
 		    <AppButton Label="Load layout" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="@this.ViewModel.OpenLoadingConfigurationPopup">
 			    <FeatherUpload Size="20" Color="currentColor" StrokeWidth="2" /> <span>Load</span>
 		    </AppButton>
+			
+		    <Filter ViewModel="this.ViewModel.FilterViewModel" Id="row">
+			    <FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
+		    </Filter>
+
 		    <DiagramCanvas /> 
 		    <DiagramLegendWidget />
 	    </LoadingComponent>

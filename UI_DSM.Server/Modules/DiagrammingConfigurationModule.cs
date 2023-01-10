@@ -55,7 +55,7 @@ namespace UI_DSM.Server.Modules
         public override void AddRoutes(IEndpointRouteBuilder app)
         {
             app.MapPost($"{this.MainRoute}/{{configurationName}}/Save", this.SaveLayoutConfiguration)
-                .Accepts<List<DiagramLayoutInformationDto>>("application/json")
+                .Accepts<List<DiagramNodeDto>>("application/json")
                 .WithTags("Layout")
                 .WithName("Layout/Save");
 
@@ -74,11 +74,11 @@ namespace UI_DSM.Server.Modules
         /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
         /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" /></param>
         /// <param name="configurationName">The name of the configuration</param>
-        /// <param name="dtos">The <see cref="List{DiagramLayoutInformationDto}" /> to save</param>
+        /// <param name="dto">The <see cref="DiagramDto"/> to save</param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public async Task SaveLayoutConfiguration(Guid projectId, Guid reviewTaskId, string configurationName, List<DiagramLayoutInformationDto> dtos, HttpContext context)
+        public async Task SaveLayoutConfiguration(Guid projectId, Guid reviewTaskId, string configurationName, DiagramDto dto, HttpContext context)
         {
             var participantManager = context.RequestServices.GetService<IParticipantManager>();
 
@@ -120,7 +120,7 @@ namespace UI_DSM.Server.Modules
                 // No need to do anything if it catches, means that no configuration has been created
             }
 
-            var json = JsonSerializer.Serialize(dtos);
+            var json = JsonSerializer.Serialize(dto);
             var fileName = configurationName + ".json";
 
             try
@@ -211,8 +211,8 @@ namespace UI_DSM.Server.Modules
 
                 await using var stream = File.OpenRead(configurationfile);
 
-                var dtos = await JsonSerializer.DeserializeAsync<List<DiagramLayoutInformationDto>>(stream);
-                await context.Response.Negotiate(dtos);
+                var dto = await JsonSerializer.DeserializeAsync<DiagramDto>(stream);
+                await context.Response.Negotiate(dto);
             }
             catch (DirectoryNotFoundException)
             {

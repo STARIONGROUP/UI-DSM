@@ -16,23 +16,28 @@ namespace UI_DSM.Client.Model
     using Blazor.Diagrams.Core.Models;
 
     /// <summary>
-    /// Derived class for holding data for the <see cref="Components.Widgets.DiagramNodeWidget.razor"/>
+    ///     Derived class for holding data for the <see cref="Components.Widgets.DiagramNodeWidget" />
     /// </summary>
     public class DiagramNode : NodeModel, IDiagramModel
     {
         /// <summary>
-        ///  Gets or sets the id of the <see cref="DiagramNode" />
+        ///     Gets or sets the id of the <see cref="DiagramNode" />
         /// </summary>
         public Guid ThingId { get; set; }
-        
-        /// <summary>
-        /// Gets or sets if the model has comments.
-        /// </summary>
-        public bool HasComments { get; set; }
 
         /// <summary>
-        /// Gets or sets if the node has been expanded
+        ///     Gets or sets if the node has been expanded
         /// </summary>
         public bool IsExpanded { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the visibility of the node
+        /// </summary>
+        public bool IsVisible { get; set; } = true;
+
+        /// <summary>
+        ///     Gets or sets if the model has comments.
+        /// </summary>
+        public bool HasComments { get; set; }
     }
 }

@@ -230,5 +230,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Opens the <see cref="DiagrammingConfigurationLoadingPopup" />
         /// </summary>
         void OpenLoadingConfigurationPopup();
+
+        /// <summary>
+        ///     Filters current rows for the diagram
+        /// </summary>
+        /// <param name="selectedFilters">The selected filters</param>
+        void FilterRowsForDiagram(Dictionary<ClassKind, List<FilterRow>> selectedFilters);
     }
 }
