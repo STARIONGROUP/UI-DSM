@@ -16,6 +16,7 @@ namespace UI_DSM.Client.ViewModels.App.Filter
     using CDP4Common.CommonData;
 
     using UI_DSM.Client.Model;
+    using UI_DSM.Shared.DTO.Common;
 
     /// <summary>
     ///     Interface definition for <see cref="FilterViewModel" />
@@ -69,5 +70,11 @@ namespace UI_DSM.Client.ViewModels.App.Filter
         /// </summary>
         /// <returns>True if all are selected, false if all deselected, null otherwise</returns>
         bool? AreAllSelected();
+
+        /// <summary>
+        ///     Updates the selected filters based on a collection of <see cref="FilterDto" />
+        /// </summary>
+        /// <param name="filters">The collection of <see cref="FilterDto" /></param>
+        void UpdateFilters(List<FilterDto> filters);
     }
 }

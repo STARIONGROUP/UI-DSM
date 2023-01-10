@@ -30,6 +30,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
     using UI_DSM.Client.Components.Widgets;
     using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
@@ -49,6 +50,11 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     Value indicating if the view is completely initialized or not
         /// </summary>
         private bool isFullyInitialized;
+
+        /// <summary>
+        ///     Value indicating that the diagram should center on the first node
+        /// </summary>
+        private bool shouldCenter;
 
         /// <summary>
         ///     Gets or sets the diagram component.
@@ -89,10 +95,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                 return false;
             }
 
-            var dimensions = await this.JsRuntime.InvokeAsync<int[]>("GetNodeDimensions", this.DiagramReference);
-            var centerX = Math.Round(dimensions[0] / 2.0);
-            var centerY = Math.Round(dimensions[1] / 2.0);
-            this.ViewModel.DiagramCenter = new Point(centerX, centerY);
             this.ViewModel = interfaceView.ViewModel;
             await this.HasChanged();
 
@@ -107,12 +109,47 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <returns>A <see cref="Task" /></returns>
         public override async Task TryNavigateToItem(string itemName)
         {
-            var product = this.ViewModel.ProductsMap.Values.FirstOrDefault(x => string.Equals(x.Id, itemName, StringComparison.InvariantCultureIgnoreCase));
-
-            if (product != null)
+            if (this.Diagram.Container is not { } rect)
             {
-                await this.JsRuntime.InvokeVoidAsync("scrollToElement", $"product_{product.ThingId}", "center", "center");
+                return;
             }
+
+            Point toFocus = null;
+            var center = this.Diagram.GetRelativePoint(rect.Center.X, rect.Center.Y);
+
+            if (this.ViewModel.ProductsMap.Any(x => string.Equals(x.Value.Id, itemName, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                var node = this.ViewModel
+                    .ProductsMap.First(x => string.Equals(x.Value.Id, itemName, StringComparison.InvariantCultureIgnoreCase))
+                    .Key;
+
+                toFocus = new Point(node.Position.X - center.X, node.Position.Y - center.Y);
+            }
+            else if (this.ViewModel.PortsMap.Any(x => string.Equals(x.Value.Id, itemName, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                var port = this.ViewModel.PortsMap
+                    .First(x => string.Equals(x.Value.Id, itemName, StringComparison.InvariantCultureIgnoreCase))
+                    .Key;
+
+                toFocus = new Point(port.Position.X - center.X, port.Position.Y - center.Y);
+            }
+            else if (this.ViewModel.InterfacesMap.Any(x => string.Equals(x.Value.Id, itemName, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                var link = this.ViewModel.InterfacesMap
+                    .First(x => string.Equals(x.Value.Id, itemName, StringComparison.InvariantCultureIgnoreCase))
+                    .Key;
+
+                toFocus = new Point(link.SourcePort!.Position.X - center.X, link.SourcePort!.Position.Y - center.Y);
+            }
+
+            if (toFocus != null)
+            {
+                this.Diagram.SetZoom(1);
+                this.Diagram.SetPan(-toFocus.X, -toFocus.Y);
+                this.Diagram.Refresh();
+            }
+
+            await Task.CompletedTask;
         }
 
         /// <summary>
@@ -129,6 +166,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart, Participant participant)
         {
             await base.InitializeViewModel(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart, participant);
+            this.ViewModel.InitializeDiagram();
             this.RefreshDiagram();
             this.IsLoading = false;
         }
@@ -248,11 +286,34 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             await base.OnAfterRenderAsync(firstRender);
 
+            if (this.shouldCenter && this.Diagram.Container != null)
+            {
+                if (this.ViewModel.SelectedElement is IHaveThingRowViewModel thingRow)
+                {
+                    await this.TryNavigateToItem(thingRow.Id);
+                }
+                else if (this.Diagram.Nodes.OfType<DiagramNode>().FirstOrDefault(x => x.IsVisible) is { } node)
+                {
+                    var firstProduct = this.ViewModel.ProductsMap[node];
+                    await this.TryNavigateToItem(firstProduct.Id);
+                }
+
+                this.shouldCenter = false;
+                await this.InvokeAsync(this.StateHasChanged);
+            }
+
             if (!this.IsLoading && !this.isFullyInitialized)
             {
-                this.ViewModel.InitializeDiagram();
-                this.RefreshDiagram();
-                this.Diagram.ZoomToFit();
+                if (this.DiagramReference.Context == null)
+                {
+                    await this.InvokeAsync(this.StateHasChanged);
+                    return;
+                }
+
+                var dimensions = await this.JsRuntime.InvokeAsync<int[]>("GetNodeDimensions", this.DiagramReference);
+                var centerX = Math.Round(dimensions[0] / 2.0);
+                var centerY = Math.Round(dimensions[1] / 2.0);
+                this.ViewModel.DiagramCenter = new Point(centerX, centerY);
 
                 this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnSavingMode)
                     .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
@@ -267,7 +328,10 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                     .Where(x => !x)
                     .Subscribe(_ => this.InvokeAsync(this.RefreshDiagram)));
 
+                this.shouldCenter = true;
                 this.isFullyInitialized = true;
+
+                await this.InvokeAsync(this.StateHasChanged);
             }
         }
 
@@ -278,9 +342,11 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <returns>A <see cref="Task" /></returns>
         private async Task OnIsOnLoadingModeChanged(bool value)
         {
-            if (!value)
+            if (!value && this.ViewModel.HasLoadedConfiguration)
             {
                 this.RefreshDiagram();
+                this.shouldCenter = true;
+                this.ViewModel.HasLoadedConfiguration = false;
             }
 
             await this.InvokeAsync(this.StateHasChanged);

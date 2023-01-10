@@ -18,6 +18,7 @@ namespace UI_DSM.Client.ViewModels.App.Filter
     using ReactiveUI;
 
     using UI_DSM.Client.Model;
+    using UI_DSM.Shared.DTO.Common;
 
     /// <summary>
     ///     View model for the <see cref="Client.Components.App.Filter.Filter" /> component
@@ -131,6 +132,7 @@ namespace UI_DSM.Client.ViewModels.App.Filter
         public bool? AreAllSelected()
         {
             var rows = this.SelectedFilters[this.SelectedFilterModel.ClassKind];
+            
             if (rows.All(x => x.IsSelected))
             {
                 return true;
@@ -139,7 +141,25 @@ namespace UI_DSM.Client.ViewModels.App.Filter
             {
                 return false;
             }
+
             return null;
+        }
+
+        /// <summary>
+        ///     Updates the selected filters based on a collection of <see cref="FilterDto" />
+        /// </summary>
+        /// <param name="filters">The collection of <see cref="FilterDto" /></param>
+        public void UpdateFilters(List<FilterDto> filters)
+        {
+            foreach (var filterDto in filters.Where(x => this.SelectedFilters.ContainsKey(x.ClassKind)))
+            {
+                var rows = this.SelectedFilters[this.SelectedFilterModel.ClassKind];
+
+                foreach (var filterRow in rows)
+                {
+                    filterRow.IsSelected = filterDto.SelectedFilters.Contains(filterRow.DefinedThing.Iid);
+                }
+            }
         }
     }
 }

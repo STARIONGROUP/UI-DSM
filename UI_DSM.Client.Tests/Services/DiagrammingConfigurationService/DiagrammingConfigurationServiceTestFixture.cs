@@ -52,13 +52,19 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
             var projectId = Guid.NewGuid();
             var reviewTaskId = Guid.NewGuid();
 
-            IEnumerable<DiagramNodeDto> diagramLayoutInformationDtos = new List<DiagramNodeDto>
+            var diagramDto = new DiagramDto()
             {
-                new()
+                Nodes = new List<DiagramNodeDto>()
                 {
-                    ThingId = Guid.NewGuid(),
-                    xPosition = 650,
-                    yPosition = 447
+                    new()
+                    {
+                        ThingId = Guid.NewGuid(),
+                        Point = new PointDto()
+                        {
+                            X = 650,
+                            Y = 447
+                        }
+                    }
                 }
             };
 
@@ -71,11 +77,11 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
             var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Layout/{projectId}/{reviewTaskId}/{configurationName}/Save");
             request.Respond(_ => httpResponse);
 
-            var result = await this.service.SaveDiagramLayout(projectId, reviewTaskId, configurationName, diagramLayoutInformationDtos);
+            var result = await this.service.SaveDiagramLayout(projectId, reviewTaskId, configurationName, diagramDto);
             Assert.That(result.result, Is.False);
 
             httpResponse.StatusCode = HttpStatusCode.OK;
-            result = await this.service.SaveDiagramLayout(projectId, reviewTaskId, configurationName, diagramLayoutInformationDtos);
+            result = await this.service.SaveDiagramLayout(projectId, reviewTaskId, configurationName, diagramDto);
             Assert.That(result.result, Is.True);
         }
 
@@ -116,19 +122,24 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
 
             httpResponse.StatusCode = HttpStatusCode.OK;
             
-            httpResponse.Content = new StringContent(this.jsonService.Serialize(new List<DiagramNodeDto>
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(new DiagramDto()
             {
-                new()
+                Nodes = new List<DiagramNodeDto>()
                 {
-                    ThingId = Guid.NewGuid(),
-                    xPosition = 650,
-                    yPosition = 447
+                    new()
+                    {
+                        ThingId = Guid.NewGuid(),
+                        Point = new PointDto()
+                        {
+                            X = 650,
+                            Y = 447
+                        }
+                    }
                 }
             }));
 
-            var configurationsName = await this.service.LoadDiagramLayoutConfiguration(projectId, reviewTaskId, configurationName);
-
-            Assert.That(configurationsName, Has.Count.EqualTo(1));
+            var diagramDto = await this.service.LoadDiagramLayoutConfiguration(projectId, reviewTaskId, configurationName);
+            Assert.That(diagramDto.Nodes, Has.Count.EqualTo(1));
         }
     }
 }

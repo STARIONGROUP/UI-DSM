@@ -12,16 +12,16 @@
 // --------------------------------------------------------------------------------------------------------
 
 namespace UI_DSM.Client.Components.Widgets
-{
-    using Blazor.Diagrams.Core.Geometry;
-    
+{
+    using Blazor.Diagrams.Core.Geometry;
+
     using Microsoft.AspNetCore.Components;
-    using Microsoft.JSInterop;
-    
+    using Microsoft.JSInterop;
+
     using UI_DSM.Client.Model;
 
     /// <summary>
-    ///     Partial class fot the <see cref="DiagramNodeWidget.razor" />
+    ///     Partial class fot the <see cref="DiagramNodeWidget" />
     /// </summary>
     public partial class DiagramNodeWidget
     {
@@ -74,7 +74,9 @@ namespace UI_DSM.Client.Components.Widgets
         {
             this.points.Clear();
             this.CalculateRectangularDistance();
+            this.Node.ReinitializePorts();
             this.Node.RefreshAll();
+            this.Node.RefreshLinks();
             this.StateHasChanged();
         }
 
