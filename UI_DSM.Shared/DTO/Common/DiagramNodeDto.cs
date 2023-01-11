@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="ReviewObjectiveCreationDto.cs" company="RHEA System S.A.">
+// <copyright file="DiagramNodeDto.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -13,28 +13,19 @@
 
 namespace UI_DSM.Shared.DTO.Common
 {
-    using UI_DSM.Shared.Enumerator;
-    using UI_DSM.Shared.Models;
-
     /// <summary>
-    ///     Data transfer object used to specify the <see cref="ReviewObjective" /> and contained <see cref="ReviewTask" />
-    ///     that needs to be created
+    ///     Common DTO used to save to all the diagram node layout
     /// </summary>
-    public class ReviewObjectiveCreationDto
+    public class DiagramNodeDto
     {
         /// <summary>
-        ///     The <see cref="ReviewObjectiveKind" />
+        ///     The <see cref="PointDto" />
         /// </summary>
-        public ReviewObjectiveKind Kind { get; set; }
+        public PointDto Point { get; set; }
 
         /// <summary>
-        ///     The <see cref="ReviewObjective.ReviewObjectiveKindNumber" />
+        ///     The id of the node
         /// </summary>
-        public int KindNumber { get; set; }
-
-        public override string ToString()
-        {
-            return this.Kind.ToString().ToUpper() + " - " + this.KindNumber;
-        }
+        public Guid ThingId { get; set; }
     }
 }

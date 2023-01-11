@@ -14,95 +14,65 @@
 namespace UI_DSM.Client.Components.Widgets
 {
     using Blazor.Diagrams.Core.Geometry;
-    
+
     using Microsoft.AspNetCore.Components;
     using Microsoft.JSInterop;
-    
+
     using UI_DSM.Client.Model;
 
     /// <summary>
-    /// Partial class fot the <see cref="DiagramNodeWidget.razor"/>
+    ///     Partial class fot the <see cref="DiagramNodeWidget" />
     /// </summary>
     public partial class DiagramNodeWidget
     {
         /// <summary>
-        /// Gets or sets the JSRuntime to invoke JS 
+        ///     Gets the points used to position the ports in this node.
         /// </summary>
-        [Inject]
-        private IJSRuntime JSRuntime { get; set; }
+        private readonly List<Point> points = new();
 
         /// <summary>
-        /// Gets or sets the reference of the div that contains the node
+        ///     Gets or sets the JSRuntime to invoke JS
+        /// </summary>
+        [Inject]
+        private IJSRuntime JsRuntime { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the reference of the div that contains the node
         /// </summary>
         private ElementReference DivReference { get; set; }
 
         /// <summary>
-        /// Gets or sets the product node
+        ///     Gets or sets the product node
         /// </summary>
         [Parameter]
         public DiagramNode Node { get; set; }
 
         /// <summary>
-        /// Gets or sets the over class of the node.
+        ///     Gets or sets the over class of the node.
         /// </summary>
         public string OverClass { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the width of the node
+        ///     Gets or sets the width of the node
         /// </summary>
         public int Width { get; private set; }
 
         /// <summary>
-        /// Gets or sets the height of the node
+        ///     Gets or sets the height of the node
         /// </summary>
         public int Height { get; private set; }
 
         /// <summary>
-        /// Gets the points used to position the ports in this node.
+        ///     Gets the points used to position the ports in this node.
         /// </summary>
-        private List<Point> Points = new List<Point>();
+        public IReadOnlyList<Point> PortsCoordinates => this.points.AsReadOnly();
 
         /// <summary>
-        /// Gets the points used to position the ports in this node.
-        /// </summary>
-        public IReadOnlyList<Point> PortsCoordinates => this.Points.AsReadOnly();
-
-        /// <summary>
-        /// Method invoked after each time the component has been rendered. Note that the component does
-        /// not automatically re-render after the completion of any returned <see cref="Task"/>, because
-        /// that would cause an infinite render loop.
-        /// </summary>
-        /// <param name="firstRender">
-        /// Set to <c>true</c> if this is the first time <see cref="OnAfterRender(bool)"/> has been invoked
-        /// on this component instance; otherwise <c>false</c>.
-        /// </param>
-        /// <returns>A <see cref="Task"/> representing any asynchronous operation.</returns>
-        /// <remarks>
-        /// The <see cref="OnAfterRender(bool)"/> and <see cref="OnAfterRenderAsync(bool)"/> lifecycle methods
-        /// are useful for performing interop, or interacting with values received from <c>@ref</c>.
-        /// Use the <paramref name="firstRender"/> parameter to ensure that initialization work is only performed
-        /// once.
-        /// </remarks>
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender)
-            {
-                var dimensions = await this.JSRuntime.InvokeAsync<int[]>("GetNodeDimensions", this.DivReference);
-
-                this.Width = dimensions != null ? dimensions[0] : 100;
-                this.Height = dimensions != null ? dimensions[1] : 80;
-                this.CalculatePortsPositions();
-            }
-
-            await base.OnAfterRenderAsync(firstRender);
-        }
-
-        /// <summary>
-        /// Calculates the positions of the corresponding ports
+        ///     Calculates the positions of the corresponding ports
         /// </summary>
         public void CalculatePortsPositions()
         {
-            this.Points.Clear();
+            this.points.Clear();
             this.CalculateRectangularDistance();
             this.Node.ReinitializePorts();
             this.Node.RefreshAll();
@@ -111,16 +81,46 @@ namespace UI_DSM.Client.Components.Widgets
         }
 
         /// <summary>
-        /// Calculates the coordinates of the ports around the rectangle node
+        ///     Method invoked after each time the component has been rendered. Note that the component does
+        ///     not automatically re-render after the completion of any returned <see cref="Task" />, because
+        ///     that would cause an infinite render loop.
+        /// </summary>
+        /// <param name="firstRender">
+        ///     Set to <c>true</c> if this is the first time <see cref="OnAfterRender(bool)" /> has been invoked
+        ///     on this component instance; otherwise <c>false</c>.
+        /// </param>
+        /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
+        /// <remarks>
+        ///     The <see cref="OnAfterRender(bool)" /> and <see cref="OnAfterRenderAsync(bool)" /> lifecycle methods
+        ///     are useful for performing interop, or interacting with values received from <c>@ref</c>.
+        ///     Use the <paramref name="firstRender" /> parameter to ensure that initialization work is only performed
+        ///     once.
+        /// </remarks>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            await base.OnAfterRenderAsync(firstRender);
+
+            if (firstRender)
+            {
+                var dimensions = await this.JsRuntime.InvokeAsync<int[]>("GetNodeDimensions", this.DivReference);
+
+                this.Width = dimensions != null ? dimensions[0] : 100;
+                this.Height = dimensions != null ? dimensions[1] : 80;
+                this.CalculatePortsPositions();
+            }
+        }
+
+        /// <summary>
+        ///     Calculates the coordinates of the ports around the rectangle node
         /// </summary>
         private void CalculateRectangularDistance()
         {
             var p = this.Width / 2.0;
             var q = this.Height / 2.0;
 
-            var totalNodes = this.Node.Ports.Cast<DiagramPort>();
+            var totalNodes = this.Node.Ports.Cast<DiagramPort>().ToList();
             var t = 0.0;
-            var tDelta = (2.0 * Math.PI) / totalNodes.Count();
+            var tDelta = 2.0 * Math.PI / totalNodes.Count;
 
             foreach (var port in totalNodes)
             {
@@ -130,11 +130,10 @@ namespace UI_DSM.Client.Components.Widgets
                 var x = p + p * (Math.Abs(cos) * cos + Math.Abs(sin) * sin);
                 var y = q + q * (Math.Abs(cos) * cos - Math.Abs(sin) * sin);
 
-                this.Points.Add(new Point(x, y));
+                this.points.Add(new Point(x, y));
 
                 t += tDelta;
             }
         }
-
     }
 }

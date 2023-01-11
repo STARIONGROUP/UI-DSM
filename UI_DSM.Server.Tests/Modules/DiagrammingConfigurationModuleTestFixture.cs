@@ -51,7 +51,7 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.participantManager = new Mock<IParticipantManager>();
 
-            ModuleTestHelper.Setup<DiagrammingConfigurationModule, DiagramLayoutInformationDto>(null, out this.context,
+            ModuleTestHelper.Setup<DiagrammingConfigurationModule, DiagramNodeDto>(null, out this.context,
                 out this.response, out _, out this.serviceProvider);
 
             this.serviceProvider.Setup(x => x.GetService(typeof(IParticipantManager))).Returns(this.participantManager.Object);
@@ -87,32 +87,36 @@ namespace UI_DSM.Server.Tests.Modules
         {
             this.fileService.Setup(x => x.GetTempFolder()).Returns(TestContext.CurrentContext.TestDirectory);
 
-            var diagramLayoutInformationDto = new DiagramLayoutInformationDto
+            var diagramDto = new DiagramDto()
             {
-                ThingId = Guid.NewGuid(),
-                xPosition = 650,
-                yPosition = 447
-            };
-
-            var diagramLayoutInformationDtos = new List<DiagramLayoutInformationDto>
-            {
-                diagramLayoutInformationDto
+                Nodes = new List<DiagramNodeDto>()
+                {
+                    new()
+                    {
+                        ThingId = Guid.NewGuid(),
+                        Point = new PointDto()
+                        {
+                            X = 650,
+                            Y = 447
+                        }
+                    }
+                }
             };
 
             const string configFileName = "config1";
             this.serviceProvider.Setup(x => x.GetService(typeof(IParticipantManager))).Returns(this.participantManager.Object);
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
 
-            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, configFileName, diagramLayoutInformationDtos, this.context.Object);
+            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, configFileName, diagramDto, this.context.Object);
             this.response.VerifySet( x => x.StatusCode = 403, Times.Once);
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(this.participant);
-            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, configFileName, diagramLayoutInformationDtos, this.context.Object);
+            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, configFileName, diagramDto, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 403, Times.Exactly(2));
 
             this.participant.Role = new Role() { AccessRights = { AccessRight.CreateDiagramConfiguration } };
 
-            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, configFileName, diagramLayoutInformationDtos, this.context.Object);
+            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, configFileName, diagramDto, this.context.Object);
 
             this.fileService.Verify(x => x.MoveFile(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
 
@@ -122,7 +126,7 @@ namespace UI_DSM.Server.Tests.Modules
             Directory.CreateDirectory(path);
             var filePath = Path.Combine(path, configFileName);
             await using var _ =File.Create(filePath);
-            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, configFileName, diagramLayoutInformationDtos, this.context.Object);
+            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, configFileName, diagramDto, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 300, Times.Once);
 
             for (var fileCount = 0; fileCount < 5; fileCount++)
@@ -131,7 +135,7 @@ namespace UI_DSM.Server.Tests.Modules
                 await using var tmp = File.Create(filePath);
             }
 
-            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, "newConfig", diagramLayoutInformationDtos, this.context.Object);
+            await this.module.SaveLayoutConfiguration(this.projectId, this.reviewTaskId, "newConfig", diagramDto, this.context.Object);
             this.response.VerifySet(x => x.StatusCode = 300, Times.Exactly(2));
         }
 

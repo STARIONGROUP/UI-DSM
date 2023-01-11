@@ -185,7 +185,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             var selectedCategories = selectedFilters[ClassKind.Category];
             var selectedComponents = selectedFilters[ClassKind.ElementDefinition];
 
-            this.filteredProducts = this.allProducts.Where(x => selectedComponents.Any(component => component.DefinedThing.Iid == x.ThingId))
+            this.filteredProducts = this.allProducts.Where(x => selectedComponents.Any(component => component.DefinedThing.Iid == x.Thing.Owner.Iid))
                 .OrderBy(x => x.Thing.Name)
                 .ToList();
 
@@ -288,6 +288,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public IErrorMessageViewModel ErrorMessageViewModel { get; }
 
         /// <summary>
+        ///     Indicates that a configuration has been loaded
+        /// </summary>
+        public bool HasLoadedConfiguration { get; set; }
+
+        /// <summary>
         ///     Value indicating the user is currently saving the diagramming configuration
         /// </summary>
         public bool IsOnSavingMode
@@ -311,6 +316,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public void OpenSavingPopup()
         {
             this.ErrorMessageViewModel.Errors.Clear();
+            this.DiagrammingConfigurationPopupViewModel.ConfigurationName = string.Empty;
             this.IsOnSavingMode = true;
         }
 
@@ -636,9 +642,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         public void CreateInterfacesLinks()
         {
-            this.InterfacesMap.Clear();
-
-            foreach (var interf in this.Interfaces)
+            foreach (var interf in this.Interfaces.Where(x => !this.InterfacesMap.ContainsValue(x)).ToList())
             {
                 var sourcePortRowVM = this.PortsMap.Values.FirstOrDefault(port => port.ThingId == interf.SourceId);
                 var targetPortRowVM = this.PortsMap.Values.FirstOrDefault(port => port.ThingId == interf.TargetId);
@@ -658,7 +662,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                         PathGenerator = PathGenerators.Smooth,
                         SourceMarker = LinkMarker.Square,
                         TargetMarker = LinkMarker.Arrow,
-                        HasComments = interf.HasComment()
+                        HasComments = interf.HasComment(),
+                        ThingId = interf.ThingId,
+                        InterfaceCategory = interf.NatureCategory.ToInterfaceCategory()
                     };
 
                     if (!this.InterfacesMap.Keys.Any(x => x.TargetPort == link.TargetPort && x.SourcePort == link.SourcePort))
@@ -719,7 +725,40 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public async void OpenLoadingConfigurationPopup()
         {
             this.DiagrammingConfigurationLoadingPopupViewModel.ConfigurationsName = await this.diagrammingConfigurationService.LoadDiagramLayoutConfigurationNames(this.ProjectId, this.ReviewTaskId);
+            this.HasLoadedConfiguration = false;
             this.IsOnLoadingMode = true;
+        }
+
+        /// <summary>
+        ///     Filters current rows for the diagram
+        /// </summary>
+        /// <param name="selectedFilters">The selected filters</param>
+        public void FilterRowsForDiagram(Dictionary<ClassKind, List<FilterRow>> selectedFilters)
+        {
+            if (selectedFilters.Keys.Any())
+            {
+                var selectedOwners = selectedFilters[ClassKind.DomainOfExpertise];
+                var selectedCategories = selectedFilters[ClassKind.Category];
+                var selectedComponents = selectedFilters[ClassKind.ElementDefinition];
+
+                var products = this.allProducts.Where(x => selectedComponents.Any(component => component.DefinedThing.Iid == x.Thing.Owner.Iid))
+                    .ToList();
+
+                var interfaces = this.allInterfaces.Where(x => selectedOwners.Any(owner => x.InterfaceOwner.Iid == owner.DefinedThing.Iid)
+                                                               && selectedCategories.Any(cat => x.NatureCategory.Iid == cat.DefinedThing.Iid))
+                    .ToList();
+
+                foreach (var node in this.ProductsMap.Keys)
+                {
+                    node.IsVisible = products.Any(x => x.ThingId == node.ThingId);
+                }
+
+                foreach (var interfaceLink in this.InterfacesMap.Keys)
+                {
+                    interfaceLink.IsVisible = interfaces.Any(x => x.ThingId == interfaceLink.ThingId && interfaceLink.SourceNode is DiagramNode { IsVisible: true }
+                                                                                                     && interfaceLink.TargetNode is DiagramNode { IsVisible : true });
+                }
+            }
         }
 
         /// <summary>
@@ -727,8 +766,30 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// </summary>
         public async Task SaveCurrentDiagramLayout()
         {
-            var layoutInformationDtos = this.ProductsMap.Keys.Select(x => new DiagramLayoutInformationDto { ThingId = x.ThingId, xPosition = x.Position.X, yPosition = x.Position.Y });
-            var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationPopupViewModel.ConfigurationName, layoutInformationDtos);
+            var diagramDto = new DiagramDto()
+            {
+                Nodes = this.ProductsMap.Keys.Select(x => new DiagramNodeDto
+                {
+                    ThingId = x.ThingId, Point = new PointDto()
+                    {
+                        X =x.Position.X, Y = x.Position.Y
+                    }
+                }).ToList(),
+                Links = this.InterfacesMap.Keys.Select(x => new DiagramLinkDto
+                {
+                    ThingId = x.ThingId,
+                    Vertices = x.Vertices.Select(v =>new PointDto() { X = v.Position.X, Y= v.Position.Y}).ToList()
+                }).ToList(),
+                Filters = this.FilterViewModel.GetSelectedFilters()
+                    .Select(selectedFilter => new FilterDto()
+                    {
+                        ClassKind = selectedFilter.Key, 
+                        SelectedFilters = selectedFilter.Value.Select(x => x.DefinedThing.Iid).ToList()
+                    }).ToList()
+            };
+
+            var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, 
+                this.DiagrammingConfigurationPopupViewModel.ConfigurationName, diagramDto);
 
             this.ErrorMessageViewModel.Errors.Clear();
 
@@ -751,15 +812,35 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.PortsMap.Clear();
             this.InterfacesMap.Clear();
 
-            foreach (var diagrammingInformationDto in response)
+            this.FilterViewModel.UpdateFilters(response.Filters);
+
+            foreach (var diagrammingInformationDto in response.Nodes)
             {
                 var productRowView = this.allProducts.FirstOrDefault(x => x.ThingId == diagrammingInformationDto.ThingId);
-                var node = this.CreateNewNodeFromProduct(productRowView);
-                node.SetPosition(diagrammingInformationDto.xPosition, diagrammingInformationDto.yPosition);
+
+                if (productRowView != null)
+                {
+                    var node = this.CreateNewNodeFromProduct(productRowView);
+                    node.SetPosition(diagrammingInformationDto.Point.X, diagrammingInformationDto.Point.Y);
+                }
             }
 
             this.CreateInterfacesLinks();
 
+            foreach (var diagramLinkDto in response.Links)
+            {
+                if (this.InterfacesMap.Values.Any(x => x.ThingId == diagramLinkDto.ThingId))
+                {
+                    var link = this.InterfacesMap
+                        .FirstOrDefault(x => x.Value.ThingId == diagramLinkDto.ThingId).Key;
+
+                    link.Vertices.Clear();
+                    link.Vertices.AddRange(diagramLinkDto.Vertices.Select(x => new LinkVertexModel(link, new Point(x.X, x.Y))));
+                }
+            }
+
+            this.SelectedElement = null;
+            this.HasLoadedConfiguration = true;
             this.IsOnLoadingMode = false;
         }
 
@@ -885,15 +966,17 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             });
 
             var availableProducts = new List<DefinedThing>(this.allProducts
-                    .Select(x => x.Thing))
-                .OrderBy(x => x.Name)
+                    .Select(x => x.Thing.Owner))
+                .DistinctBy(x => x.Iid)
+                .OrderBy(x => x.ShortName)
                 .ToList();
 
             availableRowFilters.Add(new FilterModel
             {
                 ClassKind = ClassKind.ElementDefinition,
-                DisplayName = "Product",
-                Values = availableProducts
+                DisplayName = "Product Owner",
+                Values = availableProducts,
+                UseShortName = true
             });
 
             this.FilterViewModel.InitializeProperties(availableRowFilters);

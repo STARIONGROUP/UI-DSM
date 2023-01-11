@@ -16,6 +16,10 @@
     box-shadow: 0 0 0 2px #6eb4f5;
 }
 
+.hidden {
+    display: none;
+}
+
 ::deep .custom-port {
     width: 14px !important;
     height: 14px !important;

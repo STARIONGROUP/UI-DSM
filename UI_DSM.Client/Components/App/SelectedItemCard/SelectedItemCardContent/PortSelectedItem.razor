@@ -13,7 +13,7 @@
 @using UI_DSM.Client.Extensions
 @using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
 @inherits SelectedItemBase<UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel.PortRowViewModel>
-<AppKeyValue Key="Name" Value="@(this.RowViewModel.Id)" />
+<AppKeyValue Key="Name" Value="@(this.RowViewModel.Id)" OnItemDoubleClick="this.OnItemDoubleClick" />
 <AppKeyValue Key="Owner" Value="@(this.RowViewModel.Owner)" />
 @switch (this.RowViewModel.Container)
 {

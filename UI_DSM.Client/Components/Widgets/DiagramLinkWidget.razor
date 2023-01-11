@@ -9,7 +9,7 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-@using UI_DSM.Client.Model
-@using Blazor.Diagrams.Core.Extensions;
-
-<Blazor.Diagrams.Components.LinkWidget Link="this.Link"></Blazor.Diagrams.Components.LinkWidget>
+@if (this.Link.IsVisible)
+{
+	<Blazor.Diagrams.Components.LinkWidget Link="this.Link"></Blazor.Diagrams.Components.LinkWidget>
+}

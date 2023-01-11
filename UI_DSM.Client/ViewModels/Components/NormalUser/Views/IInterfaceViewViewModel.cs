@@ -117,6 +117,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         IErrorMessageViewModel ErrorMessageViewModel { get; }
 
         /// <summary>
+        ///     Indicates that a configuration has been loaded
+        /// </summary>
+        bool HasLoadedConfiguration { get; set; }
+
+        /// <summary>
         ///     Filters current rows
         /// </summary>
         /// <param name="selectedFilters">The selected filters</param>
@@ -230,5 +235,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Opens the <see cref="DiagrammingConfigurationLoadingPopup" />
         /// </summary>
         void OpenLoadingConfigurationPopup();
+
+        /// <summary>
+        ///     Filters current rows for the diagram
+        /// </summary>
+        /// <param name="selectedFilters">The selected filters</param>
+        void FilterRowsForDiagram(Dictionary<ClassKind, List<FilterRow>> selectedFilters);
     }
 }
