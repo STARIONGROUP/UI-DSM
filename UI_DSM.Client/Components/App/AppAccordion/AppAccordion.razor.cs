@@ -29,7 +29,8 @@ namespace UI_DSM.Client.Components.App.AppAccordion
             Small,
             Medium,
             Tiny,
-            Reply
+            Reply,
+            Group,
         }
 
         /// <summary>
@@ -97,6 +98,7 @@ namespace UI_DSM.Client.Components.App.AppAccordion
                 VariantValue.Medium => "app-accordion__button--medium",
                 VariantValue.Tiny => "app-accordion__button--tiny",
                 VariantValue.Reply => "app-accordion__button--reply",
+                VariantValue.Group => "app-accordion__button--group",
                 _ => ""
             };
         }

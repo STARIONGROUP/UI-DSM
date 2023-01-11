@@ -8,3 +8,34 @@
     font-size: var(--text-sm);
     font-weight: 500;
 }
+
+.search-group {
+    padding: var(--spacing-4);
+    background-color: var(--colors-gray-50);
+    border-radius: var(--radius-1);
+}
+
+.search-page {
+    padding: var(--spacing-8);
+    display: grid;
+    gap: var(--spacing-4);
+}
+
+.search-group__label {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--colors-gray-600);
+}
+
+.search-group__list {
+    margin: 0;
+    display: grid;
+    padding: var(--spacing-3) 0 0;
+    gap: var(--spacing-2);
+}
+
+
+.search-group__list li {
+    padding: 0;
+    list-style: none;
+}

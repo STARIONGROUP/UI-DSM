@@ -1,16 +1,17 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
 // SearchPage.razor
 // Copyright (c) 2022 RHEA System S.A.
-// 
+//
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
-// 
-// This file is part of UI-DSM. 
+//
+// This file is part of UI-DSM.
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @page "/Search/{Keyword}"
 @using UI_DSM.Shared.Extensions
+
 
 <DxPopup CloseOnOutsideClick="false" HeaderText="Select View" @bind-Visible="@(this.ViewModel.IsOnViewSelectionMode)">
 	<Content>
@@ -25,7 +26,6 @@
 		}
 	</Content>
 </DxPopup>
-<h3>Results for: @this.Keyword</h3>
 
 <LoadingComponent IsLoading="@this.isLoading">
 	@foreach (var locationGroup in this.searchResults.GroupBy(x => x.Location)
