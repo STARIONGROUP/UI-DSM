@@ -21,6 +21,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
 
     using Bunit;
 
+    using CDP4Common.CommonData;
     using CDP4Common.DTO;
     using CDP4Common.EngineeringModelData;
     
@@ -55,6 +56,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     using ElementUsage = CDP4Common.DTO.ElementUsage;
     using Participant = UI_DSM.Shared.Models.Participant;
     using TestContext = Bunit.TestContext;
+    using Thing = CDP4Common.DTO.Thing;
 
     [TestFixture]
     public class PhysicalFlowViewTestFixture
@@ -98,32 +100,32 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var interfaceCategoryId = Guid.NewGuid();
 
                 var categories = new List<Category>
-            {
-                new()
                 {
-                    Iid = portCategoryId,
-                    Name = "ports"
-                },
-                new()
-                {
-                    Iid = interfaceCategoryId,
-                    Name = "interfaces"
-                },
-                new()
-                {
-                    Iid = productCategoryId,
-                    Name = "products"
-                }
-            };
+                    new()
+                    {
+                        Iid = portCategoryId,
+                        Name = "ports"
+                    },
+                    new()
+                    {
+                        Iid = interfaceCategoryId,
+                        Name = "interfaces"
+                    },
+                    new()
+                    {
+                        Iid = productCategoryId,
+                        Name = "products"
+                    }
+                };
 
                 var portDefinition = new ElementDefinition()
                 {
                     Iid = Guid.NewGuid(),
                     Name = "Port",
                     Category =
-                {
-                    portCategoryId
-                }
+                    {
+                        portCategoryId
+                    }
                 };
 
                 var notConnectedPort = new ElementUsage()
@@ -132,9 +134,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     Name = "Port_ACC",
                     ElementDefinition = portDefinition.Iid,
                     Category =
-                {
-                    portCategoryId
-                }
+                    {
+                        portCategoryId
+                    }
                 };
 
                 var sourcePort = new ElementUsage()
@@ -156,9 +158,9 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     ElementDefinition = portDefinition.Iid,
                     InterfaceEnd = InterfaceEndKind.OUTPUT,
                     Category =
-                {
-                    portCategoryId
-                }
+                    {
+                        portCategoryId
+                    }
                 };
 
                 var accelorometerBox = new ElementDefinition()
@@ -195,15 +197,15 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 var assembler = new Assembler(new Uri("http://localhost"));
 
                 var things = new List<Thing>(categories)
-            {
-                sourcePort,
-                targetPort,
-                notConnectedPort,
-                accelorometerBox,
-                powerGenerator,
-                interfaceRelationShip,
-                emptyProduct
-            };
+                {
+                    sourcePort,
+                    targetPort,
+                    notConnectedPort,
+                    accelorometerBox,
+                    powerGenerator,
+                    interfaceRelationShip,
+                    emptyProduct
+                };
 
                 assembler.Synchronize(things).Wait();
                 _ = assembler.Cache.Select(x => x.Value.Value);
@@ -227,6 +229,8 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     .Select(x => x.Value)
                     .Select(x => x.Value)
                     .ToList();
+
+                this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new[] { 100, 80 });
 
                 this.renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, Guid.Empty, new List<string>(), 
                     new List<string>(), new Participant() { Role = new Role() { AccessRights = { AccessRight.CreateDiagramConfiguration } } });
@@ -393,7 +397,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             var anotherView = component.Instance;
 
             var oldViewModel = anotherView.ViewModel;
-            this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new [] { 100, 80 });
 
             var result = Task.FromResult(false);
             await this.renderer.InvokeAsync(() => result = this.renderer.Instance.CopyComponents(anotherView));
@@ -525,7 +528,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     {
                         new()
                         {
-                            ThingId = Guid.NewGuid(),
+                            ThingId = this.viewModel.Products[0].ThingId,
                             Point = new PointDto()
                             {
                                 X = 650,
@@ -534,10 +537,19 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                         },
                         new()
                         {
-                            ThingId = Guid.NewGuid(),
+                            ThingId = this.viewModel.Products[1].ThingId,
                             Point = new PointDto()
                             {
                                 X = 750,
+                                Y = 447
+                            }
+                        },
+                        new()
+                        {
+                            ThingId = this.viewModel.Products[2].ThingId,
+                            Point = new PointDto()
+                            {
+                                X = 500,
                                 Y = 447
                             }
                         }
@@ -546,11 +558,28 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     {
                         new()
                         {
-                            ThingId = Guid.NewGuid(),
-                            Vertices = new List<PointDto>()
+                            ThingId = this.viewModel.Interfaces[0].ThingId,
+                            Vertices = new List<PointDto>{new (){X = 450, Y = 200}}
                         }
                     },
                     Filters = new List<FilterDto>()
+                    {
+                        new ()
+                        {
+                            ClassKind = ClassKind.DomainOfExpertise,
+                            SelectedFilters = new List<Guid>(this.viewModel.FilterViewModel.SelectedFilters[ClassKind.DomainOfExpertise].Select(x => x.DefinedThing.Iid))
+                        },
+                        new()
+                        {
+                            ClassKind = ClassKind.ElementDefinition,
+                            SelectedFilters = new List<Guid>(this.viewModel.FilterViewModel.SelectedFilters[ClassKind.ElementDefinition].Select(x => x.DefinedThing.Iid))
+                        },
+                        new()
+                        {
+                            ClassKind = ClassKind.Category,
+                            SelectedFilters = new List<Guid>(this.viewModel.FilterViewModel.SelectedFilters[ClassKind.Category].Select(x => x.DefinedThing.Iid))
+                        }
+                    }
                 });
 
             await this.renderer.InvokeAsync(creationDialog.Instance.ViewModel.OnValidSubmit.InvokeAsync);
