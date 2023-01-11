@@ -13,8 +13,10 @@
 
 namespace UI_DSM.Client.Services.DiagrammingConfigurationService
 {
-    using Microsoft.AspNetCore.Components;
     using System.Text;
+
+    using Microsoft.AspNetCore.Components;
+
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
@@ -40,7 +42,7 @@ namespace UI_DSM.Client.Services.DiagrammingConfigurationService
         /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
         /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" /></param>
         /// <param name="configurationName">The name of the configuration</param>
-        /// <param name="diagram">The <see cref="DiagramDto"/></param>
+        /// <param name="diagram">The <see cref="DiagramDto" /></param>
         /// <returns>A <see cref="Task" /> </returns>
         public async Task<(bool result, List<string> errors)> SaveDiagramLayout(Guid projectId, Guid reviewTaskId, string configurationName, DiagramDto diagram)
         {
@@ -77,7 +79,7 @@ namespace UI_DSM.Client.Services.DiagrammingConfigurationService
             {
                 throw new HttpRequestException(response.ReasonPhrase);
             }
-            
+
             var content = this.jsonService.Deserialize<List<string>>(await response.Content.ReadAsStreamAsync());
             return content;
         }
@@ -91,15 +93,45 @@ namespace UI_DSM.Client.Services.DiagrammingConfigurationService
         /// <returns>A <see cref="Task" /> with the <see cref="DiagramDto" /></returns>
         public async Task<DiagramDto> LoadDiagramLayoutConfiguration(Guid projectId, Guid reviewTaskId, string configurationName)
         {
+            if (string.IsNullOrEmpty(configurationName))
+            {
+                return null;
+            }
+
             var response = await this.HttpClient.GetAsync($"{this.MainRoute}/{projectId}/{reviewTaskId}/{configurationName}/Load");
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new HttpRequestException(response.ReasonPhrase);
+                return null;
             }
-            
+
             var content = this.jsonService.Deserialize<DiagramDto>(await response.Content.ReadAsStreamAsync());
             return content;
+        }
+
+        /// <summary>
+        ///     Deletes a diagram configuration
+        /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
+        /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" /></param>
+        /// <param name="configurationName">The name of the selected configuration</param>
+        /// <returns>A <see cref="Task" /> with the result of the deletion</returns>
+        public async Task<(bool success, string error)> DeleteDiagramLayoutConfiguration(Guid projectId, Guid reviewTaskId, string configurationName)
+        {
+            if (string.IsNullOrEmpty(configurationName))
+            {
+                return (false, "Empty configuration name");
+            }
+
+            var response = await this.HttpClient.DeleteAsync($"{this.MainRoute}/{projectId}/{reviewTaskId}/{configurationName}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, string.Empty);
+            }
+
+            var content = this.jsonService.Deserialize<string>(await response.Content.ReadAsStreamAsync());
+            return (false, content);
         }
     }
 }

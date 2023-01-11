@@ -118,7 +118,11 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
             var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Layout/{projectId}/{reviewTaskId}/{configurationName}/Load");
             request.Respond(_ => httpResponse);
 
-            Assert.That(async () => await this.service.LoadDiagramLayoutConfiguration(projectId, reviewTaskId, configurationName), Throws.Exception);
+            var diagramDto = await this.service.LoadDiagramLayoutConfiguration(projectId, reviewTaskId, configurationName);
+            Assert.That(diagramDto, Is.Null);
+
+            diagramDto=await this.service.LoadDiagramLayoutConfiguration(projectId, reviewTaskId, string.Empty);
+            Assert.That(diagramDto, Is.Null);
 
             httpResponse.StatusCode = HttpStatusCode.OK;
             
@@ -138,8 +142,34 @@ namespace UI_DSM.Client.Tests.Services.DiagrammingConfigurationService
                 }
             }));
 
-            var diagramDto = await this.service.LoadDiagramLayoutConfiguration(projectId, reviewTaskId, configurationName);
+            diagramDto = await this.service.LoadDiagramLayoutConfiguration(projectId, reviewTaskId, configurationName);
             Assert.That(diagramDto.Nodes, Has.Count.EqualTo(1));
+        }
+
+        [Test]
+        public async Task VerifyDeleteDiagram()
+        {
+            var projectId = Guid.NewGuid();
+            var reviewTaskId = Guid.NewGuid();
+            const string configurationName = "config1";
+
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.NotFound;
+            httpResponse.Content = new StringContent(this.jsonService.Serialize("Unauthorized"));
+
+            var request = this.httpMessageHandler.When(HttpMethod.Delete, $"/Layout/{projectId}/{reviewTaskId}/{configurationName}");
+            request.Respond(_ => httpResponse);
+
+            var deletion = await this.service.DeleteDiagramLayoutConfiguration(projectId, reviewTaskId, configurationName);
+            Assert.That(deletion.success, Is.False);
+
+            deletion = await this.service.DeleteDiagramLayoutConfiguration(projectId, reviewTaskId, string.Empty);
+            Assert.That(deletion.success, Is.False);
+
+            httpResponse.StatusCode = HttpStatusCode.OK;
+
+            deletion = await this.service.DeleteDiagramLayoutConfiguration(projectId, reviewTaskId, configurationName);
+            Assert.That(deletion.success, Is.True);
         }
     }
 }

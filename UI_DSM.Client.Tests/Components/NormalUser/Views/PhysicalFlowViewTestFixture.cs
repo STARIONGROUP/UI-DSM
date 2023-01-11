@@ -29,6 +29,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
     
     using CDP4JsonSerializer;
 
+    using Microsoft.AspNetCore.Components.Web;
     using Microsoft.Extensions.DependencyInjection;
 
     using Moq;
@@ -230,7 +231,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     .Select(x => x.Value)
                     .ToList();
 
-                this.context.JSInterop.Setup<int[]>("GetNodeDimensions").SetResult(new[] { 100, 80 });
+                this.context.JSInterop.Setup<int[]>("GetNodeDimensions", _ => true).SetResult(new[] { 100, 80 });
 
                 this.renderer.Instance.InitializeViewModel(pocos, projectId, reviewId, Guid.Empty, new List<string>(), 
                     new List<string>(), new Participant() { Role = new Role() { AccessRights = { AccessRight.CreateDiagramConfiguration } } });
@@ -507,19 +508,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
         {
             this.renderer.Instance.IsLoading = false;
             this.renderer.Render();
-            var buttons = this.renderer.FindComponents<AppButton>();
+            var button = this.renderer.Find("#load-configuration-button");
             Assert.That(this.viewModel.IsOnLoadingMode, Is.False);
 
             this.diagramService.Setup(x => x.LoadDiagramLayoutConfigurationNames(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync(new List<string> { "A config" });
 
-            await this.renderer.InvokeAsync(buttons[1].Instance.Click.InvokeAsync);
+            await this.renderer.InvokeAsync(() => button.Click(new MouseEventArgs()));
             Assert.That(this.viewModel.IsOnLoadingMode, Is.True);
-
-            var creationDialog = this.renderer.FindComponent<DiagrammingConfigurationLoadingPopup>();
-            Assert.That(creationDialog.Instance.ViewModel.ConfigurationsName.ToList(), Has.Count.EqualTo(1));
-
-            creationDialog.Instance.ViewModel.SelectedConfiguration = "A config";
 
             this.diagramService.Setup(x => x.LoadDiagramLayoutConfiguration(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>()))
                 .ReturnsAsync(new DiagramDto()
@@ -582,8 +578,56 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     }
                 });
 
-            await this.renderer.InvokeAsync(creationDialog.Instance.ViewModel.OnValidSubmit.InvokeAsync);
-            this.diagramService.Verify(x => x.LoadDiagramLayoutConfiguration(It.IsAny<Guid>(), It.IsAny<Guid>(), "A config"), Times.Once);
+            this.viewModel.SelectedConfiguration = "A config";
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.IsOnLoadingMode, Is.False);
+                this.diagramService.Verify(x => x.LoadDiagramLayoutConfiguration(It.IsAny<Guid>(), It.IsAny<Guid>(), "A config"), Times.Once);
+            });
+        }
+
+        [Test]
+        public async Task VerifyDeleteDiagram()
+        {
+            this.renderer.Instance.IsLoading = false;
+            this.renderer.Render();
+            var buttons = this.renderer.FindComponents<AppButton>();
+            Assert.That(this.viewModel.IsOnDeletionMode, Is.False);
+
+            await this.renderer.InvokeAsync(buttons[1].Instance.Click.InvokeAsync);
+            Assert.That(this.viewModel.IsOnDeletionMode, Is.True);
+
+            this.diagramService.Setup(x => x.LoadDiagramLayoutConfigurationNames(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(new List<string> { "A config" });
+
+            var deletionDialog = this.renderer.FindComponent<DiagrammingConfigurationDeletionPopup>();
+            deletionDialog.Instance.ViewModel.SelectedConfiguration = "a config";
+            await this.renderer.InvokeAsync(deletionDialog.Instance.ViewModel.OnValidSubmit.InvokeAsync);
+            Assert.That(this.viewModel.ConfirmCancelPopup.IsVisible, Is.True);
+
+            await this.renderer.InvokeAsync(this.viewModel.ConfirmCancelPopup.OnCancel.InvokeAsync);
+            Assert.That(this.viewModel.ConfirmCancelPopup.IsVisible, Is.False);
+
+            deletionDialog.Instance.ViewModel.SelectedConfiguration = "A config";
+
+            this.diagramService.Setup(x => x.DeleteDiagramLayoutConfiguration(It.IsAny<Guid>(), It.IsAny<Guid>(),
+                It.IsAny<string>())).ReturnsAsync((false, "Unauthorized"));
+
+            await this.renderer.InvokeAsync(this.viewModel.ConfirmCancelPopup.OnConfirm.InvokeAsync);
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.ConfirmCancelPopup.IsVisible, Is.False);
+                Assert.That(this.viewModel.IsOnDeletionMode, Is.True);
+            });
+
+            this.diagramService.Setup(x => x.DeleteDiagramLayoutConfiguration(It.IsAny<Guid>(), It.IsAny<Guid>(),
+                It.IsAny<string>())).ReturnsAsync((true, string.Empty));
+
+            await this.renderer.InvokeAsync(deletionDialog.Instance.ViewModel.OnValidSubmit.InvokeAsync);
+            await this.renderer.InvokeAsync(this.viewModel.ConfirmCancelPopup.OnConfirm.InvokeAsync);
+            Assert.That(this.viewModel.IsOnDeletionMode, Is.False);
         }
     }
 }

@@ -97,6 +97,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
             this.ViewModel = interfaceView.ViewModel;
             this.ViewModel.InitializeDiagram();
+            this.ViewModel.SelectedConfiguration = string.Empty;
             this.RefreshDiagram();
             await this.HasChanged();
 
@@ -320,11 +321,20 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                 this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnSavingMode)
                     .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
+                this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnDeletionMode)
+                    .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
+                this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ConfirmCancelPopup.IsVisible)
+                    .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
                 this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnLoadingMode)
                     .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
                 this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnLoadingMode)
-                    .Subscribe(async x => await this.OnIsOnLoadingModeChanged(x)));
+                    .Subscribe(async x => await this.InvokeAsync(() => this.OnIsOnLoadingModeChanged(x))));
+
+                this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.SelectedConfiguration)
+                    .Subscribe(async _ => await this.ViewModel.LoadDiagramLayout()));
 
                 this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.FilterViewModel.IsFilterVisible)
                     .Where(x => !x)
@@ -341,8 +351,8 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         ///     Handle the change of the <see cref="IsOnLoadingMode" /> variable
         /// </summary>
         /// <param name="value">The IsOnLoadingMode</param>
-        /// <returns>A <see cref="Task" /></returns>
-        private async Task OnIsOnLoadingModeChanged(bool value)
+        /// <returns>A <see cref="Task"/></returns>
+        private Task OnIsOnLoadingModeChanged(bool value)
         {
             if (!value && this.ViewModel.HasLoadedConfiguration)
             {
@@ -351,7 +361,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                 this.ViewModel.HasLoadedConfiguration = false;
             }
 
-            await this.InvokeAsync(this.StateHasChanged);
+            return this.InvokeAsync(this.StateHasChanged);
         }
 
         /// <summary>

@@ -23,6 +23,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using UI_DSM.Client.Model;
     using UI_DSM.Client.ViewModels.App.ConnectionVisibilitySelector;
     using UI_DSM.Client.ViewModels.App.Filter;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.DiagrammingConfiguration;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
 
@@ -107,9 +108,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; }
 
         /// <summary>
-        ///     The <see cref="IDiagrammingConfigurationLoadingPopupViewModel" />
+        ///     The <see cref="IDiagrammingConfigurationDeletionPopupViewModel" />
         /// </summary>
-        IDiagrammingConfigurationLoadingPopupViewModel DiagrammingConfigurationLoadingPopupViewModel { get; }
+        IDiagrammingConfigurationDeletionPopupViewModel DiagrammingConfigurationDeletionPopupViewModel { get; }
 
         /// <summary>
         ///     The <see cref="IErrorMessageViewModel" />
@@ -120,6 +121,21 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Indicates that a configuration has been loaded
         /// </summary>
         bool HasLoadedConfiguration { get; set; }
+
+        /// <summary>
+        ///     The current selected configuration
+        /// </summary>
+        string SelectedConfiguration { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IConfirmCancelPopupViewModel" />
+        /// </summary>
+        IConfirmCancelPopupViewModel ConfirmCancelPopup { get; }
+
+        /// <summary>
+        ///     Value indicating if the current state is a deletion state
+        /// </summary>
+        bool IsOnDeletionMode { get; set; }
 
         /// <summary>
         ///     Filters current rows
@@ -232,14 +248,33 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         void OpenSavingPopup();
 
         /// <summary>
-        ///     Opens the <see cref="DiagrammingConfigurationLoadingPopup" />
+        ///     Display to the user all available configuration to load
         /// </summary>
-        void OpenLoadingConfigurationPopup();
+        void OpenLoadingConfiguration();
 
         /// <summary>
         ///     Filters current rows for the diagram
         /// </summary>
         /// <param name="selectedFilters">The selected filters</param>
         void FilterRowsForDiagram(Dictionary<ClassKind, List<FilterRow>> selectedFilters);
+
+        /// <summary>
+        ///     Gets all available configuration
+        /// </summary>
+        /// <param name="token">The <see cref="CancellationToken" /></param>
+        /// <returns>A collection of <see cref="string" /></returns>
+        Task<IEnumerable<string>> GetAvailableConfigurations(CancellationToken token);
+
+        /// <summary>
+        ///     Load choosen diagram layout
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        Task LoadDiagramLayout();
+
+        /// <summary>
+        /// Opens the deletion component
+        /// </summary>
+        /// <returns>A <see cref="Task"/></returns>
+        Task OpenDeletionComponent();
     }
 }
