@@ -96,6 +96,8 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             }
 
             this.ViewModel = interfaceView.ViewModel;
+            this.ViewModel.InitializeDiagram();
+            this.RefreshDiagram();
             await this.HasChanged();
 
             this.IsLoading = false;
