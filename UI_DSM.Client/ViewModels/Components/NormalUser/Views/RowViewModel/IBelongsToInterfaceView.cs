@@ -18,13 +18,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
     /// <summary>
     ///     Interface that defines the fact that a row view model is part of the <see cref="InterfaceView" />
     /// </summary>
-    public interface IBelongsToInterfaceView
+    public interface IBelongsToInterfaceView: IHaveThingRowViewModel
     {
-        /// <summary>
-        ///     Gets the Id of the current <see cref="IHaveThingRowViewModel" />
-        /// </summary>
-        string Id { get; }
-
         /// <summary>
         ///     The name of the source
         /// </summary>

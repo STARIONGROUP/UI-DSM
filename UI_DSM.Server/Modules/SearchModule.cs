@@ -94,16 +94,23 @@ namespace UI_DSM.Server.Modules
         /// <returns>A <see cref="Task" /></returns>
         private static async Task IndexPredefinedData(ISearchService searchService, IRoleManager roleManager, IUserManager userManager)
         {
-            var adminUser = await userManager.FindEntity(Guid.Parse(UserEntityConfiguration.EntityId));
-
-            var roles = (await roleManager.FindEntities(new List<Guid>
+            try
             {
-                Guid.Parse(UiDsmRoleConfiguration.ProjectAdministratorRoleId),
-                Guid.Parse(UiDsmRoleConfiguration.ReviewerRoleId)
-            })).Select(x => x.ToDto() as RoleDto);
+                var adminUser = await userManager.FindEntity(Guid.Parse(UserEntityConfiguration.EntityId));
 
-            await searchService.IndexData(adminUser.ToDto() as UserEntityDto);
-            await searchService.IndexData(roles);
+                var roles = (await roleManager.FindEntities(new List<Guid>
+                {
+                    Guid.Parse(UiDsmRoleConfiguration.ProjectAdministratorRoleId),
+                    Guid.Parse(UiDsmRoleConfiguration.ReviewerRoleId)
+                })).Select(x => x.ToDto() as RoleDto);
+
+                await searchService.IndexData(adminUser.ToDto() as UserEntityDto);
+                await searchService.IndexData(roles);
+            }
+            catch
+            {
+                // Nothing to do
+            }
         }
     }
 }

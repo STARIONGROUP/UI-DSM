@@ -92,6 +92,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// </summary>
         protected override void InitializesProperties()
         {
+            base.InitializesProperties();
             var elementUsage = this.Thing as ElementUsage;
             this.IsConnected = elementUsage.GetInterfacesOfPort().Any();
             this.ElementContainer = this.Thing.Container as ElementDefinition;
