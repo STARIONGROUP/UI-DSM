@@ -16,8 +16,10 @@ namespace UI_DSM.Client.Services.ReviewTaskService
     using Microsoft.AspNetCore.Components;
 
     using UI_DSM.Client.Services.JsonService;
+    using UI_DSM.Shared.Assembler;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
     using UI_DSM.Shared.Types;
 
@@ -129,12 +131,13 @@ namespace UI_DSM.Client.Services.ReviewTaskService
         }
 
         /// <summary>
-        ///     Gets, for all <see cref="ReviewTask" /> inside a <see cref="ReviewObjective"/>, the number of <see cref="Comment" />
+        ///     Gets, for all <see cref="ReviewTask" /> inside a <see cref="ReviewObjective" />, the number of
+        ///     <see cref="Comment" />
         ///     related to the <see cref="ReviewTask" />
         /// </summary>
-        /// <param name="projectId">The <see cref="Guid"/> of the <see cref="Project"/></param>
-        /// <param name="reviewId">The <see cref="Guid"/> of the <see cref="Review"/></param>
-        /// <param name="reviewObjectiveId">The <see cref="Guid"/> of the <see cref="ReviewObjective"/></param>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
+        /// <param name="reviewObjectiveId">The <see cref="Guid" /> of the <see cref="ReviewObjective" /></param>
         /// <returns>A <see cref="Task" /> with a <see cref="Dictionary{Guid, ComputedProjectProperties}" /></returns>
         public async Task<Dictionary<Guid, AdditionalComputedProperties>> GetCommmentsCount(Guid projectId, Guid reviewId, Guid reviewObjectiveId)
         {
@@ -147,6 +150,28 @@ namespace UI_DSM.Client.Services.ReviewTaskService
             }
 
             return this.jsonService.Deserialize<Dictionary<Guid, AdditionalComputedProperties>>(await response.Content.ReadAsStreamAsync());
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="ReviewTask" /> with related <see cref="Entity" /> and Container that are contained inside a
+        ///     <see cref="Review" /> and could access to a <see cref="View" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="view">the <see cref="View" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="ReviewTask" /></returns>
+        public async Task<List<ReviewTask>> GetReviewTasksForView(Guid projectId, Guid reviewId, View view)
+        {
+            this.ComputeMainRoute(projectId, reviewId, Guid.Empty);
+            var response = await this.HttpClient.GetAsync($"{this.MainRoute}/View/{view}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(response.ReasonPhrase);
+            }
+
+            var dtos = this.jsonService.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync());
+            return Assembler.CreateEntities<ReviewTask>(dtos).ToList();
         }
     }
 }

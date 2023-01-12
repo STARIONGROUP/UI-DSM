@@ -232,5 +232,27 @@ namespace UI_DSM.Client.Tests.Services.ReviewTaskService
             httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResults));
             Assert.That(await this.service.GetCommmentsCount(project.Id, review.Id, this.reviewObjectiveId), Is.EquivalentTo(requestResults));
         }
+
+        [Test]
+        public async Task GetReviewTasksForView()
+        {
+            var httpResponse = new HttpResponseMessage();
+            httpResponse.StatusCode = HttpStatusCode.BadRequest;
+
+            var project = new Project(Guid.NewGuid());
+            var review = new Review(Guid.NewGuid());
+
+            var request = this.httpMessageHandler.When(HttpMethod.Get, $"/Project/{project.Id}/Review/{review.Id}/ReviewObjective/{Guid.Empty}/ReviewTask/View/InterfaceView");
+            request.Respond(_ => httpResponse);
+
+            Assert.That(async () => await this.service.GetReviewTasksForView(project.Id, review.Id, View.InterfaceView), Throws.Exception);
+
+            httpResponse.StatusCode = HttpStatusCode.OK;
+
+            var requestResults = new List<EntityDto>();
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(requestResults));
+            Assert.That(await this.service.GetReviewTasksForView(project.Id, review.Id, View.InterfaceView), Is.Empty);
+        }
     }
 }

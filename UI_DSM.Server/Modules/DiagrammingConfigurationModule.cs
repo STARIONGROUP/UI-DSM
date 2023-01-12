@@ -81,6 +81,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="configurationName">The name of the configuration</param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
+        [Authorize]
         public async Task DeleteLayoutConfiguration(IParticipantManager participantManager, Guid projectId, Guid reviewTaskId, string configurationName, HttpContext context)
         {
             var participant = await participantManager.GetParticipantForProject(projectId, context.User.Identity?.Name);

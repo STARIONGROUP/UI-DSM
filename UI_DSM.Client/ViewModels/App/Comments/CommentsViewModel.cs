@@ -22,6 +22,8 @@ namespace UI_DSM.Client.ViewModels.App.Comments
     using UI_DSM.Client.Services.AnnotationService;
     using UI_DSM.Client.Services.ReplyService;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.Services.ReviewTaskService;
+    using UI_DSM.Client.ViewModels.App.AvailableReviewTasksSelection;
     using UI_DSM.Client.ViewModels.App.CommentCreation;
     using UI_DSM.Client.ViewModels.App.ReplyCreation;
     using UI_DSM.Client.ViewModels.Components;
@@ -55,6 +57,11 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         private readonly IReviewItemService reviewItemService;
 
         /// <summary>
+        ///     The <see cref="IReviewTaskService" />
+        /// </summary>
+        private readonly IReviewTaskService reviewTaskService;
+
+        /// <summary>
         ///     Backing field for <see cref="IsOnCommentCreationMode" />
         /// </summary>
         private bool isOnCommentCreationMode;
@@ -65,6 +72,11 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         private bool isOnCommentUpdateMode;
 
         /// <summary>
+        ///     Backing field <see cref="IsOnLinkMode" />
+        /// </summary>
+        private bool isOnLinkMode;
+
+        /// <summary>
         ///     Backing field for <see cref="IsOnReplyCreationMode" />
         /// </summary>
         private bool isOnReplyCreationMode;
@@ -73,6 +85,11 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         ///     Backing field for <see cref="IsOnReplyUpdateMode" />
         /// </summary>
         private bool isOnReplyUpdateMode;
+
+        /// <summary>
+        ///     Reference to the <see cref="reviewTask" />
+        /// </summary>
+        private ReviewTask reviewTask;
 
         /// <summary>
         ///     The currently selected <see cref="Comment" /> to update/delete
@@ -90,21 +107,18 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         private Reply selectedReply;
 
         /// <summary>
-        /// Reference to the <see cref="reviewTask"/>
-        /// </summary>
-        private ReviewTask reviewTask;
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="CommentsViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
         /// <param name="annotationService">The <see cref="IAnnotationService" /></param>
         /// <param name="replyService">The <see cref="IReplyService" /></param>
-        public CommentsViewModel(IReviewItemService reviewItemService, IAnnotationService annotationService, IReplyService replyService)
+        /// <param name="reviewTaskService">The <see cref="IReviewTaskService" /></param>
+        public CommentsViewModel(IReviewItemService reviewItemService, IAnnotationService annotationService, IReplyService replyService, IReviewTaskService reviewTaskService)
         {
             this.reviewItemService = reviewItemService;
             this.annotationService = annotationService;
             this.replyService = replyService;
+            this.reviewTaskService = reviewTaskService;
 
             this.CommentCreationViewModel = new CommentCreationViewModel
             {
@@ -140,6 +154,11 @@ namespace UI_DSM.Client.ViewModels.App.Comments
                 HeaderText = "Delete Comment",
                 ContentText = "Are you sure to want to delete this comment ?",
                 OnCancel = new EventCallbackFactory().Create(this, () => this.CommentConfirmCancelPopupViewModel.IsVisible = false)
+            };
+
+            this.AvailableReviewTasksSelectionViewModel = new AvailableReviewTasksSelectionViewModel
+            {
+                OnSubmit = new EventCallbackFactory().Create(this, this.CreateCommentWithLinkedReviewTask)
             };
         }
 
@@ -221,7 +240,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         public IConfirmCancelPopupViewModel ReplyConfirmCancelPopupViewModel { get; set; }
 
         /// <summary>
-        ///     Event callback when a user wants to link a <see cref="Comment"/> to another element
+        ///     Event callback when a user wants to link a <see cref="Comment" /> to another element
         /// </summary>
         public EventCallback<Comment> OnLinkCallback { get; private set; }
 
@@ -229,6 +248,20 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         ///     A collection of <see cref="ICommentsViewModel.AvailableRows" />
         /// </summary>
         public List<IHaveAnnotatableItemRowViewModel> AvailableRows { get; set; }
+
+        /// <summary>
+        ///     Value indicating if the view should be on link to <see cref="ReviewTask" /> mode
+        /// </summary>
+        public bool IsOnLinkMode
+        {
+            get => this.isOnLinkMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnLinkMode, value);
+        }
+
+        /// <summary>
+        ///     The <see cref="IAvailableReviewTasksSelectionViewModel" />
+        /// </summary>
+        public IAvailableReviewTasksSelectionViewModel AvailableReviewTasksSelectionViewModel { get; set; }
 
         /// <summary>
         ///     The current <see cref="Participant" />
@@ -292,10 +325,10 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
         /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
         /// <param name="currentView">The <see cref="View" /></param>
-        /// <param name="currentParticipant">The current <see cref="Participant"/></param>
+        /// <param name="currentParticipant">The current <see cref="Participant" /></param>
         /// <param name="onLinkCallback">The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element</param>
-        /// <param name="task">The <see cref="reviewTask"/></param>
-        public void InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant currentParticipant, EventCallback<Comment> onLinkCallback, 
+        /// <param name="task">The <see cref="reviewTask" /></param>
+        public void InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant currentParticipant, EventCallback<Comment> onLinkCallback,
             ReviewTask task)
         {
             this.ProjectId = projectId;
@@ -323,6 +356,22 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         public void SetCurrentComment(Comment comment)
         {
             this.selectedComment = comment;
+        }
+
+        /// <summary>
+        ///     Creates a <see cref="Comment" /> after that the user selected a <see cref="ReviewTask" /> to link to that
+        ///     <see cref="Comment" />
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task CreateCommentWithLinkedReviewTask()
+        {
+            if (this.AvailableReviewTasksSelectionViewModel.SelectedReviewTask != null)
+            {
+                this.IsOnLinkMode = false;
+
+                await this.CreateComment(this.AvailableReviewTasksSelectionViewModel.Row, this.AvailableReviewTasksSelectionViewModel.CurrentComment, 
+                    this.AvailableReviewTasksSelectionViewModel.SelectedReviewTask);
+            }
         }
 
         /// <summary>
@@ -432,7 +481,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <summary>
         ///     Opens the creation popup for a <see cref="Reply" />
         /// </summary>
-        /// <param name="comment">The <see cref="Comment"/></param>
+        /// <param name="comment">The <see cref="Comment" /></param>
         private void OpenReplyCreationPopup(Comment comment)
         {
             this.selectedComment = comment;
@@ -529,9 +578,39 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <returns>A <see cref="Task" /></returns>
         private async Task CreateComment(IHaveThingRowViewModel thingRowViewModel, Comment comment)
         {
+            if (this.reviewTask == null)
+            {
+                var availablesTasks = await this.reviewTaskService.GetReviewTasksForView(this.ProjectId, this.ReviewId, this.CurrentView);
+
+                if (!availablesTasks.Any())
+                {
+                    await this.CreateComment(thingRowViewModel, comment, this.reviewTask);
+                }
+
+                this.AvailableReviewTasksSelectionViewModel.ReviewTasks = availablesTasks;
+                this.AvailableReviewTasksSelectionViewModel.SelectedReviewTask = null;
+                this.AvailableReviewTasksSelectionViewModel.CurrentComment = comment;
+                this.AvailableReviewTasksSelectionViewModel.Row = thingRowViewModel;
+                this.IsOnLinkMode = true;
+            }
+            else
+            {
+                await this.CreateComment(thingRowViewModel, comment, this.reviewTask);
+            }
+        }
+
+        /// <summary>
+        ///     Creates a new <see cref="Comment" />
+        /// </summary>
+        /// <param name="thingRowViewModel">The associated <see cref="IHaveThingRowViewModel" /></param>
+        /// <param name="comment">The <see cref="Comment" /> to create</param>
+        /// <param name="linkedReviewTask">The <see cref="ReviewTask" /> linked to the <see cref="Comment" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task CreateComment(IHaveThingRowViewModel thingRowViewModel, Comment comment, ReviewTask linkedReviewTask)
+        {
             comment.View = this.CurrentView;
             comment.AnnotatableItems.Add(thingRowViewModel.ReviewItem);
-            comment.CreatedInside = this.reviewTask;
+            comment.CreatedInside = linkedReviewTask;
 
             var commentCreation = await this.annotationService.CreateAnnotation(this.ProjectId, comment);
 
@@ -625,7 +704,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
 
             if (this.SelectedItem is IHaveAnnotatableItemRowViewModel { AnnotatableItemId: { } } annotatableItemRowViewModel)
             {
-                var annotations = await this.annotationService.GetAnnotationsOfAnnotatableItem(this.ProjectId, 
+                var annotations = await this.annotationService.GetAnnotationsOfAnnotatableItem(this.ProjectId,
                     annotatableItemRowViewModel.AnnotatableItemId.Value);
 
                 this.Comments.AddRange(annotations.OfType<Comment>());

@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Server.Managers.ReviewTaskManager
 {
+    using DynamicData;
+
     using Microsoft.EntityFrameworkCore;
 
     using UI_DSM.Server.Context;
@@ -198,6 +200,29 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
             }
 
             return dictionary;
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="ReviewTask" /> with related <see cref="Entity" /> and Container that are contained inside a
+        ///     <see cref="Review" /> and could access to a <see cref="View" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="view">the <see cref="View" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
+        public async Task<IEnumerable<Entity>> GetReviewTasksForView(Guid projectId, Guid reviewId, View view)
+        {
+            var reviewTasks = await this.EntityDbSet.Where(x => (x.EntityContainer.EntityContainer.Id == reviewId && x.EntityContainer.EntityContainer.EntityContainer.Id==projectId) &&
+                                                                (x.MainView == view
+                                                                || x.AdditionalView == view
+                                                                || x.OptionalView == view || ((ReviewObjective)x.EntityContainer).RelatedViews.Contains(view)))
+                .Include(x => x.EntityContainer)
+                .BuildIncludeEntityQueryable(0)
+                .ToListAsync();
+
+            var entities = reviewTasks.SelectMany(x => x.GetAssociatedEntities()).DistinctBy(x => x.Id).ToList();
+            entities.Add(reviewTasks.Select(x => x.EntityContainer).DistinctBy(x => x.Id));
+            return entities;
         }
 
         /// <summary>

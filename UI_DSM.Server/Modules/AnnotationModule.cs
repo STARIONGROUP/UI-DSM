@@ -86,6 +86,7 @@ namespace UI_DSM.Server.Modules
         /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
+        [Authorize]
         public async Task GetAnnotationsForReviewTask(IAnnotationManager annotationManager, Guid projectId, Guid reviewTaskId, HttpContext context)
         {
             var participant = await this.GetParticipantBasedOnRequest(context, this.ContainerRouteKey);

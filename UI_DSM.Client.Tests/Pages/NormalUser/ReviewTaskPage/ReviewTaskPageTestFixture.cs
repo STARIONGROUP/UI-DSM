@@ -107,7 +107,8 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             this.context.Services.AddSingleton(this.reviewItemService.Object);
             this.context.Services.AddSingleton(this.annotationService.Object);
             this.context.Services.AddSingleton(this.replyService.Object);
-            this.context.Services.AddTransient<ICommentsViewModel, CommentsViewModel>();
+            ICommentsViewModel commentsViewModel = new CommentsViewModel(this.reviewItemService.Object, new Mock<IAnnotationService>().Object, new Mock<IReplyService>().Object, new Mock<IReviewTaskService>().Object);
+            this.context.Services.AddSingleton(commentsViewModel);
             this.context.Services.AddTransient<ISelectedItemCardViewModel, SelectedItemCardViewModel>();
 
             IRequirementBreakdownStructureViewViewModel breakdown = 

@@ -14,6 +14,7 @@
 namespace UI_DSM.Client.Services.ReviewTaskService
 {
     using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
     using UI_DSM.Shared.Types;
 
@@ -75,5 +76,15 @@ namespace UI_DSM.Client.Services.ReviewTaskService
         /// <param name="reviewObjectiveId">The <see cref="Guid"/> of the <see cref="ReviewObjective"/></param>
         /// <returns>A <see cref="Task" /> with a <see cref="Dictionary{Guid, ComputedProjectProperties}" /></returns>
         Task<Dictionary<Guid, AdditionalComputedProperties>> GetCommmentsCount(Guid projectId, Guid reviewId, Guid reviewObjectiveId);
+
+        /// <summary>
+        ///     Gets all <see cref="ReviewTask" /> with related <see cref="Entity" /> and Container that are contained inside a
+        ///     <see cref="Review" /> and could access to a <see cref="View" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="view">the <see cref="View" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="ReviewTask" /></returns>
+        Task<List<ReviewTask>> GetReviewTasksForView(Guid projectId, Guid reviewId, View view);
     }
 }

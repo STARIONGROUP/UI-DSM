@@ -110,11 +110,21 @@ namespace UI_DSM.Server.Tests.Services
                 project1
             };
 
+            var review1 = new Review(Guid.NewGuid())
+            {
+                Artifacts = { model1 }
+            };
+
+            var review2 = new Review(Guid.NewGuid())
+            {
+                Artifacts = { model2 }
+            };
+
             this.projectManager.Setup(x => x.GetAvailableProjectsForUser(username)).ReturnsAsync(availableProjects);
             this.projectManager.Setup(x => x.GetProjectsForManagement(username)).ReturnsAsync(managedProjects);
-            this.modelManager.Setup(x => x.GetContainedEntities(project1.Id,0)).ReturnsAsync(new List<Entity> { model1 });
-            this.modelManager.Setup(x => x.GetContainedEntities(project2.Id,0)).ReturnsAsync(new List<Entity> { model2 });
-            
+            this.reviewManager.Setup(x => x.GetContainedEntities(project1.Id,0)).ReturnsAsync(new List<Entity> { review1 });
+            this.reviewManager.Setup(x => x.GetContainedEntities(project2.Id,0)).ReturnsAsync(new List<Entity> { review2 });
+
             this.userManager.Setup(x => x.GetUserByName(username)).ReturnsAsync(new UserEntity(Guid.NewGuid())
             {
                 IsAdmin = true
@@ -297,9 +307,9 @@ namespace UI_DSM.Server.Tests.Services
                     Name = "Element"
                 });
 
-            this.modelManager.Setup(x => x.GetSearchResult(model1.Id)).ReturnsAsync(new SearchResultDto()
+            this.reviewManager.Setup(x => x.GetSearchResult(review1.Id)).ReturnsAsync(new SearchResultDto()
             {
-                BaseUrl = $"Project/{project2.Id}/Model/{model1.Id}"
+                BaseUrl = $"Project/{project2.Id}/Review/{review1.Id}"
             });
 
             resolvedDtos = await this.service.ResolveSearchResult(thingsDtos, username);

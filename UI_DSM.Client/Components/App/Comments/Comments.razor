@@ -12,7 +12,7 @@
 @using UI_DSM.Shared.Enumerator
 @using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
 
-<AppAccordion Label="Comments">
+<AppAccordion Label="Comments" @bind-PanelOpen="@this.IsPanelOpen">
 	<div class="comments__header">
 		@if (this.ViewModel.SelectedItem is IHaveThingRowViewModel && this.ViewModel.Participant != null && this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask))
 		{
@@ -21,6 +21,12 @@
 			</button>
 		}
 	</div>
+	
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Link Comment to ReviewTask" @bind-Visible="@(this.ViewModel.IsOnLinkMode)">
+		<Content>
+			<AvailableReviewTasksSelection ViewModel="@(this.ViewModel.AvailableReviewTasksSelectionViewModel)" />
+		</Content>
+	</DxPopup>
 
 	<DxPopup CloseOnOutsideClick="false" HeaderText="Add comment" @bind-Visible="@(this.ViewModel.IsOnCommentCreationMode)">
 		<Content>
