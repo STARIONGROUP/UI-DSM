@@ -61,3 +61,10 @@
   padding: 0;
   font-weight: 600;
 }
+
+.app-accordion__button--group {
+  font-size: var(--text-lg);
+  color: var(--colors-primary-700);
+  padding: 0;
+  font-weight: 600;
+}

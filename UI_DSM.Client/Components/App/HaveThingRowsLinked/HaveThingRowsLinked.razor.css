@@ -15,3 +15,11 @@
   text-align: left;
   color: var(--colors-primary-500);
 }
+
+.have-thing-rows-linked__list-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  text-align: left;
+  color: var(--colors-primary-500);
+  align-items: flex-start;
+}

@@ -1,16 +1,17 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
 // SearchPage.razor
 // Copyright (c) 2022 RHEA System S.A.
-// 
+//
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
-// 
-// This file is part of UI-DSM. 
+//
+// This file is part of UI-DSM.
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @page "/Search/{Keyword}"
 @using UI_DSM.Shared.Extensions
+
 
 <DxPopup CloseOnOutsideClick="false" HeaderText="Select View" @bind-Visible="@(this.ViewModel.IsOnViewSelectionMode)">
 	<Content>
@@ -25,24 +26,30 @@
 		}
 	</Content>
 </DxPopup>
-<h3>Results for: @this.Keyword</h3>
-
+<div class="search-page">
+<h1 class="h3">Results for: @this.Keyword</h1>
 <LoadingComponent IsLoading="@this.isLoading">
 	@foreach (var locationGroup in this.searchResults.GroupBy(x => x.Location)
 		.ToDictionary(g => g.Key ?? "UI-DSM", g => g.ToList()))
 	{
-		<AppAccordion PanelOpen="false" Label="@locationGroup.Key">
-			
-			@foreach (var objectKindGroup in locationGroup.Value.GroupBy(x => x.ObjectKind)
-				.ToDictionary(g => g.Key, g => g.ToList()))
-			{
-				<AppAccordion PanelOpen="false" Label="@objectKindGroup.Key" Variant="AppAccordion.VariantValue.Medium">
-					@foreach (var result in objectKindGroup.Value)
-					{
-						<SearchResultCard SearchResult="@result" OnClick="this.ViewModel.NavigateTo"/>
-					}
-				</AppAccordion>
-			}
-		</AppAccordion>
+		<div class="search-group">
+			<AppAccordion PanelOpen="false" Label="@locationGroup.Key">
+					
+				@foreach (var objectKindGroup in locationGroup.Value.GroupBy(x => x.ObjectKind)
+					.ToDictionary(g => g.Key, g => g.ToList()))
+				{
+					<h2 class="search-group__label">@objectKindGroup.Key</h2>
+					<ul class="search-group__list">
+						@foreach (var result in objectKindGroup.Value)
+						{
+							<li>
+								<SearchResultCard SearchResult="@result" OnClick="this.ViewModel.NavigateTo"/>
+							</li>
+						}
+					</ul>
+				}
+			</AppAccordion>
+		</div>
 	}
 </LoadingComponent>
+</div>

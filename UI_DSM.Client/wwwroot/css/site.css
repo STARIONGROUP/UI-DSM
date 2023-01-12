@@ -103,8 +103,11 @@ figure {
   margin: 0;
 }
 
+.dxbl-dropdown>.dxbl-dropdown-dialog.dxbl-dropdown-scrollable>.account-dropdown,
+.dxbl-itemlist-dropdown>.dxbl-dropdown-dialog.dxbl-dropdown-scrollable>.list-dropdown,
 .account-dropdown,
-.list-dropdown {
+.list-dropdown
+ {
   padding: 0;
 }
 
@@ -342,4 +345,31 @@ div.invisible {
 .dxbl-listbox {
     height: auto;
     max-height: 150px;
+}
+
+.dxbl-dropdown, .dxbl-itemlist-dropdown {
+  --dxbl-dropdown-min-width: 250px;
+}
+
+.participant-widget {
+  width: 100%;
+}
+
+.avatar-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  margin: auto 0;
+}
+
+.avatar-list li {
+  margin-right: -4px;
+}
+
+.avatar-list .user-avatar {
+  box-shadow: 0 0 0 2px var(--colors-white);
+}
+
+.avatar-list li:last-child {
+  margin-right: 0;
 }

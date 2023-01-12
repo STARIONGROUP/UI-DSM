@@ -9,14 +9,13 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-
 @using UI_DSM.Shared.Enumerator
 @using UI_DSM.Client.Components.NormalUser.DiagrammingConfiguration
 @using UI_DSM.Client.Components.Widgets
 @using Blazor.Diagrams.Components
 @inherits GenericBaseView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IInterfaceViewViewModel>
 
-<ConfirmCancelPopup ViewModel="@this.ViewModel.ConfirmCancelPopup" />
+<ConfirmCancelPopup ViewModel="@(this.ViewModel.ConfirmCancelPopup)"/>
 <DxPopup CloseOnOutsideClick="false" HeaderText="Delete Configuration" @bind-Visible="@(this.ViewModel.IsOnDeletionMode)">
 	<Content>
 		<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
@@ -34,39 +33,45 @@
 </DxPopup>
 
 <LoadingComponent IsLoading="@(this.IsLoading)">
-	@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.CreateDiagramConfiguration))
-	{
-		<AppButton Label="Save layout" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="@(this.ViewModel.OpenSavingPopup)">
-			<FeatherSave Size="20" Color="currentColor" StrokeWidth="2"/> <span>Save</span>
-		</AppButton>
+	<div class="view-actions">
+		<div class="right-actions">
+			@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.CreateDiagramConfiguration))
+			{
+				<AppButton Label="Save layout" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="@(this.ViewModel.OpenSavingPopup)">
+					<FeatherSave Size="20" Color="currentColor" StrokeWidth="2"/> <span>Save</span>
+				</AppButton>
 
-		<AppButton Label="Delete layout" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="@(this.ViewModel.OpenDeletionComponent)">
-			<FeatherTrash2 Size="20" Color="currentColor" StrokeWidth="2"/> <span>Delete</span>
-		</AppButton>
-	}
-	
-	<button id="load-configuration-button" type="button" @onclick="this.ViewModel.OpenLoadingConfiguration">
-		<FeatherEye Size="20" Color="currentColor" StrokeWidth="2" /><span>@(string.IsNullOrEmpty(this.ViewModel.SelectedConfiguration)? "No configuration" : this.ViewModel.SelectedConfiguration)</span>
-	</button>
-	<DxDropDown @bind-IsOpen="@(this.ViewModel.IsOnLoadingMode)"
-	            Width="200"
-	            MaxHeight="500"
-	            PositionTarget="#load-configuration-button"
-	            PositionMode="DropDownPositionMode.Bottom"
-	            PreventCloseOnPositionTargetClick="true">
-		<BodyTemplate>
-			<DxListBox DataAsync="@this.ViewModel.GetAvailableConfigurations" 
-			           @bind-Value="@(this.ViewModel.SelectedConfiguration)"/>
-		</BodyTemplate>
-	</DxDropDown>
+				<AppButton Label="Delete layout" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="@(this.ViewModel.OpenDeletionComponent)">
+					<FeatherTrash2 Size="20" Color="currentColor" StrokeWidth="2"/> <span>Delete</span>
+				</AppButton>
+			}
 
-	<Filter ViewModel="this.ViewModel.FilterViewModel" Id="row">
-		<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
-	</Filter>
+			<button id="load-configuration-button" type="button" @onclick="this.ViewModel.OpenLoadingConfiguration">
+				<FeatherEye Size="20" Color="currentColor" StrokeWidth="2"/><span>@(string.IsNullOrEmpty(this.ViewModel.SelectedConfiguration) ? "No configuration" : this.ViewModel.SelectedConfiguration)</span>
+			</button>
+			<DxDropDown @bind-IsOpen="@(this.ViewModel.IsOnLoadingMode)"
+			            Width="200"
+			            MaxHeight="500"
+			            PositionTarget="#load-configuration-button"
+			            PositionMode="DropDownPositionMode.Bottom"
+			            PreventCloseOnPositionTargetClick="true">
+				<BodyTemplate>
+					<DxListBox DataAsync="@(this.ViewModel.GetAvailableConfigurations)"
+					           @bind-Value="@(this.ViewModel.SelectedConfiguration)"/>
+				</BodyTemplate>
+			</DxDropDown>
+		</div>
+		<div class="left-actions">
+			<Filter ViewModel="this.ViewModel.FilterViewModel" Id="row">
+				<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
+			</Filter>
+		</div>
+	</div>
 	<CascadingValue Value="this.Diagram">
 		<div id="diagram-parent" @ref="this.DiagramReference">
 			<DiagramCanvas/>
 			<DiagramLegendWidget/>
 		</div>
+
 	</CascadingValue>
 </LoadingComponent>

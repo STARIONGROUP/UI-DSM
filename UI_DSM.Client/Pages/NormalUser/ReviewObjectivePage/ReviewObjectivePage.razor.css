@@ -1,7 +1,6 @@
 ﻿.task-overview {
     border: 1px solid var(--colors-gray-100);
     border-radius: var(--radius-1);
-    overflow: hidden;
 }
 
 .objective-page {

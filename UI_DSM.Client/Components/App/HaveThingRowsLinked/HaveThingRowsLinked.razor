@@ -1,12 +1,12 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
 // HaveThingRowsLinked.razor
 // Copyright (c) 2022 RHEA System S.A.
-// 
+//
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
-// 
-// This file is part of UI-DSM. 
+//
+// This file is part of UI-DSM.
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @typeparam THaveThingRowViewModel where THaveThingRowViewModel: UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel.IHaveThingRowViewModel, new()
@@ -16,12 +16,12 @@
 	<DynamicComponent Type="@this.CardInformationType" Parameters="this.Parameters"/>
 </DxPopup>
 
-<div class="app-key-values">
+<div class="app-key-values have-thing-rows-linked">
 	<AppAccordion Label="@(this.Label)" Variant="AppAccordion.VariantValue.Tiny" @bind-PanelOpen="@this.IsPanelOpen">
 		<ul class="app-key-values__list">
 			@foreach (var item in this.rows)
 			{
-				<li class="app-key-values__list-item" >
+				<li class="app-key-values__list-item have-thing-rows-linked__list-item">
 					@if(this.OnItemDoubleClick.HasDelegate)
 					{
 						<button @ondblclick="() => this.OnDoubleClick(item.Id)">

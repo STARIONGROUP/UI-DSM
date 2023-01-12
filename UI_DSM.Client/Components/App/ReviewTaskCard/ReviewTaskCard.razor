@@ -15,21 +15,31 @@
 	<button class="task-item__button"  @onclick="this.Navigate">
 		<span class="h4">@(this.ReviewTask.Description)</span>
 	</button>
-	
-	@if (!string.IsNullOrEmpty(this.UserName))
-	{
-		if (this.ReviewTask.IsAssignedTo.Any(x => string.Equals(this.UserName, x.ParticipantName, StringComparison.InvariantCultureIgnoreCase)))
-		{
-			<UserAvatar UserName="@this.UserName" IsCurrentUser="true" UserInitials="@this.UserName[0].ToString()"/>
-		}
 
-		foreach (var participant in this.ReviewTask.IsAssignedTo.Where(x => !string.Equals(this.UserName, x.ParticipantName, StringComparison.InvariantCultureIgnoreCase)))
-		{
-			<UserAvatar UserName="@participant.ParticipantName" UserInitials="@participant.ParticipantName[0].ToString()" />
-		}
-	}
 
 	<div class="task-item__actions">
+
+
+		@if (!string.IsNullOrEmpty(this.UserName))
+		{
+			<ul class="avatar-list">
+
+				@if (this.ReviewTask.IsAssignedTo.Any(x => string.Equals(this.UserName, x.ParticipantName, StringComparison.InvariantCultureIgnoreCase)))
+				{
+					<li>
+						<UserAvatar UserName="@this.UserName" IsCurrentUser="true" UserInitials="@this.UserName[0].ToString()"/>
+					</li>
+				}
+
+				@foreach (var participant in this.ReviewTask.IsAssignedTo.Where(x => !string.Equals(this.UserName, x.ParticipantName, StringComparison.InvariantCultureIgnoreCase)))
+				{
+					<li>
+						<UserAvatar UserName="@participant.ParticipantName" UserInitials="@participant.ParticipantName[0].ToString()" />
+					</li>
+				}
+			</ul>
+		}
+
 		@if (this.ReviewTask.Status == StatusKind.Done)
 		{
 			<FeatherCheckCircle Size="24" Color="#1FAB77" StrokeWidth="2"/>
@@ -44,7 +54,7 @@
 				</AppButton>
 			}
 		}
-		
+
 		@if (this.CommentsCount != null)
 		{
 			<div class="app-project-card__stat">
