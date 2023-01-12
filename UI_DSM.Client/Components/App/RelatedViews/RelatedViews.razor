@@ -14,7 +14,7 @@
 
 @if (this.MainRelatedView != View.None || this.OtherRelatedViews.Any())
 {
-	<AppAccordion Label="Related views">
+	<AppAccordion Label="Related views" @bind-PanelOpen="@this.IsPanelOpen">
 		<div class="related-views">
 			@if (this.MainRelatedView != View.None)
 			{

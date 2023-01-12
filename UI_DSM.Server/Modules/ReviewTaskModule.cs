@@ -26,6 +26,8 @@ namespace UI_DSM.Server.Modules
     using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
+    using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -59,6 +61,43 @@ namespace UI_DSM.Server.Modules
                 .Produces<Dictionary<Guid, AdditionalComputedProperties>>()
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/GetCommentsCount");
+
+            app.MapGet(this.MainRoute+"/View/{view}", this.GetReviewTasksForView)
+                .Produces<IEnumerable<EntityDto>>()
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/GetReviewTasksForView");
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="ReviewTask" /> with related <see cref="Entity" /> and Container that are contained inside a
+        ///     <see cref="Review" /> and could access to a <see cref="View" />
+        /// </summary>
+        /// <param name="reviewTaskManager">The <see cref="IReviewTaskManager"/></param>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="reviewObjectiveId">The <see cref="ReviewObjective"/> id, not used.</param>
+        /// <param name="view">the <see cref="View" /></param>
+        /// <param name="context">The <see cref="HttpContext"/></param>
+        /// <returns>A <see cref="Task" /></returns>
+        [Authorize]
+        public async Task GetReviewTasksForView(IReviewTaskManager reviewTaskManager, Guid projectId, Guid reviewId, Guid reviewObjectiveId, string view, HttpContext context)
+        {
+            var participant = await this.GetParticipantBasedOnRequest(context, ProjectKey);
+
+            if (participant == null)
+            {
+                return;
+            }
+
+            if (!Enum.TryParse(typeof(View), view, out var viewParsed))
+            {
+                context.Response.StatusCode = 300;
+            }
+            else
+            {
+                var entities = await reviewTaskManager.GetReviewTasksForView(projectId, reviewId, (View)viewParsed!);
+                await context.Response.Negotiate(entities.ToDtos());
+            }
         }
 
         /// <summary>

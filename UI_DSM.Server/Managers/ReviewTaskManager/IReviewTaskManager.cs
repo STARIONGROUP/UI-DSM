@@ -15,6 +15,7 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
 {
     using UI_DSM.Server.Managers.ReviewObjectiveManager;
     using UI_DSM.Shared.DTO.Common;
+    using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -41,5 +42,15 @@ namespace UI_DSM.Server.Managers.ReviewTaskManager
         /// <param name="reviewTasksId">A collection of <see cref="Guid" /> for <see cref="ReviewTask" /></param>
         /// <returns>A <see cref="Dictionary{Guid, AdditionalComputedProperties}" /></returns>
         Task<Dictionary<Guid, AdditionalComputedProperties>> GetCommentsCount(IEnumerable<Guid> reviewTasksId);
+
+        /// <summary>
+        ///     Gets all <see cref="ReviewTask" /> with related <see cref="Entity" /> and Container that are contained inside a
+        ///     <see cref="Review" /> and could access to a <see cref="View" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="view">the <see cref="View" /></param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
+        Task<IEnumerable<Entity>> GetReviewTasksForView(Guid projectId, Guid reviewId, View view);
     }
 }

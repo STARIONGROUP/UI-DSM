@@ -48,6 +48,11 @@ namespace UI_DSM.Client.Components.App.Comments
         public EventCallback<string> OnItemDoubleClick { get; set; }
 
         /// <summary>
+        ///     Value indicating if the panel is open
+        /// </summary>
+        public bool IsPanelOpen { get; set; } = true;
+
+        /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
@@ -93,6 +98,7 @@ namespace UI_DSM.Client.Components.App.Comments
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCommentUpdateMode).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnReplyCreationMode).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnReplyUpdateMode).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnLinkMode).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.ReplyConfirmCancelPopupViewModel.IsVisible)
                 .Where(x => !x).Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));

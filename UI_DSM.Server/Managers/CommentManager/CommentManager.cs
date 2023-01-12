@@ -102,7 +102,7 @@ namespace UI_DSM.Server.Managers.CommentManager
                 .ThenInclude(x => x.EntityContainer)
                 .ThenInclude(x => x.EntityContainer).FirstOrDefaultAsync();
 
-            if (comment == null)
+            if (comment?.CreatedInside == null)
             {
                 return null;
             }

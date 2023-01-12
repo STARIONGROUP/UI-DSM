@@ -33,6 +33,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
     using UI_DSM.Client.Services.AnnotationService;
     using UI_DSM.Client.Services.ReplyService;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.Services.ReviewTaskService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.App.Comments;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
@@ -51,6 +52,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
         private Mock<IReviewItemService> reviewItemService;
         private Mock<IAnnotationService> annotationService;
         private Mock<IReplyService> replyService;
+        private Mock<IReviewTaskService> reviewTaskService;
 
         [SetUp]
         public void Setup()
@@ -60,6 +62,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
             this.reviewItemService = new Mock<IReviewItemService>();
             this.annotationService = new Mock<IAnnotationService>();
             this.replyService = new Mock<IReplyService>();
+            this.reviewTaskService = new Mock<IReviewTaskService>();
 
             this.participant = new Participant(Guid.NewGuid())
             {
@@ -73,7 +76,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
                 }
             };
 
-            this.viewModel = new CommentsViewModel(this.reviewItemService.Object, this.annotationService.Object, this.replyService.Object);
+            this.viewModel = new CommentsViewModel(this.reviewItemService.Object, this.annotationService.Object, this.replyService.Object, this.reviewTaskService.Object);
             this.context.Services.AddSingleton(this.viewModel);
         }
 

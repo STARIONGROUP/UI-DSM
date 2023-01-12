@@ -161,10 +161,17 @@ namespace UI_DSM.Server.Services.ResolverService
             var managedProjects = (await this.projectManager.GetProjectsForManagement(userName)).ToList();
             var loggedUser = await this.userManager.GetUserByName(userName);
             var models = new List<Model>();
+            var reviews = new List<(Review review, SearchResultDto searchResult)>();
 
-            foreach (var project in projects)
+            foreach (var projectId in projects.Select(x => x.Id))
             {
-                models.AddRange((await this.modelManager.GetContainedEntities(project.Id)).OfType<Model>());
+                var containedEntities = (await this.reviewManager.GetContainedEntities(projectId)).OfType<Review>().ToList();
+                models.AddRange(containedEntities.SelectMany(x => x.Artifacts.OfType<Model>()));
+
+                foreach (var review in containedEntities)
+                {
+                    reviews.Add((review, await this.reviewManager.GetSearchResult(review.Id)));
+                }
             }
 
             models = models.DistinctBy(x => x.IterationId).ToList();
@@ -181,7 +188,7 @@ namespace UI_DSM.Server.Services.ResolverService
 
             foreach (var commonBaseSearchDto in dtos.Where(commonBaseSearchDto => !commonBaseSearchDto.Type.EndsWith("Dto")))
             {
-                results.AddRange(await this.ResolveSearchResult(commonBaseSearchDto, models));
+                results.AddRange(await this.ResolveSearchResult(commonBaseSearchDto, models, reviews));
             }
 
             return results;
@@ -192,8 +199,10 @@ namespace UI_DSM.Server.Services.ResolverService
         /// </summary>
         /// <param name="commonBaseSearchDto">The <see cref="CommonBaseSearchDto" /></param>
         /// <param name="models">A collection of <see cref="Model" /></param>
+        /// <param name="reviews">A collection of <see cref="Tuple{Review,SearchResultDto}"/></param>
         /// <returns>A <see cref="Task" /> with the <see cref="SearchResultDto" /></returns>
-        private async Task<List<SearchResultDto>> ResolveSearchResult(CommonBaseSearchDto commonBaseSearchDto, List<Model> models)
+        private async Task<List<SearchResultDto>> ResolveSearchResult(CommonBaseSearchDto commonBaseSearchDto, List<Model> models,
+            IReadOnlyCollection<(Review, SearchResultDto)> reviews)
         {
             var results = new List<SearchResultDto>();
 
@@ -201,19 +210,20 @@ namespace UI_DSM.Server.Services.ResolverService
             {
                 if (await this.thingManager.GetThing(commonBaseSearchDto, model) is { } thing)
                 {
-                    var modelDto = await this.modelManager.GetSearchResult(model.Id);
-
-                    results.Add(new SearchResultDto
+                    foreach (var review in reviews.Where(x => x.Item1.Artifacts.Any(a => a.Id == model.Id)))
                     {
-                        BaseUrl = modelDto.BaseUrl,
-                        SpecificCategory = thing.GetSpecificCategoryForThing(),
-                        ObjectKind = thing.GetType().Name,
-                        DisplayText = thing.GetSpecificNameForThing(),
-                        AvailableViews = thing.GetAvailableViews(),
-                        ItemId = thing.Iid,
-                        IterationId = model.IterationId,
-                        Location = $"{modelDto.Location} > {model.ModelName}"
-                    });
+                        results.Add(new SearchResultDto
+                        {
+                            BaseUrl = $"{review.Item2.BaseUrl}/Model/{model.Id}",
+                            SpecificCategory = thing.GetSpecificCategoryForThing(),
+                            ObjectKind = thing.GetType().Name,
+                            DisplayText = thing.GetSpecificNameForThing(),
+                            AvailableViews = thing.GetAvailableViews(),
+                            ItemId = thing.Iid,
+                            IterationId = model.IterationId,
+                            Location = $"{review.Item2.Location} > {review.Item1.Title} > {model.ModelName}"
+                        });
+                    }
                 }
             }
 

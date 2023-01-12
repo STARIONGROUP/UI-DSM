@@ -447,7 +447,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         {
             this.DoneConfirmCancelPopup.ContentText = this.ReviewTask.Status == StatusKind.Open
                 ? "You are about to mark this task as done.\nAre you sure?"
-                : "You are about to mark this task as undone.\nAre you sure?";
+                : "You are about to mark this task as open.\nAre you sure?";
 
             this.DoneConfirmCancelPopup.IsVisible = true;
         }

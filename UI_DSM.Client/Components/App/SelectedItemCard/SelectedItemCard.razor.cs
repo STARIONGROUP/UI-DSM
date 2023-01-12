@@ -55,6 +55,11 @@ namespace UI_DSM.Client.Components.App.SelectedItemCard
         public EventCallback<string> OnItemDoubleClick { get; set; }
 
         /// <summary>
+        ///     Value indicating if the panel is open
+        /// </summary>
+        public bool IsPanelOpen { get; set; } = true;
+
+        /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()

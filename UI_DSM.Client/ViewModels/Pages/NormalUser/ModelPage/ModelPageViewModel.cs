@@ -15,22 +15,41 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ModelPage
 {
     using CDP4Common.CommonData;
 
+    using Microsoft.AspNetCore.Components;
+
+    using ReactiveUI;
+
+    using UI_DSM.Client.Components.App.AnnotationLinker;
     using UI_DSM.Client.Components.NormalUser.Views;
-    using UI_DSM.Client.Services.ArtifactService;
+    using UI_DSM.Client.Services.Administration.ParticipantService;
+    using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Services.ViewProviderService;
+    using UI_DSM.Client.ViewModels.App.AnnotationLinker;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
 
     /// <summary>
     ///     View model for the <see cref="Client.Pages.NormalUser.ModelPage.ModelPage" /> page
     /// </summary>
-    public class ModelPageViewModel : IModelPageViewModel
+    public class ModelPageViewModel : ReactiveObject, IModelPageViewModel
     {
         /// <summary>
-        ///     The <see cref="IArtifactService" />
+        ///     The <see cref="IParticipantService" />
         /// </summary>
-        private readonly IArtifactService artifactService;
+        private readonly IParticipantService participantService;
+
+        /// <summary>
+        ///     The <see cref="IReviewItemService" />
+        /// </summary>
+        private readonly IReviewItemService reviewItemService;
+
+        /// <summary>
+        ///     The <see cref="IReviewService" />
+        /// </summary>
+        private readonly IReviewService reviewService;
 
         /// <summary>
         ///     The <see cref="IThingService" />
@@ -43,17 +62,65 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ModelPage
         private readonly IViewProviderService viewProviderService;
 
         /// <summary>
+        ///     Backing field for <see cref="IsLinkerVisible" />
+        /// </summary>
+        private bool isLinkerVisible;
+
+        /// <summary>
+        ///     The current <see cref="Project" /> id
+        /// </summary>
+        private Guid projectId;
+
+        /// <summary>
+        ///     The <see cref="Guid" /> of the current <see cref="Review" />
+        /// </summary>
+        private Guid reviewId;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ModelPageViewModel" /> class.
         /// </summary>
         /// <param name="thingService">The <see cref="IThingService" /></param>
         /// <param name="viewProviderService">The <see cref="IViewProviderService" /></param>
-        /// <param name="artifactService">The <see cref="IArtifactService" /></param>
-        public ModelPageViewModel(IThingService thingService, IViewProviderService viewProviderService, IArtifactService artifactService)
+        /// <param name="reviewService">The <see cref="IReviewService" /></param>
+        /// <param name="participantService">The <see cref="IParticipantService" /></param>
+        /// <param name="annotationLinkerViewModel">The <see cref="IAnnotationLinkerViewModel" /></param>
+        /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
+        public ModelPageViewModel(IThingService thingService, IViewProviderService viewProviderService, IReviewService reviewService,
+            IParticipantService participantService, IAnnotationLinkerViewModel annotationLinkerViewModel, IReviewItemService reviewItemService)
         {
             this.thingService = thingService;
             this.viewProviderService = viewProviderService;
-            this.artifactService = artifactService;
+            this.reviewService = reviewService;
+            this.participantService = participantService;
+            this.AnnotationLinkerViewModel = annotationLinkerViewModel;
+            this.reviewItemService = reviewItemService;
+            this.AnnotationLinkerViewModel.OnSubmit = new EventCallbackFactory().Create(this, this.LinkAnnotation);
+            this.OnLinkCallback = new EventCallbackFactory().Create<Comment>(this, this.OpenLinkComponent);
         }
+
+        /// <summary>
+        ///     Value indicating if the <see cref="AnnotationLinker" /> is visible
+        /// </summary>
+        public bool IsLinkerVisible
+        {
+            get => this.isLinkerVisible;
+            set => this.RaiseAndSetIfChanged(ref this.isLinkerVisible, value);
+        }
+
+        /// <summary>
+        ///     The <see cref="IAnnotationLinkerViewModel" />
+        /// </summary>
+        public IAnnotationLinkerViewModel AnnotationLinkerViewModel { get; }
+
+        /// <summary>
+        ///     The current <see cref="Participant" />
+        /// </summary>
+        public Participant Participant { get; set; }
+
+        /// <summary>
+        ///     The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element
+        /// </summary>
+        public EventCallback<Comment> OnLinkCallback { get; }
 
         /// <summary>
         ///     The current <see cref="Type" /> for the <see cref="GenericBaseView{TViewModel}" />
@@ -83,21 +150,26 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ModelPage
         /// <summary>
         ///     Initializes this view model properties
         /// </summary>
-        /// <param name="projectId">The <see cref="Project" /> id</param>
-        /// <param name="modelId">The <see cref="Model" /> id</param>
+        /// <param name="projectGuid"></param>
+        /// <param name="reviewGuid"></param>
+        /// <param name="modelGuid"></param>
         /// <param name="selectedView">The selected view</param>
         /// <returns>A <see cref="Task" /></returns>
-        public async Task InitializeProperties(Guid projectId, Guid modelId, View selectedView)
+        public async Task InitializeProperties(Guid projectGuid, Guid reviewGuid, Guid modelGuid, View selectedView)
         {
-            var model = (await this.artifactService.GetArtifactsOfProject(projectId)).OfType<Model>().FirstOrDefault(x => x.Id == modelId);
+            this.projectId = projectGuid;
+            this.reviewId = reviewGuid;
+            var review = await this.reviewService.GetReviewOfProject(projectGuid, reviewGuid);
+            var model = review?.Artifacts.OfType<Model>().FirstOrDefault(x => x.Id == modelGuid);
             this.CurrentBaseViewInstance = null;
 
             if (model != null)
             {
                 this.CurrentView = selectedView;
-                this.Things = await this.thingService.GetThings(projectId, model);
+                this.Things = await this.thingService.GetThings(projectGuid, model);
                 this.CurrentBaseView = this.viewProviderService.GetViewType(selectedView);
                 this.ShouldInitializeBaseView = true;
+                this.Participant = await this.participantService.GetCurrentParticipant(projectGuid);
             }
         }
 
@@ -124,6 +196,36 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ModelPage
 
             allViews.Remove(this.CurrentView);
             return allViews;
+        }
+
+        /// <summary>
+        ///     Links the <see cref="Annotation" /> to all selected items
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task LinkAnnotation()
+        {
+            var linkResult = await this.reviewItemService.LinkItemsToAnnotation(this.projectId, this.reviewId,
+                this.AnnotationLinkerViewModel.CurrentAnnotation.Id,
+                this.AnnotationLinkerViewModel.SelectedItems.OfType<IHaveThingRowViewModel>().Select(x => x.ThingId));
+
+            if (linkResult.IsRequestSuccessful)
+            {
+                await this.CurrentBaseViewInstance.UpdateAnnotatableRows(linkResult.Entities.ToList<AnnotatableItem>());
+                this.IsLinkerVisible = false;
+            }
+        }
+
+        /// <summary>
+        ///     Opens the link component to link the current <see cref="Comment" /> to other element
+        /// </summary>
+        /// <param name="comment">The <see cref="Comment" /></param>
+        private void OpenLinkComponent(Comment comment)
+        {
+            if (this.CurrentBaseViewInstance != null)
+            {
+                this.AnnotationLinkerViewModel.InitializesViewModel(this.CurrentBaseViewInstance.GetAvailablesRows(), comment);
+                this.IsLinkerVisible = true;
+            }
         }
     }
 }

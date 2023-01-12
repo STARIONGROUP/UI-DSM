@@ -41,6 +41,11 @@ namespace UI_DSM.Client.Components.App.RelatedViews
         /// </summary>
         [Parameter]
         public EventCallback<View> OnViewSelect { get; set; }
+        
+        /// <summary>
+        ///     Value indicating if the panel is open
+        /// </summary>
+        public bool IsPanelOpen { get; set; } = true;
 
         /// <summary>
         /// Handle the click on a <see cref="View"/>

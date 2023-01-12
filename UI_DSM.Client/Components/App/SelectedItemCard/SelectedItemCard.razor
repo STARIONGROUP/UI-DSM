@@ -12,7 +12,7 @@
 @using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
 @using UI_DSM.Shared.Enumerator
 
-<AppAccordion Label="@this.ViewModel.Label">
+<AppAccordion Label="@this.ViewModel.Label" @bind-PanelOpen="@this.IsPanelOpen">
 	@if (this.ViewModel.SelectedItem != null)
 	{
 		<DynamicComponent Type="@this.ViewModel.ComponentType" Parameters="this.parameters"/>

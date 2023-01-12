@@ -319,5 +319,76 @@ namespace UI_DSM.Server.Tests.Managers
                 Assert.That(result.Values.First().OpenCommentCount, Is.EqualTo(1));
             });
         }
+
+        [Test]
+        public async Task VerifyGetReviewTasksForView()
+        {
+            var reviewTask1 = new ReviewTask(Guid.NewGuid())
+            {
+                MainView = View.InterfaceView
+            };
+
+            var reviewTask2 = new ReviewTask(Guid.NewGuid())
+            {
+                AdditionalView = View.InterfaceView
+            };
+
+            var reviewTask3 = new ReviewTask(Guid.NewGuid())
+            {
+                OptionalView = View.InterfaceView
+            };
+
+            var reviewObjective1 = new ReviewObjective(Guid.NewGuid())
+            {
+                ReviewTasks = { reviewTask1, reviewTask2, reviewTask3 , new ReviewTask(Guid.NewGuid())}
+            };
+
+            var reviewTask4 = new ReviewTask(Guid.NewGuid());
+
+            var reviewObjective2 = new ReviewObjective(Guid.NewGuid())
+            {
+                ReviewTasks = { reviewTask4 },
+                RelatedViews = new List<View> { View.InterfaceView }
+            };
+
+            var projectId = Guid.NewGuid();
+            var reviewId = Guid.NewGuid();
+
+            _ = new Project(projectId)
+            {
+                Reviews =
+                {
+                    new Review(reviewId)
+                    {
+                        ReviewObjectives = { reviewObjective1, reviewObjective2 }
+                    }
+                }
+            };
+
+            var reviewTask5 = new ReviewTask(Guid.NewGuid())
+            {
+                EntityContainer = new ReviewObjective(Guid.NewGuid())
+                {
+                    EntityContainer = new Review(Guid.NewGuid())
+                    {
+                        EntityContainer = new Project(Guid.NewGuid())
+                    }
+                }
+            };
+
+            var allTasks = new List<ReviewTask>();
+            allTasks.AddRange(reviewObjective1.ReviewTasks);
+            allTasks.AddRange(reviewObjective2.ReviewTasks);
+            allTasks.Add(reviewTask5);
+
+            this.reviewTaskDbSet.UpdateDbSetCollection(allTasks);
+            var reviewTasksForView = (await this.manager.GetReviewTasksForView(projectId, reviewId, View.InterfaceView)).ToList();
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(reviewTasksForView, Has.Count.EqualTo(6));
+                Assert.That(reviewTasksForView.FirstOrDefault(x => x.Id == reviewTask5.Id || x.Id == reviewObjective1.ReviewTasks.Last().Id), Is.Null);
+            });
+        }
     }
 }

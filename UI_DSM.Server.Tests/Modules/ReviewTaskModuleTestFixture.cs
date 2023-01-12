@@ -344,5 +344,31 @@ namespace UI_DSM.Server.Tests.Modules
             await this.module.GetCommentsCount(this.reviewTaskManager.As<IReviewTaskManager>().Object, Guid.NewGuid(), this.context.Object);
             this.reviewTaskManager.As<IReviewTaskManager>().Verify(x => x.GetCommentsCount(It.IsAny<IEnumerable<Guid>>()), Times.Once);
         }
+
+        [Test]
+        public async Task VerifyGetReviewTasksForView()
+        {
+            var participant = new Participant(Guid.NewGuid())
+            {
+                Role = new Role(Guid.NewGuid()),
+                User = new UserEntity(Guid.NewGuid())
+            };
+
+            var viewName = "aView";
+
+            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
+
+            await this.module.GetReviewTasksForView(this.reviewTaskManager.As<IReviewTaskManager>().Object, this.projectId, this.reviewId, this.reviewObjectiveId, viewName, this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 401, Times.Once);
+
+            this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(participant);
+
+            await this.module.GetReviewTasksForView(this.reviewTaskManager.As<IReviewTaskManager>().Object, this.projectId, this.reviewId, this.reviewObjectiveId, viewName, this.context.Object);
+            this.response.VerifySet(x => x.StatusCode = 300, Times.Once);
+
+            viewName = View.InterfaceView.ToString();
+            await this.module.GetReviewTasksForView(this.reviewTaskManager.As<IReviewTaskManager>().Object, this.projectId, this.reviewId, this.reviewObjectiveId, viewName, this.context.Object);
+            this.reviewTaskManager.As<IReviewTaskManager>().Verify(x => x.GetReviewTasksForView(this.projectId, this.reviewId, View.InterfaceView), Times.Once);
+        }
     }
 }

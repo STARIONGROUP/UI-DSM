@@ -17,6 +17,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
 
     using Microsoft.AspNetCore.Components;
 
+    using UI_DSM.Client.ViewModels.App.AvailableReviewTasksSelection;
     using UI_DSM.Client.ViewModels.App.CommentCreation;
     using UI_DSM.Client.ViewModels.App.ReplyCreation;
     using UI_DSM.Client.ViewModels.Components;
@@ -140,6 +141,16 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         List<IHaveAnnotatableItemRowViewModel> AvailableRows { get; set; }
 
         /// <summary>
+        ///     Value indicating if the view should be on link to <see cref="ReviewTask" /> mode
+        /// </summary>
+        bool IsOnLinkMode { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IAvailableReviewTasksSelectionViewModel" />
+        /// </summary>
+        IAvailableReviewTasksSelectionViewModel AvailableReviewTasksSelectionViewModel { get; set; }
+
+        /// <summary>
         ///     Initializes this viewModel properties
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
@@ -147,7 +158,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <param name="currentView">The current <see cref="View" /></param>
         /// <param name="currentParticipant">The current <see cref="Participant" /></param>
         /// <param name="onLinkCallback">The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element</param>
-        /// <param name="task">The <see cref="ReviewTask"/></param>
+        /// <param name="task">The <see cref="ReviewTask" /></param>
         void InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant currentParticipant, EventCallback<Comment> onLinkCallback, ReviewTask task);
 
         /// <summary>

@@ -18,6 +18,10 @@ namespace UI_DSM.Client.Pages.NormalUser.ModelPage
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.WebUtilities;
 
+    using ReactiveUI;
+
+    using UI_DSM.Client.Components.App.AnnotationLinker;
+    using UI_DSM.Client.Components.App.Comments;
     using UI_DSM.Client.Components.App.SelectedItemCard;
     using UI_DSM.Client.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
@@ -28,8 +32,21 @@ namespace UI_DSM.Client.Pages.NormalUser.ModelPage
     /// <summary>
     ///     Page to view an <see cref="Iteration" />
     /// </summary>
-    public partial class ModelPage
+    public partial class ModelPage: IDisposable
     {
+        /// <summary>
+        ///     The collection of <see cref="IDisposable" />
+        /// </summary>
+        private readonly List<IDisposable> disposables = new();
+
+        /// <summary>
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.disposables.ForEach(x => x.Dispose());
+        }
+
         /// <summary>
         ///     The collection of <see cref="IDisposable" /> linked to a <see cref="BaseView" />
         /// </summary>
@@ -45,6 +62,12 @@ namespace UI_DSM.Client.Pages.NormalUser.ModelPage
         /// </summary>
         [Parameter]
         public string ProjectId { get; set; }
+
+        /// <summary>
+        ///     The <see cref="Review" /> id
+        /// </summary>
+        [Parameter]
+        public string ReviewId { get; set; }
 
         /// <summary>
         ///     The <see cref="Model" /> id
@@ -89,6 +112,11 @@ namespace UI_DSM.Client.Pages.NormalUser.ModelPage
         public SelectedItemCard SelectedItemCard { get; set; }
 
         /// <summary>
+        ///     The <see cref="Comments" />
+        /// </summary>
+        public Comments Comments { get; set; }
+
+        /// <summary>
         ///     The currently selected item in the BaseView
         /// </summary>
         public object SelectedItem { get; set; }
@@ -100,7 +128,28 @@ namespace UI_DSM.Client.Pages.NormalUser.ModelPage
         protected override void OnInitialized()
         {
             this.isLoading = true;
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsLinkerVisible)
+                .Subscribe(async x => await this.OnLinkerVisibilityChanged(x)));
+
             base.OnInitialized();
+        }
+
+        /// <summary>
+        ///     Handle the change of visible of the <see cref="AnnotationLinker" /> component
+        /// </summary>
+        /// <param name="value">The new visibility</param>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task OnLinkerVisibilityChanged(bool value)
+        {
+            if (!value && this.ViewModel.CurrentBaseViewInstance != null)
+            {
+                await this.ViewModel.CurrentBaseViewInstance.HasChanged();
+                this.Comments.ViewModel.SelectedItem = null;
+                this.Comments.ViewModel.SelectedItem = this.SelectedItem;
+            }
+
+            await this.InvokeAsync(this.StateHasChanged);
         }
 
         /// <summary>
@@ -119,7 +168,8 @@ namespace UI_DSM.Client.Pages.NormalUser.ModelPage
             {
                 var projectId = Guid.Parse(this.ProjectId);
                 var modelId = Guid.Parse(this.ModelId);
-                await this.ViewModel.InitializeProperties(projectId, modelId, selectedView);
+                var reviewId = Guid.Parse(this.ReviewId);
+                await this.ViewModel.InitializeProperties(projectId, reviewId, modelId, selectedView);
                 await this.InvokeAsync(this.StateHasChanged);
             }
 
@@ -152,9 +202,13 @@ namespace UI_DSM.Client.Pages.NormalUser.ModelPage
                 this.ViewModel.CurrentBaseViewInstance = baseView;
                 this.DisposeViewDisposables();
                 var projectId = new Guid(this.ProjectId);
+                var reviewId = new Guid(this.ReviewId);
 
-                await baseView.InitializeViewModel(this.ViewModel.Things, projectId, Guid.Empty, 
+                await baseView.InitializeViewModel(this.ViewModel.Things, projectId, reviewId, 
                     Guid.Empty, new List<string>(), new List<string>(), null);
+
+                await this.Comments.InitializesProperties(projectId, reviewId, this.ViewModel.CurrentView,
+                    this.ViewModel.Participant, this.ViewModel.OnLinkCallback, null);
 
                 if (Guid.TryParse(this.Id, out var itemId))
                 {
@@ -169,10 +223,23 @@ namespace UI_DSM.Client.Pages.NormalUser.ModelPage
                     }
                 }
 
+                this.viewDisposables.Add(this.Comments.ViewModel.Comments.CountChanged
+                    .Subscribe(async _ => await this.OnCommentsCountChanged(baseView)));
+
                 this.viewDisposables.Add(baseView.SelectedItemObservable.Subscribe(async x => await this.OnSelectedItemChanged(x)));
             }
 
             await base.OnAfterRenderAsync(firstRender);
+        }
+
+        /// <summary>
+        ///     Handle the count Changed event on the Comments collection
+        /// </summary>
+        /// <param name="baseView">The <see cref="BaseView" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task OnCommentsCountChanged(BaseView baseView)
+        {
+            await baseView.HasChanged();
         }
 
         /// <summary>
@@ -189,6 +256,12 @@ namespace UI_DSM.Client.Pages.NormalUser.ModelPage
 
             this.SelectedItem = newSelectedItem;
             this.SelectedItemCard.ViewModel.SelectedItem = this.SelectedItem;
+            this.Comments.ViewModel.SelectedItem = this.SelectedItem;
+
+            if (this.ViewModel?.CurrentBaseViewInstance != null)
+            {
+                this.Comments.ViewModel.AvailableRows = this.ViewModel?.CurrentBaseViewInstance.GetAvailablesRows();
+            }
 
             await this.InvokeAsync(this.StateHasChanged);
         }
