@@ -26,23 +26,30 @@
 		}
 	</Content>
 </DxPopup>
-
+<div class="search-page">
+<h1 class="h3">Results for: @this.Keyword</h1>
 <LoadingComponent IsLoading="@this.isLoading">
 	@foreach (var locationGroup in this.searchResults.GroupBy(x => x.Location)
 		.ToDictionary(g => g.Key ?? "UI-DSM", g => g.ToList()))
 	{
-		<AppAccordion PanelOpen="false" Label="@locationGroup.Key">
-			
-			@foreach (var objectKindGroup in locationGroup.Value.GroupBy(x => x.ObjectKind)
-				.ToDictionary(g => g.Key, g => g.ToList()))
-			{
-				<AppAccordion PanelOpen="false" Label="@objectKindGroup.Key" Variant="AppAccordion.VariantValue.Medium">
-					@foreach (var result in objectKindGroup.Value)
-					{
-						<SearchResultCard SearchResult="@result" OnClick="this.ViewModel.NavigateTo"/>
-					}
-				</AppAccordion>
-			}
-		</AppAccordion>
+		<div class="search-group">
+			<AppAccordion PanelOpen="false" Label="@locationGroup.Key">
+					
+				@foreach (var objectKindGroup in locationGroup.Value.GroupBy(x => x.ObjectKind)
+					.ToDictionary(g => g.Key, g => g.ToList()))
+				{
+					<h2 class="search-group__label">@objectKindGroup.Key</h2>
+					<ul class="search-group__list">
+						@foreach (var result in objectKindGroup.Value)
+						{
+							<li>
+								<SearchResultCard SearchResult="@result" OnClick="this.ViewModel.NavigateTo"/>
+							</li>
+						}
+					</ul>
+				}
+			</AppAccordion>
+		</div>
 	}
 </LoadingComponent>
+</div>
