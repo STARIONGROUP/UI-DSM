@@ -27,6 +27,7 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
 
     using NUnit.Framework;
 
+    using UI_DSM.Client.Components.App.AppAccordion;
     using UI_DSM.Client.Components.App.CommentCard;
     using UI_DSM.Client.Components.App.Comments;
     using UI_DSM.Client.Components.App.ReplyCard;
@@ -213,6 +214,9 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
             try
             {
                 var renderer = this.context.RenderComponent<Comments>();
+
+                await renderer.Instance.InitializesProperties(Guid.NewGuid(), Guid.NewGuid(), View.RequirementBreakdownStructureView,
+                    this.participant, EventCallback<Comment>.Empty, new ReviewTask());
                 
                 this.viewModel.Comments.Add(new Comment(Guid.NewGuid())
                 {
@@ -236,6 +240,10 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
 
                 await renderer.InvokeAsync(this.viewModel.ReplyCreationViewModel.OnValidSubmit.InvokeAsync);
                 Assert.That(this.viewModel.IsOnReplyCreationMode, Is.False);
+
+                var accordion = commentCard.FindComponent<AppAccordion>();
+                accordion.Instance.PanelOpen = true;
+                renderer.Render();
 
                 var replyCard = renderer.FindComponent<ReplyCard>();
                 Assert.That(replyCard, Is.Not.Null);
@@ -265,6 +273,62 @@ namespace UI_DSM.Client.Tests.Components.App.Comments
             {
                 // On GitHub, exception is thrown even if the JSRuntime has been configured
             }
+        }
+
+        [Test]
+        public async Task VerifyCommentWithoutTask()
+        {
+            var renderer = this.context.RenderComponent<Comments>();
+            var projectId = Guid.NewGuid();
+            var reviewId = Guid.NewGuid();
+
+            await renderer.Instance.InitializesProperties(projectId, reviewId, View.RequirementBreakdownStructureView,
+                this.participant, EventCallback<Comment>.Empty, null);
+
+            this.viewModel.AvailableRows = new List<IHaveAnnotatableItemRowViewModel>();
+            var thingId = Guid.NewGuid();
+            var reviewItem = new ReviewItem(Guid.NewGuid()) { ThingId = thingId };
+            this.annotationService.Setup(x => x.GetAnnotationsOfAnnotatableItem(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(new List<Annotation>());
+            this.viewModel.SelectedItem = new ElementBaseRowViewModel(new ElementDefinition() { Iid = thingId }, reviewItem);
+
+            var button = renderer.Find(".comments__add-button");
+            await renderer.InvokeAsync(() => button.Click(new MouseEventArgs()));
+            Assert.That(this.viewModel.IsOnCommentCreationMode, Is.True);
+
+            this.viewModel.CommentCreationViewModel.Comment.Content = "new content";
+
+            var reviewObjective = new ReviewObjective(Guid.NewGuid())
+            {
+                ReviewTasks = { new ReviewTask(Guid.NewGuid()) },
+                ReviewObjectiveKind = ReviewObjectiveKind.Srr
+            };
+
+            var reviewObjective2 = new ReviewObjective(Guid.NewGuid())
+            {
+                ReviewTasks = { new ReviewTask(Guid.NewGuid()) }
+            };
+
+            var reviewTasks = new List<ReviewTask>(reviewObjective.ReviewTasks);
+            reviewTasks.AddRange(reviewObjective2.ReviewTasks);
+
+            this.reviewTaskService.Setup(x => x.GetReviewTasksForView(projectId, reviewId, View.RequirementBreakdownStructureView))
+                .ReturnsAsync(reviewTasks);
+
+            await renderer.InvokeAsync(this.viewModel.CommentCreationViewModel.OnValidSubmit.InvokeAsync);
+            Assert.That(this.viewModel.IsOnLinkMode, Is.True);
+
+            this.annotationService.Setup(x => x.CreateAnnotation(It.IsAny<Guid>(), It.IsAny<Comment>()))
+                .ReturnsAsync(EntityRequestResponse<Annotation>.Success(new Comment(Guid.NewGuid())));
+            
+            this.viewModel.AvailableReviewTasksSelectionViewModel.SelectedReviewTask = reviewTasks[0];
+            await renderer.InvokeAsync(this.viewModel.AvailableReviewTasksSelectionViewModel.OnSubmit.InvokeAsync);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.IsOnLinkMode, Is.False);
+                Assert.That(this.viewModel.IsOnCommentCreationMode, Is.False);
+                Assert.That(this.viewModel.Comments, Has.Count.EqualTo(1));
+            });
         }
     }
 }

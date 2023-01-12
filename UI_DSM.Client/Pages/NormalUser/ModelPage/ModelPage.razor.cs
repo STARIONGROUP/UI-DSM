@@ -224,7 +224,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ModelPage
                 }
 
                 this.viewDisposables.Add(this.Comments.ViewModel.Comments.CountChanged
-                    .Subscribe(async _ => await this.OnCommentsCountChanged(baseView)));
+                    .Subscribe(async _ => await OnCommentsCountChanged(baseView)));
 
                 this.viewDisposables.Add(baseView.SelectedItemObservable.Subscribe(async x => await this.OnSelectedItemChanged(x)));
             }
@@ -237,7 +237,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ModelPage
         /// </summary>
         /// <param name="baseView">The <see cref="BaseView" /></param>
         /// <returns>A <see cref="Task" /></returns>
-        private async Task OnCommentsCountChanged(BaseView baseView)
+        private static async Task OnCommentsCountChanged(BaseView baseView)
         {
             await baseView.HasChanged();
         }
