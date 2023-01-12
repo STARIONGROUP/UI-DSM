@@ -1,5 +1,5 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
-// DiagrammingConfigurationLoadingPopup.razor
+// DiagrammingConfigurationDeletionPopup.razor
 // Copyright (c) 2022 RHEA System S.A.
 //
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -9,17 +9,18 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-@using UI_DSM.Shared.Models
-
 <DxFormLayout>
 	<DxFormLayoutItem Caption="Configurations :" ColSpanMd="12">
 		<DxListBox Data="@this.ViewModel.ConfigurationsName"
-				   @bind-Value="@this.ViewModel.SelectedConfiguration"
-				   SelectionMode="ListBoxSelectionMode.Single" />
+		           @bind-Value="@this.ViewModel.SelectedConfiguration"
+		           SelectionMode="ListBoxSelectionMode.Single" />
 	</DxFormLayoutItem>
+	<ErrorMessage/>
 </DxFormLayout>
 
 <div class="modal-footer m-top-10px">
-	<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Load" Click="@this.ViewModel.OnValidSubmit" Enabled="@(!(string.IsNullOrEmpty(this.ViewModel.SelectedConfiguration)))" />
+	<DxButton RenderStyle="ButtonRenderStyle.Danger" 
+	          Text="Delete"
+	          Click="@this.ViewModel.OnValidSubmit" Enabled="@(!(string.IsNullOrEmpty(this.ViewModel.SelectedConfiguration)))" />
 </div>
 

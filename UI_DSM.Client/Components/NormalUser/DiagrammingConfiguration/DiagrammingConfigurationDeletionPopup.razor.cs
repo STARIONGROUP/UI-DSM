@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="DiagrammingConfigurationLoadingPopup.razor.cs" company="RHEA System S.A.">
+// <copyright file="DiagrammingConfigurationDeletionPopup.razor.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -15,17 +15,17 @@ namespace UI_DSM.Client.Components.NormalUser.DiagrammingConfiguration
 {
     using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.DiagrammingConfiguration;
 
     /// <summary>
     ///     This component is used to load a diagramming configuration
     /// </summary>
-    public partial class DiagrammingConfigurationLoadingPopup
+    public partial class DiagrammingConfigurationDeletionPopup
     {
         /// <summary>
-        ///     The <see cref="DiagrammingConfigurationLoadingPopupViewModel" /> for the component
+        ///     The <see cref="DiagrammingConfigurationDeletionPopupViewModel" /> for the component
         /// </summary>
         [Parameter]
-        public IDiagrammingConfigurationLoadingPopupViewModel ViewModel { get; set; }
+        public IDiagrammingConfigurationDeletionPopupViewModel ViewModel { get; set; }
     }
 }

@@ -47,5 +47,14 @@ namespace UI_DSM.Client.Services.DiagrammingConfigurationService
         /// <param name="configurationName">The name of the selected configuration</param>
         /// <returns>A <see cref="Task" /> with the <see cref="DiagramDto" /></returns>
         Task<DiagramDto> LoadDiagramLayoutConfiguration(Guid projectId, Guid reviewTaskId, string configurationName);
+
+        /// <summary>
+        ///     Deletes a diagram configuration
+        /// </summary>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
+        /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" /></param>
+        /// <param name="configurationName">The name of the selected configuration</param>
+        /// <returns>A <see cref="Task" /> with the result of the deletion</returns>
+        Task<(bool success, string error)> DeleteDiagramLayoutConfiguration(Guid projectId, Guid reviewTaskId, string configurationName);
     }
 }

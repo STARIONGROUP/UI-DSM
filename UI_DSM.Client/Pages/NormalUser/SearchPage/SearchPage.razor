@@ -28,30 +28,20 @@
 <h3>Results for: @this.Keyword</h3>
 
 <LoadingComponent IsLoading="@this.isLoading">
-	@foreach (var objectGroup in this.searchResults.GroupBy(x => x.ObjectKind)
-		.ToDictionary(g => g.Key, g => g.ToList()))
+	@foreach (var locationGroup in this.searchResults.GroupBy(x => x.Location)
+		.ToDictionary(g => g.Key ?? "UI-DSM", g => g.ToList()))
 	{
-		<AppAccordion PanelOpen="false" Label="@objectGroup.Key">
+		<AppAccordion PanelOpen="false" Label="@locationGroup.Key">
 			
-			@foreach (var locationGroup in objectGroup.Value.GroupBy(x => x.Location)
-				.ToDictionary(g => g.Key ?? string.Empty, g => g.ToList()))
+			@foreach (var objectKindGroup in locationGroup.Value.GroupBy(x => x.ObjectKind)
+				.ToDictionary(g => g.Key, g => g.ToList()))
 			{
-				if (!string.IsNullOrEmpty(locationGroup.Key))
-				{
-					<AppAccordion PanelOpen="false" Label="@locationGroup.Key" Variant="AppAccordion.VariantValue.Medium">
-						@foreach (var result in locationGroup.Value)
-						{
-							<SearchResultCard SearchResult="@result" OnClick="this.ViewModel.NavigateTo"/>
-						}
-					</AppAccordion>
-				}
-				else
-				{
-					@foreach (var result in locationGroup.Value)
+				<AppAccordion PanelOpen="false" Label="@objectKindGroup.Key" Variant="AppAccordion.VariantValue.Medium">
+					@foreach (var result in objectKindGroup.Value)
 					{
 						<SearchResultCard SearchResult="@result" OnClick="this.ViewModel.NavigateTo"/>
 					}
-				}
+				</AppAccordion>
 			}
 		</AppAccordion>
 	}

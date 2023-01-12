@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="DiagrammingConfigurationLoadingPopupViewModel.cs" company="RHEA System S.A.">
+// <copyright file="DiagrammingConfigurationDeletionPopupViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,19 +11,16 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
+namespace UI_DSM.Client.ViewModels.Components.NormalUser.DiagrammingConfiguration
 {
     using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Client.Components.NormalUser.ProjectReview;
-    using UI_DSM.Client.Enumerator;
-    using UI_DSM.Client.Services.Administration.ProjectService;
-    using UI_DSM.Shared.Models;
+    using UI_DSM.Client.Components.NormalUser.DiagrammingConfiguration;
 
     /// <summary>
-    ///     View model for the <see cref="DiagrammingConfigurationLoadingPopup" /> component
+    ///     View model for the <see cref="DiagrammingConfigurationDeletionPopup" /> component
     /// </summary>
-    public class DiagrammingConfigurationLoadingPopupViewModel : IDiagrammingConfigurationLoadingPopupViewModel
+    public class DiagrammingConfigurationDeletionPopupViewModel : IDiagrammingConfigurationDeletionPopupViewModel
     {
         /// <summary>
         ///     The list of available configurations
@@ -39,6 +36,5 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         ///     The <see cref="EventCallback" /> to call for data submit
         /// </summary>
         public EventCallback OnValidSubmit { get; set; }
-
     }
 }

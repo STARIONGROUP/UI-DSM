@@ -66,28 +66,68 @@ namespace UI_DSM.Server.Modules
             app.MapGet($"{this.MainRoute}/{{configurationName}}/Load", this.LoadLayoutConfiguration)
                 .WithTags("Layout")
                 .WithName("Layout/LoadConfig");
+
+            app.MapDelete($"{this.MainRoute}/{{configurationName}}", this.DeleteLayoutConfiguration)
+                .WithTags("Layout")
+                .WithName("Layout/DeleteConfig");
+        }
+
+        /// <summary>
+        ///     Deletes a configuration
+        /// </summary>
+        /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
+        /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
+        /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" /></param>
+        /// <param name="configurationName">The name of the configuration</param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        public async Task DeleteLayoutConfiguration(IParticipantManager participantManager, Guid projectId, Guid reviewTaskId, string configurationName, HttpContext context)
+        {
+            var participant = await participantManager.GetParticipantForProject(projectId, context.User.Identity?.Name);
+
+            if (participant == null || !participant.IsAllowedTo(AccessRight.CreateDiagramConfiguration))
+            {
+                context.Response.StatusCode = 403;
+                await context.Response.Negotiate("Unauthorized");
+                return;
+            }
+
+            try
+            {
+                var folderPath = Path.Combine("Diagram Configuration", reviewTaskId.ToString());
+
+                var fileName = $"{configurationName}.json";
+
+                if (this.fileService.Exists(folderPath, fileName))
+                {
+                    this.fileService.DeleteFile(Path.Combine(folderPath, fileName));
+                }
+                else
+                {
+                    context.Response.StatusCode = 300;
+                    await context.Response.Negotiate("Configuration not found");
+                }
+            }
+            catch (Exception exception)
+            {
+                context.Response.StatusCode = 500;
+                await context.Response.Negotiate(exception.Message);
+            }
         }
 
         /// <summary>
         ///     Saves the product diagram layout
         /// </summary>
+        /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
         /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
         /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" /></param>
         /// <param name="configurationName">The name of the configuration</param>
-        /// <param name="dto">The <see cref="DiagramDto"/> to save</param>
+        /// <param name="dto">The <see cref="DiagramDto" /> to save</param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public async Task SaveLayoutConfiguration(Guid projectId, Guid reviewTaskId, string configurationName, DiagramDto dto, HttpContext context)
+        public async Task SaveLayoutConfiguration(IParticipantManager participantManager, Guid projectId, Guid reviewTaskId, string configurationName, DiagramDto dto, HttpContext context)
         {
-            var participantManager = context.RequestServices.GetService<IParticipantManager>();
-
-            if (participantManager == null)
-            {
-                context.Response.StatusCode = 500;
-                return;
-            }
-
             var participant = await participantManager.GetParticipantForProject(projectId, context.User.Identity?.Name);
 
             if (participant == null || !participant.IsAllowedTo(AccessRight.CreateDiagramConfiguration))
@@ -108,7 +148,7 @@ namespace UI_DSM.Server.Modules
                     return;
                 }
 
-                if (configurationsfiles.Count >= 5)
+                if (configurationsfiles.Count >= 20)
                 {
                     context.Response.StatusCode = 300;
                     await context.Response.Negotiate(new List<string> { "This diagram already has reach the maximum amount of configurations" });
@@ -140,21 +180,14 @@ namespace UI_DSM.Server.Modules
         /// <summary>
         ///     Load the product diagram layout
         /// </summary>
+        /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
         /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
         /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public async Task LoadLayoutConfigurationNames(Guid projectId, Guid reviewTaskId, HttpContext context)
+        public async Task LoadLayoutConfigurationNames(IParticipantManager participantManager, Guid projectId, Guid reviewTaskId, HttpContext context)
         {
-            var participantManager = context.RequestServices.GetService<IParticipantManager>();
-
-            if (participantManager == null)
-            {
-                context.Response.StatusCode = 500;
-                return;
-            }
-
             var participant = await participantManager.GetParticipantForProject(projectId, context.User.Identity?.Name);
 
             if (participant == null)
@@ -179,22 +212,15 @@ namespace UI_DSM.Server.Modules
         /// <summary>
         ///     Load the product diagram layout
         /// </summary>
+        /// <param name="participantManager">The <see cref="IParticipantManager" /></param>
         /// <param name="projectId">The <see cref="Entity.Id" /> of the <see cref="Project" /></param>
         /// <param name="reviewTaskId">The <see cref="Entity.Id" /> of the <see cref="ReviewTask" /></param>
         /// <param name="configurationName">The name of the configuration</param>
         /// <param name="context">The <see cref="HttpContext" /></param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public async Task LoadLayoutConfiguration(Guid projectId, Guid reviewTaskId, string configurationName, HttpContext context)
+        public async Task LoadLayoutConfiguration(IParticipantManager participantManager, Guid projectId, Guid reviewTaskId, string configurationName, HttpContext context)
         {
-            var participantManager = context.RequestServices.GetService<IParticipantManager>();
-
-            if (participantManager == null)
-            {
-                context.Response.StatusCode = 500;
-                return;
-            }
-
             var participant = await participantManager.GetParticipantForProject(projectId, context.User.Identity?.Name);
 
             if (participant == null)

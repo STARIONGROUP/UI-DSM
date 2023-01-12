@@ -26,15 +26,14 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.DiagrammingConfiguration
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components;
     using UI_DSM.Client.ViewModels.Components.NormalUser.DiagrammingConfiguration;
-    using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
-    using UI_DSM.Shared.DTO.Common;
+
     using TestContext = Bunit.TestContext;
 
     [TestFixture]
     public class DiagrammingConfigurationLoadingPopupTestFixture
     {
         private TestContext context;
-        private IDiagrammingConfigurationLoadingPopupViewModel diagrammingConfigurationLoadingPopupViewModel;
+        private IDiagrammingConfigurationDeletionPopupViewModel diagrammingConfigurationDeletionPopupViewModel;
         private IErrorMessageViewModel errorMessageViewModel;
 
         [SetUp]
@@ -44,10 +43,10 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.DiagrammingConfiguration
             this.context.ConfigureDevExpressBlazor();
             this.errorMessageViewModel = new ErrorMessageViewModel();
 
-            this.diagrammingConfigurationLoadingPopupViewModel = new DiagrammingConfigurationLoadingPopupViewModel()
+            this.diagrammingConfigurationDeletionPopupViewModel = new DiagrammingConfigurationDeletionPopupViewModel()
             {
                 SelectedConfiguration = "",
-                OnValidSubmit = new EventCallbackFactory().Create(this, () => this.diagrammingConfigurationLoadingPopupViewModel.SelectedConfiguration = "")
+                OnValidSubmit = new EventCallbackFactory().Create(this, () => this.diagrammingConfigurationDeletionPopupViewModel.SelectedConfiguration = "")
             };
         }
 
@@ -62,27 +61,27 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.DiagrammingConfiguration
         {
             try
             {
-                var renderer = this.context.RenderComponent<DiagrammingConfigurationLoadingPopup>(parameters =>
+                var renderer = this.context.RenderComponent<DiagrammingConfigurationDeletionPopup>(parameters =>
                 {
-                    parameters.Add(p => p.ViewModel, this.diagrammingConfigurationLoadingPopupViewModel);
+                    parameters.Add(p => p.ViewModel, this.diagrammingConfigurationDeletionPopupViewModel);
+                    parameters.AddCascadingValue(this.errorMessageViewModel);
                 });
 
                 var listBox = renderer.FindComponent<DxListBox<string, string>>();
-
 
                 Assert.That(listBox.Instance.Values, Is.Empty);
 
                 var configurationsName = new List<string>() { "config1", "config2" };
 
-                this.diagrammingConfigurationLoadingPopupViewModel.ConfigurationsName = configurationsName;
-                this.diagrammingConfigurationLoadingPopupViewModel.SelectedConfiguration = configurationsName.First();
+                this.diagrammingConfigurationDeletionPopupViewModel.ConfigurationsName = configurationsName;
+                this.diagrammingConfigurationDeletionPopupViewModel.SelectedConfiguration = configurationsName.First();
 
                 renderer.Render();
 
                 var dxButton = renderer.FindComponent<EditForm>();
                 await renderer.InvokeAsync(dxButton.Instance.OnValidSubmit.InvokeAsync);
 
-                Assert.That(this.diagrammingConfigurationLoadingPopupViewModel.SelectedConfiguration, Is.EqualTo(""));
+                Assert.That(this.diagrammingConfigurationDeletionPopupViewModel.SelectedConfiguration, Is.EqualTo(""));
             }
             catch
             {

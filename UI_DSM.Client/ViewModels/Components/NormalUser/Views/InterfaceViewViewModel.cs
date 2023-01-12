@@ -20,6 +20,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
 
+    using DevExpress.Blazor;
+
     using DynamicData;
 
     using Microsoft.AspNetCore.Components;
@@ -73,6 +75,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         private List<ProductRowViewModel> filteredProducts;
 
         /// <summary>
+        ///     Backing field for <see cref="IsOnDeletionMode" />
+        /// </summary>
+        private bool isOnDeletionMode;
+
+        /// <summary>
         ///     Backing field for <see cref="IsOnLoadingMode" />
         /// </summary>
         private bool isOnLoadingMode;
@@ -86,6 +93,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         ///     Backing field for <see cref="IsViewSettingsVisible" />
         /// </summary>
         private bool isViewSettingsVisible;
+
+        /// <summary>
+        ///     Backing field for <see cref="SelectedConfiguration" />
+        /// </summary>
+        private string selectedConfiguration;
 
         /// <summary>
         ///     Backing field for <see cref="ShouldShowProducts" />
@@ -105,7 +117,39 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.FilterViewModel = filterViewModel;
             this.diagrammingConfigurationService = diagrammingConfigurationService;
             this.ErrorMessageViewModel = errorMessageViewModel;
+
+            this.ConfirmCancelPopup = new ConfirmCancelPopupViewModel
+            {
+                OnCancel = new EventCallbackFactory().Create(this, this.OnCancel),
+                CancelRenderStyle = ButtonRenderStyle.Secondary,
+                ConfirmRenderStyle = ButtonRenderStyle.Danger,
+                HeaderText = "Delete configuration",
+                OnConfirm = new EventCallbackFactory().Create(this, this.DeleteDiagram)
+            };
         }
+
+        /// <summary>
+        ///     Value indicating if the current state is a deletion state
+        /// </summary>
+        public bool IsOnDeletionMode
+        {
+            get => this.isOnDeletionMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnDeletionMode, value);
+        }
+
+        /// <summary>
+        ///     The current selected configuration
+        /// </summary>
+        public string SelectedConfiguration
+        {
+            get => this.selectedConfiguration;
+            set => this.RaiseAndSetIfChanged(ref this.selectedConfiguration, value);
+        }
+
+        /// <summary>
+        ///     The <see cref="IConfirmCancelPopupViewModel" />
+        /// </summary>
+        public IConfirmCancelPopupViewModel ConfirmCancelPopup { get; private set; }
 
         /// <summary>
         ///     Value asserting if products has to been shown
@@ -266,10 +310,21 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 OnValidSubmit = new EventCallbackFactory().Create(this, this.SaveCurrentDiagramLayout)
             };
 
-            this.DiagrammingConfigurationLoadingPopupViewModel = new DiagrammingConfigurationLoadingPopupViewModel
+            this.DiagrammingConfigurationDeletionPopupViewModel = new DiagrammingConfigurationDeletionPopupViewModel
             {
-                OnValidSubmit = new EventCallbackFactory().Create(this, this.LoadDiagramLayout)
+                OnValidSubmit = new EventCallbackFactory().Create(this, this.AskDeleteDiagram)
             };
+        }
+
+        /// <summary>
+        ///     Opens the deletion component
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        public async Task OpenDeletionComponent()
+        {
+            this.DiagrammingConfigurationDeletionPopupViewModel.SelectedConfiguration = string.Empty;
+            this.DiagrammingConfigurationDeletionPopupViewModel.ConfigurationsName = await this.GetAvailableConfigurations(CancellationToken.None);
+            this.IsOnDeletionMode = true;
         }
 
         /// <summary>
@@ -278,9 +333,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public IDiagrammingConfigurationPopupViewModel DiagrammingConfigurationPopupViewModel { get; private set; }
 
         /// <summary>
-        ///     The <see cref="IDiagrammingConfigurationLoadingPopupViewModel" />
+        ///     The <see cref="IDiagrammingConfigurationDeletionPopupViewModel" />
         /// </summary>
-        public IDiagrammingConfigurationLoadingPopupViewModel DiagrammingConfigurationLoadingPopupViewModel { get; private set; }
+        public IDiagrammingConfigurationDeletionPopupViewModel DiagrammingConfigurationDeletionPopupViewModel { get; private set; }
 
         /// <summary>
         ///     The <see cref="IErrorMessageViewModel" />
@@ -722,9 +777,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     Opens the <see cref="DiagrammingConfigurationLoadingPopup" />
         /// </summary>
-        public async void OpenLoadingConfigurationPopup()
+        public void OpenLoadingConfiguration()
         {
-            this.DiagrammingConfigurationLoadingPopupViewModel.ConfigurationsName = await this.diagrammingConfigurationService.LoadDiagramLayoutConfigurationNames(this.ProjectId, this.ReviewTaskId);
             this.HasLoadedConfiguration = false;
             this.IsOnLoadingMode = true;
         }
@@ -762,51 +816,27 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         }
 
         /// <summary>
-        ///     Saves current diagram layout
+        ///     Gets all available configuration
         /// </summary>
-        public async Task SaveCurrentDiagramLayout()
+        /// <param name="token">The <see cref="CancellationToken" /></param>
+        /// <returns>A collection of <see cref="string" /></returns>
+        public async Task<IEnumerable<string>> GetAvailableConfigurations(CancellationToken token)
         {
-            var diagramDto = new DiagramDto()
-            {
-                Nodes = this.ProductsMap.Keys.Select(x => new DiagramNodeDto
-                {
-                    ThingId = x.ThingId, Point = new PointDto()
-                    {
-                        X =x.Position.X, Y = x.Position.Y
-                    }
-                }).ToList(),
-                Links = this.InterfacesMap.Keys.Select(x => new DiagramLinkDto
-                {
-                    ThingId = x.ThingId,
-                    Vertices = x.Vertices.Select(v =>new PointDto() { X = v.Position.X, Y= v.Position.Y}).ToList()
-                }).ToList(),
-                Filters = this.FilterViewModel.GetSelectedFilters()
-                    .Select(selectedFilter => new FilterDto()
-                    {
-                        ClassKind = selectedFilter.Key, 
-                        SelectedFilters = selectedFilter.Value.Select(x => x.DefinedThing.Iid).ToList()
-                    }).ToList()
-            };
-
-            var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId, 
-                this.DiagrammingConfigurationPopupViewModel.ConfigurationName, diagramDto);
-
-            this.ErrorMessageViewModel.Errors.Clear();
-
-            if (!response.result)
-            {
-                this.ErrorMessageViewModel.HandleErrors(response.errors);
-            }
-
-            this.IsOnSavingMode = !response.result;
+            return await this.diagrammingConfigurationService.LoadDiagramLayoutConfigurationNames(this.ProjectId, this.ReviewTaskId);
         }
 
         /// <summary>
         ///     Load choosen diagram layout
         /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
         public async Task LoadDiagramLayout()
         {
-            var response = await this.diagrammingConfigurationService.LoadDiagramLayoutConfiguration(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationLoadingPopupViewModel.SelectedConfiguration);
+            var response = await this.diagrammingConfigurationService.LoadDiagramLayoutConfiguration(this.ProjectId, this.ReviewTaskId, this.SelectedConfiguration);
+
+            if (response == null)
+            {
+                return;
+            }
 
             this.ProductsMap.Clear();
             this.PortsMap.Clear();
@@ -842,6 +872,91 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             this.SelectedElement = null;
             this.HasLoadedConfiguration = true;
             this.IsOnLoadingMode = false;
+        }
+
+        /// <summary>
+        ///     Saves current diagram layout
+        /// </summary>
+        public async Task SaveCurrentDiagramLayout()
+        {
+            var diagramDto = new DiagramDto
+            {
+                Nodes = this.ProductsMap.Keys.Select(x => new DiagramNodeDto
+                {
+                    ThingId = x.ThingId, Point = new PointDto
+                    {
+                        X = x.Position.X, Y = x.Position.Y
+                    }
+                }).ToList(),
+                Links = this.InterfacesMap.Keys.Select(x => new DiagramLinkDto
+                {
+                    ThingId = x.ThingId,
+                    Vertices = x.Vertices.Select(v => new PointDto { X = v.Position.X, Y = v.Position.Y }).ToList()
+                }).ToList(),
+                Filters = this.FilterViewModel.GetSelectedFilters()
+                    .Select(selectedFilter => new FilterDto
+                    {
+                        ClassKind = selectedFilter.Key,
+                        SelectedFilters = selectedFilter.Value.Select(x => x.DefinedThing.Iid).ToList()
+                    }).ToList()
+            };
+
+            var response = await this.diagrammingConfigurationService.SaveDiagramLayout(this.ProjectId, this.ReviewTaskId,
+                this.DiagrammingConfigurationPopupViewModel.ConfigurationName, diagramDto);
+
+            this.ErrorMessageViewModel.Errors.Clear();
+
+            if (!response.result)
+            {
+                this.ErrorMessageViewModel.HandleErrors(response.errors);
+            }
+
+            this.IsOnSavingMode = !response.result;
+        }
+
+        /// <summary>
+        ///     Handle the cancel inside the confirmation dialog
+        /// </summary>
+        private void OnCancel()
+        {
+            this.ConfirmCancelPopup.IsVisible = false;
+        }
+
+        /// <summary>
+        ///     Open the confirmation dialog to delete a configuration
+        /// </summary>
+        private void AskDeleteDiagram()
+        {
+            this.ConfirmCancelPopup.ContentText = $"Are you sure to want to delete the configuration {this.DiagrammingConfigurationDeletionPopupViewModel.SelectedConfiguration} ?";
+            this.ConfirmCancelPopup.IsVisible = true;
+        }
+
+        /// <summary>
+        ///     Deletes a configuration diagram
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task DeleteDiagram()
+        {
+            this.ConfirmCancelPopup.IsVisible = false;
+            this.ErrorMessageViewModel.Errors.Clear();
+
+            var deletionResult = await this.diagrammingConfigurationService.DeleteDiagramLayoutConfiguration(this.ProjectId, this.ReviewTaskId, this.DiagrammingConfigurationDeletionPopupViewModel.SelectedConfiguration);
+
+            if (!deletionResult.success)
+            {
+                this.ErrorMessageViewModel.HandleErrors(new List<string> { deletionResult.error });
+            }
+            else
+            {
+                if (this.SelectedConfiguration == this.DiagrammingConfigurationDeletionPopupViewModel.SelectedConfiguration)
+                {
+                    this.SelectedConfiguration = string.Empty;
+                }
+
+                this.DiagrammingConfigurationDeletionPopupViewModel.SelectedConfiguration = string.Empty;
+            }
+
+            this.IsOnDeletionMode = !deletionResult.success;
         }
 
         /// <summary>

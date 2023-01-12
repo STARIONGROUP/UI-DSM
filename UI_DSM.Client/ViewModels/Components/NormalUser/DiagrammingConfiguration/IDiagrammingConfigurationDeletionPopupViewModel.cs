@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IDiagrammingConfigurationLoadingPopupViewModel.cs" company="RHEA System S.A.">
+// <copyright file="IDiagrammingConfigurationDeletionPopupViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2022 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,17 +11,14 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
+namespace UI_DSM.Client.ViewModels.Components.NormalUser.DiagrammingConfiguration
 {
     using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Client.Enumerator;
-    using UI_DSM.Shared.Models;
-
     /// <summary>
-    ///     Interface definition for <see cref="DiagrammingConfigurationLoadingPopupViewModel" />
+    ///     Interface definition for <see cref="DiagrammingConfigurationDeletionPopupViewModel" />
     /// </summary>
-    public interface IDiagrammingConfigurationLoadingPopupViewModel
+    public interface IDiagrammingConfigurationDeletionPopupViewModel
     {
         /// <summary>
         ///     The list of available configurations
