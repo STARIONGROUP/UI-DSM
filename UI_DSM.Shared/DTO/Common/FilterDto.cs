@@ -13,8 +13,6 @@
 
 namespace UI_DSM.Shared.DTO.Common
 {
-    using CDP4Common.CommonData;
-
     /// <summary>
     ///     Data Transfer Object that represents selected filters
     /// </summary>
@@ -23,7 +21,7 @@ namespace UI_DSM.Shared.DTO.Common
         /// <summary>
         ///     The <see cref="ClassKind" />
         /// </summary>
-        public ClassKind ClassKind { get; set; }
+        public string ClassKind { get; set; }
 
         /// <summary>
         ///     A collection of <see cref="Guid" /> of filters that has been selected

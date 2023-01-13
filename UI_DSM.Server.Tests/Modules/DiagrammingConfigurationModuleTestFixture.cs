@@ -71,7 +71,7 @@ namespace UI_DSM.Server.Tests.Modules
         [TearDown]
         public void Teardown()
         {
-            var basePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Diagram Configuration");
+            var basePath = Path.Combine(TestContext.CurrentContext.TestDirectory, DiagrammingConfigurationModule.DirectoryName);
 
             if (Directory.Exists(basePath))
             {
@@ -116,8 +116,8 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.fileService.Verify(x => x.MoveFile(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
 
-            var basePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Diagram Configuration");
-            this.fileService.Setup(x => x.GetFullPath("Diagram Configuration")).Returns(basePath);
+            var basePath = Path.Combine(TestContext.CurrentContext.TestDirectory, DiagrammingConfigurationModule.DirectoryName);
+            this.fileService.Setup(x => x.GetDirectoryPath(DiagrammingConfigurationModule.DirectoryName)).Returns(basePath);
             var path = Path.Combine(basePath, this.reviewTaskId.ToString());
             Directory.CreateDirectory(path);
             var filePath = Path.Combine(path, configFileName);
@@ -138,34 +138,34 @@ namespace UI_DSM.Server.Tests.Modules
         [Test]
         public async Task VerifyLoadLayoutConfigurationNames()
         {
-            this.fileService.Setup(x => x.GetFullPath("Diagram Configuration")).Returns(TestContext.CurrentContext.TestDirectory);
+            this.fileService.Setup(x => x.GetDirectoryPath(DiagrammingConfigurationModule.DirectoryName)).Returns(TestContext.CurrentContext.TestDirectory);
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
 
             await this.module.LoadLayoutConfigurationNames(this.participantManager.Object, this.projectId, this.reviewTaskId, this.context.Object);
-            this.fileService.Verify(x => x.GetFullPath(It.IsAny<string>()), Times.Never());
+            this.fileService.Verify(x => x.GetDirectoryPath(It.IsAny<string>()), Times.Never());
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(this.participant);
             await this.module.LoadLayoutConfigurationNames(this.participantManager.Object, this.projectId, this.reviewTaskId, this.context.Object);
 
-            this.fileService.Verify(x => x.GetFullPath(It.IsAny<string>()), Times.Once());
+            this.fileService.Verify(x => x.GetDirectoryPath(It.IsAny<string>()), Times.Once());
         }
 
         [Test]
         public async Task VerifyLoadLayoutConfiguration()
         {
             const string configName = "config1";
-            this.fileService.Setup(x => x.GetFullPath("Diagram Configuration")).Returns(TestContext.CurrentContext.TestDirectory);
+            this.fileService.Setup(x => x.GetDirectoryPath(DiagrammingConfigurationModule.DirectoryName)).Returns(TestContext.CurrentContext.TestDirectory);
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync((Participant)null);
 
             await this.module.LoadLayoutConfiguration(this.participantManager.Object, this.projectId, this.reviewTaskId, configName, this.context.Object);
-            this.fileService.Verify(x => x.GetFullPath(It.IsAny<string>()), Times.Never());
+            this.fileService.Verify(x => x.GetDirectoryPath(It.IsAny<string>()), Times.Never());
 
             this.participantManager.Setup(x => x.GetParticipantForProject(this.projectId, "user")).ReturnsAsync(this.participant);
             await this.module.LoadLayoutConfiguration(this.participantManager.Object, this.projectId, this.reviewTaskId, configName, this.context.Object);
 
-            this.fileService.Verify(x => x.GetFullPath(It.IsAny<string>()), Times.Once());
+            this.fileService.Verify(x => x.GetDirectoryPath(It.IsAny<string>()), Times.Once());
         }
 
         [Test]

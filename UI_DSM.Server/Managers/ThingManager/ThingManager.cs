@@ -17,6 +17,7 @@ namespace UI_DSM.Server.Managers.ThingManager
     using CDP4Common.EngineeringModelData;
     using CDP4Common.SiteDirectoryData;
 
+    using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Services.CometService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Extensions;

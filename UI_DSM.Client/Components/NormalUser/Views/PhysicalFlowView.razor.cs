@@ -265,6 +265,9 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             this.Diagram.RegisterModelComponent<DiagramLink, DiagramLinkWidget>();
             this.Diagram.MouseDoubleClick += this.Diagram_MouseDoubleClick;
             this.Diagram.MouseUp += this.Diagram_MouseUp;
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.SelectedConfiguration)
+                .Subscribe(async _ => await this.ViewModel.LoadDiagramLayout()));
         }
 
         /// <summary>
@@ -332,9 +335,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
                 this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnLoadingMode)
                     .Subscribe(async x => await this.InvokeAsync(() => this.OnIsOnLoadingModeChanged(x))));
-
-                this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.SelectedConfiguration)
-                    .Subscribe(async _ => await this.ViewModel.LoadDiagramLayout()));
 
                 this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.FilterViewModel.IsFilterVisible)
                     .Where(x => !x)

@@ -661,12 +661,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
             if (this.HasChildren(product) && nodeCanBeAdded)
             {
-                var ports = this.LoadChildren(product);
+                var ports = this.LoadChildren(product).ToList();
 
                 foreach (var port in ports)
                 {
                     var index = ports.IndexOf(port);
-                    var alignment = GetAproximateAlignment(index, ports.Count());
+                    var alignment = GetAproximateAlignment(index, ports.Count);
                     var portNode = new DiagramPort(node, alignment, port.Name);
                     node.AddPort(portNode);
                     portNode.Locked = true;
@@ -896,7 +896,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                 Filters = this.FilterViewModel.GetSelectedFilters()
                     .Select(selectedFilter => new FilterDto
                     {
-                        ClassKind = selectedFilter.Key,
+                        ClassKind = selectedFilter.Key.ToString(),
                         SelectedFilters = selectedFilter.Value.Select(x => x.DefinedThing.Iid).ToList()
                     }).ToList()
             };
@@ -909,6 +909,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             if (!response.result)
             {
                 this.ErrorMessageViewModel.HandleErrors(response.errors);
+            }
+            else
+            {
+                this.SelectedConfiguration = this.DiagrammingConfigurationPopupViewModel.ConfigurationName;
             }
 
             this.IsOnSavingMode = !response.result;

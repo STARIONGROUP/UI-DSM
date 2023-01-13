@@ -13,8 +13,6 @@
 
 namespace UI_DSM.Shared.DTO.Common
 {
-    using CDP4Common.EngineeringModelData;
-
     using UI_DSM.Shared.Enumerator;
 
     /// <summary>

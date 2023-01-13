@@ -13,8 +13,6 @@
 
 namespace UI_DSM.Shared.Extensions
 {
-    using CDP4Common.CommonData;
-
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Models;
     using UI_DSM.Shared.Types;
@@ -72,16 +70,6 @@ namespace UI_DSM.Shared.Extensions
                     collection.Add(foundEntity);
                 }
             }
-        }
-
-        /// <summary>
-        ///     Distincts a collection of <see cref="Thing" /> by its <see cref="Thing.Iid" />
-        /// </summary>
-        /// <param name="things">The collection of <see cref="Thing" /></param>
-        /// <returns>The distincted collection</returns>
-        public static List<Thing> DistinctById(this IEnumerable<Thing> things)
-        {
-            return things.DistinctBy(x => x.Iid).ToList();
         }
 
         /// <summary>

@@ -1,0 +1,32 @@
+UI-DSM Search Service container application
+
+# Build and Deploy using Docker
+
+The UI-DSM Search Service container is built using docker and docker buildkit and the result is a Docker container ready to be deployed (or pushed to a Docker registry). The Docker file is located in the Docker-images/SearchService project folder.
+
+> The Docker command needs to be executed from the commandline in the **solution** folder. 
+
+For docker login, create a (ui-dsm_framework) project level access token. 
+
+```
+$ ./solutionfolder# docker login gitlab.esa.int:4567
+$ ./solutionfolder# docker build -f Docker-images/SearchService/Dockerfile -t rheagroup/ui-dsm-search-service:latest -t rheagroup/ui-dsm-search-service:<version> . 
+```
+
+Run the container in local environment
+
+```
+docker run -p 2222:80 -it -d --name ui-dsm-search-service --net uidsm-net rheagroup/ui-dsm-search-service:latest
+```
+
+Push to docker registry
+
+```
+$ ./solutionfolder# docker push rheagroup/ui-dsm-search-service:latest
+$ ./solutionfolder# docker push rheagroup/ui-dsm-search-service:<specific-version>
+```
+
+# License
+
+Copyright (c) 2022 RHEA S.A.
+The UI-DSM Search Service is provided to the community under the Apache License 2.0.

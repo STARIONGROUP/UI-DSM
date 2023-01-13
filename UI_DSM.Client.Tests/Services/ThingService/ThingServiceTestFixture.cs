@@ -27,8 +27,8 @@ namespace UI_DSM.Client.Tests.Services.ThingService
     using UI_DSM.Client.Services.JsonService;
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Server.Extensions;
     using UI_DSM.Shared.Enumerator;
-    using UI_DSM.Shared.Extensions;
     using UI_DSM.Shared.Models;
 
     [TestFixture]

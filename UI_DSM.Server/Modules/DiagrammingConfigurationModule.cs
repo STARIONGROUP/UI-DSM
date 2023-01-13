@@ -34,6 +34,11 @@ namespace UI_DSM.Server.Modules
     public class DiagrammingConfigurationModule : ModuleBase
     {
         /// <summary>
+        ///     The name of the directory where to store diagrams
+        /// </summary>
+        public const string DirectoryName = "diagrams";
+
+        /// <summary>
         ///     The <see cref="IFileService" />
         /// </summary>
         private readonly IFileService fileService;
@@ -95,7 +100,7 @@ namespace UI_DSM.Server.Modules
 
             try
             {
-                var folderPath = Path.Combine("Diagram Configuration", reviewTaskId.ToString());
+                var folderPath = Path.Combine(DirectoryName, reviewTaskId.ToString());
 
                 var fileName = $"{configurationName}.json";
 
@@ -139,7 +144,7 @@ namespace UI_DSM.Server.Modules
 
             try
             {
-                var folderPath = Path.Combine(this.fileService.GetFullPath("Diagram Configuration"), reviewTaskId.ToString());
+                var folderPath = Path.Combine(this.fileService.GetDirectoryPath(DirectoryName), reviewTaskId.ToString());
                 var configurationsfiles = Directory.EnumerateFiles(folderPath).Select(Path.GetFileNameWithoutExtension).ToList();
 
                 if (configurationsfiles.Any(x => string.Equals(configurationName, x, StringComparison.InvariantCultureIgnoreCase)))
@@ -167,7 +172,7 @@ namespace UI_DSM.Server.Modules
             try
             {
                 await File.WriteAllTextAsync(Path.Combine(this.fileService.GetTempFolder(), fileName), json);
-                var configurationPath = Path.Combine("Diagram configuration", reviewTaskId.ToString());
+                var configurationPath = Path.Combine(DirectoryName, reviewTaskId.ToString());
                 var pathOfSavedConfig = this.fileService.MoveFile(fileName, configurationPath);
                 await context.Response.Negotiate(pathOfSavedConfig);
             }
@@ -197,7 +202,7 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            var folderPath = Path.Combine(this.fileService.GetFullPath("Diagram Configuration"), reviewTaskId.ToString());
+            var folderPath = Path.Combine(this.fileService.GetDirectoryPath(DirectoryName), reviewTaskId.ToString());
 
             try
             {
@@ -230,7 +235,7 @@ namespace UI_DSM.Server.Modules
                 return;
             }
 
-            var folderPath = Path.Combine(this.fileService.GetFullPath("Diagram Configuration"), reviewTaskId.ToString());
+            var folderPath = Path.Combine(this.fileService.GetDirectoryPath(DirectoryName), reviewTaskId.ToString());
 
             try
             {

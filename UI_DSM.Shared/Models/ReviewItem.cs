@@ -15,8 +15,6 @@ namespace UI_DSM.Shared.Models
 {
     using System.ComponentModel.DataAnnotations.Schema;
 
-    using CDP4Common.CommonData;
-
     using UI_DSM.Shared.Annotations;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Extensions;

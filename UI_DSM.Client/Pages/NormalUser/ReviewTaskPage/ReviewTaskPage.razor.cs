@@ -203,11 +203,11 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                         this.ViewModel.ReviewObjective.AdditionnalColumnsVisibleAtStart, this.ViewModel.Participant);
 
                     baseView.TrySetSelectedItem(this.SelectedItem);
+                }
 
-                    if (this.SelectedItem is IHaveThingRowViewModel row)
-                    {
-                        await baseView.TryNavigateToItem(row.Id);
-                    }
+                if (this.SelectedItem is IHaveThingRowViewModel row)
+                {
+                    await baseView.TryNavigateToItem(row.Id);
                 }
 
                 this.ViewModel.CurrentBaseViewInstance = baseView;

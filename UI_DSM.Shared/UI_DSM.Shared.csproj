@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CDP4Common-CE" Version="8.3.0" />
-    <PackageReference Include="GP.SearchService.SDK" Version="1.0.6" />
+      <PackageReference Include="GP.SearchService.SDK" Version="1.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.7" />
   </ItemGroup>
 
@@ -21,5 +20,12 @@
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
+
+  <Target Name="CopyUIDSMSharedDll" AfterTargets="Build">
+        <Message Text="Executing Copy UI_DSM.Shared.dll to SearchService docker container folder" Importance="High" />
+        <Copy SourceFiles="$(TargetDir)$(ProjectName).dll" 
+              DestinationFolder="..\Docker-images\SearchService\Plugins\" />
+        <Message Text="UI_DSM.Shared.dll was copied to SearchService docker container folder" Importance="High" />
+    </Target>
 
 </Project>
