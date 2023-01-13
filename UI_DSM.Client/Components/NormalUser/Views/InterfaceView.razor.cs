@@ -54,11 +54,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         private bool isFullyInitialized;
 
         /// <summary>
-        ///     Enable to track the element to which needs to navigate to
-        /// </summary>
-        private string needToNavigativeTo;
-
-        /// <summary>
         /// The <see cref="Guid"/> of the item to navigate to
         /// </summary>
         private Guid navigationId = Guid.Empty;
@@ -134,27 +129,16 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <returns>A <see cref="Task" /></returns>
         public override async Task TryNavigateToItem(string itemName)
         {
-            this.needToNavigativeTo = itemName;
-
             var existingItem = this.ViewModel.GetAvailablesRows().OfType<IBelongsToInterfaceView>()
                 .FirstOrDefault(x => x.Id == itemName);
 
             if (existingItem != null)
             {
                 var path = this.ComputeTreePath(existingItem);
-
-                if (path == null)
-                {
-                    return;
-                }
-
-                this.needToNavigativeTo = string.Empty;
                 await this.ExpandAllRows(path);
                 this.navigationId = existingItem.ThingId;
                 await this.InvokeAsync(this.StateHasChanged);
             }
-
-            this.needToNavigativeTo = string.Empty;
         }
 
         /// <summary>
@@ -223,11 +207,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
                 this.HideColumnsAtStart();
                 this.isFullyInitialized = true;
-            }
-
-            if (!string.IsNullOrWhiteSpace(this.needToNavigativeTo))
-            {
-                this.InvokeAsync(() => this.TryNavigateToItem(this.needToNavigativeTo));
             }
         }
 
@@ -340,7 +319,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             if (!this.ViewModel.ShouldShowProducts)
             {
                 this.ViewModel.SetProductsVisibility(true);
-                return null;
             }
 
             while (currentItem is not null)
@@ -351,7 +329,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                         || this.ViewModel.ProductVisibilityState.CurrentState == ConnectionToVisibilityState.Connected && !this.ViewModel.HasChildren(product))
                     {
                         this.ViewModel.ProductVisibilityState.CurrentState = ConnectionToVisibilityState.All;
-                        return null;
                     }
 
                     currentItem = null;
@@ -363,7 +340,6 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                         || this.ViewModel.PortVisibilityState.CurrentState == ConnectionToVisibilityState.Connected && !this.ViewModel.HasChildren(port))
                     {
                         this.ViewModel.PortVisibilityState.CurrentState = ConnectionToVisibilityState.All;
-                        return null;
                     }
 
                     var productRow = this.ViewModel.GetAvailablesRows().OfType<ProductRowViewModel>()
