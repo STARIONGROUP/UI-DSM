@@ -279,8 +279,26 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 
                 Assert.Multiple(() =>
                 {
-                    Assert.That(renderer.Instance.TryNavigateToItem("a name"), Is.EqualTo(Task.CompletedTask));
+                    Assert.That(() => renderer.Instance.TryNavigateToItem("a name"), Throws.Nothing);
                     Assert.That(this.viewModel.IsViewSettingsVisible, Is.True);
+                });
+
+                this.viewModel.SetProductsVisibility(false);
+                await renderer.Instance.TryNavigateToItem(this.viewModel.Interfaces[0].Id);
+
+                Assert.That(this.viewModel.ShouldShowProducts, Is.False);
+
+                await renderer.Instance.TryNavigateToItem(this.viewModel.Products[0].Id);
+                Assert.That(this.viewModel.ShouldShowProducts, Is.True);
+                this.viewModel.PortVisibilityState.CurrentState = ConnectionToVisibilityState.NotConnected;
+                this.viewModel.ProductVisibilityState.CurrentState = ConnectionToVisibilityState.NotConnected;
+
+                await renderer.Instance.TryNavigateToItem(this.viewModel.Interfaces[0].Id);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(this.viewModel.PortVisibilityState.CurrentState, Is.EqualTo(ConnectionToVisibilityState.All));
+                    Assert.That(this.viewModel.ProductVisibilityState.CurrentState, Is.EqualTo(ConnectionToVisibilityState.All));
                 });
             }
             catch

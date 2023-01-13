@@ -17,12 +17,16 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
     using CDP4Common.CommonData;
 
+    using Microsoft.AspNetCore.Components;
+    using Microsoft.JSInterop;
+
     using Radzen;
     using Radzen.Blazor;
 
     using ReactiveUI;
 
     using UI_DSM.Client.Components.App.ConnectionVisibilitySelector;
+    using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.ViewModels.App.ColumnChooser;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
@@ -50,9 +54,20 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         private bool isFullyInitialized;
 
         /// <summary>
+        /// The <see cref="Guid"/> of the item to navigate to
+        /// </summary>
+        private Guid navigationId = Guid.Empty;
+
+        /// <summary>
         ///     Reference to the <see cref="RadzenDataGrid{TItem}" />
         /// </summary>
         public RadzenDataGrid<IBelongsToInterfaceView> Grid { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IJSRuntime" />
+        /// </summary>
+        [Inject]
+        public IJSRuntime JsRuntime { get; set; }
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -90,7 +105,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
-        /// <param name="participant">The current <see cref="Participant"/></param>
+        /// <param name="participant">The current <see cref="Participant" /></param>
         /// <returns>A <see cref="Task" /></returns>
         public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart, Participant participant)
         {
@@ -112,9 +127,30 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// </summary>
         /// <param name="itemName">The name of the item to navigate to</param>
         /// <returns>A <see cref="Task" /></returns>
-        public override Task TryNavigateToItem(string itemName)
+        public override async Task TryNavigateToItem(string itemName)
         {
-            return Task.CompletedTask;
+            var existingItem = this.ViewModel.GetAvailablesRows().OfType<IBelongsToInterfaceView>()
+                .FirstOrDefault(x => x.Id == itemName);
+
+            if (existingItem != null)
+            {
+                var path = this.ComputeTreePath(existingItem);
+                await this.ExpandAllRows(path);
+                this.navigationId = existingItem.ThingId;
+                await this.InvokeAsync(this.StateHasChanged);
+            }
+        }
+
+        /// <summary>
+        ///     Handle the on expand event
+        /// </summary>
+        /// <param name="row">The <see cref="IBelongsToInterfaceView" /></param>
+        public void OnRowExpand(IBelongsToInterfaceView row)
+        {
+            if (row is ElementBaseRowViewModel elementBaseRow)
+            {
+                elementBaseRow.IsExpanded = !elementBaseRow.IsExpanded;
+            }
         }
 
         /// <summary>
@@ -175,6 +211,33 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         }
 
         /// <summary>
+        /// Method invoked after each time the component has been rendered. Note that the component does
+        /// not automatically re-render after the completion of any returned <see cref="T:System.Threading.Tasks.Task" />, because
+        /// that would cause an infinite render loop.
+        /// </summary>
+        /// <param name="firstRender">
+        /// Set to <c>true</c> if this is the first time <see cref="M:Microsoft.AspNetCore.Components.ComponentBase.OnAfterRender(System.Boolean)" /> has been invoked
+        /// on this component instance; otherwise <c>false</c>.
+        /// </param>
+        /// <returns>A <see cref="T:System.Threading.Tasks.Task" /> representing any asynchronous operation.</returns>
+        /// <remarks>
+        /// The <see cref="M:Microsoft.AspNetCore.Components.ComponentBase.OnAfterRender(System.Boolean)" /> and <see cref="M:Microsoft.AspNetCore.Components.ComponentBase.OnAfterRenderAsync(System.Boolean)" /> lifecycle methods
+        /// are useful for performing interop, or interacting with values received from <c>@ref</c>.
+        /// Use the <paramref name="firstRender" /> parameter to ensure that initialization work is only performed
+        /// once.
+        /// </remarks>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            await base.OnAfterRenderAsync(firstRender);
+
+            if (this.navigationId != Guid.Empty)
+            {
+                await this.JsRuntime.InvokeVoidAsync("scrollToElement", $"row_{this.navigationId}", "center", "center");
+                this.navigationId = Guid.Empty;
+            }
+        }
+
+        /// <summary>
         ///     Supplies information to a row render
         /// </summary>
         /// <param name="row">The <see cref="RowRenderEventArgs{T}" /></param>
@@ -195,6 +258,8 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                     row.Attributes["class"] = interfaceRow.IsVisible ? string.Empty : "invisible-row";
                     break;
             }
+
+            row.Attributes["id"] = $"row_{row.Data.ThingId}";
         }
 
         /// <summary>
@@ -218,6 +283,90 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                 PortRowViewModel port => this.ViewModel.LoadChildren(port),
                 _ => parent.Data
             };
+        }
+
+        /// <summary>
+        ///     Expands all rows that are contained into the collection
+        /// </summary>
+        /// <param name="rows">The collection <see cref="IBelongsToInterfaceView" />"/></param>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task ExpandAllRows(IEnumerable<IBelongsToInterfaceView> rows)
+        {
+            foreach (var row in rows)
+            {
+                if (row is ElementBaseRowViewModel { IsExpanded: false })
+                {
+                    await this.Grid.ExpandRow(row);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Computes the path inside the tree to access to the <see cref="IBelongsToInterfaceView" />
+        /// </summary>
+        /// <param name="item">The <see cref="IBelongsToInterfaceView" /></param>
+        /// <returns>A collection of <see cref="IBelongsToInterfaceView" /> to have the path</returns>
+        private  IEnumerable<IBelongsToInterfaceView> ComputeTreePath(IBelongsToInterfaceView item)
+        {
+            var path = new List<IBelongsToInterfaceView>();
+            var currentItem = item;
+
+            if (item is InterfaceRowViewModel && !this.ViewModel.ShouldShowProducts)
+            {
+                return path;
+            }
+
+            if (!this.ViewModel.ShouldShowProducts)
+            {
+                this.ViewModel.SetProductsVisibility(true);
+            }
+
+            while (currentItem is not null)
+            {
+                if (currentItem is ProductRowViewModel product)
+                {
+                    if (this.ViewModel.ProductVisibilityState.CurrentState == ConnectionToVisibilityState.NotConnected && this.ViewModel.HasChildren(product)
+                        || this.ViewModel.ProductVisibilityState.CurrentState == ConnectionToVisibilityState.Connected && !this.ViewModel.HasChildren(product))
+                    {
+                        this.ViewModel.ProductVisibilityState.CurrentState = ConnectionToVisibilityState.All;
+                    }
+
+                    currentItem = null;
+                }
+
+                if (currentItem is PortRowViewModel port)
+                {
+                    if (this.ViewModel.PortVisibilityState.CurrentState == ConnectionToVisibilityState.NotConnected && this.ViewModel.HasChildren(port)
+                        || this.ViewModel.PortVisibilityState.CurrentState == ConnectionToVisibilityState.Connected && !this.ViewModel.HasChildren(port))
+                    {
+                        this.ViewModel.PortVisibilityState.CurrentState = ConnectionToVisibilityState.All;
+                    }
+
+                    var productRow = this.ViewModel.GetAvailablesRows().OfType<ProductRowViewModel>()
+                        .FirstOrDefault(x => (x.ThingId == port.ContainerId || x.ElementDefinitionId == port.ContainerId) &&
+                                             this.ViewModel.LoadChildren(x).Any(p => p.ThingId == currentItem.ThingId));
+
+                    if (productRow != null)
+                    {
+                        path.Add(productRow);
+                        currentItem = productRow;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                if (currentItem is InterfaceRowViewModel interfaceRow)
+                {
+                    var portRow = interfaceRow.SourceRow as PortRowViewModel;
+                    path.Add(portRow);
+                    currentItem = portRow;
+                }
+            }
+
+            path.Reverse();
+            return path;
         }
 
         /// <summary>

@@ -86,7 +86,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             {
                 var path = this.ComputeTreePath(existingItem);
                 await this.ExpandAllRows(path);
-                await this.JsRuntime.InvokeVoidAsync("scrollToElement", $"row_{itemName}", "center", "center");
+                await this.JsRuntime.InvokeVoidAsync("scrollToElement", $"row_{existingItem.ThingId}", "center", "center");
             }
         }
 
@@ -187,7 +187,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             row.Expandable = this.ViewModel.HasChildren(row.Data);
             row.Attributes["class"] = this.ViewModel.IsVisible(row.Data) ? string.Empty : "invisible-row";
-            row.Attributes["id"] = $"row_{row.Data.Id}";
+            row.Attributes["id"] = $"row_{row.Data.ThingId}";
         }
 
         /// <summary>
@@ -226,7 +226,8 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             while (currentItem.ContainerId != Guid.Empty)
             {
                 var existingParent = this.ViewModel.GetAvailablesRows().OfType<ElementBaseRowViewModel>()
-                    .FirstOrDefault(x => x.ThingId == currentItem.ContainerId || x.ElementDefinitionId == currentItem.ContainerId);
+                        .FirstOrDefault(x => (x.ThingId == currentItem.ContainerId || x.ElementDefinitionId == currentItem.ContainerId) &&
+                                             this.ViewModel.LoadChildren(x).Any(p => p.ThingId == currentItem.ThingId));
 
                 if (existingParent != null)
                 {

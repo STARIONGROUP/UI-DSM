@@ -223,6 +223,7 @@ namespace UI_DSM.Server.Modules
             var identityResult = await manager.CreateEntityBasedOnTemplate(template, review);
             this.HandleOperationResult(requestResponse, context.Response, identityResult, 201, deepLevel);
             await context.Response.Negotiate(requestResponse);
+            await context.Response.CompleteAsync();
 
             if (identityResult.Succeeded)
             {
@@ -299,6 +300,7 @@ namespace UI_DSM.Server.Modules
             var identityResults = await manager.CreateEntityBasedOnTemplates(templates, review);
             this.HandleOperationResult(requestResponse, context.Response, identityResults, 201, deepLevel);
             await context.Response.Negotiate(requestResponse);
+            await context.Response.CompleteAsync();
 
             if (identityResults.Succeeded)
             {

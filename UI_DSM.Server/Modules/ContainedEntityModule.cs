@@ -168,7 +168,8 @@ namespace UI_DSM.Server.Modules
             var identityResult = await manager.CreateEntity(entity);
             this.HandleOperationResult(requestResponse, context.Response, identityResult, 201, deepLevel);
             await context.Response.Negotiate(requestResponse);
-            
+            await context.Response.CompleteAsync();
+
             if (identityResult.Succeeded)
             {
                 await searchService.IndexData((TEntityDto)identityResult.Entity.ToDto());
@@ -227,6 +228,7 @@ namespace UI_DSM.Server.Modules
                 context.Response.StatusCode = 500;
             }
 
+            await context.Response.CompleteAsync();
             await searchService.DeleteIndexedData(entity.ToDto());
 
             foreach (var otherEntity in otherEntitiesToUnindex)

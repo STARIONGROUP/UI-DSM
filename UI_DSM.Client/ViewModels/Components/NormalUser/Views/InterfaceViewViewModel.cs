@@ -397,8 +397,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public override List<IHaveAnnotatableItemRowViewModel> GetAvailablesRows()
         {
             var rows = new List<IHaveAnnotatableItemRowViewModel>();
-            rows.AddRange(this.Interfaces);
-            rows.AddRange(this.Products);
+            rows.AddRange(this.allInterfaces);
+            rows.AddRange(this.allProducts);
             rows.AddRange(this.allPorts);
             return rows;
         }
