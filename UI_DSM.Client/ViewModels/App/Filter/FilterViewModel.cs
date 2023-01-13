@@ -151,9 +151,10 @@ namespace UI_DSM.Client.ViewModels.App.Filter
         /// <param name="filters">The collection of <see cref="FilterDto" /></param>
         public void UpdateFilters(List<FilterDto> filters)
         {
-            foreach (var filterDto in filters.Where(x => this.SelectedFilters.ContainsKey(x.ClassKind)))
+            foreach (var filterDto in filters.Where(x => this.SelectedFilters.ContainsKey(Enum.Parse<ClassKind>(x.ClassKind))))
             {
-                var rows = this.SelectedFilters[this.SelectedFilterModel.ClassKind];
+                var classKind = Enum.Parse<ClassKind>(filterDto.ClassKind);
+                var rows = this.SelectedFilters[classKind];
 
                 foreach (var filterRow in rows)
                 {

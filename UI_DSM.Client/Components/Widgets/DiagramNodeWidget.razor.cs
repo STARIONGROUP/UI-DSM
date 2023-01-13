@@ -127,8 +127,8 @@ namespace UI_DSM.Client.Components.Widgets
                 var cos = Math.Cos(t);
                 var sin = Math.Sin(t);
 
-                var x = p + p * (Math.Abs(cos) * cos + Math.Abs(sin) * sin);
-                var y = q + q * (Math.Abs(cos) * cos - Math.Abs(sin) * sin);
+                var x = Math.Round(p + p * (Math.Abs(cos) * cos + Math.Abs(sin) * sin));
+                var y = Math.Round(q + q * (Math.Abs(cos) * cos - Math.Abs(sin) * sin));
 
                 this.points.Add(new Point(x, y));
 

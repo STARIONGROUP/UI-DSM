@@ -13,8 +13,6 @@
 
 namespace UI_DSM.Shared.DTO.Common
 {
-    using CDP4Common.CommonData;
-
     /// <summary>
     ///     Common DTO used to save to all the diagram link configuration
     /// </summary>

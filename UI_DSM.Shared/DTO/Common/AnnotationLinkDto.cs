@@ -13,8 +13,6 @@
 
 namespace UI_DSM.Shared.DTO.Common
 {
-    using CDP4Common.CommonData;
-
     using UI_DSM.Shared.Models;
 
     /// <summary>

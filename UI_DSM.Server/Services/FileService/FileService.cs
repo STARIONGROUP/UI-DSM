@@ -186,5 +186,15 @@ namespace UI_DSM.Server.Services.FileService
         {
             return Path.IsPathFullyQualified(fileName) ? fileName : Path.Combine(this.mainPath, fileName);
         }
+
+        /// <summary>
+        ///     Retrieves the full path of a Directory
+        /// </summary>
+        /// <param name="directoryName">The directory name</param>
+        /// <returns>The full path</returns>
+        public string GetDirectoryPath(string directoryName)
+        {
+            return Path.Combine(this.mainPath,directoryName);
+        }
     }
 }

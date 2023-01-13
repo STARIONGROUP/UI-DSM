@@ -17,16 +17,16 @@ services:
     restart: unless-stopped
   search:
     container_name: uidsm_search
-    image: gitlab.esa.int:4567/rhea-generic-platform/rhea-generic-platform/gp-search-service
+    image: rheagroup/ui-dsm-search-service:latest
     environment:
       - Meilisearch__host=${MEILI_HOST:-http://uidsm_meilisearch:7700}
       - Meilisearch__key=${MEILI_MASTER_KEY:-masterkey}
       - MessageBroker__host=uidsm_rabbitmq
       - MessageBroker__port=5672
-    volumes:
-      - './searchlibrary:/app/Plugins'
     networks:
       - uidsm_net
+    volumes:
+      - 'searchlibrary:/app/Plugins'
     ports:
       - 2222:80
     restart: unless-stopped

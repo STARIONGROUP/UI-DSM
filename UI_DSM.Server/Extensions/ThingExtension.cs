@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------
 // <copyright file="ThingExtension.cs" company="RHEA System S.A.">
-//  Copyright (c) 2022 RHEA System S.A.
+//  Copyright (c) 2023 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
 // 
@@ -11,14 +11,14 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Shared.Extensions
+namespace UI_DSM.Server.Extensions
 {
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
     using CDP4Common.SiteDirectoryData;
 
     /// <summary>
-    ///     Extension class for <see cref="Thing" /> object
+    ///     Extension class for <see cref="Thing" />
     /// </summary>
     public static class ThingExtension
     {
@@ -55,8 +55,8 @@ namespace UI_DSM.Shared.Extensions
 
                 foreach (ParameterTypeComponent parameterTypeComponent in components)
                 {
-                    things.AddRange(parameterTypeComponent.QueryReferencedThingsDeep()); 
-                    things.AddRange(parameterTypeComponent.QueryContainedThingsDeep()); 
+                    things.AddRange(parameterTypeComponent.QueryReferencedThingsDeep());
+                    things.AddRange(parameterTypeComponent.QueryContainedThingsDeep());
                 }
             }
 
@@ -107,6 +107,16 @@ namespace UI_DSM.Shared.Extensions
 
             things = collectionSelect(iteration);
             return true;
+        }
+
+        /// <summary>
+        ///     Distincts a collection of <see cref="Thing" /> by its <see cref="Thing.Iid" />
+        /// </summary>
+        /// <param name="things">The collection of <see cref="Thing" /></param>
+        /// <returns>The distincted collection</returns>
+        public static List<Thing> DistinctById(this IEnumerable<Thing> things)
+        {
+            return things.DistinctBy(x => x.Iid).ToList();
         }
     }
 }

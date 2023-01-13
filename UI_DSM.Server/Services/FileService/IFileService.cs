@@ -80,5 +80,12 @@ namespace UI_DSM.Server.Services.FileService
         /// <param name="fileName">The filename</param>
         /// <returns>The full path</returns>
         string GetFullPath(string fileName);
+
+        /// <summary>
+        ///     Retrieves the full path of a Directory
+        /// </summary>
+        /// <param name="directoryName">The directory name</param>
+        /// <returns>The full path</returns>
+        string GetDirectoryPath(string directoryName);
     }
 }

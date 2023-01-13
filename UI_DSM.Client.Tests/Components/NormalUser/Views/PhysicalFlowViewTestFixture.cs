@@ -562,17 +562,17 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                     {
                         new ()
                         {
-                            ClassKind = ClassKind.DomainOfExpertise,
+                            ClassKind = ClassKind.DomainOfExpertise.ToString(),
                             SelectedFilters = new List<Guid>(this.viewModel.FilterViewModel.SelectedFilters[ClassKind.DomainOfExpertise].Select(x => x.DefinedThing.Iid))
                         },
                         new()
                         {
-                            ClassKind = ClassKind.ElementDefinition,
+                            ClassKind = ClassKind.ElementDefinition.ToString(),
                             SelectedFilters = new List<Guid>(this.viewModel.FilterViewModel.SelectedFilters[ClassKind.ElementDefinition].Select(x => x.DefinedThing.Iid))
                         },
                         new()
                         {
-                            ClassKind = ClassKind.Category,
+                            ClassKind = ClassKind.Category.ToString(),
                             SelectedFilters = new List<Guid>(this.viewModel.FilterViewModel.SelectedFilters[ClassKind.Category].Select(x => x.DefinedThing.Iid))
                         }
                     }

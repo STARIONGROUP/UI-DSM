@@ -23,6 +23,7 @@ namespace UI_DSM.Server.Tests.Services
 
     using RichardSzalay.MockHttp;
 
+    using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Services.SearchService;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Extensions;
