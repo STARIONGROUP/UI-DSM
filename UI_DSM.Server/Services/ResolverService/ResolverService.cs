@@ -210,7 +210,8 @@ namespace UI_DSM.Server.Services.ResolverService
             {
                 if (await this.thingManager.GetThing(commonBaseSearchDto, model) is { } thing)
                 {
-                    foreach (var review in reviews.Where(x => x.Item1.Artifacts.Any(a => a.Id == model.Id)))
+                    foreach (var review in reviews.Where(x => x.Item1.Artifacts.OfType<Model>()
+                                 .Any(a => a.IterationId == model.IterationId)))
                     {
                         results.Add(new SearchResultDto
                         {
