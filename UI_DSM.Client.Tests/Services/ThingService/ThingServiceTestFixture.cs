@@ -168,5 +168,15 @@ namespace UI_DSM.Client.Tests.Services.ThingService
             things = await this.thingService.GetThings(this.projectId, new Model());
             Assert.That(things, Is.Empty);
         }
+
+        [Test]
+        public void VerifyIndexIteration()
+        {
+            var guids = new List<Guid>();
+
+            Assert.That(() => this.thingService.IndexIteration(this.projectId, guids), Throws.Nothing);
+            guids.Add(Guid.NewGuid());
+            Assert.That(() => this.thingService.IndexIteration(this.projectId, guids), Throws.Nothing);
+        }
     }
 }

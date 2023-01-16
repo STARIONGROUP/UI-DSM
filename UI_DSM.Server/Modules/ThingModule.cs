@@ -94,7 +94,8 @@ namespace UI_DSM.Server.Modules
                 var response = await searchService.SearchAfter(model.IterationId.ToString());
                 var searchDtos = jsonService.Deserialize<IEnumerable<CommonBaseSearchDto>>(response);
 
-                if (searchDtos.Any())
+                if (searchDtos.Any(x => string.Equals(nameof(Iteration), x.Type, StringComparison.InvariantCultureIgnoreCase)
+                    && x.Id == model.IterationId))
                 {
                     models.Remove(model);
                 }

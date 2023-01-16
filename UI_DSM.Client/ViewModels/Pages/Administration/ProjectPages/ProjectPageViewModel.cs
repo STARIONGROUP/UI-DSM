@@ -75,6 +75,11 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         private bool isOnCreationMode;
 
         /// <summary>
+        /// The <see cref="IThingService"/>
+        /// </summary>
+        private readonly IThingService thingService;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectPageViewModel" /> class.
         /// </summary>
         /// <param name="projectService">The <see cref="IProjectService" /></param>
@@ -89,6 +94,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
             this.projectService = projectService;
             this.participantService = participantService;
             this.artifactService = artifactService;
+            this.thingService = thingService;
 
             this.ParticipantCreationViewModel = new ParticipantCreationViewModel(this.participantService, roleService, thingService)
             {
@@ -219,6 +225,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
                 if (uploadModelResponse.IsRequestSuccessful)
                 {
                     this.ProjectDetailsViewModel.Project.Artifacts.Add(uploadModelResponse.Entity);
+                    await this.thingService.IndexIteration(this.ProjectDetailsViewModel.Project.Id, new List<Guid>{uploadModelResponse.Entity.Id});
                     this.IsOnCometConnectionMode = false;
                 }
                 else

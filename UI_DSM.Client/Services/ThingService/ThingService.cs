@@ -155,6 +155,25 @@ namespace UI_DSM.Client.Services.ThingService
         }
 
         /// <summary>
+        ///     Index an Iteration
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="modelsId">A collection of <see cref="Guid" /> for <see cref="Model" /></param>
+        /// <returns>A <see cref="Task"/></returns>
+        public async Task IndexIteration(Guid projectId, IEnumerable<Guid> modelsId)
+        {
+            var models = modelsId.ToList();
+
+            if (!models.Any())
+            {
+                return;
+            }
+
+            this.ComputeMainRoute(projectId, models);
+            await this.HttpClient.PutAsync(this.MainRoute, null);
+        }
+
+        /// <summary>
         ///     Computes the <see cref="ServiceBase.MainRoute" /> to include custom <see cref="Guid" />
         /// </summary>
         /// <param name="projectId">The <see cref="Project" /> <see cref="Guid" /></param>
