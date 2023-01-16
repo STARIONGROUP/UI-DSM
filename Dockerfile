@@ -10,6 +10,7 @@ COPY ["UI_DSM.Shared", "UI_DSM.Shared/"]
 RUN --mount=type=secret,id=envConfig . /run/secrets/envConfig \
  && dotnet nuget add source https://nuget.devexpress.com/api -n DXFeed -u DevExpress -p ${DEVEXPRESS_NUGET_KEY} --store-password-in-clear-text \ 
  && dotnet nuget add source https://gitlab.esa.int/api/v4/projects/7524/packages/nuget/index.json -n GPFeed -u ${GP_NUGET_USER} -p ${GP_NUGET_TOKEN} --store-password-in-clear-text \ 
+ && dotnet nuget add source https://nuget.pkg.github.com/RHEAGROUP/index.json -n RHEAGROUPFeed -u ${RHEA_USER} -p ${RHEA_TOKEN} --store-password-in-clear-text \ 
  && dotnet restore "UI_DSM.Server/UI_DSM.Server.csproj"
  
 WORKDIR "/src/UI_DSM.Server"
