@@ -16,16 +16,19 @@ namespace UI_DSM.Server.Services.SearchService
     using System.Text;
     using System.Text.Json;
 
-    using CDP4Common.CommonData;
-    using CDP4Common.EngineeringModelData;
-
     using CometSearch.Common;
+    using CometSearch.Common.SearchDto;
 
     using GP.SearchService.SDK.Definitions;
 
     using Microsoft.AspNetCore.WebUtilities;
 
     using UI_DSM.Client.Extensions;
+
+    using BinaryRelationship = CDP4Common.EngineeringModelData.BinaryRelationship;
+    using ElementDefinition = CDP4Common.EngineeringModelData.ElementDefinition;
+    using Requirement = CDP4Common.EngineeringModelData.Requirement;
+    using Thing = CDP4Common.CommonData.Thing;
 
     /// <summary>
     ///     Service that enable the indexing and searching of UI-DSM data also than 10-25 data
@@ -114,9 +117,9 @@ namespace UI_DSM.Server.Services.SearchService
         }
 
         /// <summary>
-        ///     Indexes an <see cref="Iteration" />
+        ///     Indexes an <see cref="CDP4Common.EngineeringModelData.Iteration" />
         /// </summary>
-        /// <param name="things">A collection of <see cref="Thing" /> that is contained into an <see cref="Iteration" /></param>
+        /// <param name="things">A collection of <see cref="CDP4Common.CommonData.Thing" /> that is contained into an <see cref="CDP4Common.EngineeringModelData.Iteration" /></param>
         /// <returns>A <see cref="Task" /></returns>
         public async Task IndexIteration(IEnumerable<Thing> things)
         {
@@ -132,6 +135,11 @@ namespace UI_DSM.Server.Services.SearchService
             await this.IndexData(elementDefinitions);
             await this.IndexData(relationShips);
             await this.IndexData(hyperlinksDto);
+
+            await this.IndexData(new Iteration()
+            {
+                Id = things.OfType<CDP4Common.EngineeringModelData.Iteration>().First().Iid
+            });
         }
     }
 }

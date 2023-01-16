@@ -150,13 +150,15 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.searchService.Verify(x => x.SearchAfter(It.IsAny<string>()), Times.Never);
 
+            var iterationId = Guid.NewGuid();
+
             this.artifactManager.Setup(x => x.FindEntityWithContainer(modelId)).ReturnsAsync(new Model(modelId)
             {
-                IterationId = Guid.NewGuid(),
+                IterationId = iterationId,
                 EntityContainer = new Project(projectId)
             });
 
-            var searchResult = $"[{{\"@Type\":\"ElementDefinition\", \"@Id\":\"{Guid.NewGuid()}\"}}]";
+            var searchResult = $"[{{\"@Type\":\"Iteration\", \"@Id\":\"{iterationId}\"}}]";
             var streamReader = new StringContent(searchResult, Encoding.UTF8);
 
             this.searchService.Setup(x => x.SearchAfter(It.IsAny<string>())).ReturnsAsync(streamReader.ReadAsStream);

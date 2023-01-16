@@ -58,5 +58,13 @@ namespace UI_DSM.Client.Services.ThingService
         /// <param name="currentView">The current <see cref="View" /></param>
         /// <returns>A collection of <see cref="Thing" /></returns>
         Task<IEnumerable<Thing>> GetThingsByView(Guid projectId, IEnumerable<Guid> modelsId, View currentView);
+
+        /// <summary>
+        ///     Index an Iteration
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="modelsId">A collection of <see cref="Guid" /> for <see cref="Model" /></param>
+        /// <returns>A <see cref="Task"/></returns>
+        Task IndexIteration(Guid projectId, IEnumerable<Guid> modelsId);
     }
 }
