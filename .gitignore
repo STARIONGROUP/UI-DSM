@@ -352,3 +352,5 @@ MigrationBackup/
 
 Storage/
 .env
+/UI_DSM.Server/Reports/Generic/DSReport.rep4
+/UI_DSM.Server/Reports/Generic/MassBudget-ENVISION-Summary.rep4

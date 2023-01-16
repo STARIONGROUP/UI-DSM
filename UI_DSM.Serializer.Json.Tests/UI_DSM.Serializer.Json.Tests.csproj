@@ -21,7 +21,9 @@
     <PackageReference Include="coverlet.msbuild" Version="3.1.2">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>  </ItemGroup>
+    </PackageReference>  
+    <PackageReference Include="System.Security.Permissions" Version="6.0.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\UI_DSM.Serializer.Json\UI_DSM.Serializer.Json.csproj" />

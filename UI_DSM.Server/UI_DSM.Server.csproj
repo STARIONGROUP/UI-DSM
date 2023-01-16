@@ -8,18 +8,23 @@
 
   <ItemGroup>
     <PackageReference Include="Carter" Version="6.1.1" />
+    <PackageReference Include="CDP4Reporting-CE" Version="1.0.0-3873713308-61-1-PR-248" />
+    <PackageReference Include="DevExpress.AspNetCore.Reporting" Version="22.2.3" />
+    <PackageReference Include="DevExpress.Reporting.Core" Version="22.2.3" />
     <PackageReference Include="Feather.Blazor" Version="1.0.1" />
     <PackageReference Include="CDP4JsonFileDal-CE" Version="8.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.7" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.7">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NLog" Version="4.7.10" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.7" />
-    <PackageReference Include="System.Security.Permissions" Version="5.0.0" />
+    <PackageReference Include="System.Security.Permissions" Version="6.0.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
 </ItemGroup>
 
 <ItemGroup>
@@ -36,6 +41,9 @@
 
 <ItemGroup>
   <None Update="lib\CometSearch.Common.dll">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </None>
+  <None Update="Reports\Generic\MassBudgetEquipment.rep4">
     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
   </None>
 </ItemGroup>

@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------------------------------------
 // <copyright file="Program.cs" company="RHEA System S.A.">
-//  Copyright (c) 2022 RHEA System S.A.
+//  Copyright (c) 2023 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
 // 
@@ -21,6 +21,10 @@ namespace UI_DSM.Server
 
     using CDP4JsonSerializer;
 
+    using DevExpress.AspNetCore;
+    using DevExpress.AspNetCore.Reporting;
+    using DevExpress.XtraReports.Services;
+
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
@@ -33,9 +37,11 @@ namespace UI_DSM.Server
     using UI_DSM.Server.Context;
     using UI_DSM.Server.Extensions;
     using UI_DSM.Server.Modules;
+    using UI_DSM.Server.Reporting;
     using UI_DSM.Server.Services.AboutService;
     using UI_DSM.Server.Services.CometService;
     using UI_DSM.Server.Services.FileService;
+    using UI_DSM.Server.Services.ReportingService;
     using UI_DSM.Server.Services.ResolverService;
     using UI_DSM.Server.Services.RouteParserService;
     using UI_DSM.Server.Services.SearchService;
@@ -65,6 +71,8 @@ namespace UI_DSM.Server
             // Add services to the container.
 
             builder.Services.AddCarter();
+            builder.Services.AddControllersWithViews();
+
             builder.Services.AddAuthorization();
 
             builder.Services.AddCors(policy =>
@@ -89,11 +97,15 @@ namespace UI_DSM.Server
             builder.Services.AddSingleton<ICometService, CometService>();
             builder.Services.AddScoped<IResolverService, ResolverService>();
             var dateTime = DateTime.Now;
-            builder.Services.AddSingleton<IAboutService, AboutService>( _ => new AboutService(dateTime));
+            builder.Services.AddSingleton<IAboutService, AboutService>(_ => new AboutService(dateTime));
+            builder.Services.AddScoped<IReportingService, ReportingService>();
             builder.Services.AddScoped<IRouteParserService, RouteParserService>();
             builder.Services.AddSingleton<IFileService, FileService>(_ => new FileService(builder.Configuration["StoragePath"]));
+
+            builder.Services.AddDevExpressControls();
+            builder.Services.AddScoped<IReportProvider, ReportProvider>();
             var searchEngineUrl = builder.Configuration["SearchEngine"];
-            
+
             var searchHttp = new HttpClient()
             {
                 BaseAddress = new Uri(searchEngineUrl)
@@ -101,10 +113,7 @@ namespace UI_DSM.Server
 
             builder.Services.AddSingleton<ISearchService, SearchService>(_ => new SearchService(searchHttp));
 
-            builder.Services.AddRouting(options =>
-            {
-                options.ConstraintMap.Add("EnumerableOfGuid", typeof(EnumerableOfGuidRouteConstraint));
-            });
+            builder.Services.AddRouting(options => { options.ConstraintMap.Add("EnumerableOfGuid", typeof(EnumerableOfGuidRouteConstraint)); });
 
             RegisterManagers(builder);
             RegisterModules();
@@ -149,6 +158,9 @@ namespace UI_DSM.Server
             app.UseCors("CorsPolicy");
             app.UseHttpsRedirection();
 
+            app.UseReporting(builder => { });
+            app.UseDevExpressControls();
+
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 
@@ -157,8 +169,12 @@ namespace UI_DSM.Server
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapCarter();
+            app.MapControllers();
 
             app.MapFallbackToFile("index.html");
+
+            var contentPath = app.Environment.ContentRootPath;
+            AppDomain.CurrentDomain.SetData("DXResourceDirectory", contentPath);
 
             LogAppStart();
 
