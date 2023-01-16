@@ -51,7 +51,7 @@ $ ./solutionFolder# docker push rheagroup/ui-dsm:<version>
 ```
 
 ### Development Environment
-Under a development environment, running the 'docker-composer-dev.yml' compose file is enough
+Under a development environment, running the 'docker-compose-dev.yml' compose file is enough
 
 ## Build Status
 

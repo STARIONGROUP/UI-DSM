@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------
 // <copyright file="ICometService.cs" company="RHEA System S.A.">
-//  Copyright (c) 2022 RHEA System S.A.
+//  Copyright (c) 2023 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
 // 
@@ -97,5 +97,21 @@ namespace UI_DSM.Server.Services.CometService
         /// <param name="iteration">The <see cref="Iteration" /></param>
         /// <returns>The collection of <see cref="DomainOfExpertise" /></returns>
         IEnumerable<DomainOfExpertise> GetDomainOfExpertises(Iteration iteration);
+
+        /// <summary>
+        ///     Gets the <see cref="ISession" /> contained into a <see cref="Model" />
+        /// </summary>
+        /// <param name="annexc3FileName">The name of the Annex C3 file</param>
+        /// <param name="iterationId">The <see cref="Iteration" />'s Id.</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="ISession" /></returns>
+        Task<ISession> GetSession(string annexc3FileName, Guid iterationId);
+
+        /// <summary>
+        ///     Gets the <see cref="Iteration" /> contained into a <see cref="Model" />
+        /// </summary>
+        /// <param name="annexc3FileName">The name of the Annex C3 file</param>
+        /// <param name="iterationId">The <see cref="Iteration" />'s Id.</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Iteration" /></returns>
+        Task<Iteration> GetIteration(string annexc3FileName, Guid iterationId);
     }
 }
