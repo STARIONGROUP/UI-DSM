@@ -373,3 +373,41 @@ div.invisible {
 .avatar-list li:last-child {
   margin-right: 0;
 }
+
+.app-breadcrumb svg:last-child { display: none; }
+
+
+.highlight-element {
+  animation: pulse 1s infinite;
+}
+
+.highlight-element svg{
+  animation: pulseIcon 1s infinite;
+}
+
+@keyframes pulseIcon {
+	0% {
+    color: var(--colors-primary-500);
+	}
+
+	100% {
+    color: var(--colors-primary-700);
+	}
+}
+
+@keyframes pulse {
+	0% {
+    background: var(--colors-primary-50);
+    color: var(--colors-primary-500);
+	}
+
+	50% {
+    background: var(--colors-primary-200);
+    color: var(--colors-primary-700);
+	}
+
+	100% {
+    background: var(--colors-primary-50);
+    color: var(--colors-primary-500);
+	}
+}
