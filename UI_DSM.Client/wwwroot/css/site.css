@@ -411,3 +411,63 @@ div.invisible {
     color: var(--colors-primary-500);
 	}
 }
+
+.task-page .dx-blazor-reporting .dxrd-designer-wrapper .dx-shadow-top {
+  box-shadow: none;
+}
+
+.task-page .dx-blazor-reporting .dx-designer-viewport .dxd-back-secondary-invariant {
+  background-color: var(--colors-gray-50);
+}
+
+.task-page .dx-blazor-reporting .dx-designer-viewport .dxrd-disabled-button,
+.task-page .dx-blazor-reporting .dx-state-disabled.dx-widget, .dx-blazor-reporting .dx-state-disabled .dx-widget {
+  opacity: 1;
+}
+
+
+.task-page .dx-blazor-reporting .dx-designer-viewport .dxrd-disabled-button svg,
+.task-page .dx-blazor-reporting .dx-state-disabled.dx-widget, .dx-blazor-reporting .dx-state-disabled .dx-widget svg{
+  fill: red;
+  color: red;
+}
+
+.task-page .dxd-icon-fill {
+  fill: var(--colors-primary-800);
+}
+
+.task-page .dx-blazor-reporting .dx-rtl .dxrd-designer-wrapper .dx-shadow.dx-shadow-left,
+.task-page .dx-blazor-reporting .dxrd-designer-wrapper .dx-shadow.dx-shadow-right {
+  box-shadow: none;
+}
+
+.task-page .dx-blazor-reporting .dx-designer-viewport .dxd-back-contrast,
+.task-page .dx-blazor-reporting .dx-designer-viewport .dxd-back-highlighted.dxd-state-active:hover:not(.dxd-state-no-hover) {
+  background-color: var(--colors-gray-50);
+}
+
+.task-page .dx-blazor-reporting .dx-designer-viewport .dxd-back-contrast .dxd-back-highlighted.dxd-state-active,
+.task-page .dx-blazor-reporting .dx-designer-viewport .dxd-back-contrast .dxd-back-highlighted.dxd-state-active:hover {
+  background-color: var(--colors-gray-100);
+}
+
+.task-page .dx-blazor-reporting .dx-designer-viewport .dx-menu-item.dx-state-focused .dxd-icon-fill,
+.task-page .dx-blazor-reporting .dx-designer-viewport .dxd-back-contrast .dxd-back-highlighted:hover .dxd-icon-fill,
+.task-page .dx-blazor-reporting .dx-designer-viewport .dxd-back-contrast .dxd-icon-fill,
+.task-page .dx-blazor-reporting .dx-designer-viewport .dxd-state-active .dxd-icon-fill {
+  fill: var(--colors-primary-700);
+}
+
+.budget-view {
+  height: 100%;
+  display: grid;
+  gap: var(--spacing-2);
+  grid-template-rows: auto 1fr;
+  align-items: flex-start;
+  padding-top: var(--spacing-4);
+}
+
+.budget-report-selector {
+  display: flex;
+  gap: var(--spacing-2);
+}

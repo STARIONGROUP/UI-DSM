@@ -1,29 +1,31 @@
 ﻿<!--------------------------------------------------------------------------------------------------------
 // BudgetView.razor
 // Copyright (c) 2023 RHEA System S.A.
-// 
+//
 // Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
-// 
-// This file is part of UI-DSM. 
+//
+// This file is part of UI-DSM.
 // The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @inherits GenericBaseView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IBudgetViewViewModel>
 
 <LoadingComponent IsLoading="this.ViewModel is null">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-auto">Select Report Definition:</div>
-            <div class="col"><DxComboBox Data="@this.ViewModel.ReportNames"
-                        @bind-Value="@this.ViewModel.ReportName"
-                        CssClass="cw-480"/></div>
-        </div>
+    <div class="budget-view">
+        <label class="budget-report-selector">
+            <span>Select Report Definition:</span>
+            <DxComboBox Data="@this.ViewModel.ReportNames"
+                    @bind-Value="@this.ViewModel.ReportName"
+                    CssClass="cw-480"/>
+        </label>
+
+        <DxWasmDocumentViewer ReportName="@this.ViewModel.ReportDtoAsString" Height="100%" Width="100%">
+            <DxWasmDocumentViewerRequestOptions InvokeAction="DXXRDV" />
+            <DxDocumentViewerCallbacks
+                BeforeRender="ReportingViewerCustomization.onBeforeRender"
+                PreviewClick="ReportingViewerCustomization.onPreviewClick"/>
+        </DxWasmDocumentViewer>
     </div>
-    <DxWasmDocumentViewer ReportName="@this.ViewModel.ReportDtoAsString" Height="100%" Width="100%">
-        <DxWasmDocumentViewerRequestOptions InvokeAction="DXXRDV" />
-        <DxDocumentViewerCallbacks 
-            BeforeRender="ReportingViewerCustomization.onBeforeRender"
-            PreviewClick="ReportingViewerCustomization.onPreviewClick"/>
-    </DxWasmDocumentViewer>
 </LoadingComponent>
+
