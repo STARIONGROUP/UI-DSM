@@ -23,13 +23,6 @@ namespace UI_DSM.Server.Services.ReportingService
     public interface IReportingService
     {
         /// <summary>
-        ///     Retrieves a list of available Reports
-        /// </summary>
-        /// <param name="modelId">The engineering model's id</param>
-        /// <returns>A <see cref="List{T}"/> of type <see cref="string"/> that contains available report locations</returns>
-        List<string> GetAvailableReports(Guid modelId);
-
-        /// <summary>
         ///     Retrieves the report information
         /// </summary>
         /// <param name="reportLocation"></param>

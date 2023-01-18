@@ -68,7 +68,10 @@ namespace UI_DSM.Client.Pages.Administration.ProjectPages
 
             this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnCometConnectionMode)
                 .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
-                
+
+            this.disposables.Add(this.WhenAnyValue(x => x.ViewModel.IsOnBudgetUploadMode)
+                .Subscribe(_ => this.InvokeAsync(this.StateHasChanged)));
+
             this.disposables.Add(this.ViewModel);
 
             await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId));

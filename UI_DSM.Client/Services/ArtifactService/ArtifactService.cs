@@ -55,6 +55,24 @@ namespace UI_DSM.Client.Services.ArtifactService
         }
 
         /// <summary>
+        ///     Tries to upload a <see cref="BudgetTemplate" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /> where the <see cref="Model" /> will belongs</param>
+        /// <param name="budgetTemplateName">The name of the budget</param>
+        /// <param name="givenFileName">The name of the given file by the server</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{BudgetTemplate}" /></returns>
+        public Task<EntityRequestResponse<BudgetTemplate>> UploadBudget(Guid projectId, string budgetTemplateName, Guid givenFileName)
+        {
+            var budgetTemplate = new BudgetTemplate()
+            {
+                FileName = $"{givenFileName}.rep4",
+                BudgetName = budgetTemplateName
+            };
+
+            return this.CreateArtifact(projectId, budgetTemplate);
+        }
+
+        /// <summary>
         ///     Uploads a File into the server and creates the corresponding <see cref="Artifact" />
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /> where the <see cref="Artifact" /> will belongs to</param>

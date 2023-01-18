@@ -20,6 +20,7 @@ namespace UI_DSM.Server.Tests.Managers
     using NUnit.Framework;
 
     using UI_DSM.Server.Managers.ArtifactManager;
+    using UI_DSM.Server.Managers.BudgetTemplateManager;
     using UI_DSM.Server.Managers.ModelManager;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Models;
@@ -30,12 +31,14 @@ namespace UI_DSM.Server.Tests.Managers
     {
         private ArtifactManager manager;
         private Mock<IModelManager> modelManager;
+        private Mock<IBudgetTemplateManager> budgetManager;
 
         [SetUp]
         public void Setup()
         {
             this.modelManager = new Mock<IModelManager>();
-            this.manager = new ArtifactManager(this.modelManager.Object);
+            this.budgetManager = new Mock<IBudgetTemplateManager>();
+            this.manager = new ArtifactManager(this.modelManager.Object, this.budgetManager.Object);
             Program.RegisterEntities();
         }
 

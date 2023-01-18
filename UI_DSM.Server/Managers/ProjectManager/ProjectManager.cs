@@ -22,6 +22,7 @@ namespace UI_DSM.Server.Managers.ProjectManager
     using UI_DSM.Server.Managers.ParticipantManager;
     using UI_DSM.Server.Managers.ReviewCategoryManager;
     using UI_DSM.Server.Managers.ReviewManager;
+    using UI_DSM.Server.Services.FileService;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.DTO.Models;
     using UI_DSM.Shared.Enumerator;
@@ -58,6 +59,11 @@ namespace UI_DSM.Server.Managers.ProjectManager
         private readonly IReviewManager reviewManager;
 
         /// <summary>
+        /// The <see cref="IFileService"/>
+        /// </summary>
+        private readonly IFileService fileService;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectManager" /> class.
         /// </summary>
         /// <param name="context">The <see cref="DatabaseContext" /></param>
@@ -66,14 +72,17 @@ namespace UI_DSM.Server.Managers.ProjectManager
         /// <param name="annotationManager">The <see cref="IAnnotationManager" /></param>
         /// <param name="artifactManager">The <see cref="IArtifactManager" /></param>
         /// <param name="reviewCategoryManager">The <see cref="IReviewCategoryManager" /></param>
+        /// <param name="fileService">The <see cref="IFileService"/></param>
         public ProjectManager(DatabaseContext context, IParticipantManager participantManager, IReviewManager reviewManager,
-            IAnnotationManager annotationManager, IArtifactManager artifactManager, IReviewCategoryManager reviewCategoryManager) : base(context)
+            IAnnotationManager annotationManager, IArtifactManager artifactManager, IReviewCategoryManager reviewCategoryManager,
+            IFileService fileService) : base(context)
         {
             this.participantManager = participantManager;
             this.reviewManager = reviewManager;
             this.annotationManager = annotationManager;
             this.artifactManager = artifactManager;
             this.reviewCategoryManager = reviewCategoryManager;
+            this.fileService = fileService;
         }
 
         /// <summary>
@@ -209,6 +218,17 @@ namespace UI_DSM.Server.Managers.ProjectManager
         protected override void SetSpecificPropertiesBeforeCreate(Project entity)
         {
             entity.CreatedOn = DateTime.UtcNow;
+
+            var availableBudgets = this.fileService.GetGenericBudgets();
+
+            foreach (var availableBudget in availableBudgets)
+            {
+                entity.Artifacts.Add(new BudgetTemplate(Guid.NewGuid())
+                {
+                    BudgetName = availableBudget.displayName,
+                    FileName = availableBudget.filepath
+                });
+            }
         }
 
         /// <summary>

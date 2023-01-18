@@ -13,10 +13,12 @@
 
 namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
 {
+    using UI_DSM.Client.Components.Administration.BudgetManagement;
     using UI_DSM.Client.Components.Administration.ModelManagement;
     using UI_DSM.Client.Components.Administration.ParticipantManagement;
     using UI_DSM.Client.Components.Administration.ProjectManagement;
     using UI_DSM.Client.ViewModels.Components;
+    using UI_DSM.Client.ViewModels.Components.Administration.BudgetManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.ModelManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.ParticipantManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement;
@@ -63,6 +65,16 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         ICometUploadViewModel CometUploadViewModel { get; }
 
         /// <summary>
+        ///     Value indicating that the user wants to upload a budget template
+        /// </summary>
+        bool IsOnBudgetUploadMode { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IBudgetUploadViewModel" />
+        /// </summary>
+        IBudgetUploadViewModel BudgetUploadViewModel { get; set; }
+
+        /// <summary>
         ///     Method invoked when the component is ready to start, having received its
         ///     initial parameters from its parent in the render tree.
         ///     Override this method if you will perform an asynchronous operation and
@@ -81,5 +93,10 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         ///     Opens the <see cref="CometUpload" /> popup
         /// </summary>
         void OpenCometConnectionPopup();
+
+        /// <summary>
+        ///     Opens the <see cref="BudgetUpload" /> popup
+        /// </summary>
+        void OpenBudgetUploadPopup();
     }
 }

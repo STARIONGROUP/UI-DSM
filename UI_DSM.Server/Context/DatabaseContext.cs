@@ -116,6 +116,11 @@ namespace UI_DSM.Server.Context
         public virtual DbSet<ReviewCategory> ReviewCategories { get; set; }
 
         /// <summary>
+        ///     A <see cref="DbSet{TEntity}" /> of <see cref="BudgetTemplate" />
+        /// </summary>
+        public virtual DbSet<BudgetTemplate> BudgetTemplates { get; set; }
+
+        /// <summary>
         ///     Tries to validate an object
         /// </summary>
         /// <param name="instance">The <see cref="object" /> to validate</param>

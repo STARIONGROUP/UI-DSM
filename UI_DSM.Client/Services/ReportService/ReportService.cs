@@ -13,16 +13,18 @@
 
 namespace UI_DSM.Client.Services.ReportService
 {
+    using System.Net.Http.Headers;
+
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Forms;
 
     using UI_DSM.Client.Services.JsonService;
-    using UI_DSM.Shared.Enumerator;
-    using UI_DSM.Shared.Models;
+    using UI_DSM.Shared.DTO.CometData;
 
     /// <summary>
     ///     This <see cref="ReportService" /> provides capabilities to query report names for a specific Project
     /// </summary>
-    [Route("Reporting/{0}")]
+    [Route("Reporting")]
     public class ReportService : ServiceBase, IReportService
     {
         /// <summary>
@@ -35,23 +37,33 @@ namespace UI_DSM.Client.Services.ReportService
         }
 
         /// <summary>
-        ///     Gets a collection of report names that will be needed for the current <see cref="View" />
+        ///     Uploads a report
         /// </summary>
-        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
-        /// <returns>A collection of report names</returns>
-        public async Task<IEnumerable<string>> GetAvailableReports(Guid projectId)
+        /// <param name="budgetName">The name of the report</param>
+        /// <param name="browserFile">The <see cref="IBrowserFile" /></param>
+        /// <returns>A <see cref="Task" /> with the <see cref="CometAuthenticationResponse" /></returns>
+        public async Task<CometAuthenticationResponse> UploadReport(string budgetName, IBrowserFile browserFile)
         {
-            this.ComputeMainRoute(projectId);
-            var uri = this.MainRoute;
+            const int limitSize = 512000 * 2;
 
-            var response = await this.HttpClient.GetAsync(uri);
-
-            if (!response.IsSuccessStatusCode)
+            if (browserFile.Size > limitSize)
             {
-                return Enumerable.Empty<string>();
+                return new CometAuthenticationResponse
+                {
+                    Errors = new List<string>
+                    {
+                        $"The file size must not exceed {limitSize / 100}Kb"
+                    }
+                };
             }
 
-            return this.jsonService.Deserialize<IEnumerable<string>>(await response.Content.ReadAsStreamAsync());
+            var content = new MultipartFormDataContent();
+            var fileContent = new StreamContent(browserFile.OpenReadStream(limitSize));
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/x-zip-compressed");
+            content.Add(fileContent, "file", browserFile.Name);
+            var uri = $"{this.MainRoute}/Upload";
+            var response = await this.HttpClient.PostAsync(uri, content);
+            return this.jsonService.Deserialize<CometAuthenticationResponse>(await response.Content.ReadAsStreamAsync());
         }
     }
 }

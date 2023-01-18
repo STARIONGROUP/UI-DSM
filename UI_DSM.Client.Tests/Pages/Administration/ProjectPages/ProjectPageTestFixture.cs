@@ -13,12 +13,15 @@
 
 namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
 {
+    using AppComponents;
+
     using Bunit;
     using Bunit.TestDoubles;
 
     using CDP4Common.CommonData;
     using CDP4Common.SiteDirectoryData;
 
+    using Microsoft.AspNetCore.Components.Forms;
     using Microsoft.Extensions.DependencyInjection;
 
     using Moq;
@@ -31,10 +34,12 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
     using UI_DSM.Client.Services.Administration.ProjectService;
     using UI_DSM.Client.Services.Administration.RoleService;
     using UI_DSM.Client.Services.ArtifactService;
+    using UI_DSM.Client.Services.ReportService;
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.Tests.Helpers;
     using UI_DSM.Client.ViewModels.Components.Administration.ModelManagement;
     using UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages;
+    using UI_DSM.Shared.DTO.CometData;
     using UI_DSM.Shared.Enumerator;
     using UI_DSM.Shared.Models;
     using UI_DSM.Shared.Types;
@@ -53,6 +58,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
         private Mock<IArtifactService> artifactService;
         private Mock<ICometUploadViewModel> cometConnexionViewModel;
         private Mock<IThingService> thingService;
+        private Mock<IReportService> reportService;
 
         [SetUp]
         public void Setup()
@@ -65,9 +71,10 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
             this.cometConnexionViewModel = new Mock<ICometUploadViewModel>();
             this.artifactService = new Mock<IArtifactService>();
             this.thingService = new Mock<IThingService>();
+            this.reportService = new Mock<IReportService>();
 
             this.viewModel = new ProjectPageViewModel(this.projectService.Object, this.participantService.Object, this.roleService.Object, 
-                this.cometConnexionViewModel.Object, this.artifactService.Object, this.thingService.Object);
+                this.cometConnexionViewModel.Object, this.artifactService.Object, this.thingService.Object, this.reportService.Object);
 
             this.context.AddTestAuthorization();
             this.context.Services.AddSingleton(this.viewModel);
@@ -155,6 +162,46 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
             {
                 Assert.That(this.viewModel.IsOnCreationMode, Is.False);
                 Assert.That(project.Participants, Has.Count.EqualTo(2));
+            });
+
+            var uploadBudgetButton = renderer.FindComponents<AppButton>().Last();
+            await renderer.InvokeAsync(uploadBudgetButton.Instance.Click.InvokeAsync);
+            Assert.That(this.viewModel.IsOnBudgetUploadMode, Is.True);
+
+            this.reportService.Setup(x => x.UploadReport(It.IsAny<string>(), It.IsAny<IBrowserFile>()))
+                .ReturnsAsync(new CometAuthenticationResponse() { Errors = { "Failed to upload" } });
+
+            await renderer.InvokeAsync(this.viewModel.BudgetUploadViewModel.OnSubmit.InvokeAsync);
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.IsOnBudgetUploadMode, Is.True);
+                Assert.That(this.viewModel.ErrorMessageViewModel.Errors, Has.Count.EqualTo(1));
+            });
+
+            this.artifactService.Setup(x => x.UploadBudget(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>()))
+                .ReturnsAsync(EntityRequestResponse<BudgetTemplate>.Fail(new List<string> { "Already exist" }));
+
+            this.reportService.Setup(x => x.UploadReport(It.IsAny<string>(), It.IsAny<IBrowserFile>()))
+                .ReturnsAsync(new CometAuthenticationResponse() { IsRequestSuccessful = true});
+
+            await renderer.InvokeAsync(this.viewModel.BudgetUploadViewModel.OnSubmit.InvokeAsync);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.IsOnBudgetUploadMode, Is.True);
+                Assert.That(this.viewModel.ErrorMessageViewModel.Errors, Has.Count.EqualTo(1));
+            });
+
+            this.artifactService.Setup(x => x.UploadBudget(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>()))
+                .ReturnsAsync(EntityRequestResponse<BudgetTemplate>.Success(new BudgetTemplate()));
+
+            await renderer.InvokeAsync(this.viewModel.BudgetUploadViewModel.OnSubmit.InvokeAsync);
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(this.viewModel.IsOnBudgetUploadMode, Is.False);
+                Assert.That(this.viewModel.ProjectDetailsViewModel.Project.Artifacts.OfType<BudgetTemplate>().ToList(), Has.Count.EqualTo(1));
             });
         }
     }

@@ -35,15 +35,15 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
         public IEnumerable<Model> ProjectModels { get; set; } = new List<Model>();
 
         /// <summary>
-        ///     The <see cref="Model" /> of the project
-        /// </summary>
-        public Model Model { get; set; }
-
-        /// <summary>
         ///     The <see cref="IReviewCreationViewModel" /> for the component
         /// </summary>
         [Parameter]
         public IReviewCreationViewModel ViewModel { get; set; }
+
+        /// <summary>
+        ///     The collection of available <see cref="BudgetTemplate" />
+        /// </summary>
+        public IEnumerable<BudgetTemplate> ProjectsBudgets { get; set; }
 
         /// <summary>
         ///     Method invoked when the component is ready to start, having received its
@@ -52,6 +52,7 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
         protected override void OnInitialized()
         {
             this.ProjectModels = this.ProjectArtifacts.OfType<Model>().ToList();
+            this.ProjectsBudgets = this.ProjectArtifacts.OfType<BudgetTemplate>().ToList();
         }
     }
 }

@@ -36,33 +36,6 @@ namespace UI_DSM.Server.Services.ReportingService
         }
 
         /// <summary>
-        ///     Retrieves a list of available Reports
-        /// </summary>
-        /// <param name="projectId">The project id</param>
-        /// <returns>A <see cref="List{T}"/> of type <see cref="string"/> that contains available report locations</returns>
-        public List<string> GetAvailableReports(Guid projectId)
-        {
-            var result = new List<string>();
-
-            foreach (var file in Directory.GetFiles(Path.Combine("Reports", "Generic")))
-            {
-                result.Add(Path.Combine("Generic", Path.GetFileNameWithoutExtension(file)));
-            }
-
-            var directoryPath = Path.Combine("Reports", projectId.ToString());
-
-            if (Directory.Exists(directoryPath))
-            {
-                foreach (var file in Directory.GetFiles(directoryPath))
-                {
-                    result.Add(Path.Combine(projectId.ToString(),  Path.GetFileNameWithoutExtension(file)));
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
         ///     Retrieves the report information
         /// </summary>
         /// <param name="reportLocation"></param>
@@ -77,7 +50,7 @@ namespace UI_DSM.Server.Services.ReportingService
 
             var fileName = reportLocation;
 
-            if (Path.GetExtension(fileName) != "rep4")
+            if (Path.GetExtension(fileName) != ".rep4")
             {
                 fileName += ".rep4";
             }

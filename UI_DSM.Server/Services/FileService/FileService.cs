@@ -194,7 +194,24 @@ namespace UI_DSM.Server.Services.FileService
         /// <returns>The full path</returns>
         public string GetDirectoryPath(string directoryName)
         {
-            return Path.Combine(this.mainPath,directoryName);
+            return Path.Combine(this.mainPath, directoryName);
+        }
+
+        /// <summary>
+        ///     Gets all available generic budgets
+        /// </summary>
+        /// <returns>A collection of <see cref="Tuple{String,String}" /></returns>
+        public List<(string filepath, string displayName)> GetGenericBudgets()
+        {
+            var directoryPath = Path.Combine(this.mainPath, "Generic");
+
+            if (Directory.Exists(directoryPath))
+            {
+                var files = Directory.EnumerateFiles(directoryPath, "*.rep4").ToList();
+                return files.Select(x => (Path.Combine("Generic", Path.GetFileName(x)), Path.GetFileNameWithoutExtension(x))).ToList();
+            }
+
+            return new List<(string, string)>();
         }
     }
 }

@@ -134,6 +134,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
             {
                 this.ReviewCreationViewModel.CreationStatus = CreationStatus.Creating;
                 this.ReviewCreationViewModel.Review.Artifacts.Add(this.ReviewCreationViewModel.SelectedModels);
+                this.ReviewCreationViewModel.Review.Artifacts.Add(this.ReviewCreationViewModel.SelectedBudgets);
 
                 var creationResult = await this.reviewService.CreateReview(this.project.Id, this.ReviewCreationViewModel.Review);
                 this.ErrorMessageViewModel.Errors.Clear();

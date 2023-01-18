@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------
-// <copyright file="IReportService.cs" company="RHEA System S.A.">
+// <copyright file="IBudgetUploadViewModel.cs" company="RHEA System S.A.">
 //  Copyright (c) 2023 RHEA System S.A.
 // 
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
@@ -11,23 +11,25 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Client.Services.ReportService
+namespace UI_DSM.Client.ViewModels.Components.Administration.BudgetManagement
 {
-    using Microsoft.AspNetCore.Components.Forms;
+    using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Shared.DTO.CometData;
+    using UI_DSM.Client.Model;
 
     /// <summary>
-    ///     Interface definition for <see cref="ReportService" />
+    ///     Interface definition for <see cref="BudgetUploadViewModel" />
     /// </summary>
-    public interface IReportService
+    public interface IBudgetUploadViewModel
     {
         /// <summary>
-        ///     Uploads a report
+        ///     The <see cref="BudgetUploadModel" />
         /// </summary>
-        /// <param name="budgetName">The name of the report</param>
-        /// <param name="browserFile">The <see cref="IBrowserFile" /></param>
-        /// <returns>A <see cref="Task" /> with the <see cref="CometAuthenticationResponse" /></returns>
-        Task<CometAuthenticationResponse> UploadReport(string budgetName, IBrowserFile browserFile);
+        BudgetUploadModel BudgetData { get; set; }
+
+        /// <summary>
+        ///     <see cref="EventCallback" /> to be called to upload the selected file
+        /// </summary>
+        EventCallback OnSubmit { get; set; }
     }
 }

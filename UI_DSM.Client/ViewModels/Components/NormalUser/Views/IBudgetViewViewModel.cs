@@ -13,24 +13,26 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 {
+    using UI_DSM.Shared.Models;
+
     /// <summary>
     ///     Interface definition for <see cref="BudgetViewViewModel" />
     /// </summary>
     public interface IBudgetViewViewModel : IBaseViewViewModel
     {
         /// <summary>
-        /// Gets or sets the Report Names
-        /// </summary>
-        IEnumerable<string> ReportNames { get; set; }
-
-        /// <summary>
         /// Gets or sets the Report ID
         /// </summary>
         string ReportDtoAsString { get; set; }
 
         /// <summary>
-        /// Gets or sets the Report Name
+        ///     Gets or sets the report name
         /// </summary>
-        string ReportName { get; set; }
+        BudgetTemplate SelectedBudgetTemplate { get; set; }
+
+        /// <summary>
+        ///     A collection of <see cref="BudgetTemplate" />
+        /// </summary>
+        IEnumerable<BudgetTemplate> AvailableBudgets { get; set; }
     }
 }
