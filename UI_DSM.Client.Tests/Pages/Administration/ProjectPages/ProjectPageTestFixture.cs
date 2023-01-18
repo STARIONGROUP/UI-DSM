@@ -164,7 +164,7 @@ namespace UI_DSM.Client.Tests.Pages.Administration.ProjectPages
                 Assert.That(project.Participants, Has.Count.EqualTo(2));
             });
 
-            var uploadBudgetButton = renderer.FindComponents<AppButton>().Last();
+            var uploadBudgetButton = renderer.FindComponents<AppButton>()[2];
             await renderer.InvokeAsync(uploadBudgetButton.Instance.Click.InvokeAsync);
             Assert.That(this.viewModel.IsOnBudgetUploadMode, Is.True);
 

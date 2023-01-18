@@ -14,17 +14,17 @@
 namespace UI_DSM.Client.ViewModels.Components.Administration.BudgetManagement
 {
     using Microsoft.AspNetCore.Components;
-    
+
     using UI_DSM.Client.Components.Administration.BudgetManagement;
     using UI_DSM.Client.Model;
 
     /// <summary>
     ///     View model for the <see cref="BudgetUpload" /> component
     /// </summary>
-    public class BudgetUploadViewModel: IBudgetUploadViewModel
+    public class BudgetUploadViewModel : IBudgetUploadViewModel
     {
         /// <summary>
-        /// The <see cref="BudgetUploadModel"/>
+        ///     The <see cref="BudgetUploadModel" />
         /// </summary>
         public BudgetUploadModel BudgetData { get; set; }
 

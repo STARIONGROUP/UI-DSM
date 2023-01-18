@@ -11,6 +11,9 @@ using UI_DSM.Server.Context;
 
 namespace UI_DSM.Server.Migrations
 {
+    using System.Diagnostics.CodeAnalysis;
+
+    [ExcludeFromCodeCoverage]
     [DbContext(typeof(DatabaseContext))]
     partial class DatabaseContextModelSnapshot : ModelSnapshot
     {

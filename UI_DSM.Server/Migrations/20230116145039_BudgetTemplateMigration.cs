@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace UI_DSM.Server.Migrations
 {
+    using System.Diagnostics.CodeAnalysis;
+
+    [ExcludeFromCodeCoverage]
     public partial class BudgetTemplateMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
