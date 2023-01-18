@@ -98,6 +98,7 @@ namespace UI_DSM.Client.ViewModels.Components.Administration.ParticipantManageme
         {
             this.AvailableRoles = await this.roleService.GetRoles();
             this.AvailableUsers = await this.participantService.GetAvailableUsersForCreation(project.Id);
+            this.SelectedDomains = new List<string>();
 
             this.Participant = new Participant
             {
