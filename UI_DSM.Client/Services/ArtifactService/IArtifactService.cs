@@ -37,5 +37,14 @@ namespace UI_DSM.Client.Services.ArtifactService
         /// <param name="deepLevel">The deep level to get associated entities from the server</param>
         /// <returns>A <see cref="Task" /> with the collection of <see cref="Artifact" /></returns>
         Task<List<Artifact>> GetArtifactsOfProject(Guid projectId, int deepLevel = 0);
+
+        /// <summary>
+        ///     Tries to upload a <see cref="BudgetTemplate" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /> where the <see cref="Model" /> will belongs</param>
+        /// <param name="budgetTemplateName">The name of the budget</param>
+        /// <param name="givenFileName">The name of the given file by the server</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="EntityRequestResponse{BudgetTemplate}" /></returns>
+        Task<EntityRequestResponse<BudgetTemplate>> UploadBudget(Guid projectId, string budgetTemplateName, Guid givenFileName);
     }
 }

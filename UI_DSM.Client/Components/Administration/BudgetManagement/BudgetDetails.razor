@@ -1,0 +1,35 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// BudgetDetails.razor
+// Copyright (c) 2023 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@if (this.ProjectBudgets is not null && this.ProjectBudgets.Count > 0)
+{
+	<table class="table">
+		<thead>
+		<tr>
+			<th scope="col">Budget Template Name</th>
+			<th scope="col">Id</th>
+		</tr>
+		</thead>
+		<tbody>
+		@foreach (var model in this.ProjectBudgets)
+		{
+			<tr>
+				<td class="align-middle">
+					@model.BudgetName
+				</td>
+				<td class="align-middle">
+					@model.Id
+				</td>
+			</tr>
+		}
+		</tbody>
+	</table>
+}

@@ -10,6 +10,7 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @using UI_DSM.Client.Enumerator
+@using UI_DSM.Shared.Models
 
 <CascadingValue Name="PreventValidation" Value="true">
 <EditForm Context="editFormContext" Model="@this.ViewModel.Review" OnValidSubmit="@this.ViewModel.OnValidSubmit">
@@ -28,11 +29,23 @@
 			           SelectionMode="ListBoxSelectionMode.Multiple" 
 			           TextFieldName="@nameof(Model.ModelName)"/>
 		</DxFormLayoutItem>
+		<DxFormLayoutItem Caption="Budget Templates :" ColSpanMd="12">
+			<DxListBox Data="@this.ProjectsBudgets"
+			           @bind-Values="@this.ViewModel.SelectedBudgets"
+			           ShowCheckboxes="true"
+			           SelectionMode="ListBoxSelectionMode.Multiple" 
+			           TextFieldName="@nameof(BudgetTemplate.BudgetName)"/>
+		</DxFormLayoutItem>
 	</DxFormLayout>
 	<ValidationSummary/>
 	<ErrorMessage />
 	<div class="modal-footer m-top-10px">
-		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Create" SubmitFormOnClick="true" Enabled="this.ViewModel.CreationStatus != CreationStatus.Creating"/>
+		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Create" SubmitFormOnClick="true" 
+		          Enabled="this.ViewModel.CreationStatus != CreationStatus.Creating 
+							&& this.ViewModel.SelectedBudgets != null 
+							&& this.ViewModel.SelectedModels != null 
+							&& this.ViewModel.SelectedBudgets.Any() 
+							&& this.ViewModel.SelectedModels.Any()"/>
 	</div>
 </EditForm>
 </CascadingValue>

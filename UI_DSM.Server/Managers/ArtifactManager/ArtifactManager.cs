@@ -14,6 +14,7 @@
 namespace UI_DSM.Server.Managers.ArtifactManager
 {
     using UI_DSM.Server.Context;
+    using UI_DSM.Server.Managers.BudgetTemplateManager;
     using UI_DSM.Server.Managers.ModelManager;
     using UI_DSM.Server.Types;
     using UI_DSM.Shared.DTO.Common;
@@ -31,12 +32,19 @@ namespace UI_DSM.Server.Managers.ArtifactManager
         private readonly IModelManager modelManager;
 
         /// <summary>
+        /// The <see cref="IBudgetTemplateManager"/>
+        /// </summary>
+        private readonly IBudgetTemplateManager budgetTemplateManager;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ArtifactManager" /> class.
         /// </summary>
         /// <param name="modelManager">The <see cref="IModelManager" /></param>
-        public ArtifactManager(IModelManager modelManager)
+        /// <param name="budgetTemplateManager">The <see cref="IBudgetTemplateManager"/></param>
+        public ArtifactManager(IModelManager modelManager, IBudgetTemplateManager budgetTemplateManager)
         {
             this.modelManager = modelManager;
+            this.budgetTemplateManager = budgetTemplateManager;
         }
 
         /// <summary>
@@ -48,6 +56,7 @@ namespace UI_DSM.Server.Managers.ArtifactManager
         {
             var annotatableItems = new List<Entity>();
             annotatableItems.AddRange(await this.modelManager.GetEntities(deepLevel));
+            annotatableItems.AddRange(await this.budgetTemplateManager.GetEntities(deepLevel));
             return annotatableItems.DistinctBy(x => x.Id);
         }
 
@@ -59,7 +68,13 @@ namespace UI_DSM.Server.Managers.ArtifactManager
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /> if found</returns>
         public async Task<IEnumerable<Entity>> GetEntity(Guid entityId, int deepLevel = 0)
         {
-            var artifact = await this.modelManager.GetEntity(entityId, deepLevel);
+            var artifact = (await this.modelManager.GetEntity(entityId, deepLevel)).ToList();
+
+            if (!artifact.Any())
+            {
+                artifact = (await this.budgetTemplateManager.GetEntity(entityId, deepLevel)).ToList();
+            }
+
             return artifact;
         }
 
@@ -70,7 +85,8 @@ namespace UI_DSM.Server.Managers.ArtifactManager
         /// <returns>A <see cref="Task" /> with the <see cref="Artifact" /> if found</returns>
         public async Task<Artifact> FindEntity(Guid entityId)
         {
-            return await this.modelManager.FindEntity(entityId);
+            return ((Artifact)(await this.modelManager.FindEntity(entityId))) ??
+                   await this.budgetTemplateManager.FindEntity(entityId);
         }
 
         /// <summary>
@@ -110,6 +126,12 @@ namespace UI_DSM.Server.Managers.ArtifactManager
                     return modelResult.Succeeded
                         ? EntityOperationResult<Artifact>.Success(modelResult.Entity)
                         : EntityOperationResult<Artifact>.Failed(modelResult.Errors.ToArray());
+                case BudgetTemplate budgetTemplate:
+                    var budgetResult = await this.budgetTemplateManager.CreateEntity(budgetTemplate);
+
+                    return budgetResult.Succeeded
+                        ? EntityOperationResult<Artifact>.Success(budgetResult.Entity)
+                        : EntityOperationResult<Artifact>.Failed(budgetResult.Errors.ToArray());
             }
 
             return EntityOperationResult<Artifact>.Failed("Unknowned Annotation subclass");
@@ -130,6 +152,12 @@ namespace UI_DSM.Server.Managers.ArtifactManager
                     return modelResult.Succeeded
                         ? EntityOperationResult<Artifact>.Success(modelResult.Entity)
                         : EntityOperationResult<Artifact>.Failed(modelResult.Errors.ToArray());
+                case BudgetTemplate budgetTemplate:
+                    var budgetResult = await this.budgetTemplateManager.UpdateEntity(budgetTemplate);
+
+                    return budgetResult.Succeeded
+                        ? EntityOperationResult<Artifact>.Success(budgetResult.Entity)
+                        : EntityOperationResult<Artifact>.Failed(budgetResult.Errors.ToArray());
             }
 
             return EntityOperationResult<Artifact>.Failed("Unknowned Annotation subclass");
@@ -150,6 +178,12 @@ namespace UI_DSM.Server.Managers.ArtifactManager
                     return modelResult.Succeeded
                         ? EntityOperationResult<Artifact>.Success(modelResult.Entity)
                         : EntityOperationResult<Artifact>.Failed(modelResult.Errors.ToArray());
+                case BudgetTemplate budgetTemplate:
+                    var budgetResult = await this.budgetTemplateManager.DeleteEntity(budgetTemplate);
+
+                    return budgetResult.Succeeded
+                        ? EntityOperationResult<Artifact>.Success(budgetResult.Entity)
+                        : EntityOperationResult<Artifact>.Failed(budgetResult.Errors.ToArray());
             }
 
             return EntityOperationResult<Artifact>.Failed("Unknowned Annotation subclass");
@@ -167,6 +201,9 @@ namespace UI_DSM.Server.Managers.ArtifactManager
             {
                 case Model model:
                     await this.modelManager.ResolveProperties(model, dto);
+                    break;
+                case BudgetTemplate budgetTemplate:
+                    await this.budgetTemplateManager.ResolveProperties(budgetTemplate, dto);
                     break;
             }
         }
@@ -187,9 +224,11 @@ namespace UI_DSM.Server.Managers.ArtifactManager
         /// </summary>
         /// <param name="entityId">The <see cref="Guid" /> of the entity</param>
         /// <returns>A collection of <see cref="Entity" /></returns>
-        public Task<IEnumerable<Entity>> GetExtraEntitiesToUnindex(Guid entityId)
+        public async Task<IEnumerable<Entity>> GetExtraEntitiesToUnindex(Guid entityId)
         {
-            return this.modelManager.GetExtraEntitiesToUnindex(entityId);
+            var entities = new List<Entity>(await this.modelManager.GetExtraEntitiesToUnindex(entityId));
+            entities.AddRange(await this.budgetTemplateManager.GetExtraEntitiesToUnindex(entityId));
+            return entities;
         }
 
         /// <summary>
@@ -199,7 +238,8 @@ namespace UI_DSM.Server.Managers.ArtifactManager
         /// <returns>A <see cref="Task" /> with the <see cref="Artifact" /></returns>
         public async Task<Artifact> FindEntityWithContainer(Guid entityId)
         {
-            return await this.modelManager.FindEntityWithContainer(entityId);
+            return ((Artifact)await this.modelManager.FindEntityWithContainer(entityId)) ?? 
+                   await this.budgetTemplateManager.FindEntityWithContainer(entityId);
         }
 
         /// <summary>
@@ -213,6 +253,7 @@ namespace UI_DSM.Server.Managers.ArtifactManager
         {
             var artifacts = new List<Entity>();
             artifacts.AddRange(await this.modelManager.GetContainedEntities(containerId, deepLevel));
+            artifacts.AddRange(await this.budgetTemplateManager.GetContainedEntities(containerId, deepLevel));
             return artifacts.DistinctBy(x => x.Id);
         }
 

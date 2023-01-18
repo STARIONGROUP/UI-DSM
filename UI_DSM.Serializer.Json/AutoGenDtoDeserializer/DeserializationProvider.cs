@@ -30,6 +30,7 @@ namespace UI_DSM.Serializer.Json
     {
         private static readonly Dictionary<string, Func<JsonElement, EntityDto>> DeserializerActionMap = new()
         {
+            { "BudgetTemplateDto", BudgetTemplateDtoDeserializer.Deserialize },
             { "CommentDto", CommentDtoDeserializer.Deserialize },
             { "FeedbackDto", FeedbackDtoDeserializer.Deserialize },
             { "ModelDto", ModelDtoDeserializer.Deserialize },

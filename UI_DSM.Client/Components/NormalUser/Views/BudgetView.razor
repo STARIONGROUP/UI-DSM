@@ -9,17 +9,18 @@
 //
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Shared.Models
 @inherits GenericBaseView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IBudgetViewViewModel>
 
-<LoadingComponent IsLoading="this.ViewModel is null">
+<LoadingComponent IsLoading="@this.IsLoading">
     <div class="budget-view">
-        <label class="budget-report-selector">
+     <label class="budget-report-selector">
             <span>Select Report Definition:</span>
-            <DxComboBox Data="@this.ViewModel.ReportNames"
-                    @bind-Value="@this.ViewModel.ReportName"
-                    CssClass="cw-480"/>
+            <DxComboBox Data="@this.ViewModel.AvailableBudgets"
+	                                     @bind-Value="@this.ViewModel.SelectedBudgetTemplate"
+	                                     TextFieldName="@(nameof(BudgetTemplate.BudgetName))"
+	                                     CssClass="cw-480"/>
         </label>
-
         <DxWasmDocumentViewer ReportName="@this.ViewModel.ReportDtoAsString" Height="100%" Width="100%">
             <DxWasmDocumentViewerRequestOptions InvokeAction="DXXRDV" />
             <DxDocumentViewerCallbacks

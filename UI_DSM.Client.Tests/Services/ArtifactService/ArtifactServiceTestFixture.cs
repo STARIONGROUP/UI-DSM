@@ -100,6 +100,46 @@ namespace UI_DSM.Client.Tests.Services.ArtifactService
         }
 
         [Test]
+        public async Task VerifyUploadBudget()
+        {
+            var projectId = Guid.NewGuid();
+            var fileName = $"{Guid.NewGuid()}.zip";
+            var guid = Guid.NewGuid();
+
+            var httpResponse = new HttpResponseMessage();
+
+            var entityRequestResponse = new EntityRequestResponseDto()
+            {
+                IsRequestSuccessful = false
+            };
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
+            var request = this.httpMessageHandler.When(HttpMethod.Post, $"/Project/{projectId}/Artifact/Create");
+            request.Respond(_ => httpResponse);
+
+            var requestResponse = await this.service.UploadBudget(projectId, fileName, guid);
+            Assert.That(requestResponse.IsRequestSuccessful, Is.False);
+
+            entityRequestResponse.IsRequestSuccessful = true;
+
+            entityRequestResponse.Entities = new BudgetTemplate().GetAssociatedEntities().ToDtos();
+
+            httpResponse.Content = new StringContent(this.jsonService.Serialize(entityRequestResponse));
+
+            requestResponse = await this.service.UploadBudget(projectId, fileName, guid);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(requestResponse.IsRequestSuccessful, Is.True);
+                Assert.That(requestResponse.Entity, Is.Not.Null);
+            });
+
+            httpResponse.Content = new StringContent(string.Empty);
+
+            Assert.That(async () => await this.service.UploadBudget(projectId, fileName, guid), Throws.Exception);
+        }
+
+        [Test]
         public async Task VerifyGetArtifacts()
         {
             var projectId = Guid.NewGuid();

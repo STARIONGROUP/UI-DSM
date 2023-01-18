@@ -19,6 +19,7 @@ namespace UI_DSM.Server.Reporting
     using DevExpress.XtraReports.UI;
 
     using UI_DSM.Client.Services.JsonService;
+    using UI_DSM.Server.Services.FileService;
     using UI_DSM.Server.Services.ReportingService;
     using UI_DSM.Shared.DTO.Common;
 
@@ -27,6 +28,11 @@ namespace UI_DSM.Server.Reporting
     /// </summary>
     public class ReportProvider : IReportProvider
     {
+        /// <summary>
+        /// The <see cref="IFileService"/>
+        /// </summary>
+        private readonly IFileService fileService;
+
         /// <summary>
         /// Gets the INJECTED <see cref="IReportingService"/>
         /// </summary>
@@ -42,10 +48,12 @@ namespace UI_DSM.Server.Reporting
         /// </summary>
         /// <param name="reportingService">The <see cref="IReportingService"/></param>
         /// <param name="jsonService">The <see cref="IJsonService"/></param>
-        public ReportProvider(IReportingService reportingService, IJsonService jsonService)
+        /// <param name="fileService">The <see cref="IFileService"/></param>
+        public ReportProvider(IReportingService reportingService, IJsonService jsonService, IFileService fileService)
         {
             this.ReportingService = reportingService;
             this.jsonService = jsonService;
+            this.fileService = fileService;
         }
 
         /// <summary>
@@ -69,7 +77,7 @@ namespace UI_DSM.Server.Reporting
                         return null;
                     }
 
-                    var result = this.ReportingService.GetReportDto($"Reports/{reportDto.Name}", $"{reportDto.ProjectId}/{reportDto.IterationId}.zip", reportDto.IterationId).Result;
+                    var result = this.ReportingService.GetReportDto(this.fileService.GetFullPath(reportDto.Name), Path.Combine(reportDto.ProjectId.ToString(),$"{reportDto.IterationId}.zip"), reportDto.IterationId).Result;
                     return result;
                 }
             }

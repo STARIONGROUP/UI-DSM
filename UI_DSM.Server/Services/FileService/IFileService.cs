@@ -87,5 +87,11 @@ namespace UI_DSM.Server.Services.FileService
         /// <param name="directoryName">The directory name</param>
         /// <returns>The full path</returns>
         string GetDirectoryPath(string directoryName);
+
+        /// <summary>
+        ///     Gets all available generic budgets
+        /// </summary>
+        /// <returns>A collection of <see cref="Tuple{String,String}" /></returns>
+        List<(string filepath, string displayName)> GetGenericBudgets();
     }
 }

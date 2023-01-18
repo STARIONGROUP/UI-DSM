@@ -28,6 +28,7 @@ namespace UI_DSM.Server.Tests.Managers
     using UI_DSM.Server.Managers.ProjectManager;
     using UI_DSM.Server.Managers.ReviewCategoryManager;
     using UI_DSM.Server.Managers.ReviewManager;
+    using UI_DSM.Server.Services.FileService;
     using UI_DSM.Server.Tests.Helpers;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Enumerator;
@@ -44,6 +45,7 @@ namespace UI_DSM.Server.Tests.Managers
         private Mock<IArtifactManager> artifactManager;
         private Mock<DbSet<Project>> projectDbSet;
         private Mock<IReviewCategoryManager> reviewCategoryManager;
+        private Mock<IFileService> fileService;
 
         [SetUp]
         public void Setup()
@@ -55,9 +57,10 @@ namespace UI_DSM.Server.Tests.Managers
             this.annotationManager = new Mock<IAnnotationManager>();
             this.artifactManager = new Mock<IArtifactManager>();
             this.reviewCategoryManager = new Mock<IReviewCategoryManager>();
+            this.fileService = new Mock<IFileService>();
 
             this.manager = new ProjectManager(this.context.Object, this.participantManager.Object, this.reviewManager.Object,
-                this.annotationManager.Object, this.artifactManager.Object, this.reviewCategoryManager.Object);
+                this.annotationManager.Object, this.artifactManager.Object, this.reviewCategoryManager.Object, this.fileService.Object);
             
             Program.RegisterEntities();
         }
@@ -96,6 +99,11 @@ namespace UI_DSM.Server.Tests.Managers
                 new(Guid.NewGuid()) { ProjectName = "P2" },
                 new(Guid.NewGuid()) { ProjectName = "P2" }
             };
+
+            this.fileService.Setup(x => x.GetGenericBudgets()).Returns(new List<(string filepath, string displayName)>()
+            {
+                ("filePath", "display")
+            });
 
             this.projectDbSet.UpdateDbSetCollection(data);
 

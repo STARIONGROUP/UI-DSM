@@ -17,7 +17,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.Enumerator;
-    using UI_DSM.Client.Services.Administration.ProjectService;
     using UI_DSM.Shared.Models;
 
     /// <summary>
@@ -44,5 +43,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         ///     The current <see cref="IReviewCreationViewModel.CreationStatus" />
         /// </summary>
         public CreationStatus CreationStatus { get; set; }
+
+        /// <summary>
+        ///     A collection of <see cref="BudgetTemplate" /> that has been selected
+        /// </summary>
+        public IEnumerable<BudgetTemplate> SelectedBudgets { get; set; }
     }
 }

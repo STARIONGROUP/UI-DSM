@@ -30,6 +30,7 @@ namespace UI_DSM.Serializer.Json
     {
         private static readonly Dictionary<Type, Action<object, Utf8JsonWriter>> SerializerActionMap = new()
         {
+            { typeof(BudgetTemplateDto), BudgetTemplateDtoSerializer.Serialize },
             { typeof(CommentDto), CommentDtoSerializer.Serialize },
             { typeof(FeedbackDto), FeedbackDtoSerializer.Serialize },
             { typeof(ModelDto), ModelDtoSerializer.Serialize },

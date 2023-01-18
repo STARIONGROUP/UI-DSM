@@ -16,15 +16,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using CDP4Common.CommonData;
     using CDP4Common.EngineeringModelData;
 
-    using DevExpress.Blazor.Internal;
-
     using DynamicData.Binding;
 
     using ReactiveUI;
 
+    using UI_DSM.Client.Extensions;
     using UI_DSM.Client.Services.JsonService;
-    using UI_DSM.Client.Services.ReportService;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.DTO.Common;
     using UI_DSM.Shared.Models;
@@ -35,73 +34,68 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     public class BudgetViewViewModel : BaseViewViewModel, IBudgetViewViewModel
     {
         /// <summary>
-        /// The INJECTED <see cref="IJsonService"/>
+        ///     The INJECTED <see cref="IJsonService" />
         /// </summary>
-        private readonly IJsonService ijsonService;
+        private readonly IJsonService jsonService;
 
         /// <summary>
-        /// The INJECTED <see cref="IReportService"/>
+        ///     The <see cref="IReviewService" />
         /// </summary>
-        private readonly IReportService reportService;
+        private readonly IReviewService reviewService;
 
         /// <summary>
-        /// Backing field for <see cref="Iteration"/>
+        ///     Backing field for <see cref="Iteration" />
         /// </summary>
         private Iteration iteration;
 
         /// <summary>
-        /// Backing field for <see cref="ReportName"/>
+        ///     Backing field for <see cref="SelectedBudgetTemplate" />
         /// </summary>
-        private string reportName;
-
-        /// <summary>
-        /// Gets or sets the available Report Names
-        /// </summary>
-        public IEnumerable<string> ReportNames { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Report ID
-        /// </summary>
-        public string ReportDtoAsString { get; set; }
+        private BudgetTemplate selectedBudgetTemplate;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="BaseViewViewModel" /> class.
         /// </summary>
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
-        /// <param name="IjsonService">The <see cref="IJsonService" /></param>
-        /// <param name="reportService">The <see cref="IReportService" /></param>
-        public BudgetViewViewModel(IReviewItemService reviewItemService, IJsonService IjsonService, IReportService reportService) : base(reviewItemService)
+        /// <param name="jsonService">The <see cref="IJsonService" /></param>
+        /// <param name="reviewService">The <see cref="IReviewService" /></param>
+        public BudgetViewViewModel(IReviewItemService reviewItemService, IJsonService jsonService, IReviewService reviewService) : base(reviewItemService)
         {
-            this.ijsonService = IjsonService;
-            this.reportService = reportService;
+            this.jsonService = jsonService;
+            this.reviewService = reviewService;
 
-            this.WhenAnyPropertyChanged(nameof(this.Iteration), nameof(this.ReportName))
-                .Subscribe(x => this.SetReportDtoAsString());
+            this.WhenAnyPropertyChanged(nameof(this.Iteration), nameof(this.SelectedBudgetTemplate))
+                .Subscribe(_ => this.SetReportDtoAsString());
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="Iteration"/>
+        ///     Gets or sets the <see cref="Iteration" />
         /// </summary>
-        public Iteration Iteration 
-        {             
+        public Iteration Iteration
+        {
             get => this.iteration;
             set => this.RaiseAndSetIfChanged(ref this.iteration, value);
         }
 
         /// <summary>
-        /// Gets or sets the report name
+        ///     Gets or sets the report name
         /// </summary>
-        public string ReportName 
-        {             
-            get => this.reportName;
-            set => this.RaiseAndSetIfChanged(ref this.reportName, value);
+        public BudgetTemplate SelectedBudgetTemplate
+        {
+            get => this.selectedBudgetTemplate;
+            set => this.RaiseAndSetIfChanged(ref this.selectedBudgetTemplate, value);
         }
 
         /// <summary>
-        ///     A collection of <see cref="HyperLinkRowViewModel" />
+        ///     A collection of <see cref="BudgetTemplate" />
         /// </summary>
-        public IEnumerable<HyperLinkRowViewModel> Rows { get; private set; } = new List<HyperLinkRowViewModel>();
-        
+        public IEnumerable<BudgetTemplate> AvailableBudgets { get; set; } = new List<BudgetTemplate>();
+
+        /// <summary>
+        ///     Gets or sets the Report ID
+        /// </summary>
+        public string ReportDtoAsString { get; set; }
+
         /// <summary>
         ///     Initialize this view model properties
         /// </summary>
@@ -117,37 +111,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         {
             await base.InitializeProperties(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart, participant);
 
-            await this.InitializeAvailableReports();
+            var review = await this.reviewService.GetReviewOfProject(projectId, reviewId);
+            this.AvailableBudgets = review.Artifacts.OfType<BudgetTemplate>().ToList();
 
             this.Iteration = this.Things.OfType<Iteration>().FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Initializes the avaliable Report Names
-        /// </summary>
-        private async Task InitializeAvailableReports()
-        {
-            var reportNames = await this.reportService.GetAvailableReports(this.ProjectId);
-            this.ReportNames = reportNames;
-
-            if (!this.ReportNames.Contains(this.ReportName))
-            {
-                this.ReportName = "";
-            }
-        }
-        
-        /// <summary>
-        /// Creates a <see cref="ReportDto"/> and writes its string representation to the ReportDtoAsString property.
-        /// The UI Document Viewer will react to this by loading the corresponding report 
-        /// </summary>
-        private void SetReportDtoAsString()
-        {
-            var reportDto = new ReportDto();
-            reportDto.Name = this.ReportName;
-            reportDto.IterationId = this.Iteration?.Iid ?? Guid.Empty;
-            reportDto.ProjectId = this.ProjectId;
-
-            this.ReportDtoAsString = this.ijsonService.Serialize(reportDto);
         }
 
         /// <summary>
@@ -158,11 +125,14 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         {
             if (selectedItem is string selectedItemString && Guid.TryParse(selectedItemString, out var selectedItemGuid))
             {
-                if (this.Things.FirstOrDefault(x => x.Iid == selectedItemGuid) is ElementBase thing)
+                this.SelectedElement = this.Things.FirstOrDefault(x => x.Iid == selectedItemGuid) switch
                 {
-                    var rowViewModel = new ElementBaseRowViewModel(thing, null);
-                    this.SelectedElement = rowViewModel;
-                }
+                    ElementBase elementBase when elementBase.IsProduct() => new ProductRowViewModel(elementBase, null),
+                    ElementBase elementBase when elementBase.IsFunction() => new FunctionRowViewModel(elementBase, null),
+                    ElementUsage elementUsage when elementUsage.IsPort() => new PortRowViewModel(elementUsage, null),
+                    ElementBase elementBase => new ElementBaseRowViewModel(elementBase, null),
+                    _ => this.SelectedElement
+                };
             }
         }
 
@@ -172,7 +142,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <returns>The collection of <see cref="IHaveAnnotatableItemRowViewModel" /></returns>
         public override List<IHaveAnnotatableItemRowViewModel> GetAvailablesRows()
         {
-            return new List<IHaveAnnotatableItemRowViewModel>(this.Rows);
+            return new List<IHaveAnnotatableItemRowViewModel>();
         }
 
         /// <summary>
@@ -181,8 +151,28 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="annotatableItems">A collection of <see cref="AnnotatableItem" /></param>
         public override void UpdateAnnotatableRows(List<AnnotatableItem> annotatableItems)
         {
-            var reviewItems = annotatableItems.OfType<ReviewItem>();
-            this.Rows.ForEach(x => x.UpdateReviewItem(reviewItems.FirstOrDefault(ri => ri.ThingId == x.ThingId)));
+        }
+
+        /// <summary>
+        ///     Creates a <see cref="ReportDto" /> and writes its string representation to the ReportDtoAsString property.
+        ///     The UI Document Viewer will react to this by loading the corresponding report
+        /// </summary>
+        private void SetReportDtoAsString()
+        {
+            if (this.SelectedBudgetTemplate == null)
+            {
+                this.ReportDtoAsString = string.Empty;
+                return;
+            }
+
+            var reportDto = new ReportDto
+            {
+                Name = this.SelectedBudgetTemplate.FileName,
+                IterationId = this.Iteration?.Iid ?? Guid.Empty,
+                ProjectId = this.ProjectId
+            };
+
+            this.ReportDtoAsString = this.jsonService.Serialize(reportDto);
         }
     }
 }

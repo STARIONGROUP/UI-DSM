@@ -42,5 +42,10 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         ///     The current <see cref="CreationStatus" />
         /// </summary>
         CreationStatus CreationStatus { get; set; }
+
+        /// <summary>
+        ///     A collection of <see cref="BudgetTemplate" /> that has been selected
+        /// </summary>
+        IEnumerable<BudgetTemplate> SelectedBudgets { get; set; }
     }
 }

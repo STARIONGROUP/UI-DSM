@@ -23,16 +23,20 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
 
     using ReactiveUI;
 
+    using UI_DSM.Client.Components.Administration.BudgetManagement;
     using UI_DSM.Client.Components.Administration.ModelManagement;
     using UI_DSM.Client.Components.Administration.ParticipantManagement;
     using UI_DSM.Client.Components.Administration.ProjectManagement;
+    using UI_DSM.Client.Model;
     using UI_DSM.Client.Pages.Administration.ProjectPages;
     using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.Administration.ProjectService;
     using UI_DSM.Client.Services.Administration.RoleService;
     using UI_DSM.Client.Services.ArtifactService;
+    using UI_DSM.Client.Services.ReportService;
     using UI_DSM.Client.Services.ThingService;
     using UI_DSM.Client.ViewModels.Components;
+    using UI_DSM.Client.ViewModels.Components.Administration.BudgetManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.ModelManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.ParticipantManagement;
     using UI_DSM.Client.ViewModels.Components.Administration.ProjectManagement;
@@ -65,6 +69,21 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         private readonly IProjectService projectService;
 
         /// <summary>
+        ///     The <see cref="IReportService" />
+        /// </summary>
+        private readonly IReportService reportService;
+
+        /// <summary>
+        ///     The <see cref="IThingService" />
+        /// </summary>
+        private readonly IThingService thingService;
+
+        /// <summary>
+        ///     Backing field for <see cref="IsOnBudgetUploadMode" />
+        /// </summary>
+        private bool isOnBudgetUploadMode;
+
+        /// <summary>
         ///     Backing field for <see cref="IsOnCometConnectionMode" />
         /// </summary>
         private bool isOnCometConnectionMode;
@@ -75,11 +94,6 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         private bool isOnCreationMode;
 
         /// <summary>
-        /// The <see cref="IThingService"/>
-        /// </summary>
-        private readonly IThingService thingService;
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="ProjectPageViewModel" /> class.
         /// </summary>
         /// <param name="projectService">The <see cref="IProjectService" /></param>
@@ -87,14 +101,16 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         /// <param name="roleService">The <see cref="IRoleService" /></param>
         /// <param name="cometUploadViewModel">The <see cref="ICometUploadViewModel" /></param>
         /// <param name="artifactService">The <see cref="IArtifactService" /></param>
-        /// <param name="thingService">The <see cref="IThingService"/></param>
+        /// <param name="thingService">The <see cref="IThingService" /></param>
+        /// <param name="reportService">The <see cref="IReportService" /></param>
         public ProjectPageViewModel(IProjectService projectService, IParticipantService participantService, IRoleService roleService,
-            ICometUploadViewModel cometUploadViewModel, IArtifactService artifactService, IThingService thingService)
+            ICometUploadViewModel cometUploadViewModel, IArtifactService artifactService, IThingService thingService, IReportService reportService)
         {
             this.projectService = projectService;
             this.participantService = participantService;
             this.artifactService = artifactService;
             this.thingService = thingService;
+            this.reportService = reportService;
 
             this.ParticipantCreationViewModel = new ParticipantCreationViewModel(this.participantService, roleService, thingService)
             {
@@ -105,6 +121,11 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
 
             this.CometUploadViewModel = cometUploadViewModel;
             this.CometUploadViewModel.OnEventCallback = new EventCallbackFactory().Create(this, _ => this.UploadIteration());
+
+            this.BudgetUploadViewModel = new BudgetUploadViewModel
+            {
+                OnSubmit = new EventCallbackFactory().Create(this, _ => this.UploadBudget())
+            };
 
             this.disposables.Add(this.WhenAnyValue(x => x.IsOnCometConnectionMode)
                 .Where(x => !x).Subscribe(async _ => await this.CometUploadViewModel.CometLogout()));
@@ -119,9 +140,23 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         public ICometUploadViewModel CometUploadViewModel { get; }
 
         /// <summary>
+        ///     Value indicating that the user wants to upload a budget template
+        /// </summary>
+        public bool IsOnBudgetUploadMode
+        {
+            get => this.isOnBudgetUploadMode;
+            set => this.RaiseAndSetIfChanged(ref this.isOnBudgetUploadMode, value);
+        }
+
+        /// <summary>
+        ///     The <see cref="IBudgetUploadViewModel" />
+        /// </summary>
+        public IBudgetUploadViewModel BudgetUploadViewModel { get; set; }
+
+        /// <summary>
         ///     The <see cref="IProjectDetailsViewModel" /> for the <see cref="ProjectDetails" /> component
         /// </summary>
-        public IProjectDetailsViewModel ProjectDetailsViewModel { get; } 
+        public IProjectDetailsViewModel ProjectDetailsViewModel { get; }
 
         /// <summary>
         ///     Value indicating the user is currently creating a new <see cref="Participant" />
@@ -201,12 +236,52 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
         }
 
         /// <summary>
+        ///     Opens the <see cref="BudgetUpload" /> popup
+        /// </summary>
+        public void OpenBudgetUploadPopup()
+        {
+            this.ErrorMessageViewModel.Errors.Clear();
+            this.BudgetUploadViewModel.BudgetData = new BudgetUploadModel();
+            this.IsOnBudgetUploadMode = true;
+        }
+
+        /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
             this.disposables.ForEach(x => x.Dispose());
             this.disposables.Clear();
+        }
+
+        /// <summary>
+        ///     Uploads a budget template to the server
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private async Task UploadBudget()
+        {
+            var requestResult = await this.reportService.UploadReport(this.BudgetUploadViewModel.BudgetData.BudgetName, this.BudgetUploadViewModel.BudgetData.BrowserFile);
+            this.ErrorMessageViewModel.Errors.Clear();
+
+            if (requestResult.IsRequestSuccessful)
+            {
+                var uploadBudgetResponse = await this.artifactService.UploadBudget(this.ProjectDetailsViewModel.Project.Id, this.BudgetUploadViewModel.BudgetData.BudgetName,
+                    requestResult.SessionId);
+
+                if (uploadBudgetResponse.IsRequestSuccessful)
+                {
+                    this.ProjectDetailsViewModel.Project.Artifacts.Add(uploadBudgetResponse.Entity);
+                    this.IsOnBudgetUploadMode = false;
+                }
+                else
+                {
+                    this.ErrorMessageViewModel.HandleErrors(uploadBudgetResponse.Errors);
+                }
+            }
+            else
+            {
+                this.ErrorMessageViewModel.HandleErrors(requestResult.Errors);
+            }
         }
 
         /// <summary>
@@ -225,7 +300,7 @@ namespace UI_DSM.Client.ViewModels.Pages.Administration.ProjectPages
                 if (uploadModelResponse.IsRequestSuccessful)
                 {
                     this.ProjectDetailsViewModel.Project.Artifacts.Add(uploadModelResponse.Entity);
-                    await this.thingService.IndexIteration(this.ProjectDetailsViewModel.Project.Id, new List<Guid>{uploadModelResponse.Entity.Id});
+                    await this.thingService.IndexIteration(this.ProjectDetailsViewModel.Project.Id, new List<Guid> { uploadModelResponse.Entity.Id });
                     this.IsOnCometConnectionMode = false;
                 }
                 else

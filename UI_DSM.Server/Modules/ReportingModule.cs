@@ -20,7 +20,8 @@ namespace UI_DSM.Server.Modules
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Server.Services.ReportingService;
+    using UI_DSM.Server.Services.FileService;
+    using UI_DSM.Shared.DTO.CometData;
 
     /// <summary>
     ///     This module gets reporting information
@@ -35,24 +36,39 @@ namespace UI_DSM.Server.Modules
         [ExcludeFromCodeCoverage]
         public override void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapGet(this.MainRoute + "/{projectId:guid}", this.GetAvailableReports)
-                .Produces<List<string>>()
-                .WithTags("Reporting")
-                .WithName("Reporting/GetAvailableReports");
+            app.MapPost($"{this.MainRoute}/Upload", this.UploadReport);
         }
 
         /// <summary>
-        ///     Gets the Available Reports for a Budget review task
+        ///     Uploads a report file
         /// </summary>
-        /// <param name="reportingService">The <see cref="IReportingService" /></param>
         /// <param name="context">The <see cref="HttpContext" /></param>
-        /// <param name="projectId">The project id</param>
         /// <returns>A <see cref="Task" /></returns>
         [Authorize]
-        public Task GetAvailableReports(IReportingService reportingService, HttpContext context, Guid projectId)
+        public async Task UploadReport(HttpContext context)
         {
-            var availableReports = reportingService.GetAvailableReports(projectId);
-            return context.Response.Negotiate(availableReports);
+            var response = new CometAuthenticationResponse();
+
+            if (context.Request.Form.Files.Count != 1 || context.Request.Form.Files[0].ContentType != "application/x-zip-compressed")
+            {
+                response.Errors = new List<string>
+                {
+                    "The request only accept a single zip file!"
+                };
+
+                context.Response.StatusCode = 400;
+                await context.Response.Negotiate(response);
+                return;
+            }
+
+            var file = context.Request.Form.Files[0];
+            var guid = Guid.NewGuid();
+            var fileName = $"{guid}.rep4";
+            var fileService = context.RequestServices.GetService<IFileService>();
+            await fileService!.WriteToFile(file, fileName);
+            response.IsRequestSuccessful = true;
+            response.SessionId = guid;
+            await context.Response.Negotiate(response);
         }
     }
 }
