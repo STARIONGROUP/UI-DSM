@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Carter" Version="6.1.1" />
-    <PackageReference Include="CDP4Reporting-CE" Version="1.0.0-3873713308-61-1-PR-248" />
+    <PackageReference Include="CDP4Reporting-CE" Version="1.0.0" />
     <PackageReference Include="DevExpress.AspNetCore.Reporting" Version="22.2.3" />
     <PackageReference Include="DevExpress.Reporting.Core" Version="22.2.3" />
     <PackageReference Include="Feather.Blazor" Version="1.0.1" />
