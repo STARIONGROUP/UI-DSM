@@ -21,17 +21,27 @@
     gap: var(--spacing-4);
 }
 
+.search-group__category {
+    display: grid;
+    gap: var(--spacing-4);
+}
+
 .search-group__label {
-    font-size: var(--text-sm);
+    font-size: var(--text-base);
     font-weight: 500;
     color: var(--colors-gray-600);
+}
+
+.search-group__main-category {
+    display: grid;
+    gap: var(--spacing-6);
 }
 
 .search-group__list {
     margin: 0;
     display: grid;
-    padding: var(--spacing-3) 0 0;
-    gap: var(--spacing-2);
+    gap: var(--spacing-3);
+    padding: 0;
 }
 
 

@@ -1,17 +1,17 @@
 ﻿// --------------------------------------------------------------------------------------------------------
 // <copyright file="ReportProvider.cs" company="RHEA System S.A.">
 //  Copyright (c) 2023 RHEA System S.A.
-// 
+//
 //  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
-// 
+//
 //  This file is part of UI-DSM.
 //  The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
-// 
+//
 //  The UI-DSM application is provided to the community under the Apache License 2.0.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------
 
-namespace UI_DSM.Server.Reporting 
+namespace UI_DSM.Server.Reporting
 {
     using System.Text;
 
@@ -25,7 +25,7 @@ namespace UI_DSM.Server.Reporting
     /// <summary>
     /// The implementation of <see cref="IReportProvider"/>
     /// </summary>
-    public class ReportProvider : IReportProvider 
+    public class ReportProvider : IReportProvider
     {
         /// <summary>
         /// Gets the INJECTED <see cref="IReportingService"/>
@@ -69,7 +69,7 @@ namespace UI_DSM.Server.Reporting
                         return null;
                     }
 
-                    var result = this.ReportingService.GetReportDto($"Reports\\{reportDto.Name}", $"{reportDto.ProjectId}\\{reportDto.IterationId}.zip", reportDto.IterationId).Result;
+                    var result = this.ReportingService.GetReportDto($"Reports/{reportDto.Name}", $"{reportDto.ProjectId}/{reportDto.IterationId}.zip", reportDto.IterationId).Result;
                     return result;
                 }
             }

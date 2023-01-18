@@ -10,9 +10,9 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 <button class="search-result-card" @onclick="this.HandleOnClick">
+	<span class="search-result-card__title">@this.SearchResult.DisplayText</span>
 	@if (!string.IsNullOrEmpty(this.SearchResult.SpecificCategory))
 	{
-		<span>Category: @this.SearchResult.SpecificCategory</span>
+		<span class="search-result-card__category">Category: @this.SearchResult.SpecificCategory</span>
 	}
-	<span>@this.SearchResult.DisplayText</span>
 </button>
