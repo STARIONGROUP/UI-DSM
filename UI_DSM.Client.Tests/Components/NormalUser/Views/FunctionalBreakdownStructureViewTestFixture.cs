@@ -270,6 +270,7 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
                 { 
                     Assert.That(this.viewModel.TopElement.First().ReviewItem, Is.Not.Null);
                     Assert.That(renderer.Instance.TryNavigateToItem("a name"), Is.EqualTo(Task.CompletedTask));
+                    Assert.That(renderer.Instance.TryNavigateToItem(function.Name), Is.EqualTo(Task.CompletedTask));
                 });
             }
             catch

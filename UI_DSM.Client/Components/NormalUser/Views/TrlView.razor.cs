@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Components.NormalUser.Views
 {
+    using DevExpress.Blazor.Internal;
+
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
@@ -35,13 +37,10 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             }
 
             this.ViewModel = productBreakdown.ViewModel;
+            this.ViewModel.GetAvailablesRows().OfType<ElementBaseRowViewModel>().ForEach(x => x.IsExpanded = false);
+
             this.IsLoading = false;
-
-            if (this.ViewModel.SelectedElement is ElementBaseRowViewModel row)
-            {
-                await this.TryNavigateToItem(row.Id);
-            }
-
+            await Task.CompletedTask;
             return true;
         }
 
