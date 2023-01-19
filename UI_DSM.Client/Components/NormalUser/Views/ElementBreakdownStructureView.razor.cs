@@ -54,6 +54,16 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         private bool hasAlreadyExpandOnce;
 
         /// <summary>
+        ///     Name of the item where the current view should navigate to
+        /// </summary>
+        private string shouldNavigateTo;
+
+        /// <summary>
+        /// <see cref="Guid"/> of the element where the view should scroll to
+        /// </summary>
+        private Guid idToScrollTo = Guid.Empty;
+
+        /// <summary>
         ///     Reference to the <see cref="RadzenDataGrid{TItem}" />
         /// </summary>
         public RadzenDataGrid<ElementBaseRowViewModel> Grid { get; set; }
@@ -79,6 +89,14 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <returns>A <see cref="Task" /></returns>
         public override async Task TryNavigateToItem(string itemName)
         {
+            if (this.Grid == null)
+            {
+                this.shouldNavigateTo = itemName;
+                return;
+            }
+
+            this.shouldNavigateTo = string.Empty;
+
             var existingItem = this.ViewModel.GetAvailablesRows().OfType<ElementBaseRowViewModel>()
                 .FirstOrDefault(x => x.Id == itemName);
 
@@ -86,7 +104,8 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             {
                 var path = this.ComputeTreePath(existingItem);
                 await this.ExpandAllRows(path);
-                await this.JsRuntime.InvokeVoidAsync("scrollToElement", $"row_{existingItem.ThingId}", "center", "center");
+                this.idToScrollTo = existingItem.ThingId;
+                await this.HasChanged();
             }
         }
 
@@ -99,7 +118,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
-        /// <param name="participant">The current <see cref="Participant"/></param>
+        /// <param name="participant">The current <see cref="Participant" /></param>
         /// <returns>A <see cref="Task" /></returns>
         public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart, Participant participant)
         {
@@ -149,9 +168,21 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             await base.OnAfterRenderAsync(firstRender);
 
+            if (this.idToScrollTo != Guid.Empty)
+            {
+                await this.JsRuntime.InvokeVoidAsync("scrollToElement", $"row_{this.idToScrollTo}", "center", "center");
+                this.idToScrollTo = Guid.Empty;
+            }
+
+            if (this.Grid != null && !string.IsNullOrEmpty(this.shouldNavigateTo) && this.hasAlreadyExpandOnce)
+            {
+                await this.InvokeAsync(() => this.TryNavigateToItem(this.shouldNavigateTo));
+            }
+
             if (!this.IsLoading && !this.hasAlreadyExpandOnce && this.ViewModel.TopElement.Any() && this.Grid != null)
             {
                 var topElement = this.ViewModel.TopElement.First();
+
                 await this.Grid.ExpandRow(topElement);
 
                 foreach (var child in this.ViewModel.LoadChildren(topElement))
@@ -226,8 +257,8 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             while (currentItem.ContainerId != Guid.Empty)
             {
                 var existingParent = this.ViewModel.GetAvailablesRows().OfType<ElementBaseRowViewModel>()
-                        .FirstOrDefault(x => (x.ThingId == currentItem.ContainerId || x.ElementDefinitionId == currentItem.ContainerId) &&
-                                             this.ViewModel.LoadChildren(x).Any(p => p.ThingId == currentItem.ThingId));
+                    .FirstOrDefault(x => (x.ThingId == currentItem.ContainerId || x.ElementDefinitionId == currentItem.ContainerId) &&
+                                         this.ViewModel.LoadChildren(x).Any(p => p.ThingId == currentItem.ThingId));
 
                 if (existingParent != null)
                 {

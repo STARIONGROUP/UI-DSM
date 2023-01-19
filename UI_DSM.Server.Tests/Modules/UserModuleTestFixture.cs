@@ -18,9 +18,9 @@ namespace UI_DSM.Server.Tests.Modules
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Net.Http.Headers;
 
     using Moq;
-
     using NUnit.Framework;
 
     using UI_DSM.Server.Managers;
@@ -65,6 +65,7 @@ namespace UI_DSM.Server.Tests.Modules
 
             this.httpContext.Setup(x => x.Request).Returns(request.Object);
             this.httpContext.Setup(x => x.Response).Returns(this.httpResponse.Object);
+            this.httpResponse.Setup(x => x.HttpContext).Returns(this.httpContext.Object);
 
             var mockValidator = new Mock<IValidatorLocator>();
             mockValidator.Setup(x => x.GetValidator<AuthenticationDto>()).Returns(new AuthenticationDtoValidator());
@@ -73,6 +74,17 @@ namespace UI_DSM.Server.Tests.Modules
             var servicesMock = new Mock<IServiceProvider>();
             servicesMock.Setup(x => x.GetService(typeof(IValidatorLocator))).Returns(mockValidator.Object);
             this.httpContext.Setup(x => x.RequestServices).Returns(servicesMock.Object);
+
+            var negotiator = new Mock<IResponseNegotiator>();
+            negotiator.Setup(x => x.CanHandle(It.IsAny<MediaTypeHeaderValue>())).Returns(true);
+
+            servicesMock.Setup(x => x.GetService(typeof(IEnumerable<IResponseNegotiator>))).Returns(new List<IResponseNegotiator>()
+            {
+                negotiator.Object
+            });
+
+            var headers = new Mock<IHeaderDictionary>();
+            request.Setup(x => x.Headers).Returns(headers.Object);
 
             ModuleBase.RegisterModule<UserModule>();
             this.module = new UserModule(configuration.Object);

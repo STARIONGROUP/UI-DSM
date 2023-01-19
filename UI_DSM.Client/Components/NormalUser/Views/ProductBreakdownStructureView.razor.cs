@@ -13,6 +13,8 @@
 
 namespace UI_DSM.Client.Components.NormalUser.Views
 {
+    using DevExpress.Blazor.Internal;
+   
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
     using UI_DSM.Shared.Enumerator;
@@ -35,6 +37,8 @@ namespace UI_DSM.Client.Components.NormalUser.Views
             }
 
             this.ViewModel = trlView.ViewModel;
+            this.ViewModel.GetAvailablesRows().OfType<ElementBaseRowViewModel>().ForEach(x => x.IsExpanded = false);
+
             this.IsLoading = false;
             await Task.CompletedTask;
             return true;

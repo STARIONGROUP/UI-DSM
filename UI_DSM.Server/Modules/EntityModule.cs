@@ -192,6 +192,7 @@ namespace UI_DSM.Server.Modules
                 context.Response.StatusCode = 500;
             }
 
+            await context.Response.Negotiate(requestResponse);
             await context.Response.CompleteAsync();
             await searchService.DeleteIndexedData(entity.ToDto());
             return requestResponse;
