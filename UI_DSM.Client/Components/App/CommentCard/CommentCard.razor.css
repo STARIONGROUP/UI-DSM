@@ -60,3 +60,7 @@
   padding-top: var(--spacing-2);
   border-top: 1px solid var(--colors-gray-50)
 }
+
+.app-comment__linked {
+    margin-right: 5px;
+}

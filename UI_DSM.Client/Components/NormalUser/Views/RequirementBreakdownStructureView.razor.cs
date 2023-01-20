@@ -19,6 +19,9 @@ namespace UI_DSM.Client.Components.NormalUser.Views
 
     using DevExpress.Blazor;
 
+    using Microsoft.AspNetCore.Components;
+    using Microsoft.JSInterop;
+
     using ReactiveUI;
 
     using UI_DSM.Client.ViewModels.Components.NormalUser.Views;
@@ -36,9 +39,20 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         private readonly List<IDisposable> disposables = new();
 
         /// <summary>
+        ///     Id of the element where the view should scroll to
+        /// </summary>
+        private Guid idToScrollTo;
+
+        /// <summary>
         ///     The <see cref="DxGrid" />
         /// </summary>
         protected DxGrid DxGrid { get; set; }
+
+        /// <summary>
+        ///     The <see cref="IJSRuntime" />
+        /// </summary>
+        [Inject]
+        public IJSRuntime JsRuntime { get; set; }
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -70,11 +84,16 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// </summary>
         /// <param name="itemName">The name of the item to navigate to</param>
         /// <returns>A <see cref="Task" /></returns>
-        public override Task TryNavigateToItem(string itemName)
+        public override async Task TryNavigateToItem(string itemName)
         {
             var item = this.ViewModel.Rows.FirstOrDefault(x => string.Equals(itemName, x.Id, StringComparison.InvariantCultureIgnoreCase));
 
-            return item != null ? this.DxGrid.SetFocusedDataItemAsync(item) : Task.CompletedTask;
+            if (item != null)
+            {
+                await this.DxGrid.SetFocusedDataItemAsync(item);
+                this.idToScrollTo = item.ThingId;
+                await this.HasChanged();
+            }
         }
 
         /// <summary>
@@ -86,7 +105,7 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
         /// <param name="prefilters">A collection of prefilters</param>
         /// <param name="additionnalColumnsVisibleAtStart">A collection of columns name that can be visible by default at start</param>
-        /// <param name="participant">The current <see cref="Participant"/></param>
+        /// <param name="participant">The current <see cref="Participant" /></param>
         /// <returns>A <see cref="Task" /></returns>
         public override async Task InitializeViewModel(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart, Participant participant)
         {
@@ -114,6 +133,35 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         protected void OnClick()
         {
             this.DxGrid.ShowColumnChooser("#column-chooser");
+        }
+
+        /// <summary>
+        ///     Method invoked after each time the component has been rendered. Note that the component does
+        ///     not automatically re-render after the completion of any returned <see cref="T:System.Threading.Tasks.Task" />, because
+        ///     that would cause an infinite render loop.
+        /// </summary>
+        /// <param name="firstRender">
+        ///     Set to <c>true</c> if this is the first time
+        ///     <see cref="M:Microsoft.AspNetCore.Components.ComponentBase.OnAfterRender(System.Boolean)" /> has been invoked
+        ///     on this component instance; otherwise <c>false</c>.
+        /// </param>
+        /// <returns>A <see cref="T:System.Threading.Tasks.Task" /> representing any asynchronous operation.</returns>
+        /// <remarks>
+        ///     The <see cref="M:Microsoft.AspNetCore.Components.ComponentBase.OnAfterRender(System.Boolean)" /> and
+        ///     <see cref="M:Microsoft.AspNetCore.Components.ComponentBase.OnAfterRenderAsync(System.Boolean)" /> lifecycle methods
+        ///     are useful for performing interop, or interacting with values received from <c>@ref</c>.
+        ///     Use the <paramref name="firstRender" /> parameter to ensure that initialization work is only performed
+        ///     once.
+        /// </remarks>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            await base.OnAfterRenderAsync(firstRender);
+
+            if (this.idToScrollTo != Guid.Empty)
+            {
+                await this.JsRuntime.InvokeVoidAsync("scrollToElement", $"row_{this.idToScrollTo}", "center", "center");
+                this.idToScrollTo = Guid.Empty;
+            }
         }
 
         /// <summary>

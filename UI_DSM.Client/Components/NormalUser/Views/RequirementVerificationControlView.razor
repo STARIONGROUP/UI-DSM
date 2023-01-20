@@ -45,6 +45,7 @@
 				<CellDisplayTemplate>
 					@if (context.DataItem is RequirementRowViewModel row)
 					{
+						<span id="row_@row.ThingId"></span>
 						<HaveThingRowIcons Row="row"/>
 					}
 				</CellDisplayTemplate>
