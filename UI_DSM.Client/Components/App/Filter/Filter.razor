@@ -1,0 +1,68 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// Filter.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.Model
+
+<div id="@this.Id">
+	<AppButton Type="button" Variant="AppButton.VariantValue.Tertiary" Click="this.OpenCloseFilter">
+		@this.ChildContent
+	</AppButton>
+</div>
+<DxDropDown @bind-IsOpen="@this.ViewModel.IsFilterVisible"
+	PreventCloseOnPositionTargetClick="true"
+            Width="200"
+            MaxHeight="500"
+            PositionTarget="@this.TargetPosition"
+            PositionMode="DropDownPositionMode.Bottom">
+	<BodyTemplate>
+		<div class="filter-dropdown">
+
+
+			<div class="filter-header">
+				<div class="filter-search">
+					<span class="filter-search__label">Filter type</span>
+					<DxComboBox 
+						Data="@this.ViewModel.AvailableFilters"
+						@bind-Value="@this.ViewModel.SelectedFilterModel"
+						TextFieldName="@nameof(FilterModel.DisplayName)"
+						Enabled="@(this.ViewModel.AvailableFilters.Count > 1)"
+					/>
+				</div>
+				<div class="filter-actions">
+					<label>
+						<RadzenCheckBox Value="@this.ViewModel.AreAllSelected()" TriState="true" TValue="bool?" Change=@(this.OnChange)/>
+						<span>@this.GetStateText()</span>
+					</label>
+				</div>
+			</div>
+
+
+			<div class="filter-items">
+				@foreach (var filter in this.ViewModel.SelectedFilters[this.ViewModel.SelectedFilterModel.ClassKind])
+				{
+					<div @onclick="() => this.ViewModel.OnChangeValue(filter)" class="filter-item">
+						<input type="checkbox" checked="@filter.IsSelected"/>
+						<span class="label">
+							@if (this.ViewModel.SelectedFilterModel.UseShortName)
+							{
+								<span>@filter.DefinedThing.ShortName</span>
+							}
+							else
+							{
+								<span>@filter.DefinedThing.Name</span>
+							}
+						</span>
+					</div>
+				}
+			</div>
+		</div>
+	</BodyTemplate>
+</DxDropDown>

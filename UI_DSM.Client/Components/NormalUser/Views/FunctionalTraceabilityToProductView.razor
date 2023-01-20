@@ -1,0 +1,54 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// FunctionalTraceabilityToProductView.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@inherits HaveTechnologyView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IFunctionalTraceabilityToProductViewViewModel>
+
+<div class="view-actions">
+	<div class="left-actions">
+		<div id="view-settings">
+			<AppButton Type="button" Variant="AppButton.VariantValue.Tertiary" Click="@this.ToggleViewSettingsDropdown">
+				View settings
+			</AppButton>
+		</div>
+
+	</div>
+	
+	<DxDropDown @bind-IsOpen="@this.ViewModel.IsViewSettingsVisible"
+	            PreventCloseOnPositionTargetClick="true"
+	            Width="400"
+	            PositionTarget="#view-settings"
+	            PositionMode="DropDownPositionMode.Bottom">
+		<BodyTemplate>
+			<div class="interface-view-actions">
+				<div class="view-settings-panel">
+					<DxCheckBox CheckType="CheckType.Switch" @bind-Checked="@this.ViewModel.IsOnTechnologyView">Show Technology</DxCheckBox>
+					<h5>Row Traces</h5>
+					<ConnectionVisibilitySelector ViewModel="this.ViewModel.TraceabilityTableViewModel.RowVisibilityState" ConnectedStateText="with" NotConnectedStateText="without"/>
+					
+					<h5>Column Traces</h5>
+					<ConnectionVisibilitySelector ViewModel="this.ViewModel.TraceabilityTableViewModel.ColumnVisibilityState" ConnectedStateText="with" NotConnectedStateText="without" />
+				</div>
+			</div>
+		</BodyTemplate>
+	</DxDropDown>
+
+	<div class="right-actions">
+		<Filter ViewModel="this.ViewModel.RowsFilterViewModel" Id="row">
+			<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
+		</Filter>
+
+		<Filter ViewModel="this.ViewModel.ColumnsFilterViewModel" Id="column">
+			<FeatherColumns Size="20" Color="currentColor" StrokeWidth="2"/> <span>Column</span>
+		</Filter>
+	</div>
+
+</div>
+<TraceabilityTable @ref="this.Table" IsLoading="this.IsLoading" />

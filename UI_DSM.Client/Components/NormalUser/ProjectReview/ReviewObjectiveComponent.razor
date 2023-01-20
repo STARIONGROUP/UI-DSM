@@ -1,0 +1,54 @@
+﻿@using UI_DSM.Shared.Enumerator
+<!--------------------------------------------------------------------------------------------------------
+// ReviewObjectiveComponent.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+<div class="project-page">
+  <div class="page-header">
+	  <h1 class="h3">Review objectives for @this.ViewModel.Review.Title</h1>
+	  @if (this.ViewModel.Participant.IsAllowedTo(AccessRight.CreateReviewObjective))
+	  {
+		  <AppButton Click="@this.ViewModel.OpenCreatePopup" Type="button">
+			  <FeatherPlusCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Create review objective(s)</span>
+		  </AppButton>
+	  }
+  </div>
+   <DxPopup CloseOnOutsideClick="false" HeaderText="Create Review Objective(s)" @bind-Visible="@this.ViewModel.IsOnCreationMode">
+		<Content>
+			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+                <ReviewObjectiveCreation  ViewModel="@this.ViewModel.ReviewObjectiveCreationViewModel" />
+			</CascadingValue>
+		</Content>
+	</DxPopup>
+	
+  <div class="objective-overview">
+		@foreach (var reviewObjective in this.ViewModel.Review.ReviewObjectives.OrderBy(x => x.ReviewObjectiveKind).ThenBy(x => x.ReviewObjectiveKindNumber))
+		{
+			<NavLink href="@this.ViewModel.GetNavLink(reviewObjective)">
+				@if (this.ViewModel.CommentsAndTasks.ContainsKey(reviewObjective.Id))
+				{
+					<AppObjectiveItem Tasks="@this.ViewModel.CommentsAndTasks[reviewObjective.Id].TaskCount" ReviewObjective="@reviewObjective"
+					                  OpenComments="@this.ViewModel.CommentsAndTasks[reviewObjective.Id].OpenCommentCount"
+							  TotalComments="@this.ViewModel.CommentsAndTasks[reviewObjective.Id].TotalCommentCount" />
+				}
+				else
+				{
+					<AppObjectiveItem Tasks="-1" ReviewObjective="@reviewObjective" OpenComments="-1"/>
+				}
+			</NavLink>
+		}
+  </div>
+</div>
+
+
+
+
+

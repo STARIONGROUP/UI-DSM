@@ -1,0 +1,70 @@
+.app-accordion__button {
+  width: 100%;
+  text-align: left;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--spacing-2);
+  align-items: center;
+}
+
+.app-accordion__panel {
+  max-height: 0vh;
+  overflow: hidden;
+}
+
+.app-accordion__panel--is-open {
+  max-height: 100vh;
+}
+
+.app-accordion__icon {
+  line-height: 0;
+  transform-origin: center center;
+  transition: transform 0.1s ease-in-out;
+}
+
+.app-accordion__button--is-active .app-accordion__icon {
+  transform: rotate(180deg);
+}
+
+.app-accordion__button--default {
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--colors-gray-50);
+  color: var(--colors-primary-700);
+  font-weight: 700;
+  font-size: var(--text-base);
+}
+
+.app-accordion__button--small {
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--text-base);
+}
+
+.app-accordion__button--medium {
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--text-base);
+  background: var(--colors-primary-25);
+  border-top: 1px solid var(--colors-primary-100);
+  font-weight: 500;
+  color: var(--colors-primary-700);
+}
+
+.app-accordion__button--tiny {
+  color: var(--colors-primary-700);
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--text-sm);
+  line-height: 130%;
+}
+
+.app-accordion__button--reply {
+  font-size: var(--text-sm);
+  color: var(--colors-primary-700);
+  padding: 0;
+  font-weight: 600;
+}
+
+.app-accordion__button--group {
+  font-size: var(--text-lg);
+  color: var(--colors-primary-700);
+  padding: 0;
+  font-weight: 600;
+}

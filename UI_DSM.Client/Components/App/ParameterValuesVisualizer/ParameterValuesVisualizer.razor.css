@@ -1,0 +1,36 @@
+﻿.app-key-value {
+    padding: var(--spacing-2) var(--spacing-4);
+    border-bottom: 1px solid var(--colors-gray-50);
+    font-size: var(--text-sm);
+    gap: var(--spacing-2);
+    line-height: 130%;
+}
+
+.app-key-value--horizontal {
+    display: flex;
+    justify-content: space-between;
+}
+
+.app-key-value--vertical {
+    display: grid;
+}
+
+.app-key-value__key {
+    color: var(--colors-gray-500);
+    white-space: nowrap;
+}
+
+.app-key-value__value {
+    color: var(--colors-gray-700);
+    font-weight: 500;
+    text-align: right;
+}
+
+.more {
+    color: var(--colors-primary-500);
+}
+
+.parameter-values-visualizer {
+    display: flex;
+    justify-content: space-between;
+}

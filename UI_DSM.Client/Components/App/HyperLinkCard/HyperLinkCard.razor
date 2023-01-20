@@ -1,0 +1,23 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// HyperLinkCard.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+<div class="hyper-link-card" @onclick="() => this.OnClick.InvokeAsync(this.Row)">
+	<span class="hyper-link-card__title h4">
+		<HaveThingRowIcons Row="this.Row" />
+		@(this.Row.Id)
+	</span>
+	<div class="hyper-link-card__actions">		
+		<a class="hyper-link-card__link" href="@(this.Row.Url)" target="_blank">
+			<FeatherExternalLink Size="20" Color="currentColor"/>
+			Open document
+		</a>
+	</div>
+</div>

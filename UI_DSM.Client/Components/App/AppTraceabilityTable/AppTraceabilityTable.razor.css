@@ -1,0 +1,90 @@
+.app-traceability-table {
+  overflow: scroll;
+  max-height: calc(100vh - 340px);
+  border-radius: var(--radius-1);
+  font-size: var(--text-sm);
+  width: 100%;
+  border: 1px solid var(--colors-gray-100);
+}
+
+table { 
+  white-space: nowrap;
+  margin: 0;
+  border: none;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+table td,
+table th {
+  border-left: 1px solid var(--colors-gray-100);
+  border-bottom: 1px solid var(--colors-gray-100);
+  padding: var(--spacing-3);
+}
+
+table td:first-child,
+table th:first-child {
+  border-left: none;
+}
+  
+
+table tr:last-child th,
+table tr:last-child td {
+  border-bottom: none;
+}
+
+table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--colors-gray-50);
+}
+
+
+table thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+table tbody th {
+  text-align: left;
+  background: var(--colors-white);
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  border-right: 1px solid var(--colors-gray-100);
+}
+
+
+table td {
+  padding: 4px 5px;
+  text-align: center;
+  color: var(--colors-green-600);
+  position: relative;
+}
+
+table td:hover {
+  color: var(--colors-primary-500);
+}
+
+
+table td:hover:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -9999px;
+  bottom: 0;
+  background: rgba(37,64,212,0.05);
+  z-index: -1;
+}
+
+table tr:hover {
+  background: rgba(37,64,212,0.05);
+}
+
+table tr:hover th {
+  background: var(--colors-primary-50);
+}

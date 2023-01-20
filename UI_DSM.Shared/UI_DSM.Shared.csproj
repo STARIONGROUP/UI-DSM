@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyVersion>1.6.0</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+      <PackageReference Include="GP.SearchService.SDK" Version="1.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.Identity.Stores">
+      <HintPath>..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\6.0.7\Microsoft.Extensions.Identity.Stores.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <Target Name="CopyUIDSMSharedDll" AfterTargets="Build">
+        <Message Text="Executing Copy UI_DSM.Shared.dll to SearchService docker container folder" Importance="High" />
+        <Copy SourceFiles="$(TargetDir)$(ProjectName).dll" 
+              DestinationFolder="..\Docker-images\SearchService\Plugins\" />
+        <Message Text="UI_DSM.Shared.dll was copied to SearchService docker container folder" Importance="High" />
+    </Target>
+
+</Project>

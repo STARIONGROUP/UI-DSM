@@ -1,0 +1,34 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// TaskAssignment.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Shared.Models
+
+<DxFormLayout>
+	<DxFormLayoutItem Caption="Participants :" ColSpanMd="12">
+		<div class="formlayout">
+			@foreach (var group in this.groupedParticipants.Keys)
+			{
+				<AppAccordion Label="@group" @bind-PanelOpen="@this.openedPanels[group]" Variant="AppAccordion.VariantValue.Small">
+					<DxListBox Data="@this.groupedParticipants[group]"
+					           Values="@this.selectedParticipants[group]"
+					           ValuesExpression="@(() => this.selectedParticipants[group])"
+					           ValuesChanged="@((IEnumerable<Participant> participants) => this.OnValuesChanged(participants, group))"
+					           TextFieldName="@nameof(Participant.ParticipantName)"
+					           ShowCheckboxes="true"
+					           SelectionMode="ListBoxSelectionMode.Multiple"/>
+				</AppAccordion>
+			}
+		</div>
+	</DxFormLayoutItem>
+</DxFormLayout>
+<div class="modal-footer m-top-10px">
+	<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Assign" Click="@this.ViewModel.OnValidSubmit" Enabled="@this.ViewModel.SelectedParticipants.Any()"/>
+</div>

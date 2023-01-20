@@ -1,0 +1,27 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// BudgetUpload.razor
+// Copyright (c) 2023 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+<EditForm Context="editFormContext" Model="@this.ViewModel.BudgetData" OnValidSubmit="@this.OnSubmit">
+	<DataAnnotationsValidator/>
+	<DxFormLayout>
+		<DxFormLayoutItem Caption="Budget File :" ColSpanMd="12">
+			<InputFile OnChange="this.OnFileSelected" accept=".rep4"/>
+		</DxFormLayoutItem>
+		<DxFormLayoutItem Caption="Name :" ColSpanMd="12">
+			<DxTextBox @bind-Text="@this.ViewModel.BudgetData.BudgetName" NullText="Enter the name to give to the budget"/>
+		</DxFormLayoutItem>
+	</DxFormLayout>
+	<ValidationSummary/>
+	<ErrorMessage />
+	<div class="modal-footer m-top-10px">
+		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="@this.UploadText" SubmitFormOnClick="true"/>
+	</div>
+</EditForm>

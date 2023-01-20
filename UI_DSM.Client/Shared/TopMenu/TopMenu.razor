@@ -1,0 +1,111 @@
+<!--------------------------------------------------------------------------------------------------------
+// TopMenu.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+@using UI_DSM.Shared.Extensions
+
+<nav class="top-menu">
+	<div class="top-menu__left">
+		<div class="top-menu__icon-group">
+			<NavLink href="/">
+				<FeatherHome Size="28" Color="currentColor" StrokeWidth="1.5f" aria-label="home button"/>
+			</NavLink>
+		</div>
+
+
+		<div class="top-menu__icon-group">
+			<button aria-label="Previous page" onclick="history.back()">
+				<FeatherArrowLeft Size="28" Color="currentColor" StrokeWidth="1.5f"/>
+			</button>
+
+			<button aria-label="Previous page" onclick="history.forward()">
+				<FeatherArrowRight Size="28" Color="currentColor" StrokeWidth="1.5f"/>
+			</button>
+		</div>
+	</div>
+
+	<SearchBar/>
+
+	<div class="top-menu__right">
+		<div class="top-menu__icon-group">
+			<div id="user-icon-button">
+				@if (this.ViewModel.UserName != null)
+				{
+					<button @onclick="this.OpenUserMenu">
+						<UserAvatar UserInitials="@this.ViewModel.UserName[0].ToString()"/>
+					</button>
+				}
+
+				<DxDropDown
+					@bind-IsOpen="@(this.IsUserMenuOpen)"
+					PositionMode="DropDownPositionMode.Bottom"
+					PositionTarget="#user-icon-button"
+					CloseMode="DropDownCloseMode.Close"
+					PreventCloseOnPositionTargetClick="true"
+					BodyCssClass="account-dropdown">
+					@{
+						var participant = this.GetParticipant();
+						if (participant != null)
+						{
+							<div class="participant-widget">
+								<AppKeyValue Key="Role" Value="@participant.Role.RoleName"/>
+								@if (participant.DomainsOfExpertise.Any())
+								{
+									<AppKeyValue Key="Domain(s):" Value="@participant.DomainsOfExpertise.AsCommaSeparated()" />
+								}
+							</div>
+						}
+					}
+					<ul>
+						<AuthorizeView Roles="Administrator">
+							<Authorized>
+								<li>
+									<NavLink href="/Administration/UserManagement" Match="NavLinkMatch.All" @onclick="() => this.IsUserMenuOpen = !this.IsUserMenuOpen">
+										<FeatherUserPlus Size="24" Color="currentColor" StrokeWidth="1.5f"/> Users
+									</NavLink>
+								</li>
+								<li>
+									<NavLink class="account-dropdown__link" href="/Administration/ProjectManagement" @onclick="() => this.IsUserMenuOpen = !this.IsUserMenuOpen">
+										<FeatherToggleLeft Size="24" Color="currentColor" StrokeWidth="1.5f"/> Project Management
+									</NavLink>
+								</li>
+								<li>
+									<NavLink href="/Administration/RoleManagement" Match="NavLinkMatch.All" @onclick="() => this.IsUserMenuOpen = !this.IsUserMenuOpen">
+										<FeatherUsers Size="24" Color="currentColor" StrokeWidth="1.5f"/> Roles
+									</NavLink>
+								</li>
+								<li>
+									<NavLink href="/About" Match="NavLinkMatch.All" @onclick="() => this.IsUserMenuOpen = !this.IsUserMenuOpen">
+										<FeatherInfo Size="24" Color="currentColor" StrokeWidth="1.5f"/> About
+									</NavLink>
+								</li>
+							</Authorized>
+							<NotAuthorized>
+								@if (this.ViewModel.HasAccessToProjectManagement())
+								{
+									<li>
+										<NavLink class="account-dropdown__link" href="/Administration/ProjectManagement" @onclick="() => this.IsUserMenuOpen = !this.IsUserMenuOpen">
+											<FeatherToggleLeft Size="24" Color="currentColor" StrokeWidth="1.5f"/> Project Management
+										</NavLink>
+									</li>
+								}
+							</NotAuthorized>
+						</AuthorizeView>
+
+						<li>
+							<Logout/>
+						</li>
+					</ul>
+				</DxDropDown>
+			</div>
+		</div>
+	</div>
+</nav>

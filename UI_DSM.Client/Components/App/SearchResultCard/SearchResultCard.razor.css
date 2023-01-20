@@ -1,0 +1,15 @@
+.search-result-card {
+  text-align: left;
+  display: grid;
+}
+
+
+
+.search-result-card__title{
+  font-weight: 600;
+}
+
+.search-result-card__category {
+  font-size: var(--text-sm);
+  justify-self: flex-start;
+}

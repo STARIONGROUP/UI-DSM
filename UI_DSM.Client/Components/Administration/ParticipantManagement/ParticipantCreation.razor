@@ -1,0 +1,39 @@
+﻿@using UI_DSM.Shared.Models
+<!--------------------------------------------------------------------------------------------------------
+// ParticipantCreation.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+<CascadingValue Name="PreventValidation" Value="true">
+	<EditForm Context="editFormContext" Model="@this.ViewModel.Participant" OnValidSubmit="@this.ViewModel.OnValidSubmit">
+		<DataAnnotationsValidator />
+		<DxFormLayout>
+			<DxFormLayoutItem Caption="User :" ColSpanMd="12">
+				<DxComboBox Data="@this.ViewModel.AvailableUsers"
+				            @bind-Value="this.ViewModel.Participant.User" 
+				            TextFieldName="@nameof(UserEntity.UserName)"/>
+			</DxFormLayoutItem>
+			<DxFormLayoutItem Caption="Role :" ColSpanMd="12">
+				<DxComboBox Data="@this.ViewModel.AvailableRoles"
+				            @bind-Value="this.ViewModel.Participant.Role"
+				            TextFieldName="@nameof(Role.RoleName)"/>
+			</DxFormLayoutItem>
+			<DxFormLayoutItem Caption="Domains Of Expertise :" ColSpanMd="12">
+				<DxListBox Data="@this.ViewModel.AvailableDomains"
+				           @bind-Values="this.ViewModel.SelectedDomains"
+				           SelectionMode="ListBoxSelectionMode.Multiple" ShowCheckboxes="true" />
+			</DxFormLayoutItem>
+		</DxFormLayout>
+		<ValidationSummary/>
+		<ErrorMessage />
+		<div class="modal-footer m-top-10px">
+			<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Create" SubmitFormOnClick="true"/>
+		</div>
+	</EditForm>
+</CascadingValue>

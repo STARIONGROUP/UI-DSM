@@ -1,0 +1,64 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// ReviewObjectivePage.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@page "/Project/{ProjectId}/Review/{ReviewId}/ReviewObjective/{ReviewObjectiveId}"
+@layout DefaultLayout
+
+<PageTitle>Review Objective | UI-DSM</PageTitle>
+	  
+<DxPopup CloseOnOutsideClick="false" HeaderText="Assign Participants" @bind-Visible="@this.ViewModel.IsOnAssignmentMode">
+		<Content>
+			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+                <UI_DSM.Client.Components.NormalUser.ReviewTask.TaskAssignment ProjectParticipants="@this.ViewModel.ProjectParticipants" ViewModel="@this.ViewModel.TaskAssignmentViewModel" />
+			</CascadingValue>
+		</Content>
+</DxPopup>
+	
+@if(!this.IsLoading && this.ViewModel.ReviewObjective is null){
+    <div style="display: flex; align-items: center; justify-content: center;">
+        <h3>No reviews found</h3>
+    </div>
+}
+else{
+	<LoadingComponent IsLoading="this.IsLoading">
+		<div class="objective-page">
+
+			<AppReviewHeader Title="@this.ViewModel.ReviewObjective.Title" Description="@this.ViewModel.ReviewObjective.Description" />
+
+			<div class="task-section">
+				<h1 class="h3">Objective tasks</h1>
+				<div class="task-overview">
+
+					@foreach (var task in this.ViewModel.ReviewObjective.ReviewTasks.OrderBy(x => x.TaskNumber))
+					{
+						@if (this.ViewModel.CommentsCount.ContainsKey(task.Id))
+						{
+							<ReviewTaskCard ReviewTask="@task" ProjectId="@this.ProjectId" ReviewId="@this.ReviewId" 
+							                ReviewObjectiveId="@this.ReviewObjectiveId" ViewModel="this.ViewModel" 
+							                CommentsCount="@this.ViewModel.CommentsCount[task.Id]" 
+							                UserName="@this.ViewModel.UserName"/>
+						}
+						else
+						{
+							<ReviewTaskCard ReviewTask="@task" ProjectId="@this.ProjectId" ReviewId="@this.ReviewId" 
+							                ReviewObjectiveId="@this.ReviewObjectiveId" ViewModel="this.ViewModel"
+								UserName="@this.ViewModel.UserName" />
+						}
+					}
+				</div>
+			</div>
+		</div>
+	</LoadingComponent>
+}
+
+
+
+

@@ -1,0 +1,13 @@
+.comments__add-button {
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--colors-gray-100);
+  text-align: center;
+  width: 100%;
+  font-weight: 700;
+  color: var(--colors-primary-500);
+}
+
+.comments__add-button:hover {
+  background-color: var(--colors-primary-500);
+  color: var(--colors-white);
+}

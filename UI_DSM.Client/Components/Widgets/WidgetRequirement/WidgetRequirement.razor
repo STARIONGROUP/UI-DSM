@@ -1,0 +1,31 @@
+<!--------------------------------------------------------------------------------------------------------
+// WidgetRequirement.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@namespace AppComponents
+
+<div class="widget-requirement">
+  <AppAccordion Label="Requirement">
+    <AppKeyValue Key="ID" Value="Requirement ID" />
+    <AppKeyValue Key="Name" Value="Requirement name" />
+    <AppKeyValue Key="Description"
+      Value="This is the requirement description it should explain something about the requirement."
+      Variant="AppKeyValue.VariantValue.Vertical" />
+    <AppKeyValue Key="Owner " Value="item value" />
+    <AppKeyValue Key="Requirement type" Value="item value" />
+    <AppKeyValue Key="Verification method" Value="item value" />
+    <AppKeyValue Key="Verification stage" Value="item value" />
+    <AppKeyValue Key="Justification" Value="item value" />
+    <AppKeyValue Key="Derivation from" Value="item value" />
+    <AppKeyValue Key="Derivation to" Value="item value" />
+    <AppKeyValue Key="Parametric Constraints" Value="item value" />
+    <AppKeyValues Key="Associated Categories" Items="null"/>
+  </AppAccordion>
+</div>

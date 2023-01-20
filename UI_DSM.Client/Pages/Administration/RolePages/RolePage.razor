@@ -1,0 +1,35 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// RolePage.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@page "/Administration/Role/{RoleId}"
+@layout DefaultLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+<UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.ViewModel.RoleDetailsViewModel.Role is null">
+	<CascadingValue Name="PreventValidation" Value="true">
+	<DxFormLayout>
+		<DxFormLayoutItem Caption="Enable Modification">
+			<DxCheckBox @bind-Checked="this.ViewModel.ModificationEnabled" />
+		</DxFormLayoutItem>
+	</DxFormLayout>
+	<EditForm Context="editFormContext" Model="@this.ViewModel.RoleDetailsViewModel.Role" OnValidSubmit="@this.ViewModel.UpdateRole">
+		<DataAnnotationsValidator />
+		<RoleDetails ViewModel="@this.ViewModel.RoleDetailsViewModel" ModificationEnabled="this.ViewModel.ModificationEnabled"/>
+		<ValidationSummary/>
+		<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+			<ErrorMessage />
+		</CascadingValue>
+		<div class="modal-footer m-top-10px">
+			<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Update" SubmitFormOnClick="true" Enabled="@this.ViewModel.ModificationEnabled"/>
+		</div>
+	</EditForm>
+	</CascadingValue>
+</UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>

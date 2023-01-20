@@ -1,0 +1,70 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// RequirementVerificationControlView.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+@inherits RequirementBreakdownStructureView
+
+<div class="view-actions">
+	<div class="left-actions">
+
+	</div>
+	<div class="right-actions">
+		<Filter ViewModel="this.ViewModel.FilterViewModel" Id="row">
+			<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
+		</Filter>
+		<AppButton Id="column-chooser" Label="Select visible columns" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="this.OnClick">
+			<FeatherColumns Size="20" Color="currentColor" StrokeWidth="2"/> <span>Columns</span>
+		</AppButton>
+	</div>
+</div>
+
+<LoadingComponent IsLoading="this.IsLoading">
+<div class="breakdown-view">
+	<DxGrid ShowAllRows="true"
+	        CssClass="default-grid"
+	        @ref="@this.DxGrid"
+	        Data="@(this.ViewModel.Rows)"
+	        @bind-SelectedDataItem="@this.ViewModel.SelectedElement"
+	        SelectionMode="GridSelectionMode.Single"
+	        AllowSelectRowByClick="true"
+	        ShowFilterRow="true"
+	        HorizontalScrollBarMode="ScrollBarMode.Visible"
+	        FocusedRowEnabled="true">
+		<Columns>
+
+			<DxGridDataColumn ShowInColumnChooser="false">
+				<FilterRowCellTemplate />
+				<CellDisplayTemplate>
+					@if (context.DataItem is RequirementRowViewModel row)
+					{
+						<span id="row_@row.ThingId"></span>
+						<HaveThingRowIcons Row="row"/>
+					}
+				</CellDisplayTemplate>
+			</DxGridDataColumn>
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Specification)" GroupIndex="0" GroupInterval="GridColumnGroupInterval.Value" Width="200" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Group)" GroupIndex="1" GroupInterval="GridColumnGroupInterval.Value" Width="200"  />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Id)" Caption="ID" Width="150" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Name)"  Width="200" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Definition)"  Width="400" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaCategories)" Caption="@("Categories")" Width="300" AllowSort="false"/>
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Justification)"  Width="250" Visible="false"/>
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.RequirementType)"  Width="250"/>
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaDerivesFrom)" Caption="@("Derives From")" AllowSort="false" Width="250" Visible="false"/>
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaDerivesTo)" Caption="@("Derives To")" AllowSort="false" Width="250" Visible="false" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaSatisfyByFunction)" Caption="@("Satisfy By Function")" AllowSort="false" Width="250" Visible="false" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaSatisfyByProduct)" Caption="@("Satisfy By Product")" AllowSort="false" Width="250" Visible="false" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationMethod)"  Width="250" />
+			<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationStage)" Width="250" />
+		</Columns>
+	</DxGrid>
+</div>
+</LoadingComponent>

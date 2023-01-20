@@ -1,0 +1,53 @@
+.task-item {
+  display: grid;
+  padding: var(--spacing-2) var(--spacing-4) var(--spacing-2) 0;
+  gap: var(--spacing-1);
+  border-bottom: 1px solid var(--colors-gray-100);
+  text-decoration: none;
+  align-items: center;
+  color: var(--colors-gray-900);
+  grid-template-columns: 1fr auto;
+}
+.task-item__button {
+  width: 100%;
+  text-align: left;
+  padding: var(--spacing-4);
+}
+
+.task-item__actions {
+  display: flex;
+  gap: var(--spacing-4);
+  align-items: center;
+  margin-left: auto;
+}
+
+.task-item:hover {
+  background: var(--colors-gray-50);
+}
+
+.app-project-card__stat {
+    display: grid;
+    gap: var(--spacing-2);
+    grid-template-columns: auto 1fr;
+    align-items: center;
+}
+
+.app-project-card__icon {
+    padding: var(--spacing-2);
+    background: var(--colors-primary-50);
+    border-radius: var(--radius-1);
+}
+
+.stat__body {
+    display: grid;
+}
+
+.stat__label {
+    color: var(--colors-gray-600);
+    font-size: var(--text-sm);
+}
+
+.stat__amount {
+    margin: 0;
+    font-weight: 700;
+}

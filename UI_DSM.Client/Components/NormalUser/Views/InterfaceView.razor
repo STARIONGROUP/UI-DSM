@@ -1,0 +1,85 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// InterfaceView.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+@using DataGridSelectionMode = Radzen.DataGridSelectionMode
+@inherits GenericBaseView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IInterfaceViewViewModel>
+
+<LoadingComponent IsLoading="this.IsLoading">
+<div class="view-actions">
+	<div class="left-actions">
+
+			<div id="view-settings">
+				<AppButton Type="button" Variant="AppButton.VariantValue.Tertiary" Click="@this.ToggleViewSettingsDropdown">
+					View settings
+				</AppButton>
+			</div>
+
+<DxDropDown @bind-IsOpen="@this.ViewModel.IsViewSettingsVisible"
+	PreventCloseOnPositionTargetClick="true"
+	Width="400"
+	PositionTarget="#view-settings"
+	PositionMode="DropDownPositionMode.Bottom">
+		<BodyTemplate>
+			<div class="interface-view-actions">
+				<div class="view-settings-panel">
+					<label>
+						<RadzenCheckBox Value="@this.ViewModel.ShouldShowProducts" TValue="bool" Change="@this.OnProductVisibilityChanged" />
+						<span>Show as products</span>
+					</label>
+
+					<div class="@this.GetSelectorsClass()">
+						<h5>Connected ports</h5>
+						<ConnectionVisibilitySelector ViewModel="@this.ViewModel.PortVisibilityState" ConnectedStateText="with" NotConnectedStateText="without"/>
+
+						<h5>ports</h5>
+						<ConnectionVisibilitySelector ViewModel="@this.ViewModel.ProductVisibilityState" ConnectedStateText="with" NotConnectedStateText="without"/>
+					</div>
+				</div>
+			</div>
+	</BodyTemplate>
+</DxDropDown>
+
+	</div>
+
+	<div class="right-actions">
+		<Filter ViewModel="this.ViewModel.FilterViewModel" Id="row">
+			<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
+		</Filter>
+		<ColumnChooser TItem="IBelongsToInterfaceView" ViewModel="@this.columnChooser"/>
+	</div>
+</div>
+
+<RadzenDataGrid @ref="@this.Grid" TItem="IBelongsToInterfaceView" Data="@(this.ViewModel.Data)" ExpandMode="DataGridExpandMode.Single"
+                RowRender="@this.RowRender" LoadChildData="@this.LoadChildren" SelectionMode="DataGridSelectionMode.Single"
+				RowSelect="@this.SelectRow" AllowFiltering="true" FilterMode="FilterMode.SimpleWithMenu" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+					LogicalFilterOperator="LogicalFilterOperator.Or" AllowColumnResize="true" RowExpand="@this.OnRowExpand">
+	<Columns>
+			<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.Id)" Pickable="false" Title="Name">
+				<Template Context="data">
+					<div>
+						@if (data is IHaveThingRowViewModel row)
+						{
+							<HaveThingRowIcons Row="row"/>
+						}
+						@data.Id
+					</div>
+				</Template>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.Owner)" Title="Owner" />
+			<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.Nature)" Title="Interface Nature" />
+			<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.SourceEnd)" Title="Source" />
+			<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.TargetEnd)" Title="Target" />
+			<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.SourceOwner)" Title="Source Owner" />
+			<RadzenDataGridColumn TItem="IBelongsToInterfaceView" Property="@nameof(IBelongsToInterfaceView.TargetOwner)" Title="Target Owner" />
+	</Columns>
+</RadzenDataGrid>
+</LoadingComponent>

@@ -1,0 +1,25 @@
+.app-key-values__list {
+  list-style: none;
+  padding: 0;
+}
+
+.app-key-values__list-item {
+  padding: var(--spacing-2) var(--spacing-4);
+  border-top: 1px solid var(--colors-gray-50);
+  font-size: var(--text-sm);
+  gap: var(--spacing-2);
+  line-height: 130%;
+}
+
+.app-key-values__list-item button {
+  text-align: left;
+  color: var(--colors-primary-500);
+}
+
+.have-thing-rows-linked__list-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  text-align: left;
+  color: var(--colors-primary-500);
+  align-items: flex-start;
+}

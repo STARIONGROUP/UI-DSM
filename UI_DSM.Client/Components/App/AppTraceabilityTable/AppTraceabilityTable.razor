@@ -1,0 +1,74 @@
+<!--------------------------------------------------------------------------------------------------------
+// AppTraceabilityTable.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@namespace AppComponents
+
+<div class="app-traceability-table">
+  <div>
+    <table>
+      <thead>
+        <tr>
+          <th>fun/prod</th>
+          <th>Product 1</th>
+          <th>Product 2</th>
+          <th>Product 3</th>
+          <th>Product 4</th>
+          <th>Product 5</th>
+          <th>Product 6</th>
+          <th>Product 7</th>
+          <th>Product 8</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Function 1</th>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>
+            <FeatherCheck Size="24" Color="currentColor" StrokeWidth="2" />
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>Function 2</th>
+          <td>
+            <FeatherCheck Size="24" Color="currentColor" StrokeWidth="2" />
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <th>Function 3</th>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>
+            <FeatherCheck Size="24" Color="currentColor" StrokeWidth="2" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

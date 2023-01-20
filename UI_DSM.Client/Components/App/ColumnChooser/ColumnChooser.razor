@@ -1,0 +1,38 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// ColumnChooser.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@typeparam TItem
+
+<div id="column-chooser-button" class="column-chooser">
+	<AppButton Label="Select visible columns" Type="button" Variant="AppButton.VariantValue.Tertiary" Click="this.ViewModel.OpenColumnChooser">
+		<FeatherColumns Size="20" Color="currentColor" StrokeWidth="2" /> <span>Columns</span>
+	</AppButton>
+
+
+	<DxDropDown @bind-IsOpen="@this.ViewModel.ColumnChooserVisible"
+							Width="200"
+				MaxHeight="500"
+							PositionTarget="#column-chooser-button"
+							PositionMode="DropDownPositionMode.Bottom">
+		<BodyTemplate>
+			<div class="column-chooser__panel">
+
+				@foreach (var column in this.ViewModel.AvailableColumns)
+				{
+					<label>
+						<input type="checkbox" checked="@column.Visible" @onchange="() => this.ViewModel.OnChangeValue(column)" />
+						<span>@column.Title</span>
+					</label>
+				}
+			</div>
+		</BodyTemplate>
+	</DxDropDown>
+</div>

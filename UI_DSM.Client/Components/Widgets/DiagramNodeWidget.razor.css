@@ -1,0 +1,75 @@
+﻿﻿.custom-node {
+    width: auto;
+    height: auto;
+    min-width: 100px;
+    min-height: 80px;
+    padding: 10px;
+    position: absolute;
+    border-radius: 0;
+}
+
+.custom-node.over {
+    box-shadow: 0 0 0 2px gray;
+}
+
+.custom-node.expanded {
+    box-shadow: 0 0 0 2px #6eb4f5;
+}
+
+.hidden {
+    display: none;
+}
+
+::deep .custom-port {
+    width: 14px !important;
+    height: 14px !important;
+    margin: -7px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    ::deep .custom-port.has-links {
+        background: whitesmoke !important;
+    }
+
+    ::deep .custom-port:hover {
+        background: lightgray !important;
+        box-shadow: 0 0 0 2px gray;
+    }
+
+    ::deep .custom-port .In {
+        width: 8px;
+        height: 8px;
+        background: var(--port-in-color);
+        border-radius: 50%;
+    }
+
+    ::deep .custom-port .Out {
+        width: 8px;
+        height: 8px;
+        background: var(--port-out-color);
+        border-radius: 50%;
+    }
+
+    ::deep .custom-port .InOut {
+        width: 8px;
+        height: 8px;
+        background: var(--port-inout-color);
+        border-radius: 50%;
+    }
+
+.node-comment {
+    width: 8px;
+    height: 8px;
+    background-color: var(--comment-color);
+    position: absolute;
+    border-radius: 50%;
+    right: 5px;
+    bottom: 5px;
+    box-shadow: 0 0 0 2px var(--comment-color);
+}
+
+::deep .port-comment {
+    box-shadow: 0 0 0 2px var(--comment-color) !important;
+}

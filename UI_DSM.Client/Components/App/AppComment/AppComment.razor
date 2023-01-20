@@ -1,0 +1,43 @@
+<!--------------------------------------------------------------------------------------------------------
+// AppComment.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+@namespace AppComponents
+
+<div class="app-comment">
+  <div class="app-comment__body">
+    <span class="app-comment__title">
+      <FeatherMessageCircle Size="24" Color="currentColor" StrokeWidth="1.5f" />
+      <span class="app-comment__name">@Name</span>
+      <span class="app-comment__date">@Date</span>
+    </span>
+
+    <span class="app-comment__description">@Comment</span>
+    <button class="app-comment__button">Reply to comment</button>
+  </div>
+</div>
+
+@code {
+  /// <summary>
+  ///   Name of the comment author
+  /// </summary>
+  [Parameter] public string Name { get; set; }
+
+  /// <summary>
+  ///   Name of the commenter
+  /// </summary>
+  [Parameter] public string Date { get; set; }
+
+  /// <summary>
+  ///   Comment text
+  /// </summary>
+  [Parameter] public string Comment { get; set; }
+}

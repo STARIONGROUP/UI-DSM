@@ -1,0 +1,74 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// ProjectPage.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@page "/Administration/Project/{ProjectId}"
+@layout DefaultLayout
+@attribute [Authorize]
+<LoadingComponent IsLoading="this.ViewModel.ProjectDetailsViewModel.Project is null">
+	<AuthorizeView Roles="Administrator">
+		<NotAuthorized>
+			@if (!this.ViewModel.IsAuthorized)
+			{
+				<text> You are not authorized to access this page. </text>
+			}
+		</NotAuthorized>
+		<Authorized>
+			@if(!this.ViewModel.IsAuthorized)
+			{
+				this.ViewModel.IsAuthorized = true;
+			}
+		</Authorized>
+	</AuthorizeView>
+	
+	@if (this.ViewModel.IsAuthorized)
+	{
+		<div>
+			<AppButton Click="@this.ViewModel.OpenCreateParticipantPopup" Type="button">
+				<FeatherUserPlus Size="20" Color="currentColor" StrokeWidth="2"/> <span>Add participant</span>
+			</AppButton>
+			<DxPopup CloseOnOutsideClick="false" HeaderText="Create Participant" @bind-Visible="@this.ViewModel.IsOnCreationMode">
+				<Content>
+					<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+						<ParticipantCreation ViewModel="@this.ViewModel.ParticipantCreationViewModel"/>
+					</CascadingValue>
+				</Content>
+			</DxPopup>
+		</div>
+		<ProjectDetails ViewModel="@this.ViewModel.ProjectDetailsViewModel"/>
+		<ModelsDetails  ViewModel="@this.ViewModel.ProjectDetailsViewModel"/>		
+		<BudgetDetails  ViewModel="@this.ViewModel.ProjectDetailsViewModel"/>		
+
+		<span class="upload">
+			<div>
+				<AppButton Click="@this.ViewModel.OpenCometConnectionPopup" Type="button">
+					<FeatherUpload Size="20" Color="currentColor" StrokeWidth="2"/> <span>Connect to COMET</span>
+				</AppButton>
+			</div>
+			<div>
+				<AppButton Click="@this.ViewModel.OpenBudgetUploadPopup" Type="button">
+					<FeatherUpload Size="20" Color="currentColor" StrokeWidth="2"/> <span>Upload budget template</span>
+				</AppButton>
+			</div>
+			<DxPopup CloseOnOutsideClick="false" HeaderText="Connect to COMET" @bind-Visible="@this.ViewModel.IsOnCometConnectionMode">
+				<Content>
+					<CometUpload ViewModel="@this.ViewModel.CometUploadViewModel"/>
+				</Content>
+			</DxPopup>
+			<DxPopup CloseOnOutsideClick="false" HeaderText="Upload budget template" @bind-Visible="@this.ViewModel.IsOnBudgetUploadMode">
+				<Content>
+					<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+						<BudgetUpload ViewModel="@this.ViewModel.BudgetUploadViewModel"/>
+					</CascadingValue>
+				</Content>
+			</DxPopup>
+		</span>
+	}
+</LoadingComponent>

@@ -1,0 +1,50 @@
+<!--------------------------------------------------------------------------------------------------------
+// AppObjectiveItem.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Shared.Enumerator
+
+<article class="app-objective-item">
+	<h2 class="h4">@(this.ReviewObjective.Title)</h2>
+	<span>@(this.ReviewObjective.Description)</span>
+	<div class="app-project-card__footer">
+		@if (this.ReviewObjective.Status == StatusKind.Done)
+	{
+		<FeatherCheckCircle Size="24" Color="#1FAB77" StrokeWidth="2"/>
+	}
+
+		@if (this.Tasks >= 0)
+		{
+			<div class="app-project-card__stat">
+				<div class="app-project-card__icon">
+					<FeatherCheckCircle Color="currentColor" Size="24"/>
+				</div>
+
+				<div class="stat__body">
+					<span class="stat__label">Tasks</span>
+					<span class="stat__amount h4">@(this.Tasks)</span>
+				</div>
+			</div>
+		}
+		
+		@if (this.OpenComments >= 0)
+		{
+			<div class="app-project-card__stat">
+				<div class="app-project-card__icon">
+					<FeatherMessageCircle Color="currentColor" Size="24" />
+				</div>
+				<div class="stat__body">
+					<span class="stat__label">Comments</span>
+					<span class="stat__amount">@(this.OpenComments)/@(this.TotalComments)</span>
+				</div>
+			</div>
+		}
+	</div>
+</article>

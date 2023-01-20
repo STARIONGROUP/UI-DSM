@@ -1,0 +1,21 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// AnnotationLinker.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+@using UI_DSM.Client.Enumerator
+
+<DxListBox Data="@this.ViewModel.AvailableItems" TextFieldName="@nameof(IHaveThingRowViewModel.Id)"
+	           @bind-Values="@this.ViewModel.SelectedItems" SelectionMode="ListBoxSelectionMode.Multiple" ShowCheckboxes="true"
+	           ListRenderMode="ListRenderMode.Virtual"/>
+<div class="modal-footer m-top-10px">
+	<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="@this.SubmitText" Click="@this.OnSubmit" 
+	          Enabled="@(this.ViewModel.CreationStatus != CreationStatus.Creating && this.ViewModel.SelectedItems.Any())"/>
+</div>

@@ -1,0 +1,9 @@
+.app-three-list {
+  list-style: none;
+  padding: 0 var(--spacing-4);
+  display: grid;
+  gap: var(--spacing-1);
+  font-size: var(--text-sm);
+  color: var(--colors-gray-600);
+  margin-bottom: 0;
+}

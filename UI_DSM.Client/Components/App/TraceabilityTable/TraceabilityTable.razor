@@ -1,0 +1,60 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// TraceabilityTable.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+<LoadingComponent IsLoading="this.IsLoading">
+	<div class="app-traceability-table">
+		<div>
+			<table>
+				<thead>
+				<tr>
+					<th>@this.ViewModel.HeaderName</th>
+					@foreach (var column in this.columnsToDisplay)
+					{
+						<th @onclick="() => this.ViewModel.SelectElement(column)" id="column_@column.ThingId">
+							<span class="@this.GetHeaderClass(column)">
+								<HaveThingRowIcons Row="column"/>
+								@column.Id
+							</span>
+						</th>
+					}
+				</tr>
+				</thead>
+				<tbody>
+				@foreach (var currentRow in this.rowsToDisplay)
+				{
+					<tr class="@this.GetTrClass(currentRow)">
+						<th @onclick="() => this.ViewModel.SelectElement(currentRow)" id="row_@currentRow.ThingId">
+							<span class="@this.GetHeaderClass(currentRow)">
+								<HaveThingRowIcons Row="currentRow"/>
+								@currentRow.Id
+							</span>
+						</th>
+							@foreach (var currentColumn in this.columnsToDisplay)
+							{
+								@if (this.ViewModel.GetRelationship(currentRow, currentColumn) is { } relationship)
+								{
+									<td class="@GetTdClass(currentRow, currentColumn)" id="cell_@relationship.ThingId">
+										<TraceabilityCell RelationshipRow="relationship" OnClick="(row) => this.ViewModel.SelectElement(row)"/>
+									</td>
+								}
+								else
+								{
+										<td class="@GetTdClass(currentRow, currentColumn)"/>
+								}
+							}
+					</tr>
+				}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</LoadingComponent>

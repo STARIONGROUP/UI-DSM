@@ -1,0 +1,196 @@
+﻿[
+  {
+    "@type": "ProjectDto",
+    "projectName": "Project",
+    "participants": [
+      "3542293d-cdcd-4143-a546-436bc9d9a118"
+    ],
+    "reviews": [
+      "18aa374f-13e9-4b59-8a1a-a030ad3f9400"
+    ],
+    "annotations": [
+      "b3d9b817-4928-47a1-b398-f6818ad4b849",
+      "bb5a4d0b-ee35-4d8a-8cb9-d471e6326abb",
+      "a8b86b4f-3b2e-441f-a607-3090cfbb5359"
+    ],
+    "artifacts": [
+      "5aac9fe3-2659-47ba-88ba-d642b8d0c94b"
+    ],
+    "id": "9417d7ea-ce53-4187-897f-f1a1cc2d104e"
+  },
+  {
+    "@type": "ParticipantDto",
+    "user": "f09d2f93-edb0-4310-9e3f-69e4d6abc71a",
+    "role": "d92d3637-0a4b-4f33-adee-8e1814f917b8",
+    "id": "3542293d-cdcd-4143-a546-436bc9d9a118"
+  },
+  {
+    "@type": "UserEntityDto",
+    "userName": "admin",
+    "isAdmin": true,
+    "id": "f09d2f93-edb0-4310-9e3f-69e4d6abc71a"
+  },
+  {
+    "@type": "RoleDto",
+    "roleName": "A role",
+    "accessRights": [
+      "CREATEREVIEW",
+      "REVIEWTASK"
+    ],
+    "id": "d92d3637-0a4b-4f33-adee-8e1814f917b8"
+  },
+  {
+    "@type": "ReplyDto",
+    "author": "3542293d-cdcd-4143-a546-436bc9d9a118",
+    "createdOn": "2022-09-19T15:03:30.892322Z",
+    "content": "Reply content",
+    "id": "7217ae7c-3c11-470e-a76d-ccbc8d4496c7"
+  },
+  {
+    "@type": "CommentDto",
+    "replies": [
+      "7217ae7c-3c11-470e-a76d-ccbc8d4496c7"
+    ],
+    "author": "3542293d-cdcd-4143-a546-436bc9d9a118",
+    "createdOn": "2022-09-19T15:03:30.8926661Z",
+    "annotatableItems": [
+      "e82db38e-a59e-4a2d-a299-1a54c687b256"
+    ],
+    "content": "Comment content",
+    "id": "b3d9b817-4928-47a1-b398-f6818ad4b849"
+  },
+  {
+    "@type": "FeedbackDto",
+    "author": "3542293d-cdcd-4143-a546-436bc9d9a118",
+    "createdOn": "2022-09-19T15:03:30.8927617Z",
+    "annotatableItems": [
+      "e82db38e-a59e-4a2d-a299-1a54c687b256"
+    ],
+    "content": "feedback content",
+    "id": "a8b86b4f-3b2e-441f-a607-3090cfbb5359"
+  },
+  {
+    "@type": "NoteDto",
+    "author": "3542293d-cdcd-4143-a546-436bc9d9a118",
+    "createdOn": "2022-09-19T15:03:30.8928157Z",
+    "annotatableItems": [
+      "e82db38e-a59e-4a2d-a299-1a54c687b256"
+    ],
+    "content": "note content",
+    "id": "bb5a4d0b-ee35-4d8a-8cb9-d471e6326abb"
+  },
+  {
+    "@type": "ReviewDto",
+    "createdOn": "2022-09-19T15:03:30.8931703Z",
+    "author": "3542293d-cdcd-4143-a546-436bc9d9a118",
+    "reviewNumber": 2,
+    "title": "review Title",
+    "description": "review description",
+    "status": "OPEN",
+    "reviewObjectives": [
+      "e82db38e-a59e-4a2d-a299-1a54c687b256"
+    ],
+    "reviewItems": [
+      "b76ee38f-3365-4e41-8ae3-2c543f551214"
+    ],
+    "id": "18aa374f-13e9-4b59-8a1a-a030ad3f9400"
+  },
+  {
+    "@type": "ReviewObjectiveDto",
+    "title": "review objective Title",
+    "description": "review objective description",
+    "reviewObjectiveNumber": 2,
+    "status": "OPEN",
+    "reviewTasks": [
+      "d6fde0cd-fa4c-4897-a9ea-b81d90396595"
+    ],
+    "author": "3542293d-cdcd-4143-a546-436bc9d9a118",
+    "createdOn": "2022-09-19T15:03:30.892112Z",
+    "annotations": [
+      "b3d9b817-4928-47a1-b398-f6818ad4b849",
+      "a8b86b4f-3b2e-441f-a607-3090cfbb5359",
+      "bb5a4d0b-ee35-4d8a-8cb9-d471e6326abb"
+    ],
+    "id": "e82db38e-a59e-4a2d-a299-1a54c687b256"
+  },
+  {
+    "@type": "ReviewTaskDto",
+    "title": "review objective Title",
+    "description": "review objective description",
+    "taskNumber": 2,
+    "status": "OPEN",
+    "createdOn": "2022-09-19T15:03:30.8916701Z",
+    "author": "3542293d-cdcd-4143-a546-436bc9d9a118",
+    "isAssignedTo": [
+      "3542293d-cdcd-4143-a546-436bc9d9a118"
+    ],
+    "id": "d6fde0cd-fa4c-4897-a9ea-b81d90396595"
+  },
+  {
+    "@type": "ModelDto",
+    "modelName": "Envision - Iteration 1",
+    "fileName": "161A0A63-DFFE-4DFA-8A33-D80B31DEC9FE.zip",
+    "id": "5aac9fe3-2659-47ba-88ba-d642b8d0c94b"
+  },
+  {
+    "@type": "ReviewCategoryDto",
+    "reviewCategoryName": "ReviewCategory",
+    "description": "ReviewCategory description",
+    "tagColor": "#CB7777",
+    "id": "df12b299-3210-4d87-bf19-69c260c30888"
+  },
+  {
+    "@type": "ProjectDto",
+    "projectName": "Project",
+    "participants": [
+      "4eaba16e-6bb7-4372-ad44-c7ae1d44cbaf"
+    ],
+    "reviews": [
+      "9b8c2e64-15ac-40ad-9202-0392a35a649c"
+    ],
+    "annotations": [
+      "b454c15f-6aeb-4ffd-882d-7631e4a1e822",
+      "c2946003-101a-4690-8600-0422fd56e2e9",
+      "0ffea74a-55fa-4cfb-abe5-9e9469b25bf7"
+    ],
+    "artifacts": [
+      "a5ec0ec9-5eaf-4243-a267-7cef8a4fe0d9"
+    ],
+    "reviewCategories": [
+      "313f5c25-63ad-41a3-a462-2a35a19afe5d"
+    ],
+    "createdOn": "0001-01-01T00:00:00",
+    "id": "4cc86577-53c3-4507-be50-021a08d37248"
+  },
+  {
+    "@type": "ReviewItemDto",
+    "reviewCategories": [],
+    "thingId": "98299d85-2fd0-4859-a44e-1eec69b31db8",
+    "annotations": [],
+    "id": "b76ee38f-3365-4e41-8ae3-2c543f551214"
+  },
+  {
+    "@type": "ReviewObjectiveDto",
+    "title": "review objective Title",
+    "description": "review objective description",
+    "reviewObjectiveKind": "PRR",
+    "reviewObjectiveKindNumber": 0,
+    "reviewObjectiveNumber": 2,
+    "status": "OPEN",
+    "reviewTasks": [
+      "e2fedcb1-9521-40de-be7c-fece53e8938a"
+    ],
+    "relatedViews": [],
+    "reviewCategories": [
+      "313f5c25-63ad-41a3-a462-2a35a19afe5d"
+    ],
+    "author": "4eaba16e-6bb7-4372-ad44-c7ae1d44cbaf",
+    "createdOn": "2022-10-21T07:49:40.1648804Z",
+    "annotations": [
+      "b454c15f-6aeb-4ffd-882d-7631e4a1e822",
+      "0ffea74a-55fa-4cfb-abe5-9e9469b25bf7",
+      "c2946003-101a-4690-8600-0422fd56e2e9"
+    ],
+    "id": "f7b30973-ec9b-4341-948f-a2a1502cdcca"
+  }
+]

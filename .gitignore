@@ -9,6 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.vscode
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -348,3 +349,8 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+Storage/
+.env
+/UI_DSM.Server/Reports/Generic/DSReport.rep4
+/UI_DSM.Server/Reports/Generic/MassBudget-ENVISION-Summary.rep4

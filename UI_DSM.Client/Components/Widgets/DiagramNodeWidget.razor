@@ -1,0 +1,56 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// DiagramNodeWidget.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Jaime Bernar
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.Model
+@using Blazor.Diagrams.Components.Renderers
+<div @ref="this.DivReference" class="default-node custom-node @(this.OverClass) @(this.Node.IsExpanded ? "expanded" : "") @(!this.Node.IsVisible? "hidden": "")"
+     @onmouseover="@(e => this.OverClass = "over")"
+     @onmouseout="@(e => this.OverClass = "")">
+
+	@(this.Node?.Title ?? "Title")
+
+	@{
+		var nodePorts = this.Node.Ports.Cast<DiagramPort>();
+		var i = 0;
+		if (this.points.Count == nodePorts.Count())
+		{
+			foreach (var port in nodePorts)
+			{
+				var posx = this.points[i].X + "px";
+				var posy = this.points[i].Y + "px";
+
+				<div style="left: @posx; position: absolute; top: @posy;">
+					<PortRenderer Port="port"
+					              Class="@(port.HasComments ? "port-comment custom-port" : "custom-port")">
+						<div class="@(port.Direction.ToString())"></div>
+					</PortRenderer>
+				</div>
+
+				i++;
+			}
+		}
+		else
+		{
+			foreach (var port in nodePorts)
+			{
+				<PortRenderer Port="port"
+				              Class="@(port.HasComments ? "port-comment custom-port" : "custom-port")">
+					<div class="@(port.Direction.ToString())"></div>
+				</PortRenderer>
+			}
+		}
+	}
+
+	@if (this.Node.HasComments)
+	{
+		<div class="node-comment"></div>
+	}
+</div>

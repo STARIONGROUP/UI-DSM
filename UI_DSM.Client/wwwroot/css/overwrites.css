@@ -1,0 +1,89 @@
+.dxbs-grid-column-chooser-dialog dxbl-grid-column-chooser .dxbs-grid-column-chooser-item {
+  border-color: var(--colors-gray-50);
+}
+
+.dxbs-grid-column-chooser-dialog dxbl-grid-column-chooser .dxbs-grid-column-chooser-item .dxbs-checkbox {
+  padding: 0 var(--spacing-3);
+}
+
+.dxbs-grid-column-chooser-dialog dxbl-grid-column-chooser .dxbs-grid-column-chooser-item .dxbs-checkbox label {
+  padding: var(--spacing-3) var(--spacing-2);
+  cursor: pointer;
+}
+
+
+.dxbs-grid-column-chooser-dialog .dxbs-checkbox .custom-control.custom-checkbox,
+.dxbs-grid-column-chooser-dialog .dxbs-checkbox .custom-control.custom-radio {
+  width: var(--spacing-4);
+  min-width: var(--spacing-4);
+  height: var(--spacing-4);
+}
+
+.dxbs-grid-column-chooser-dialog .dxbs-checkbox-label {
+  color: var(--colors-gray-600);
+}
+
+.dxbs-grid-column-chooser-item-drag-anchor {
+  color: var(--colors-gray-300);
+}
+
+.breakdown-view .card {
+  border-color: var(--colors-gray-100);
+}
+
+.dxbs-grid {
+  --dx-grid-selection-color: var(--colors-primary-50);
+  font-size: var(--text-sm);
+}
+
+.dxbs-grid .dxbs-grid-table {
+  border-color: var(--colors-gray-100);
+  color: var(--colors-gray-700);
+}
+
+.dxbs-grid-selected-row {
+  background: var(--colors-primary-50);
+  color: var(--colors-primary-800);
+}
+
+.default-grid {
+  width: 100%;
+}
+
+.dxbs-grid
+  .dxbs-grid-table
+  > *
+  > tr
+  > td:not(.dxbs-grid-indent-cell):not(.dxbs-grid-expand-button-cell):not(.dxbs-grid-empty-cell):not(.dxbs-grid-empty-data):not(.dxbs-grid-edit-form):not(.dxbs-grid-detail-cell),
+.dxbs-grid
+  .dxbs-grid-table
+  > *
+  > tr
+  > th:not(.dxbs-grid-header-indent-cell):not(.dxbs-grid-empty-header) {
+  padding: var(--spacing-3);
+}
+
+.rz-html-editor {
+  height: 320px;
+}
+
+.dxbs-checkbox-label-right {
+  padding-left: 0;
+}
+
+.dxbs-checkbox-label {
+  font-weight: 700;
+}
+
+.dxbl-dropdown > .dxbs-dropdown-dialog {
+  max-height: 200px;
+  overflow: auto;
+}
+
+.filter-actions .rz-chkbox-box .rzi {
+  vertical-align: initial;
+}
+
+.view-actions .rz-chkbox-icon {
+  vertical-align: initial !important;
+}

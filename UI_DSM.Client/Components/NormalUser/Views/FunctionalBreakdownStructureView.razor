@@ -1,0 +1,99 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// FunctionalBreakdownStructureView.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+@using DataGridSelectionMode = Radzen.DataGridSelectionMode
+@inherits ElementBreakdownStructureView<UI_DSM.Client.ViewModels.Components.NormalUser.Views.IFunctionalBreakdownStructureViewViewModel>
+
+<LoadingComponent IsLoading="this.IsLoading">
+
+@if (!this.ViewModel.TopElement.Any())
+{
+	<p>TopElement of the Model is not set, can not compute the Functional Breakdown</p>
+}
+else
+{
+	<div class="view-actions">
+		<div class="left-actions"></div>
+		<div class="right-actions">
+			<OptionChooser ViewModel="this.ViewModel.OptionChooserViewModel"/>
+			<Filter ViewModel="this.ViewModel.FilterViewModel" Id="row">
+				<FeatherFilter Size="20" Color="currentColor" StrokeWidth="2"/> <span>Filter</span>
+			</Filter>
+			<ColumnChooser TItem="ElementBaseRowViewModel" ViewModel="@this.ColumnChooser"/>
+		</div>
+	</div>
+	
+	<RadzenDataGrid @ref="@this.Grid" Data="@(this.ViewModel.TopElement)" TItem="ElementBaseRowViewModel" ExpandMode="DataGridExpandMode.Single"
+	                RowRender="@this.RowRender" LoadChildData="@this.LoadChildren" SelectionMode="DataGridSelectionMode.Single" RowSelect="@this.SelectRow"
+	                AllowFiltering="true" FilterMode="FilterMode.SimpleWithMenu" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+	                LogicalFilterOperator="LogicalFilterOperator.Or" AllowColumnResize="true" RowExpand="@this.OnRowExpand">
+		<Columns>
+			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(ElementBaseRowViewModel.Name)" Pickable="false" Title="Name">
+				<Template Context="data">
+					<div>
+						<HaveThingRowIcons Row="data"/>
+						@data.Name
+					</div>
+				</Template>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(ElementBaseRowViewModel.Owner)" Title="Owner"/>
+			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(ElementBaseRowViewModel.CommaCategories)" Title="Categories"/>
+			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(FunctionRowViewModel.LinkedTechnologyValues)" Title="Technology" Filterable="false">
+				<Template Context="data">
+					@if (data is FunctionRowViewModel function)
+					{
+						<ul>
+							@foreach (var technolgoValue in function.LinkedTechnologyValues)
+							{
+								<li>@technolgoValue.Item1 (@technolgoValue.Item2)</li>
+							}
+						</ul>
+					}
+				</Template>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(FunctionRowViewModel.LinkedTrlValues)" Title="TRL" Filterable="false">
+				<Template Context="data">
+					@if (data is FunctionRowViewModel function)
+					{
+						<ul>
+							@foreach (var trlValue in function.LinkedTrlValues)
+							{
+								if (trlValue.Item2 == null)
+								{
+									<li>@trlValue.Item1 (-)</li>
+								}
+								else
+								{
+									<li>@trlValue.Item1 (@trlValue.Item2)</li>
+								}
+							}
+						</ul>
+					}
+				</Template>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(FunctionRowViewModel.LinkedCostValues)" Title="Cost" Filterable="false">
+				<Template Context="data">
+					@if (data is FunctionRowViewModel function)
+					{
+						<ul>
+							@foreach (var costValue in function.LinkedCostValues)
+							{
+									<li>@costValue.Item1 (@costValue.Item2)</li>
+							}
+						</ul>
+					}
+				</Template>
+			</RadzenDataGridColumn>
+		</Columns>
+	</RadzenDataGrid>
+}
+</LoadingComponent>

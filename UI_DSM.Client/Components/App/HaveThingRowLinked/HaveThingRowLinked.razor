@@ -1,0 +1,35 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// HaveThingRowLinked.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@typeparam THaveThingRowViewModel where THaveThingRowViewModel: UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel.IHaveThingRowViewModel, new()
+@inherits HaveThingRowLinkedBase
+
+<DxPopup @ref="@this.Popup" HeaderText="@this.PopupHeader" ShowFooter="false">
+	<DynamicComponent Type="@this.CardInformationType" Parameters="this.Parameters" />
+</DxPopup>
+
+<div class="app-key-value @(this.componentVariant)">
+	<span class="app-key-value__key">@(this.Label)</span>
+
+	@if (this.OnItemDoubleClick.HasDelegate)
+	{
+		<button class="app-key-value__value" @ondblclick="() => this.OnDoubleClick(this.row.Id)">
+			@(this.row.Id)
+			<button @onclick="() => this.OpenPopup(this.row)"><FeatherInfo Size="20" Color="gray" /></button>
+		</button>
+	}
+	else
+	{
+		<span class="app-key-value__value">
+			@(this.row.Id)
+		</span>
+	}
+</div>

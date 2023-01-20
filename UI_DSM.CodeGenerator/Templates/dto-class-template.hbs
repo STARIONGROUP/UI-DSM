@@ -1,0 +1,74 @@
+// --------------------------------------------------------------------------------------------------------
+// <copyright file="{{this.Name}}.cs" company="RHEA System S.A.">
+//  Copyright (c) 2022 RHEA System S.A.
+//
+//  Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft
+//
+//  This file is part of UI-DSM.
+//  The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+//  The UI-DSM application is provided to the community under the Apache License 2.0.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------------------------------
+// ------------THIS IS AN AUTOMATICALLY GENERATED FILE. ANY MANUAL CHANGES WILL BE OVERWRITTEN!------------
+// --------------------------------------------------------------------------------------------------------
+
+namespace UI_DSM.Shared.DTO.Models
+{
+    {{#unless this.IsAbstract}}
+    using GP.SearchService.SDK.Definitions;
+
+    {{/unless}}
+    {{#if (PropertyReflection.HasEnumeratorProperties this)}}
+    using UI_DSM.Shared.Enumerator;
+    {{/if}}
+    using UI_DSM.Shared.Models;
+
+    {{ #Documentation this}}
+    {{#unless this.IsAbstract}}[SearchDto(nameof({{this.Name}}Dto))]{{/unless}}public {{#if this.IsAbstract}}abstract {{/if}}partial class {{this.Name}}Dto : {{this.BaseType.Name}}Dto
+    {
+        {{ #Documentation this "constructor"}}
+        {{#if this.IsAbstract}}protected{{else}}public{{/if}} {{this.Name}}Dto()
+        {
+            {{#each (PropertyReflection.GetProperties this) as | property |}}
+                {{#if (PropertyReflection.IsEnumerable property)}}
+                    {{#if (PropertyReflection.IsSerialized property)}}
+                        this.{{ property.Name }} = new {{#PropertyReflection.GetPropertyType property}}();
+                    {{/if}}
+                {{/if}}
+            {{/each}}
+        }
+
+        {{ #Documentation this "constructor" "guid"}}
+        {{#if this.IsAbstract}}protected{{else}}public{{/if}} {{this.Name}}Dto(Guid id) : base(id)
+        {
+            {{#each (PropertyReflection.GetProperties this) as | property |}}
+                {{#if (PropertyReflection.IsEnumerable property)}}
+                        {{#if (PropertyReflection.IsSerialized property)}}
+                            this.{{ property.Name }} = new {{#PropertyReflection.GetPropertyType property}}();
+                        {{/if}}
+                {{/if}}
+            {{/each}}
+        }
+        {{#each (PropertyReflection.GetProperties this) as | property |}}
+            {{#if (PropertyReflection.IsSerialized property)}}
+                {{ #Documentation.Property property }}
+                public {{ #PropertyReflection.GetPropertyType property }} {{ property.Name }} {get; set;}
+            {{/if}}
+        {{/each}}
+        {{#if this.IsAbstract}}
+        {{else}}
+        {{ #Documentation this "instantiatePoco" }}
+        public override Entity InstantiatePoco()
+        {
+            return new {{this.Name}}(this.Id);
+        }
+        {{/if}}
+    }
+}
+
+// ------------------------------------------------------------------------------------------------
+// --------THIS IS AN AUTOMATICALLY GENERATED FILE. ANY MANUAL CHANGES WILL BE OVERWRITTEN!--------
+// ------------------------------------------------------------------------------------------------

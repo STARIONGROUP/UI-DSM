@@ -1,0 +1,36 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// ReplyCard.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+<div class="app-reply">
+	<div class="app-reply__body">
+		<span class="app-reply__title">
+			<span class="app-reply__name">@(this.ViewModel.Reply.Author.ParticipantName)</span>
+			<span class="app-reply__date">@(this.ViewModel.Reply.CreatedOn)</span>
+		</span>
+		<span class="app-reply__description">@((MarkupString)this.ViewModel.Reply.Content)</span>
+	</div>
+
+	<div class="app-reply__actions">
+		@if (this.ViewModel.IsAllowedToEdit)
+		{
+			<button class="app-reply__button" @onclick="this.OnContentEditClick">
+				<FeatherEdit Size="20" Color="currentColor" StrokeWidth="2"/>
+				Edit
+			</button>
+
+			<button class="app-reply__button" @onclick="this.OnDeleteClick">
+				<FeatherTrash2 Size="20" Color="currentColor" StrokeWidth="2"/>
+				Delete
+			</button>
+		}
+	</div>
+</div>

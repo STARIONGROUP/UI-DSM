@@ -1,0 +1,70 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// UserManagement.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@page "/Administration/UserManagement"
+@layout DefaultLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+<ConfirmCancelPopup ViewModel="@this.ViewModel.ConfirmCancelPopup"/>
+<div>
+	<div class="page-header">
+		<h1>User management</h1>
+		<AppButton Click="@this.ViewModel.OpenRegisterPopup" Type="button">
+			<FeatherUserPlus Size="20" Color="currentColor" StrokeWidth="2"  /> <span>Add user</span>
+		</AppButton>
+	</div>
+
+	<DxPopup CloseOnOutsideClick="false" HeaderText="User Registration" @bind-Visible="@this.ViewModel.IsOnCreationMode">
+		<Content>
+			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+				<UserRegistration ViewModel="@this.ViewModel.UserRegistrationViewModel"/>
+			</CascadingValue>
+		</Content>
+	</DxPopup>
+	<DxPopup CloseOnOutsideClick="false" HeaderText="User Details" @bind-Visible="@this.ViewModel.IsOnDetailsViewMode">
+		<Content>
+			<UserDetails ViewModel="@this.ViewModel.UserDetailsViewModel"/>
+		</Content>
+	</DxPopup>
+</div>
+
+@if (this.ViewModel.Users.Count > 0)
+{
+	<table class="table">
+		<thead>
+		<tr>
+			<th scope="col">UserName</th>
+			<th scope="col">Details</th>
+			<th scope="col">Delete</th>
+		</tr>
+		</thead>
+		<tbody>
+		@foreach (var user in this.ViewModel.Users.Items)
+		{
+			<tr>
+				<td class="align-middle">
+					@user.UserName
+				</td>
+				<td class="align-middle">
+					<DxButton Text="View details" RenderStyle="ButtonRenderStyle.Info" Click="() => this.ViewModel.OpenDetailsPopup(user)"/>
+				</td>
+				
+				<td class="align-middle">
+					@if (!user.IsAdmin)
+					{
+						<DxButton Text="Delete" RenderStyle="ButtonRenderStyle.Danger" Click="() => this.ViewModel.AskConfirmDeleteUser(user)"/>
+					}
+				</td>
+			</tr>
+		}
+		</tbody>
+	</table>
+}

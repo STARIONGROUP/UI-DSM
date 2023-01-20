@@ -1,0 +1,40 @@
+<!--------------------------------------------------------------------------------------------------------
+// AppRelateViewsWidget.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Shared.Enumerator
+@using UI_DSM.Shared.Extensions
+
+@if (this.MainRelatedView != View.None || this.OtherRelatedViews.Any())
+{
+	<AppAccordion Label="Related views" @bind-PanelOpen="@this.IsPanelOpen">
+		<div class="related-views">
+			@if (this.MainRelatedView != View.None)
+			{
+				<button class="related-views__button related-views__button--primary" @onclick="() => this.OnClick(this.MainRelatedView)">
+					<FeatherLink Size="20" Color="currentColor" StrokeWidth="2" />
+					<span>
+						@this.MainRelatedView.GetEnumDisplayName()
+					</span>
+				</button>
+			}
+		
+			@foreach(var view in this.OtherRelatedViews)
+			{
+				<button class="related-views__button" @onclick="() => this.OnClick(view)">
+					<FeatherLink Size="20" Color="currentColor" StrokeWidth="2" />
+					<span>
+						@view.GetEnumDisplayName()
+					</span>
+				</button>
+			}
+		</div>
+	</AppAccordion>
+}

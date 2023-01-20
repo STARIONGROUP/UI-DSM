@@ -1,0 +1,33 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// AvailableReviewTasksSelection.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Shared.Models
+@using UI_DSM.Shared.DTO.Common
+<DxFormLayout>
+	<DxFormLayoutItem Caption="Available Review Tasks :" ColSpanMd="12">
+		@foreach (var reviewObjective in this.availablesReviewTasks.Keys
+			.OrderBy(x => x.ReviewObjectiveKind).ThenBy(x=>x.ReviewObjectiveKindNumber))
+		{
+			<AppAccordion Label="@reviewObjective.Title" @bind-PanelOpen="@this.openedPanels[reviewObjective.Id]" Variant="AppAccordion.VariantValue.Small">
+				<DxListBox Data="@this.availablesReviewTasks[reviewObjective].OrderBy(x => x.TaskNumber)"
+				           @bind-Value="@this.ViewModel.SelectedReviewTask"
+				           TextFieldName="@nameof(ReviewTask.Description)"
+				           SelectionMode="ListBoxSelectionMode.Single"/>
+			</AppAccordion>
+		}
+	</DxFormLayoutItem>
+</DxFormLayout>
+
+<div class="modal-footer m-top-10px">
+	<DxButton RenderStyle="ButtonRenderStyle.Primary" 
+	          Text="Link"
+	          Click="@this.ViewModel.OnSubmit" Enabled="@(this.ViewModel.SelectedReviewTask != null)" />
+</div>

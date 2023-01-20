@@ -1,0 +1,33 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// PortSelectedItem.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using CDP4Common.EngineeringModelData
+@using UI_DSM.Client.Extensions
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+@inherits SelectedItemBase<UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel.PortRowViewModel>
+<AppKeyValue Key="Name" Value="@(this.RowViewModel.Id)" OnItemDoubleClick="this.OnItemDoubleClick" />
+<AppKeyValue Key="Owner" Value="@(this.RowViewModel.Owner)" />
+@switch (this.RowViewModel.Container)
+{
+	case ElementBase elementBase when elementBase.IsFunction():
+		<HaveThingRowLinked THaveThingRowViewModel="FunctionRowViewModel" Label="Container" Item="@(this.RowViewModel.Container)" OnItemDoubleClick="this.OnItemDoubleClick"/>
+		break;
+	case ElementBase elementBase when elementBase.IsProduct():
+		<HaveThingRowLinked THaveThingRowViewModel="ProductRowViewModel" Label="Container" Item="@(this.RowViewModel.Container)" OnItemDoubleClick="this.OnItemDoubleClick"/>
+		break;
+	case not null:
+		<HaveThingRowLinked THaveThingRowViewModel="ElementBaseRowViewModel" Label="Container" Item="@(this.RowViewModel.Container)" OnItemDoubleClick="this.OnItemDoubleClick"/>
+		break;
+	default:
+		<AppKeyValue Key="Container" Value="-"/>
+		break;
+}
+<AppKeyValue Key="Interface End" Value="@(this.RowViewModel.InterfaceEnd)" />

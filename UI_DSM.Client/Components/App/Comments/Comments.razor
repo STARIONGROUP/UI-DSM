@@ -1,0 +1,66 @@
+﻿<!--------------------------------------------------------------------------------------------------------
+// Comments.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Shared.Enumerator
+@using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
+
+<AppAccordion Label="Comments" @bind-PanelOpen="@this.IsPanelOpen">
+	<div class="comments__header">
+		@if (this.ViewModel.SelectedItem is IHaveThingRowViewModel && this.ViewModel.Participant != null && this.ViewModel.Participant.IsAllowedTo(AccessRight.ReviewTask))
+		{
+			<button class="comments__add-button" @onclick="@this.ViewModel.OpenCommentCreationPopup">
+				<FeatherMessageCircle Size="24" Color="currentColor" StrokeWidth="1.5f"/> Leave a comment
+			</button>
+		}
+	</div>
+	
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Link Comment to ReviewTask" @bind-Visible="@(this.ViewModel.IsOnLinkMode)">
+		<Content>
+			<AvailableReviewTasksSelection ViewModel="@(this.ViewModel.AvailableReviewTasksSelectionViewModel)" />
+		</Content>
+	</DxPopup>
+
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Add comment" @bind-Visible="@(this.ViewModel.IsOnCommentCreationMode)">
+		<Content>
+			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+				<CommentCreation ViewModel="@(this.ViewModel.CommentCreationViewModel)"/>
+			</CascadingValue>
+		</Content>
+	</DxPopup>
+
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Update comment" @bind-Visible="@(this.ViewModel.IsOnCommentUpdateMode)">
+		<Content>
+			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+				<CommentCreation ViewModel="@(this.ViewModel.CommentCreationViewModel)"/>
+			</CascadingValue>
+		</Content>
+	</DxPopup>
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Create Reply" @bind-Visible="@(this.ViewModel.IsOnReplyCreationMode)">
+		<Content>
+			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+				<ReplyCreation ViewModel="@(this.ViewModel.ReplyCreationViewModel)"/>
+			</CascadingValue>
+		</Content>
+	</DxPopup>
+	<DxPopup CloseOnOutsideClick="false" HeaderText="Update Reply" @bind-Visible="@(this.ViewModel.IsOnReplyUpdateMode)">
+		<Content>
+			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+				<ReplyCreation ViewModel="@(this.ViewModel.ReplyCreationViewModel)"/>
+			</CascadingValue>
+		</Content>
+	</DxPopup>
+	<ConfirmCancelPopup ViewModel="@this.ViewModel.CommentConfirmCancelPopupViewModel"/>
+	<ConfirmCancelPopup ViewModel="@this.ViewModel.ReplyConfirmCancelPopupViewModel"/>
+	@foreach (var comment in this.ViewModel.Comments.Items.OrderBy(x => x.CreatedOn))
+	{
+		<CommentCard ViewModel="@this.CreateCommentCardViewModel(comment)" OnItemDoubleClick="@this.OnItemDoubleClick" />
+	}
+</AppAccordion>

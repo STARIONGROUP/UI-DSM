@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyVersion>1.6.6</AssemblyVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Blazored.SessionStorage" Version="2.2.0" />
+    <PackageReference Include="CDP4JsonSerializer-CE" Version="8.3.0" />
+    <PackageReference Include="CDP4ServicesDal-CE" Version="8.3.0" />
+    <PackageReference Include="DevExpress.Blazor" Version="22.2.3" />
+    <PackageReference Include="DevExpress.Blazor.Reporting.JSBasedControls.WebAssembly" Version="22.2.3" />
+    <PackageReference Include="Feather.Blazor" Version="1.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.7" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
+    <PackageReference Include="Radzen.Blazor" Version="4.3.2" />
+    <PackageReference Include="ReactiveUI" Version="18.3.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.0" />
+    <PackageReference Include="Z.Blazor.Diagrams" Version="2.1.6" />
+    <PackageReference Include="Z.Blazor.Diagrams.Core" Version="2.1.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\UI_DSM.Serializer.Json\UI_DSM.Serializer.Json.csproj" />
+    <ProjectReference Include="..\UI_DSM.Shared\UI_DSM.Shared.csproj" />
+  </ItemGroup>
+</Project>

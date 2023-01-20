@@ -1,0 +1,8 @@
+.app-sidebar-text {
+  padding: var(--spacing-4);
+  font-size: var(--text-sm);
+}
+
+.app-sidebar-text p:last-child {
+  margin: 0;
+}

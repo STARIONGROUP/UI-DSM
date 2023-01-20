@@ -1,0 +1,20 @@
+<!--------------------------------------------------------------------------------------------------------
+// SearchBar.razor
+// Copyright (c) 2022 RHEA System S.A.
+// 
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+// 
+// This file is part of UI-DSM. 
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+// 
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+<label class="search-bar">
+	<form @onsubmit="@this.Search">	
+		<span class="search-bar__icon">
+			<button type="submit"><FeatherSearch Color="#5C6370" /></button>
+		</span>
+		<input class="search-bar__input" placeholder="search" @bind="@this.Keyword"/>
+	</form>
+</label>

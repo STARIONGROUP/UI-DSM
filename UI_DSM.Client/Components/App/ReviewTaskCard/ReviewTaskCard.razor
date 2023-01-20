@@ -1,0 +1,71 @@
+<!--------------------------------------------------------------------------------------------------------
+// TaskItem.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+@using UI_DSM.Shared.Enumerator
+
+<div class="task-item">
+	<button class="task-item__button"  @onclick="this.Navigate">
+		<span class="h4">@(this.ReviewTask.Description)</span>
+	</button>
+
+
+	<div class="task-item__actions">
+
+
+		@if (!string.IsNullOrEmpty(this.UserName))
+		{
+			<ul class="avatar-list">
+
+				@if (this.ReviewTask.IsAssignedTo.Any(x => string.Equals(this.UserName, x.ParticipantName, StringComparison.InvariantCultureIgnoreCase)))
+				{
+					<li>
+						<UserAvatar UserName="@this.UserName" IsCurrentUser="true" UserInitials="@this.UserName[0].ToString()"/>
+					</li>
+				}
+
+				@foreach (var participant in this.ReviewTask.IsAssignedTo.Where(x => !string.Equals(this.UserName, x.ParticipantName, StringComparison.InvariantCultureIgnoreCase)))
+				{
+					<li>
+						<UserAvatar UserName="@participant.ParticipantName" UserInitials="@participant.ParticipantName[0].ToString()" />
+					</li>
+				}
+			</ul>
+		}
+
+		@if (this.ReviewTask.Status == StatusKind.Done)
+		{
+			<FeatherCheckCircle Size="24" Color="#1FAB77" StrokeWidth="2"/>
+		}
+
+		@if(this.ViewModel != null)
+		{
+			@if (this.ViewModel.Participant.IsAllowedTo(AccessRight.AssignTask))
+			{
+				<AppButton Click="() => this.ViewModel.OpenTaskAssignmentPopup(this.ReviewTask)" Type="button">
+					<FeatherPlusCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Assign to</span>
+				</AppButton>
+			}
+		}
+
+		@if (this.CommentsCount != null)
+		{
+			<div class="app-project-card__stat">
+				<div class="app-project-card__icon">
+					<FeatherMessageCircle Color="currentColor" Size="24" />
+				</div>
+				<div class="stat__body">
+					<span class="stat__label">Comments</span>
+					<span class="stat__amount">@(this.CommentsCount.OpenCommentCount)/@(this.CommentsCount.TotalCommentCount)</span>
+				</div>
+			</div>
+		}
+	</div>
+</div>

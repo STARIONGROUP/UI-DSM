@@ -1,0 +1,51 @@
+﻿@using UI_DSM.Shared.Enumerator
+<!--------------------------------------------------------------------------------------------------------
+// ProjectReview.razor
+// Copyright (c) 2022 RHEA System S.A.
+//
+// Author: Antoine Théate, Sam Gerené, Alex Vorobiev, Alexander van Delft, Martin Risseeuw, Nabil Abbar
+//
+// This file is part of UI-DSM.
+// The UI-DSM web application is used to review an ECSS-E-TM-10-25 model.
+//
+// The UI-DSM application is provided to the community under the Apache License 2.0.
+-------------------------------------------------------------------------------------------------------->
+
+<div class="project-page">
+  <div class="page-header">
+	  <h1 class="h3">Review plans for @this.ViewModel.Project.ProjectName</h1>
+      @if (this.ViewModel.Participant.IsAllowedTo(AccessRight.CreateReview))
+      {
+	      <AppButton Click="@this.ViewModel.OpenCreatePopup" Type="button">
+		      <FeatherPlusCircle Size="20" Color="currentColor" StrokeWidth="2" /> <span>Create review</span>
+	      </AppButton>
+      }
+  </div>
+  <DxPopup CloseOnOutsideClick="false" HeaderText="Create Review" @bind-Visible="@this.ViewModel.IsOnCreationMode">
+		<Content>
+			<CascadingValue Value="this.ViewModel.ErrorMessageViewModel">
+                <ReviewCreation ProjectArtifacts="@this.ViewModel.Project.Artifacts" ViewModel="@this.ViewModel.ReviewCreationViewModel" />
+			</CascadingValue>
+		</Content>
+	</DxPopup>
+  <div class="projects-overview">
+      @foreach (var review in this.ViewModel.Project.Reviews.OrderBy(x => x.ReviewNumber))
+	  {
+          <NavLink href=@("/Project/"+this.ViewModel.Project.Id+"/Review/"+review.Id)>
+                @if (this.ViewModel.CommentsAndTasks.ContainsKey(review.Id))
+                {
+	                <AppProjectCard Title="@review.Title" Created="@review.CreatedOn.ToString()" 
+	                                Tasks="@this.ViewModel.CommentsAndTasks[review.Id].TaskCount" 
+	                                OpenComments="@this.ViewModel.CommentsAndTasks[review.Id].OpenCommentCount"
+									TotalComments="@this.ViewModel.CommentsAndTasks[review.Id].TotalCommentCount" />
+                }
+                else
+                {
+                   <AppProjectCard Title="@review.Title" Created="@review.CreatedOn.ToString()" Tasks="-1" OpenComments="-1" />
+                }
+          </NavLink>
+      }
+  </div>
+</div>
+
+
