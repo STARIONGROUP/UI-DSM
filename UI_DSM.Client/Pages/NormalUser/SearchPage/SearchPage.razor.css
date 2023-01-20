@@ -42,6 +42,8 @@
     display: grid;
     gap: var(--spacing-3);
     padding: 0;
+    overflow-y: auto;
+    max-height: 500px;
 }
 
 

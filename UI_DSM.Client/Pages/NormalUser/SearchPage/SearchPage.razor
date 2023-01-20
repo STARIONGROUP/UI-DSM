@@ -39,15 +39,16 @@
 						.ToDictionary(g => g.Key, g => g.ToList()))
 					{
 						<div class="search-group__category">
-							<h2 class="search-group__label">@objectKindGroup.Key</h2>
-							<ul class="search-group__list">
-								@foreach (var result in objectKindGroup.Value)
-								{
-									<li>
-										<SearchResultCard SearchResult="@result" OnClick="this.ViewModel.NavigateTo"/>
-									</li>
-								}
-							</ul>
+							<AppAccordion PanelOpen="false" Label="@objectKindGroup.Key" Variant="AppAccordion.VariantValue.Small">
+								<ul class="search-group__list">
+									@foreach (var result in objectKindGroup.Value)
+									{
+										<li>
+											<SearchResultCard SearchResult="@result" OnClick="this.ViewModel.NavigateTo"/>
+										</li>
+									}
+								</ul>
+							</AppAccordion>
 						</div>
 					}
 				</div>
