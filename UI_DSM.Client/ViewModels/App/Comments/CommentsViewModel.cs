@@ -396,6 +396,7 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         /// <param name="reply">The <see cref="Reply" /> to delete</param>
         private void AskToDeleteReply(Reply reply)
         {
+            this.selectedComment = reply.EntityContainer as Comment;
             this.selectedReply = reply;
             this.ReplyConfirmCancelPopupViewModel.IsVisible = true;
         }

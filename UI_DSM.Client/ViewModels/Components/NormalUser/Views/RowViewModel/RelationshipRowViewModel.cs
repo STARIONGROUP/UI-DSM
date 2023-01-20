@@ -51,7 +51,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         /// <summary>
         ///     Gets the Id of the current <see cref="RelationshipRowViewModel" />
         /// </summary>
-        public override string Id => $"{this.SourceName} -> {this.TargetName}";
+        public override string Id => $"{this.SourceRow.Id} -> {this.TargetRow.Id}";
 
         /// <summary>
         ///     The <see cref="Guid" /> of the Source <see cref="Thing" />
