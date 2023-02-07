@@ -46,8 +46,13 @@
   color: var(--colors-primary-800);
 }
 
+.breakdown-view {
+  height: 100%;
+}
+
 .default-grid {
   width: 100%;
+  height: 100%;
 }
 
 .dxbs-grid
@@ -86,4 +91,8 @@
 
 .view-actions .rz-chkbox-icon {
   vertical-align: initial !important;
+}
+
+.task-page__body-inner .rz-data-grid {
+  height: 100%;
 }

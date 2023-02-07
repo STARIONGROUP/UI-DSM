@@ -381,6 +381,10 @@ div.invisible {
   animation: pulse 1s infinite;
 }
 
+.highlight-element td {
+  animation: pulse 1s infinite;
+}
+
 .highlight-element svg{
   animation: pulseIcon 1s infinite;
 }
