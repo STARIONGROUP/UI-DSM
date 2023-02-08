@@ -13,7 +13,7 @@
 }
 
 .app-accordion__panel--is-open {
-  max-height: 100vh;
+  max-height: none;
 }
 
 .app-accordion__icon {
