@@ -28,12 +28,12 @@
 				</div>
 
 				<div class="stat__body">
-					<span class="stat__label">Tasks</span>
-					<span class="stat__amount h4">@(this.Tasks)</span>
+					<span class="stat__label">Assigned</span>
+					<span class="stat__amount h4">@(this.Tasks) Tasks</span>
 				</div>
 			</div>
 		}
-		
+
 		@if (this.OpenComments >= 0)
 		{
 			<div class="app-project-card__stat">
@@ -41,8 +41,8 @@
 					<FeatherMessageCircle Color="currentColor" Size="24" />
 				</div>
 				<div class="stat__body">
-					<span class="stat__label">Comments</span>
-					<span class="stat__amount">@(this.OpenComments)/@(this.TotalComments)</span>
+					<span class="stat__label">Open/total</span>
+					<span class="stat__amount">@(this.OpenComments)/@(this.TotalComments) comments</span>
 				</div>
 			</div>
 		}
