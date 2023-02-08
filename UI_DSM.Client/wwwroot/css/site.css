@@ -377,16 +377,19 @@ div.invisible {
 .app-breadcrumb svg:last-child { display: none; }
 
 
-.highlight-element {
-  animation: pulse 1s infinite;
-}
-
+.highlight-element,
 .highlight-element td {
   animation: pulse 1s infinite;
 }
 
 .highlight-element svg{
   animation: pulseIcon 1s infinite;
+}
+
+
+.selected-element, .selected-element td {
+  background: var(--colors-primary-100) !important;
+  color: var(--colors-primary-700) !important;
 }
 
 @keyframes pulseIcon {

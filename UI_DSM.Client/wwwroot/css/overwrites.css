@@ -47,7 +47,7 @@
 }
 
 .breakdown-view {
-  height: 100%;
+  height: 80%;
 }
 
 .default-grid {
@@ -94,5 +94,5 @@
 }
 
 .task-page__body-inner .rz-data-grid {
-  height: 100%;
+  height: 80%;
 }
