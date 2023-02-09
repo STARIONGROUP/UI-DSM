@@ -90,8 +90,8 @@ namespace UI_DSM.Shared.Models
         /// <returns>The iteration number</returns>
         public int GetIterationNumber()
         {
-            var dashSplittedName = this.ModelName.Split('-');
-            var iterationField = dashSplittedName[^1];
+            var dashSplittedName = this.ModelName.Split(" - ");
+            var iterationField = dashSplittedName[^2];
             var spaceSplitted = iterationField.Split(' ');
             return int.Parse(spaceSplitted[^1]);
         }

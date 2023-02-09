@@ -14,7 +14,9 @@
 namespace UI_DSM.Client.Components.NormalUser.ProjectReview
 {
     using Microsoft.AspNetCore.Components;
+
     using ReactiveUI;
+
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Shared.DTO.Common;
@@ -22,43 +24,43 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
     using UI_DSM.Shared.Models;
 
     /// <summary>
-    ///     This component is used to create new <see cref="ReviewObjective" />(s)
+    ///  This component is used to create new <see cref="ReviewObjective" />(s)
     /// </summary>
     public partial class ReviewObjectiveCreation : IDisposable
     {
         /// <summary>
-        ///     A collection of <see cref="IDisposable" />
+        ///  A collection of <see cref="IDisposable" />
         /// </summary>
         private readonly List<IDisposable> disposables = new();
 
         /// <summary>
-        ///     The <see cref="ReviewObjectiveCreationDto" />
+        ///  The <see cref="ReviewObjectiveCreationDto" />
         /// </summary>
         public ReviewObjectiveCreationDto ReviewObjectiveCreationDto { get; set; }
 
         /// <summary>
-        ///     A collection of <see cref="ReviewObjectiveCreationDto" /> of kind PRR available for a review
+        ///  A collection of <see cref="ReviewObjectiveCreationDto" /> of kind PRR available for a review
         /// </summary>
-        List<ReviewObjectiveCreationDto> AvailableReviewObjectiveCreationDtoPrr { get; set; } = new List<ReviewObjectiveCreationDto>();
+        private List<ReviewObjectiveCreationDto> AvailableReviewObjectiveCreationDtoPrr { get; set; } = new();
 
         /// <summary>
-        ///     A collection of <see cref="ReviewObjectiveCreationDto" /> of kind SRR available for a review
+        ///  A collection of <see cref="ReviewObjectiveCreationDto" /> of kind SRR available for a review
         /// </summary>
-        List<ReviewObjectiveCreationDto> AvailableReviewObjectiveCreationDtoSrr { get; set; } = new List<ReviewObjectiveCreationDto>();
+        private List<ReviewObjectiveCreationDto> AvailableReviewObjectiveCreationDtoSrr { get; set; } = new();
 
         /// <summary>
-        ///     The text to display inside the creation button
+        ///  The text to display inside the creation button
         /// </summary>
         public string CreationText { get; set; }
 
         /// <summary>
-        ///     The <see cref="IReviewObjectiveCreationViewModel" /> for the component
+        ///  The <see cref="IReviewObjectiveCreationViewModel" /> for the component
         /// </summary>
         [Parameter]
         public IReviewObjectiveCreationViewModel ViewModel { get; set; }
 
         /// <summary>
-        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        ///  Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
@@ -67,10 +69,10 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
         }
 
         /// <summary>
-        ///     Method invoked when the component is ready to start, having received its
-        ///     initial parameters from its parent in the render tree.
-        ///     Override this method if you will perform an asynchronous operation and
-        ///     want the component to refresh when that operation is completed.
+        ///  Method invoked when the component is ready to start, having received its
+        ///  initial parameters from its parent in the render tree.
+        ///  Override this method if you will perform an asynchronous operation and
+        ///  want the component to refresh when that operation is completed.
         /// </summary>
         /// <returns>A <see cref="Task" /> representing any asynchronous operation.</returns>
         protected override async Task OnInitializedAsync()
@@ -84,7 +86,7 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
         }
 
         /// <summary>
-        ///     Sets properties when the <see cref="ReviewObjectivesCreationStatus" /> has changed
+        ///  Sets properties when the <see cref="ReviewObjectivesCreationStatus" /> has changed
         /// </summary>
         private void OnCreationStatusChanged()
         {
@@ -109,12 +111,20 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
         }
 
         /// <summary>
-        /// Selects all availables <see cref="ReviewObjectiveCreationDto"/>
+        ///  Selects all availables <see cref="ReviewObjectiveCreationDto" /> based on their <see cref="ReviewObjectiveKind" />
         /// </summary>
-        private void SelectAll()
+        /// <param name="kind">The <see cref="ReviewObjectiveKind" /></param>
+        private void SelectAll(ReviewObjectiveKind kind)
         {
-	        this.ViewModel.SelectedReviewObjectivesPrr = new List<ReviewObjectiveCreationDto>(this.AvailableReviewObjectiveCreationDtoPrr);
-	        this.ViewModel.SelectedReviewObjectivesSrr = new List<ReviewObjectiveCreationDto>(this.AvailableReviewObjectiveCreationDtoSrr);
+            switch (kind)
+            {
+                case ReviewObjectiveKind.Prr:
+                    this.ViewModel.SelectedReviewObjectivesPrr = new List<ReviewObjectiveCreationDto>(this.AvailableReviewObjectiveCreationDtoPrr);
+                    break;
+                case ReviewObjectiveKind.Srr:
+                    this.ViewModel.SelectedReviewObjectivesSrr = new List<ReviewObjectiveCreationDto>(this.AvailableReviewObjectiveCreationDtoSrr);
+                    break;
+            }
         }
     }
 }
