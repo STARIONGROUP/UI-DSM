@@ -36,6 +36,28 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         {
             this.SourceRow = sourceRow;
             this.TargetRow = targetRow;
+            this.SourceKind = $"Source {this.GetRowKind(sourceRow)}";
+            this.TargetKind = $"Target {this.GetRowKind(targetRow)}";
+        }
+
+        /// <summary>
+        /// Gets the source kind
+        /// </summary>
+        public string SourceKind { get; }
+
+        /// <summary>
+        /// Gets the target kind
+        /// </summary>
+        public string TargetKind { get; }
+
+        /// <summary>
+        /// Gets the row kind of the <see cref="IHaveThingRowViewModel"/>
+        /// </summary>
+        /// <param name="row">The <see cref="IHaveThingRowViewModel"/></param>
+        /// <returns>The row kind</returns>
+        private string GetRowKind(IHaveThingRowViewModel row)
+        {
+	        return row.GetType().Name.Split("Row")[0];
         }
 
         /// <summary>

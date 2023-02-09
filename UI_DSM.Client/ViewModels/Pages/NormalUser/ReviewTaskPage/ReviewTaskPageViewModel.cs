@@ -24,6 +24,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Services.Administration.CometService;
     using UI_DSM.Client.Services.Administration.ParticipantService;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.Services.ReviewObjectiveService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Services.ReviewTaskService;
     using UI_DSM.Client.Services.ThingService;
@@ -49,6 +50,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         ///     The <see cref="IReviewItemService" />
         /// </summary>
         private readonly IReviewItemService reviewItemService;
+
+        /// <summary>
+        ///     The <see cref="IReviewObjectiveService" />
+        /// </summary>
+        private readonly IReviewObjectiveService reviewObjectiveService;
 
         /// <summary>
         ///     The <see cref="IReviewService" />
@@ -135,9 +141,10 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         /// <param name="reviewItemService">The <see cref="IReviewItemService" /></param>
         /// <param name="reviewTaskService">The <see cref="IReviewTaskService" /></param>
         /// <param name="annotationLinkerViewModel">The <see cref="IAnnotationLinkerViewModel" /></param>
+        /// <param name="reviewObjectiveService">The <see cref="IReviewObjectiveService" /></param>
         public ReviewTaskPageViewModel(IThingService thingService, IReviewService reviewService,
             IViewProviderService viewProviderService, IParticipantService participantService, IReviewItemService reviewItemService, IReviewTaskService reviewTaskService
-            , IAnnotationLinkerViewModel annotationLinkerViewModel)
+            , IAnnotationLinkerViewModel annotationLinkerViewModel, IReviewObjectiveService reviewObjectiveService)
         {
             this.thingService = thingService;
             this.reviewService = reviewService;
@@ -147,6 +154,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
             this.reviewTaskService = reviewTaskService;
             this.AnnotationLinkerViewModel = annotationLinkerViewModel;
             this.AnnotationLinkerViewModel.OnSubmit = new EventCallbackFactory().Create(this, this.LinkAnnotation);
+            this.reviewObjectiveService = reviewObjectiveService;
 
             this.ConfirmCancelDialog = new ConfirmCancelPopupViewModel
             {
@@ -315,8 +323,8 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
             this.AvailableViews.Clear();
             this.projectId = projectGuid;
             this.reviewId = reviewGuid;
-            var review = await this.reviewService.GetReviewOfProject(this.projectId, reviewGuid, 2);
-            var reviewObjectiveInsideReview = review?.ReviewObjectives.FirstOrDefault(x => x.Id == reviewObjectiveId);
+            var review = await this.reviewService.GetReviewOfProject(this.projectId, reviewGuid);
+            var reviewObjectiveInsideReview = await this.reviewObjectiveService.GetReviewObjectiveOfReview(this.projectId, this.reviewId, reviewObjectiveId, 1);
 
             var reviewTaskInsideObjective = reviewObjectiveInsideReview?.ReviewTasks.FirstOrDefault(x => x.Id == reviewTaskId);
 
@@ -459,7 +467,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         private async Task LinkAnnotation()
         {
             var linkResult = await this.reviewItemService.LinkItemsToAnnotation(this.projectId, this.reviewId,
-                this.AnnotationLinkerViewModel.CurrentAnnotation.Id, 
+                this.AnnotationLinkerViewModel.CurrentAnnotation.Id,
                 this.AnnotationLinkerViewModel.SelectedItems.OfType<IHaveThingRowViewModel>().Select(x => x.ThingId));
 
             if (linkResult.IsRequestSuccessful)

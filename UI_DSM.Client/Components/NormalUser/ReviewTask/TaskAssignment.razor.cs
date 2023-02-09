@@ -67,6 +67,12 @@ namespace UI_DSM.Client.Components.NormalUser.ReviewTask
                 
                 this.selectedParticipants[group] = new List<Participant>(this.ViewModel.SelectedParticipants
                     .Where(x => x.DomainsOfExpertise.Contains(group)));
+
+                if (group == "No Domain")
+                {
+	                this.selectedParticipants[group] = new List<Participant>(this.ViewModel.SelectedParticipants
+		                .Where(x => !x.DomainsOfExpertise.Any()));
+				}
             }
         }
 
@@ -93,7 +99,13 @@ namespace UI_DSM.Client.Components.NormalUser.ReviewTask
             foreach (var key in this.groupedParticipants.Keys)
             {
                 this.selectedParticipants[key] = new List<Participant>(this.ViewModel.SelectedParticipants.Where(x => x.DomainsOfExpertise.Contains(key)));
-            }
+
+                if (key == "No Domain")
+                {
+	                this.selectedParticipants[key] = new List<Participant>(this.ViewModel.SelectedParticipants
+		                .Where(x => !x.DomainsOfExpertise.Any()));
+                }
+			}
 
             await this.InvokeAsync(this.StateHasChanged);
         }

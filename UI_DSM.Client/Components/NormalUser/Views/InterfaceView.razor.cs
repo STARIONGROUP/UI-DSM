@@ -259,7 +259,12 @@ namespace UI_DSM.Client.Components.NormalUser.Views
                     break;
             }
 
-            row.Attributes["id"] = $"row_{row.Data.ThingId}";
+            if (this.ViewModel.SelectedElement is IBelongsToInterfaceView belongsToInterfaceView && belongsToInterfaceView.ThingId == row.Data.ThingId)
+            {
+	            row.Attributes["class"] += "selected-element";
+            }
+
+			row.Attributes["id"] = $"row_{row.Data.ThingId}";
         }
 
         /// <summary>

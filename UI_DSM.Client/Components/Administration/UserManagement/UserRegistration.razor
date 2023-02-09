@@ -19,7 +19,7 @@
 			<DxTextBox @bind-Text="@this.ViewModel.Registration.Password" NullText="Enter password" Password="true"/>
 		</DxFormLayoutItem>
 		<DxFormLayoutItem Caption="Confirm Password:" ColSpanMd="12" BeginRow="true">
-			<DxTextBox  @bind-Text="@this.ViewModel.Registration.ConfirmPassword" NullText="Confirm the password" Password="true"/>
+			<DxTextBox  @bind-Text="@this.ViewModel.Registration.ConfirmPassword" NullText="Confirm the password" Password="true" BindValueMode="BindValueMode.OnInput"/>
 		</DxFormLayoutItem>
 	</DxFormLayout>
 	<ValidationSummary/>

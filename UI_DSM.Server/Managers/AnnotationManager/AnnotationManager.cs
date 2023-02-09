@@ -250,7 +250,7 @@ namespace UI_DSM.Server.Managers.AnnotationManager
         }
 
         /// <summary>
-        ///     Gets the <see cref="SearchResultDto"/> based on a <see cref="Guid"/>
+        ///     Gets the <see cref="SearchResultDto" /> based on a <see cref="Guid" />
         /// </summary>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Annotation" /></param>
         /// <returns>A URL</returns>
@@ -285,7 +285,7 @@ namespace UI_DSM.Server.Managers.AnnotationManager
         }
 
         /// <summary>
-        ///     Gets all <see cref="Annotation"/> linked to a <see cref="AnnotatableItem" />
+        ///     Gets all <see cref="Annotation" /> linked to a <see cref="AnnotatableItem" />
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
         /// <param name="annotatableItemId">The <see cref="Guid" /> of the <see cref="AnnotatableItem" /></param>
@@ -304,6 +304,17 @@ namespace UI_DSM.Server.Managers.AnnotationManager
         public Task<IEnumerable<Entity>> GetAnnotationsForReviewTask(Guid projectId, Guid reviewTaskId)
         {
             return this.commentManager.GetCommentsForReviewTask(projectId, reviewTaskId);
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Annotation" /> that are linked to a <see cref="Review" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
+        public Task<IEnumerable<Entity>> GetAnnotationsForReview(Guid projectId, Guid reviewId)
+        {
+            return this.commentManager.GetCommentsForReview(projectId, reviewId);
         }
 
         /// <summary>

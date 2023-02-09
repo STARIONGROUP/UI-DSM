@@ -44,14 +44,7 @@ else
 					</div>
 				</Template>
 			</RadzenDataGridColumn>
-			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(ProductRowViewModel.TrlValue)" Title="TRL">
-				<Template Context="data">
-					@if (data is ProductRowViewModel product && product.Thing.ShouldHaveTechnologyParameter())
-					{
-						<p>@product.TrlValue</p>
-					}
-				</Template>
-			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="ElementBaseRowViewModel" Property="@nameof(ElementBaseRowViewModel.TrlValue)" Title="TRL" />
 		</Columns>
 	</RadzenDataGrid>
 }

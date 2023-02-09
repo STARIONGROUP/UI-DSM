@@ -247,5 +247,15 @@ namespace UI_DSM.Client.Components.App.TraceabilityTable
         {
             return row.Id.Length < 30 ? string.Empty : "app-traceability-table__header--large";
         }
+
+        /// <summary>
+        /// Verifies that the current element is the selected element
+        /// </summary>
+        /// <param name="thingId"></param>
+        /// <returns>The css class for the selected element</returns>
+        private string IsSelectedElement(Guid thingId)
+        {
+	        return this.ViewModel.SelectedElement?.ThingId == thingId ? "selected-element" : string.Empty;
+        }
     }
 }

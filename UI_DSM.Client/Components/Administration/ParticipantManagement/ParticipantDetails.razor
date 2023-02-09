@@ -9,7 +9,6 @@
 // 
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
-<CascadingValue Name="PreventValidation" Value="true">
 <EditForm Context="editFormContext" Model="@this.ViewModel.Participant" OnValidSubmit="@this.ViewModel.OnValidSubmit">
 	<DxFormLayout>
 		<DxFormLayoutItem Caption="Participant Name:" ColSpanMd="12">
@@ -30,4 +29,3 @@
 		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Update" SubmitFormOnClick="true" />
 	</div>
 </EditForm>
-</CascadingValue>

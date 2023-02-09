@@ -12,7 +12,6 @@
 @using UI_DSM.Client.Enumerator
 @using UI_DSM.Shared.Models
 
-<CascadingValue Name="PreventValidation" Value="true">
 <EditForm Context="editFormContext" Model="@this.ViewModel.Review" OnValidSubmit="@this.ViewModel.OnValidSubmit">
 	<DataAnnotationsValidator />
 	<DxFormLayout>
@@ -48,4 +47,3 @@
 							&& this.ViewModel.SelectedModels.Any()"/>
 	</div>
 </EditForm>
-</CascadingValue>

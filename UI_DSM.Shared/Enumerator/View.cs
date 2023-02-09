@@ -92,9 +92,9 @@ namespace UI_DSM.Shared.Enumerator
         InterfaceView = 11,
 
         /// <summary>
-        ///     View associated to represent a Requirement Traceability to Requirement
+        ///     View associated to represent the InterfaceView through Diagram
         /// </summary>
-        [Display(Name = "Physical Flow")]
+        [Display(Name = "Physical Architecture Diagram")]
         PhysicalFlowView = 12,
 
         /// <summary>

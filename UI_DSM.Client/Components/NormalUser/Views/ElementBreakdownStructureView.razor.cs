@@ -218,7 +218,13 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         {
             row.Expandable = this.ViewModel.HasChildren(row.Data);
             row.Attributes["class"] = this.ViewModel.IsVisible(row.Data) ? string.Empty : "invisible-row";
-            row.Attributes["id"] = $"row_{row.Data.ThingId}";
+
+            if (this.ViewModel.SelectedElement is ElementBaseRowViewModel elementBase && elementBase.ThingId == row.Data.ThingId)
+            {
+	            row.Attributes["class"] += "selected-element";
+			}
+
+			row.Attributes["id"] = $"row_{row.Data.ThingId}";
         }
 
         /// <summary>

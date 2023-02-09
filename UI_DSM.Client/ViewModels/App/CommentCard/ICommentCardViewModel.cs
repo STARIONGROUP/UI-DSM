@@ -36,6 +36,11 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
         EventCallback<Comment> OnContentEditCallback { get; set; }
 
         /// <summary>
+        ///     The <see cref="EventCallback{TValue}" /> when the user wants to navigate to the <see cref="Comment" />
+        /// </summary>
+        EventCallback<Comment> OnNavigateCallback { get; set; }
+
+        /// <summary>
         ///     The <see cref="EventCallback{TValue}" /> when the user wants to delete the <see cref="Comment" />
         /// </summary>
         EventCallback<Comment> OnDeleteCallback { get; set; }

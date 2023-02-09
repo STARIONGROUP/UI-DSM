@@ -136,8 +136,6 @@ namespace UI_DSM.Client.Tests.Components.NormalUser.Views
             await this.viewModel.InitializeProperties(things, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(),
                 new List<string>(), new List<string>(), new Participant());
 
-            Assert.That(this.viewModel.ReportDtoAsString, Is.Empty);
-            this.viewModel.SelectedBudgetTemplate = this.viewModel.AvailableBudgets.First();
             Assert.That(this.viewModel.ReportDtoAsString, Is.Not.Empty);
 
             renderer.Instance.SetSelectedElement(elementDefintion.Iid.ToString());

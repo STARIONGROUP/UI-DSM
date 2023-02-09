@@ -46,7 +46,7 @@
 			</span>
 
 
-			@if (this.ViewModel.CurrentParticipant.IsAllowedTo(AccessRight.ReviewTask) && this.ViewModel.IsAllowedToEdit)
+			@if (this.ViewModel.CurrentParticipant != null && this.ViewModel.CurrentParticipant.IsAllowedTo(AccessRight.ReviewTask) && this.ViewModel.IsAllowedToEdit)
 			{
 				<button id="@this.CardUniqueId" class="app-comment__status" @onclick="() => this.IsOnStatusUpdateMode = true">
 					@this.ViewModel.Comment.Status
@@ -62,7 +62,7 @@
 	</div>
 
 	<div class="app-comment__actions">
-		@if (this.ViewModel.CurrentParticipant.IsAllowedTo(AccessRight.ReviewTask))
+		@if (this.ViewModel.CurrentParticipant != null && this.ViewModel.CurrentParticipant.IsAllowedTo(AccessRight.ReviewTask))
 		{
 			<button class="app-comment__button" @onclick="this.OnReplyCallback">
 				<FeatherMessageCircle Size="20" Color="currentColor" StrokeWidth="2"/>
@@ -83,6 +83,12 @@
 			<button class="app-comment__button" @onclick="this.OnLinkCallback">
 				<FeatherLink2 Size="20" Color="currentColor" StrokeWidth="2"/>
 				Link
+			</button>
+		}else if (this.ViewModel.CurrentParticipant == null)
+		{
+			<button class="app-comment__button" @onclick="this.OnNavigateCallback">
+				<FeatherLink2 Size="20" Color="currentColor" StrokeWidth="2" />
+				Go To
 			</button>
 		}
 	</div>
