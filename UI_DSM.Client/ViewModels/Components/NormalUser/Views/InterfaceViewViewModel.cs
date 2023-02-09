@@ -268,9 +268,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         {
             await base.InitializeProperties(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart, participant);
 
-            if (prefilters.Any(x => string.Equals(x , "product")))
+            if (prefilters.Any(x => string.Equals(x, "product")))
             {
-	            this.ShouldShowProducts = true;
+                this.ShouldShowProducts = true;
             }
 
             var products = this.Things.OfType<ElementDefinition>()
@@ -579,9 +579,9 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="model">the model to select</param>
         public void SetSelectedModel(Model model)
         {
-			this.ProductsMap.Keys.ForEach(x => x.IsSelected = false);
+            this.ProductsMap.Keys.ForEach(x => x.IsSelected = false);
 
-			if (model is DiagramNode node && this.ProductsMap.ContainsKey(node))
+            if (model is DiagramNode node && this.ProductsMap.ContainsKey(node))
             {
                 this.SelectedElement = this.ProductsMap[node];
                 node.IsSelected = true;

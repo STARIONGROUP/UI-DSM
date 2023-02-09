@@ -78,10 +78,10 @@ namespace UI_DSM.Server.Modules
                 .WithName($"{this.EntityName}/GetAnnotationsForReviewTask");
 
             app.MapGet(this.MainRoute + "/Review/{reviewId:guid}", this.GetAnnotationsForReview)
-	            .Produces<IEnumerable<EntityDto>>()
-	            .WithTags(this.EntityName)
-	            .WithName($"{this.EntityName}/GetAnnotationsForReview");
-		}
+                .Produces<IEnumerable<EntityDto>>()
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/GetAnnotationsForReview");
+        }
 
         /// <summary>
         ///     Gets all <see cref="Annotation" /> that are linked to a <see cref="ReviewTask" />
@@ -116,26 +116,26 @@ namespace UI_DSM.Server.Modules
         [Authorize]
         public async Task GetAnnotationsForReview(IAnnotationManager annotationManager, Guid projectId, Guid reviewId, HttpContext context)
         {
-	        var participant = await this.GetParticipantBasedOnRequest(context, this.ContainerRouteKey);
+            var participant = await this.GetParticipantBasedOnRequest(context, this.ContainerRouteKey);
 
-	        if (participant == null)
-	        {
-		        return;
-	        }
+            if (participant == null)
+            {
+                return;
+            }
 
-	        var annotations = await annotationManager.GetAnnotationsForReview(projectId, reviewId);
-	        await context.Response.Negotiate(annotations.ToDtos());
+            var annotations = await annotationManager.GetAnnotationsForReview(projectId, reviewId);
+            await context.Response.Negotiate(annotations.ToDtos());
         }
 
-		/// <summary>
-		///     Get a <see cref="AnnotationDto" /> based on its <see cref="Guid" /> with all associated entities
-		/// </summary>
-		/// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
-		/// <param name="entityId">The <see cref="Guid" /></param>
-		/// <param name="context">The <see cref="HttpContext" /></param>
-		/// <param name="deepLevel">An optional parameters for the deep level</param>
-		/// <returns>A <see cref="Task" /></returns>
-		[Authorize]
+        /// <summary>
+        ///     Get a <see cref="AnnotationDto" /> based on its <see cref="Guid" /> with all associated entities
+        /// </summary>
+        /// <param name="manager">The <see cref="IEntityManager{TEntity}" /></param>
+        /// <param name="entityId">The <see cref="Guid" /></param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <param name="deepLevel">An optional parameters for the deep level</param>
+        /// <returns>A <see cref="Task" /></returns>
+        [Authorize]
         public override async Task GetEntity(IEntityManager<Annotation> manager, Guid entityId, HttpContext context, int deepLevel = 0)
         {
             var participant = await this.GetParticipantBasedOnRequest(context, this.ContainerRouteKey);

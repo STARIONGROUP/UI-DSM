@@ -13,168 +13,168 @@
 
 namespace UI_DSM.Client.ViewModels.App.Comments
 {
-	using DynamicData;
+    using DynamicData;
 
-	using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components;
 
-	using UI_DSM.Client.ViewModels.App.AvailableReviewTasksSelection;
-	using UI_DSM.Client.ViewModels.App.CommentCreation;
-	using UI_DSM.Client.ViewModels.App.ReplyCreation;
-	using UI_DSM.Client.ViewModels.Components;
-	using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
-	using UI_DSM.Shared.Enumerator;
-	using UI_DSM.Shared.Models;
+    using UI_DSM.Client.ViewModels.App.AvailableReviewTasksSelection;
+    using UI_DSM.Client.ViewModels.App.CommentCreation;
+    using UI_DSM.Client.ViewModels.App.ReplyCreation;
+    using UI_DSM.Client.ViewModels.Components;
+    using UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel;
+    using UI_DSM.Shared.Enumerator;
+    using UI_DSM.Shared.Models;
 
-	/// <summary>
-	///     Interface definition for <see cref="CommentsViewModel" />
-	/// </summary>
-	public interface ICommentsViewModel : IDisposable
-	{
-		/// <summary>
-		///     The currently selected item in a View
-		/// </summary>
-		object SelectedItem { get; set; }
+    /// <summary>
+    ///     Interface definition for <see cref="CommentsViewModel" />
+    /// </summary>
+    public interface ICommentsViewModel : IDisposable
+    {
+        /// <summary>
+        ///     The currently selected item in a View
+        /// </summary>
+        object SelectedItem { get; set; }
 
-		/// <summary>
-		///     The <see cref="SourceList{T}" /> for <see cref="Comment" />
-		/// </summary>
-		SourceList<Comment> Comments { get; }
+        /// <summary>
+        ///     The <see cref="SourceList{T}" /> for <see cref="Comment" />
+        /// </summary>
+        SourceList<Comment> Comments { get; }
 
-		/// <summary>
-		///     The <see cref="Guid" /> of the <see cref="Project" />
-		/// </summary>
-		Guid ProjectId { get; }
+        /// <summary>
+        ///     The <see cref="Guid" /> of the <see cref="Project" />
+        /// </summary>
+        Guid ProjectId { get; }
 
-		/// <summary>
-		///     The <see cref="Guid" /> of the <see cref="Review" />
-		/// </summary>
-		Guid ReviewId { get; }
+        /// <summary>
+        ///     The <see cref="Guid" /> of the <see cref="Review" />
+        /// </summary>
+        Guid ReviewId { get; }
 
-		/// <summary>
-		///     Value indicating if the current view is on creation mode for <see cref="Comment" />
-		/// </summary>
-		bool IsOnCommentCreationMode { get; set; }
+        /// <summary>
+        ///     Value indicating if the current view is on creation mode for <see cref="Comment" />
+        /// </summary>
+        bool IsOnCommentCreationMode { get; set; }
 
-		/// <summary>
-		///     The <see cref="ICommentCreationViewModel" />
-		/// </summary>
-		ICommentCreationViewModel CommentCreationViewModel { get; set; }
+        /// <summary>
+        ///     The <see cref="ICommentCreationViewModel" />
+        /// </summary>
+        ICommentCreationViewModel CommentCreationViewModel { get; set; }
 
-		/// <summary>
-		///     The <see cref="IErrorMessageViewModel" />
-		/// </summary>
-		IErrorMessageViewModel ErrorMessageViewModel { get; set; }
+        /// <summary>
+        ///     The <see cref="IErrorMessageViewModel" />
+        /// </summary>
+        IErrorMessageViewModel ErrorMessageViewModel { get; set; }
 
-		/// <summary>
-		///     The current <see cref="Participant" />
-		/// </summary>
-		Participant Participant { get; }
+        /// <summary>
+        ///     The current <see cref="Participant" />
+        /// </summary>
+        Participant Participant { get; }
 
-		/// <summary>
-		///     Event callback when a user wants to delete a <see cref="Comment" />
-		/// </summary>
-		EventCallback<Comment> OnDeleteCallback { get; set; }
+        /// <summary>
+        ///     Event callback when a user wants to delete a <see cref="Comment" />
+        /// </summary>
+        EventCallback<Comment> OnDeleteCallback { get; set; }
 
-		/// <summary>
-		///     Event callback when a user wants to update a <see cref="Comment" />
-		/// </summary>
-		EventCallback<Comment> OnCommentEditCallback { get; }
+        /// <summary>
+        ///     Event callback when a user wants to update a <see cref="Comment" />
+        /// </summary>
+        EventCallback<Comment> OnCommentEditCallback { get; }
 
-		/// <summary>
-		///     The <see cref="IConfirmCancelPopupViewModel" />
-		/// </summary>
-		IConfirmCancelPopupViewModel CommentConfirmCancelPopupViewModel { get; set; }
+        /// <summary>
+        ///     The <see cref="IConfirmCancelPopupViewModel" />
+        /// </summary>
+        IConfirmCancelPopupViewModel CommentConfirmCancelPopupViewModel { get; set; }
 
-		/// <summary>
-		///     Value indicating if the current view is on update mode
-		/// </summary>
-		bool IsOnCommentUpdateMode { get; set; }
+        /// <summary>
+        ///     Value indicating if the current view is on update mode
+        /// </summary>
+        bool IsOnCommentUpdateMode { get; set; }
 
-		/// <summary>
-		///     Event callback when a user wants to update the statis of a <see cref="Comment" />
-		/// </summary>
-		EventCallback<Comment> OnUpdateStatusCallback { get; set; }
+        /// <summary>
+        ///     Event callback when a user wants to update the statis of a <see cref="Comment" />
+        /// </summary>
+        EventCallback<Comment> OnUpdateStatusCallback { get; set; }
 
-		/// <summary>
-		///     Event callback when a user wants to reply to a <see cref="Comment" />
-		/// </summary>
-		EventCallback<Comment> OnReplyCallback { get; set; }
+        /// <summary>
+        ///     Event callback when a user wants to reply to a <see cref="Comment" />
+        /// </summary>
+        EventCallback<Comment> OnReplyCallback { get; set; }
 
-		/// <summary>
-		///     Event callback when a user wants to edit the content of a <see cref="Reply" />
-		/// </summary>
-		EventCallback<Reply> OnReplyEditContentCallback { get; set; }
+        /// <summary>
+        ///     Event callback when a user wants to edit the content of a <see cref="Reply" />
+        /// </summary>
+        EventCallback<Reply> OnReplyEditContentCallback { get; set; }
 
-		/// <summary>
-		///     Event callback when a user wants to delete a <see cref="Reply" />
-		/// </summary>
-		EventCallback<Reply> OnDeleteReplyCallback { get; set; }
+        /// <summary>
+        ///     Event callback when a user wants to delete a <see cref="Reply" />
+        /// </summary>
+        EventCallback<Reply> OnDeleteReplyCallback { get; set; }
 
-		/// <summary>
-		///     Value indicating if the current view is on creation mode for <see cref="Reply" />
-		/// </summary>
-		bool IsOnReplyCreationMode { get; set; }
+        /// <summary>
+        ///     Value indicating if the current view is on creation mode for <see cref="Reply" />
+        /// </summary>
+        bool IsOnReplyCreationMode { get; set; }
 
-		/// <summary>
-		///     Value indicating if the current view is on update mode for <see cref="Reply" />
-		/// </summary>
-		bool IsOnReplyUpdateMode { get; set; }
+        /// <summary>
+        ///     Value indicating if the current view is on update mode for <see cref="Reply" />
+        /// </summary>
+        bool IsOnReplyUpdateMode { get; set; }
 
-		/// <summary>
-		///     The <see cref="IReplyCreationViewModel" />
-		/// </summary>
-		IReplyCreationViewModel ReplyCreationViewModel { get; set; }
+        /// <summary>
+        ///     The <see cref="IReplyCreationViewModel" />
+        /// </summary>
+        IReplyCreationViewModel ReplyCreationViewModel { get; set; }
 
-		/// <summary>
-		///     The <see cref="IConfirmCancelPopupViewModel" /> for <see cref="Reply" />
-		/// </summary>
-		IConfirmCancelPopupViewModel ReplyConfirmCancelPopupViewModel { get; set; }
+        /// <summary>
+        ///     The <see cref="IConfirmCancelPopupViewModel" /> for <see cref="Reply" />
+        /// </summary>
+        IConfirmCancelPopupViewModel ReplyConfirmCancelPopupViewModel { get; set; }
 
-		/// <summary>
-		///     Event callback when a user wants to link a <see cref="Comment" /> to another element
-		/// </summary>
-		EventCallback<Comment> OnLinkCallback { get; }
+        /// <summary>
+        ///     Event callback when a user wants to link a <see cref="Comment" /> to another element
+        /// </summary>
+        EventCallback<Comment> OnLinkCallback { get; }
 
-		/// <summary>
-		///     A collection of <see cref="AvailableRows" />
-		/// </summary>
-		List<IHaveAnnotatableItemRowViewModel> AvailableRows { get; set; }
+        /// <summary>
+        ///     A collection of <see cref="AvailableRows" />
+        /// </summary>
+        List<IHaveAnnotatableItemRowViewModel> AvailableRows { get; set; }
 
-		/// <summary>
-		///     Value indicating if the view should be on link to <see cref="ReviewTask" /> mode
-		/// </summary>
-		bool IsOnLinkMode { get; set; }
+        /// <summary>
+        ///     Value indicating if the view should be on link to <see cref="ReviewTask" /> mode
+        /// </summary>
+        bool IsOnLinkMode { get; set; }
 
-		/// <summary>
-		///     The <see cref="IAvailableReviewTasksSelectionViewModel" />
-		/// </summary>
-		IAvailableReviewTasksSelectionViewModel AvailableReviewTasksSelectionViewModel { get; set; }
+        /// <summary>
+        ///     The <see cref="IAvailableReviewTasksSelectionViewModel" />
+        /// </summary>
+        IAvailableReviewTasksSelectionViewModel AvailableReviewTasksSelectionViewModel { get; set; }
 
-		/// <summary>
-		///     The <see cref="EventCallback{TValue}" /> when the user wants to navigate to the <see cref="Comment" />
-		/// </summary>
-		EventCallback<Comment> OnNavigateCallback { get; set; }
+        /// <summary>
+        ///     The <see cref="EventCallback{TValue}" /> when the user wants to navigate to the <see cref="Comment" />
+        /// </summary>
+        EventCallback<Comment> OnNavigateCallback { get; set; }
 
-		/// <summary>
-		///     Initializes this viewModel properties
-		/// </summary>
-		/// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
-		/// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
-		/// <param name="currentView">The current <see cref="View" /></param>
-		/// <param name="currentParticipant">The current <see cref="Participant" /></param>
-		/// <param name="onLinkCallback">The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element</param>
-		/// <param name="task">The <see cref="ReviewTask" /></param>
-		void InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant currentParticipant, EventCallback<Comment> onLinkCallback, ReviewTask task);
+        /// <summary>
+        ///     Initializes this viewModel properties
+        /// </summary>
+        /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
+        /// <param name="reviewId">The <see cref="Guid" /> of the <see cref="Review" /></param>
+        /// <param name="currentView">The current <see cref="View" /></param>
+        /// <param name="currentParticipant">The current <see cref="Participant" /></param>
+        /// <param name="onLinkCallback">The <see cref="EventCallback{TValue}" /> for linking a <see cref="Comment" /> on other element</param>
+        /// <param name="task">The <see cref="ReviewTask" /></param>
+        void InitializesProperties(Guid projectId, Guid reviewId, View currentView, Participant currentParticipant, EventCallback<Comment> onLinkCallback, ReviewTask task);
 
-		/// <summary>
-		///     Opens the creation popup
-		/// </summary>
-		void OpenCommentCreationPopup();
+        /// <summary>
+        ///     Opens the creation popup
+        /// </summary>
+        void OpenCommentCreationPopup();
 
-		/// <summary>
-		///     Sets the current selected <see cref="Comment" />
-		/// </summary>
-		/// <param name="comment">The <see cref="Comment" /></param>
-		void SetCurrentComment(Comment comment);
-	}
+        /// <summary>
+        ///     Sets the current selected <see cref="Comment" />
+        /// </summary>
+        /// <param name="comment">The <see cref="Comment" /></param>
+        void SetCurrentComment(Comment comment);
+    }
 }

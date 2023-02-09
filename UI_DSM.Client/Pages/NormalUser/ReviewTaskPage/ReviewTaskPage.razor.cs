@@ -81,10 +81,10 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         [SupplyParameterFromQuery]
         public string CommentId { get; set; }
 
-		/// <summary>
-		/// The <see cref="Guid"/> of the <see cref="Comment"/> to focus on
-		/// </summary>
-		private Guid commentId;
+        /// <summary>
+        /// The <see cref="Guid"/> of the <see cref="Comment"/> to focus on
+        /// </summary>
+        private Guid commentId;
 
         /// <summary>
         ///     The <see cref="IReviewTaskPageViewModel" />
@@ -174,7 +174,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
             if (Guid.TryParse(this.CommentId, out var parsedId))
             {
-	            this.commentId = parsedId;
+                this.commentId = parsedId;
             }
 
             await base.OnParametersSetAsync();
@@ -268,25 +268,25 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
             if (this.commentId != Guid.Empty && this.Comments.ViewModel.Comments.Items.Any())
             {
-	            var reviewItems = this.Comments.ViewModel.Comments.Items.FirstOrDefault(x => x.Id == this.commentId)
-		            ?.AnnotatableItems.OfType<ReviewItem>().ToList();
+                var reviewItems = this.Comments.ViewModel.Comments.Items.FirstOrDefault(x => x.Id == this.commentId)
+                    ?.AnnotatableItems.OfType<ReviewItem>().ToList();
 
-	            if (reviewItems != null && reviewItems.Any())
-	            {
-		            var availableRow = baseView.GetAvailablesRows()
-			            .FirstOrDefault(x => reviewItems.Any(r => x.AnnotatableItemId == r.Id));
+                if (reviewItems != null && reviewItems.Any())
+                {
+                    var availableRow = baseView.GetAvailablesRows()
+                        .FirstOrDefault(x => reviewItems.Any(r => x.AnnotatableItemId == r.Id));
 
-		            if (availableRow is IHaveThingRowViewModel asThingRow)
-		            {
-			            baseView.TrySetSelectedItem(asThingRow);
-			            await baseView.TryNavigateToItem(asThingRow.Id);
-		            }
-	            }
+                    if (availableRow is IHaveThingRowViewModel asThingRow)
+                    {
+                        baseView.TrySetSelectedItem(asThingRow);
+                        await baseView.TryNavigateToItem(asThingRow.Id);
+                    }
+                }
 
-	            this.commentId = Guid.Empty;
+                this.commentId = Guid.Empty;
             }
 
-			await baseView.HasChanged();
+            await baseView.HasChanged();
         }
 
         /// <summary>
@@ -403,7 +403,7 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
                 this.Comments.ViewModel.AvailableRows = this.ViewModel?.CurrentBaseViewInstance.GetAvailablesRows();
             }
 
-			await this.InvokeAsync(this.StateHasChanged);
+            await this.InvokeAsync(this.StateHasChanged);
         }
 
         /// <summary>

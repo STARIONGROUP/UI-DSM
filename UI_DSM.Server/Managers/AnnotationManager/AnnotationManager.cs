@@ -250,7 +250,7 @@ namespace UI_DSM.Server.Managers.AnnotationManager
         }
 
         /// <summary>
-        ///     Gets the <see cref="SearchResultDto"/> based on a <see cref="Guid"/>
+        ///     Gets the <see cref="SearchResultDto" /> based on a <see cref="Guid" />
         /// </summary>
         /// <param name="entityId">The <see cref="Guid" /> of the <see cref="Annotation" /></param>
         /// <returns>A URL</returns>
@@ -285,7 +285,7 @@ namespace UI_DSM.Server.Managers.AnnotationManager
         }
 
         /// <summary>
-        ///     Gets all <see cref="Annotation"/> linked to a <see cref="AnnotatableItem" />
+        ///     Gets all <see cref="Annotation" /> linked to a <see cref="AnnotatableItem" />
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
         /// <param name="annotatableItemId">The <see cref="Guid" /> of the <see cref="AnnotatableItem" /></param>
@@ -314,15 +314,15 @@ namespace UI_DSM.Server.Managers.AnnotationManager
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
         public Task<IEnumerable<Entity>> GetAnnotationsForReview(Guid projectId, Guid reviewId)
         {
-	        return this.commentManager.GetCommentsForReview(projectId, reviewId);
+            return this.commentManager.GetCommentsForReview(projectId, reviewId);
         }
 
-		/// <summary>
-		///     Finds an <see cref="Annotation" /> and includes his <see cref="Entity" /> container
-		/// </summary>
-		/// <param name="entityId">The <see cref="Entity" /> id</param>
-		/// <returns>A <see cref="Task" /> with the <see cref="Annotation" /></returns>
-		public async Task<Annotation> FindEntityWithContainer(Guid entityId)
+        /// <summary>
+        ///     Finds an <see cref="Annotation" /> and includes his <see cref="Entity" /> container
+        /// </summary>
+        /// <param name="entityId">The <see cref="Entity" /> id</param>
+        /// <returns>A <see cref="Task" /> with the <see cref="Annotation" /></returns>
+        public async Task<Annotation> FindEntityWithContainer(Guid entityId)
         {
             return (Annotation)await this.commentManager.FindEntityWithContainer(entityId)
                    ?? (Annotation)await this.feedbackManager.FindEntityWithContainer(entityId)

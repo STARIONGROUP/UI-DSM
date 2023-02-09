@@ -196,23 +196,23 @@ namespace UI_DSM.Client.Services.AnnotationService
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
         public async Task<List<Annotation>> GetAnnotationsForReview(Guid projectId, Guid reviewId)
         {
-	        try
-	        {
-		        this.ComputeMainRoute(projectId);
-		        var response = await this.HttpClient.GetAsync($"{this.MainRoute}/Review/{reviewId}");
+            try
+            {
+                this.ComputeMainRoute(projectId);
+                var response = await this.HttpClient.GetAsync($"{this.MainRoute}/Review/{reviewId}");
 
-		        if (!response.IsSuccessStatusCode)
-		        {
-			        return new List<Annotation>();
-		        }
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new List<Annotation>();
+                }
 
-		        var dtos = this.jsonService.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync()).ToList();
-		        return Assembler.CreateEntities<Annotation>(dtos).ToList();
-	        }
-	        catch (Exception exception)
-	        {
-		        throw new HttpRequestException(exception.Message);
-	        }
+                var dtos = this.jsonService.Deserialize<IEnumerable<EntityDto>>(await response.Content.ReadAsStreamAsync()).ToList();
+                return Assembler.CreateEntities<Annotation>(dtos).ToList();
+            }
+            catch (Exception exception)
+            {
+                throw new HttpRequestException(exception.Message);
+            }
         }
-	}
+    }
 }

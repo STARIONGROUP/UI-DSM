@@ -462,26 +462,26 @@ namespace UI_DSM.Client.Extensions
         /// <returns>The name of the category if any</returns>
         public static string GetSpecificObjectKindForThing(this Thing thing)
         {
-	        return thing switch
-	        {
-		        ElementBase elementBase when elementBase.IsProduct() => "Product",
-		        ElementBase elementBase when elementBase.IsFunction() => "Function",
-		        ElementBase elementBase when elementBase.IsPort() => "Port",
-		        BinaryRelationship binaryRelationship when binaryRelationship.IsInterface() => "Interface",
-		        BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(DeriveCategoryName) => "Requirement flow-down Traceability",
-		        BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(TraceCategoryName) => "Requirement Traces",
-		        BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(ImplementCategoryName) => "Function Implementation Traceability",
-		        BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(SatisfyCategoryName) => $"Requirement Implementation Traceability",
-		        _ => thing.GetType().Name
-	        };
+            return thing switch
+            {
+                ElementBase elementBase when elementBase.IsProduct() => "Product",
+                ElementBase elementBase when elementBase.IsFunction() => "Function",
+                ElementBase elementBase when elementBase.IsPort() => "Port",
+                BinaryRelationship binaryRelationship when binaryRelationship.IsInterface() => "Interface",
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(DeriveCategoryName) => "Requirement flow-down Traceability",
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(TraceCategoryName) => "Requirement Traces",
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(ImplementCategoryName) => "Function Implementation Traceability",
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(SatisfyCategoryName) => $"Requirement Implementation Traceability",
+                _ => thing.GetType().Name
+            };
         }
 
-		/// <summary>
-		///     Gets the specific category name base on a <see cref="Thing" />
-		/// </summary>
-		/// <param name="thing">The <see cref="Thing" /></param>
-		/// <returns>The name of the category if any</returns>
-		public static string GetSpecificCategoryForThing(this Thing thing)
+        /// <summary>
+        ///     Gets the specific category name base on a <see cref="Thing" />
+        /// </summary>
+        /// <param name="thing">The <see cref="Thing" /></param>
+        /// <returns>The name of the category if any</returns>
+        public static string GetSpecificCategoryForThing(this Thing thing)
         {
             return thing switch
             {

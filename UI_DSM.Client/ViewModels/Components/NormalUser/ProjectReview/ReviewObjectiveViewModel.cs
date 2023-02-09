@@ -124,7 +124,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         public List<Annotation> Annotations { get; set; }
 
         /// <summary>
-        ///     Gets the navLink link to navigate to the <see cref="ReviewObjective"/> page
+        ///     Gets the navLink link to navigate to the <see cref="ReviewObjective" /> page
         /// </summary>
         /// <param name="reviewObjective">The <see cref="ReviewObjective" /></param>
         /// <returns>The navigation link</returns>
@@ -170,7 +170,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
                 {
                     this.Review.ReviewObjectives.Add(creationResult.Entities);
                     this.ReviewObjectiveCreationViewModel.ReviewObjectivesCreationStatus = CreationStatus.Done;
-                    foreach(var reviewObjective in creationResult.Entities)
+
+                    foreach (var reviewObjective in creationResult.Entities)
                     {
                         this.CommentsAndTasks[reviewObjective.Id] = new AdditionalComputedProperties();
                     }

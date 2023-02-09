@@ -28,7 +28,7 @@ namespace UI_DSM.Server.Managers.AnnotationManager
         void InjectManager(IAnnotatableItemManager manager);
 
         /// <summary>
-        ///     Gets all <see cref="Annotation"/> linked to a <see cref="AnnotatableItem" />
+        ///     Gets all <see cref="Annotation" /> linked to a <see cref="AnnotatableItem" />
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>
         /// <param name="annotatableItemId">The <see cref="Guid" /> of the <see cref="AnnotatableItem" /></param>
@@ -49,6 +49,6 @@ namespace UI_DSM.Server.Managers.AnnotationManager
         /// <param name="projectId">The <see cref="Project" /> id</param>
         /// <param name="reviewId">The <see cref="Review" /> id</param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
-		Task<IEnumerable<Entity>> GetAnnotationsForReview(Guid projectId, Guid reviewId);
+        Task<IEnumerable<Entity>> GetAnnotationsForReview(Guid projectId, Guid reviewId);
     }
 }

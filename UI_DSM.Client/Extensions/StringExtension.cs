@@ -13,39 +13,39 @@
 
 namespace UI_DSM.Client.Extensions
 {
-	using System.Text;
+    using System.Text;
 
-	/// <summary>
-	///     Extension class for <see cref="string" />
-	/// </summary>
-	public static class StringExtension
-	{
-		/// <summary>
-		///     Add a blank space before each uppercase inside the text
-		/// </summary>
-		/// <param name="text">The current text</param>
-		/// <returns>The text with additional uppercase</returns>
-		public static string AddSpaceBeforeUpperCase(this string text)
-		{
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				return "";
-			}
+    /// <summary>
+    ///     Extension class for <see cref="string" />
+    /// </summary>
+    public static class StringExtension
+    {
+        /// <summary>
+        ///     Add a blank space before each uppercase inside the text
+        /// </summary>
+        /// <param name="text">The current text</param>
+        /// <returns>The text with additional uppercase</returns>
+        public static string AddSpaceBeforeUpperCase(this string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return "";
+            }
 
-			var newText = new StringBuilder();
-			newText.Append(text[0]);
+            var newText = new StringBuilder();
+            newText.Append(text[0]);
 
-			for (var charachterIndex = 1; charachterIndex < text.Length; charachterIndex++)
-			{
-				if (char.IsUpper(text[charachterIndex]) && text[charachterIndex - 1] != ' ')
-				{
-					newText.Append(' ');
-				}
+            for (var charachterIndex = 1; charachterIndex < text.Length; charachterIndex++)
+            {
+                if (char.IsUpper(text[charachterIndex]) && text[charachterIndex - 1] != ' ')
+                {
+                    newText.Append(' ');
+                }
 
-				newText.Append(text[charachterIndex]);
-			}
+                newText.Append(text[charachterIndex]);
+            }
 
-			return newText.ToString();
-		}
-	}
+            return newText.ToString();
+        }
+    }
 }
