@@ -379,7 +379,7 @@ namespace UI_DSM.Server.Modules
         {
             var reviewId = this.GetAdditionalRouteId(context.Request, this.ContainerRouteKey);
             var existingReviewObjectives = reviewObjectiveManager.GetReviewObjectiveCreationForReview(reviewId);
-            var reviewObjectiveCreationTemplates = this.reviewObjectivesTemplates.Select(x => new ReviewObjectiveCreationDto { Kind = x.ReviewObjectiveKind, KindNumber = x.ReviewObjectiveKindNumber }).ToList();
+            var reviewObjectiveCreationTemplates = this.reviewObjectivesTemplates.Select(x => new ReviewObjectiveCreationDto { Kind = x.ReviewObjectiveKind, KindNumber = x.ReviewObjectiveKindNumber , Tooltip = x.Description}).ToList();
             reviewObjectiveCreationTemplates.RemoveAll(x => existingReviewObjectives.Any(y => y.Kind == x.Kind && y.KindNumber == x.KindNumber));
             await context.Response.Negotiate(reviewObjectiveCreationTemplates);
         }

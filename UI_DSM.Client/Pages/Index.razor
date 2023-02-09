@@ -21,24 +21,28 @@
     </div>
     <div class="projects-overview">
 
-        <LoadingComponent IsLoading="this.IsLoading">
-            @foreach (var project in this.ViewModel.AvailableProject.Items.OrderBy(x => x.CreatedOn))
-            {
-                <NavLink href=@("/Project/"+project.Id)>
-                    @if (this.ViewModel.CommentsAndTasks.ContainsKey(project.Id))
-                    {
-	                    <AppProjectCard Title="@project.ProjectName" Created="@project.CreatedOn.ToString()" 
-	                                    Tasks="@this.ViewModel.CommentsAndTasks[project.Id].TaskCount" 
-	                                    OpenComments="@this.ViewModel.CommentsAndTasks[project.Id].OpenCommentCount" 
-	                                    TotalComments="@this.ViewModel.CommentsAndTasks[project.Id].TotalCommentCount" />
-                    }
-                    else
-                    {
-                        <AppProjectCard Title="@project.ProjectName" Created="@project.CreatedOn.ToString()" Tasks="-1" OpenComments="-1" />
-                    }
-                </NavLink>
-            }
-        </LoadingComponent>
+	    <LoadingComponent IsLoading="this.IsLoading">
+			@if (this.ViewModel.AvailableProject.Count == 0)
+			{
+				<h5>No projects to display</h5>
+			}
+			@foreach (var project in this.ViewModel.AvailableProject.Items.OrderBy(x => x.CreatedOn))
+		    {
+			    <NavLink href=@("/Project/" + project.Id)>
+				    @if (this.ViewModel.CommentsAndTasks.ContainsKey(project.Id))
+				    {
+					    <AppProjectCard Title="@project.ProjectName" Created="@project.CreatedOn.ToString()"
+					                    Tasks="@this.ViewModel.CommentsAndTasks[project.Id].TaskCount"
+					                    OpenComments="@this.ViewModel.CommentsAndTasks[project.Id].OpenCommentCount"
+					                    TotalComments="@this.ViewModel.CommentsAndTasks[project.Id].TotalCommentCount"/>
+				    }
+				    else
+				    {
+					    <AppProjectCard Title="@project.ProjectName" Created="@project.CreatedOn.ToString()" Tasks="-1" OpenComments="-1"/>
+				    }
+			    </NavLink>
+		    }
+	    </LoadingComponent>
 
     </div>
 </div>

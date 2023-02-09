@@ -79,16 +79,17 @@
 								<FeatherEye Size="20" Color="currentColor" StrokeWidth="2"/> <span>@(this.ViewModel.CurrentView.GetEnumDisplayName())</span>
 							</button>
 							<DxDropDown @bind-IsOpen="@(this.ViewModel.ViewSelectorVisible)"
-													Width="200"
-													MaxHeight="500"
-													PositionTarget="#view-selector-button"
-													PositionMode="DropDownPositionMode.Bottom"
-													PreventCloseOnPositionTargetClick="true">
+							            Width="200"
+							            MaxHeight="500"
+							            PositionTarget="#view-selector-button"
+							            PositionMode="DropDownPositionMode.Bottom"
+							            PreventCloseOnPositionTargetClick="true">
 								<BodyTemplate>
 									<DxListBox Data="@(this.ViewModel.AvailableViews)" TextFieldName="@nameof(ViewWrapper.ViewName)"
-														@bind-Value="@(this.ViewModel.SelectedView)"/>
+									           @bind-Value="@(this.ViewModel.SelectedView)"/>
 								</BodyTemplate>
 							</DxDropDown>
+							
 						</div>
 					</div>
 
@@ -99,20 +100,26 @@
 							@if (this.ViewModel.ReviewTask.Status == StatusKind.Open)
 							{
 								<AppButton Id="doneButton" Label="Mark as done" Type="button" Variant="AppButton.VariantValue.Success" Click="() => this.ViewModel.AskConfirmMarkTaskAsDoneOrUndone()">
-									<FeatherCheckCircle Size="20" Color="CurrentColor" StrokeWidth="2" /> <span>Done</span>
+									<FeatherCheckCircle Size="20" Color="CurrentColor" StrokeWidth="2" /> <span>Mark as Done</span>
 								</AppButton>
 							}
 							else
 							{
 								<AppButton Id="undoneButton" Label="Mark as open" Type="button" Variant="AppButton.VariantValue.Danger" Click="() => this.ViewModel.AskConfirmMarkTaskAsDoneOrUndone()">
-									<FeatherXCircle Size="20" Color="#f44336" StrokeWidth="2" /> <span>Open</span>
+									<FeatherXCircle Size="20" Color="#f44336" StrokeWidth="2" /> <span>Mark as Open</span>
 								</AppButton>
 							}
 						}
-
+						<AppButton Label="Clear selection" Type="button" Variant="AppButton.VariantValue.Primary" Click="@this.ClearSelection">
+							<FeatherX Size="20" Color="#f44336" StrokeWidth="2" /> <span>Clear selection</span>
+						</AppButton>
 					</div>
 				</div>
 				<div class="task-page__body-inner">
+					@if (this.ViewModel.ReviewTask.Prefilters.Any(x => !x.Equals("product")) && this.ViewModel.CurrentView == this.ViewModel.ReviewTask.MainView)
+					{
+						<h5 style="margin-bottom: -30px">Prefilter applied on Category: @this.ViewModel.ReviewTask.Prefilters.AsCommaSeparated()</h5>
+					}
 					<DynamicComponent Type="@(this.ViewModel.CurrentBaseView)" @ref="this.BaseView"/>
 				</div>
 			</main>

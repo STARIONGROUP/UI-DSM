@@ -87,7 +87,14 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         /// <param name="selectedItem">The previous selected <see cref="object" /></param>
         public override void TrySetSelectedItem(object selectedItem)
         {
-            this.ViewModel.TrySetSelectedItem(selectedItem);
+            if (selectedItem == null)
+            {
+                this.ViewModel.SelectedElement = null;
+            }
+            else
+            {
+                this.ViewModel.TrySetSelectedItem(selectedItem);
+            }
         }
     }
 }

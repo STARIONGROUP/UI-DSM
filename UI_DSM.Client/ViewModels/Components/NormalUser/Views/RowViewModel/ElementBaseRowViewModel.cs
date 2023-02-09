@@ -102,6 +102,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public bool IsExpanded { get; set; }
 
         /// <summary>
+        ///     The value of the TRL parameter
+        /// </summary>
+        public int? TrlValue { get; protected set; }
+
+        /// <summary>
         ///     Verifies that the current <see cref="ElementBase" /> has the current <see cref="Option" /> has excluded
         /// </summary>
         /// <param name="option">The <see cref="Option" /></param>

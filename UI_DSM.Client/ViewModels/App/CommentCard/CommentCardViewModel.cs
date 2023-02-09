@@ -39,12 +39,14 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
         /// <param name="onLinkCallback">
         ///     The <see cref="EventCallback{TValue}" /> for linking element to the <see cref="Comment" />
         /// </param>
-        /// <param name="selectedAnnotatableItem">The current selected <see cref="AnnotatableItem" /></param>
-        /// <param name="linkedRows">A collection of linked <see cref="IHaveAnnotatableItemRowViewModel"/></param>
+        /// <param name="linkedRows">A collection of linked <see cref="IHaveAnnotatableItemRowViewModel" /></param>
+        /// <param name="onNavigateCallback">
+        ///     The <see cref="EventCallback{TValue}" /> to navigate to the <see cref="Comment" />
+        /// </param>
         public CommentCardViewModel(Comment comment, Participant currentParticipant,
             EventCallback<Comment> onContentEditCallback, EventCallback<Comment> onDeleteCallback, EventCallback<Comment> onUpdateStatusCallback,
             EventCallback<Comment> onReplyCallback, EventCallback<Reply> onContentEditReplyCallback, EventCallback<Reply> onDeleteReplyCallback,
-            EventCallback<Comment> onLinkCallback, List<IHaveAnnotatableItemRowViewModel> linkedRows)
+            EventCallback<Comment> onLinkCallback, List<IHaveAnnotatableItemRowViewModel> linkedRows, EventCallback<Comment> onNavigateCallback)
         {
             this.Comment = comment;
             this.CurrentParticipant = currentParticipant;
@@ -56,17 +58,18 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
             this.OnDeleteReplyCallback = onDeleteReplyCallback;
             this.OnLinkCallback = onLinkCallback;
             this.LinkedRows = linkedRows;
+            this.OnNavigateCallback = onNavigateCallback;
         }
-
-        /// <summary>
-        ///     A collection of all <see cref="LinkedRows" />
-        /// </summary>
-        public List<IHaveAnnotatableItemRowViewModel> LinkedRows { get; }
 
         /// <summary>
         ///     The <see cref="EventCallback" /> to update the status of the <see cref="ICommentCardViewModel.Comment" />
         /// </summary>
         public EventCallback<Comment> OnUpdateStatusCallback { get; set; }
+
+        /// <summary>
+        ///     A collection of all <see cref="LinkedRows" />
+        /// </summary>
+        public List<IHaveAnnotatableItemRowViewModel> LinkedRows { get; }
 
         /// <summary>
         ///     The currently logged <see cref="Participant" />
@@ -114,6 +117,11 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
         ///     The <see cref="EventCallback{TValue}" /> when the user wants to edit the <see cref="Comment" />
         /// </summary>
         public EventCallback<Comment> OnContentEditCallback { get; set; }
+
+        /// <summary>
+        ///     The <see cref="EventCallback{TValue}" /> when the user wants to navigate to the <see cref="Comment" />
+        /// </summary>
+        public EventCallback<Comment> OnNavigateCallback { get; set; }
 
         /// <summary>
         ///     The <see cref="EventCallback{TValue}" /> when the user wants to delete the <see cref="Comment" />

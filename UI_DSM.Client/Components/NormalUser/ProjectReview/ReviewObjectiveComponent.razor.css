@@ -1,5 +1,36 @@
-﻿.objective-overview {
+﻿.review-page {
+    height: 100%;
+    display: grid;
+    grid-template-areas: "a b";
+    grid-template-columns: calc(100% - 320px);
+    margin-top: -32px;
+    margin-right: -16px;
+}
+
+.review-page__body {
     padding: var(--spacing-8) 0;
     gap: var(--spacing-2);
     display: grid;
+}
+
+.review-page__sidebar__right {
+    grid-area: b;
+    border-left: 1px solid var(--colors-gray-100);
+    height: calc(100vh - 114px);
+    overflow: auto;
+}
+
+.review-page__body-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    height: 100%;
+}
+
+.review-page__header {
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--colors-gray-100);
+    display: grid;
+    gap: var(--spacing-8);
+    grid-template-columns: 1fr auto;
 }

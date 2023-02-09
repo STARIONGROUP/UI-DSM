@@ -211,7 +211,9 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
         /// <returns>A <see cref="Task" /> with a collection of <see cref="ReviewObjective" /></returns>
         public IEnumerable<ReviewObjectiveCreationDto> GetReviewObjectiveCreationForReview(Guid reviewId)
         {
-            var reviewObjectives = this.EntityDbSet.Where(x => x.EntityContainer.Id == reviewId).Select(x => new ReviewObjectiveCreationDto { Kind = x.ReviewObjectiveKind, KindNumber = x.ReviewObjectiveKindNumber });
+            var reviewObjectives = this.EntityDbSet.Where(x => x.EntityContainer.Id == reviewId)
+	            .Select(x => new ReviewObjectiveCreationDto { Kind = x.ReviewObjectiveKind, KindNumber = x.ReviewObjectiveKindNumber , Tooltip = x.Description});
+            
             return reviewObjectives;
         }
 
@@ -284,7 +286,7 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
             {
                 BaseUrl = route,
                 ObjectKind = nameof(ReviewObjective),
-                DisplayText = reviewObjective.Title,
+                DisplayText = $"{reviewObjective.Title} : {reviewObjective.Title}",
                 Location = $"{((Project)reviewObjective.EntityContainer.EntityContainer).ProjectName} > {((Review)reviewObjective.EntityContainer).Title}"
             };
         }

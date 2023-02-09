@@ -213,11 +213,13 @@ namespace UI_DSM.Server.Services.ResolverService
                     foreach (var review in reviews.Where(x => x.Item1.Artifacts.OfType<Model>()
                                  .Any(a => a.IterationId == model.IterationId)))
                     {
+                        var reviewModel = review.Item1.Artifacts.OfType<Model>().First(a => a.IterationId == model.IterationId);
+
                         results.Add(new SearchResultDto
                         {
-                            BaseUrl = $"{review.Item2.BaseUrl}/Model/{model.Id}",
+                            BaseUrl = $"{review.Item2.BaseUrl}/Model/{reviewModel.Id}",
+                            ObjectKind = thing.GetSpecificObjectKindForThing(),
                             SpecificCategory = thing.GetSpecificCategoryForThing(),
-                            ObjectKind = thing.GetType().Name,
                             DisplayText = thing.GetSpecificNameForThing(),
                             AvailableViews = thing.GetAvailableViews(),
                             ItemId = thing.Iid,

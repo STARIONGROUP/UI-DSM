@@ -173,16 +173,42 @@ namespace UI_DSM.Server.Managers.CommentManager
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
         public async Task<IEnumerable<Entity>> GetCommentsForReviewTask(Guid projectId, Guid reviewTaskId)
         {
-            var comments = this.EntityDbSet.Where(x => x.EntityContainer.Id == projectId 
+            var comments = this.EntityDbSet.Where(x => x.EntityContainer.Id == projectId
                                                        && x.CreatedInside != null && x.CreatedInside.Id == reviewTaskId)
                 .Include(x => x.Author)
                 .ThenInclude(x => x.User)
                 .Include(x => x.AnnotatableItems)
                 .Include(x => x.Replies)
-                .ThenInclude(x => x.Author);
+                .ThenInclude(x => x.Author)
+                .ThenInclude(x => x.User);
 
             var list = await comments.ToListAsync();
             return list.SelectMany(x => x.GetAssociatedEntities(1)).DistinctBy(x => x.Id);
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Comment" /> that are linked to a <see cref="Review" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
+        public async Task<IEnumerable<Entity>> GetCommentsForReview(Guid projectId, Guid reviewId)
+        {
+            var comments = this.EntityDbSet.Where(x => x.EntityContainer.Id == projectId
+                                                       && x.CreatedInside != null && x.CreatedInside.EntityContainer.EntityContainer.Id == reviewId)
+                .Include(x => x.Author)
+                .ThenInclude(x => x.User)
+                .Include(x => x.CreatedInside)
+                .ThenInclude(x => x.EntityContainer)
+                .Include(x => x.AnnotatableItems)
+                .Include(x => x.Replies)
+                .ThenInclude(x => x.Author)
+                .ThenInclude(x => x.User);
+
+            var list = await comments.ToListAsync();
+            var associatedEntities = list.SelectMany(x => x.GetAssociatedEntities(2)).ToList();
+            associatedEntities.AddRange(list.Select(x => x.CreatedInside.EntityContainer));
+            return associatedEntities.DistinctBy(x => x.Id);
         }
 
         /// <summary>

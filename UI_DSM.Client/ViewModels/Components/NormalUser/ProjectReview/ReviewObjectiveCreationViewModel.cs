@@ -14,7 +14,9 @@
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 {
     using Microsoft.AspNetCore.Components;
+
     using ReactiveUI;
+
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.Enumerator;
     using UI_DSM.Client.Services.ReviewObjectiveService;
@@ -29,14 +31,38 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
     public class ReviewObjectiveCreationViewModel : ReactiveObject, IReviewObjectiveCreationViewModel
     {
         /// <summary>
-        ///     The <see cref="ReviewObjective" /> to create
+        ///     The <see cref="IReviewService" />
         /// </summary>
-        public ReviewObjective ReviewObjective { get; set; }
+        private readonly IReviewObjectiveService reviewObjectiveService;
 
         /// <summary>
         ///     Backing field for <see cref="ProjectId" />
         /// </summary>
         private Guid projectId;
+
+        /// <summary>
+        ///     Backing field for <see cref="ReviewId" />
+        /// </summary>
+        private Guid reviewId;
+
+        /// <summary>
+        ///     Backing field for <see cref="ReviewObjectivesCreationStatus" />
+        /// </summary>
+        private CreationStatus reviewObjectivesCreationStatus;
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ReviewObjectiveCreationViewModel" /> class.
+        /// </summary>
+        /// <param name="reviewObjectiveService">The <see cref="IReviewObjectiveService" /></param>
+        public ReviewObjectiveCreationViewModel(IReviewObjectiveService reviewObjectiveService)
+        {
+            this.reviewObjectiveService = reviewObjectiveService;
+        }
+
+        /// <summary>
+        ///     The <see cref="ReviewObjective" /> to create
+        /// </summary>
+        public ReviewObjective ReviewObjective { get; set; }
 
         /// <summary>
         ///     The <see cref="Guid" /> of the <see cref="Project" />
@@ -48,36 +74,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         }
 
         /// <summary>
-        ///     Backing field for <see cref="ReviewId" />
-        /// </summary>
-        private Guid reviewId;
-
-        /// <summary>
         ///     The <see cref="Guid" /> of the <see cref="Review" />
         /// </summary>
         public Guid ReviewId
         {
             get => this.reviewId;
             set => this.RaiseAndSetIfChanged(ref this.reviewId, value);
-        }
-
-        /// <summary>
-        ///     Backing field for <see cref="ReviewObjectivesCreationStatus" />
-        /// </summary>
-        private CreationStatus reviewObjectivesCreationStatus;
-
-        /// <summary>
-        ///     The <see cref="IReviewService" />
-        /// </summary>
-        private readonly IReviewObjectiveService reviewObjectiveService;
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ReviewObjectiveCreationViewModel" /> class.
-        /// </summary>
-        /// <param name="reviewObjectiveService">The <see cref="IReviewObjectiveService" /></param>
-        public ReviewObjectiveCreationViewModel(IReviewObjectiveService reviewObjectiveService)
-        {
-            this.reviewObjectiveService = reviewObjectiveService;
         }
 
         /// <summary>

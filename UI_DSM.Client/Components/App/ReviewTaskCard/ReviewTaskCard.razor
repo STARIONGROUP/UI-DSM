@@ -27,14 +27,20 @@
 				@if (this.ReviewTask.IsAssignedTo.Any(x => string.Equals(this.UserName, x.ParticipantName, StringComparison.InvariantCultureIgnoreCase)))
 				{
 					<li>
-						<UserAvatar UserName="@this.UserName" IsCurrentUser="true" UserInitials="@this.UserName[0].ToString()"/>
+						@{
+							var initials = this.UserName.Length > 1 ? this.UserName[..2] : this.UserName[..1];
+							<UserAvatar UserName="@this.UserName" IsCurrentUser="true" UserInitials="@initials" />
+						}
 					</li>
 				}
 
 				@foreach (var participant in this.ReviewTask.IsAssignedTo.Where(x => !string.Equals(this.UserName, x.ParticipantName, StringComparison.InvariantCultureIgnoreCase)))
 				{
 					<li>
-						<UserAvatar UserName="@participant.ParticipantName" UserInitials="@participant.ParticipantName[0].ToString()" />
+						@{
+							var initials = participant.ParticipantName.Length > 1 ? participant.ParticipantName[..2] : participant.ParticipantName[..1];
+							<UserAvatar UserName="@participant.ParticipantName" UserInitials="@initials" />
+						}
 					</li>
 				}
 			</ul>

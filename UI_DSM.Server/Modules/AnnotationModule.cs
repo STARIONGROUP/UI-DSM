@@ -76,6 +76,11 @@ namespace UI_DSM.Server.Modules
                 .Produces<IEnumerable<EntityDto>>()
                 .WithTags(this.EntityName)
                 .WithName($"{this.EntityName}/GetAnnotationsForReviewTask");
+
+            app.MapGet(this.MainRoute + "/Review/{reviewId:guid}", this.GetAnnotationsForReview)
+                .Produces<IEnumerable<EntityDto>>()
+                .WithTags(this.EntityName)
+                .WithName($"{this.EntityName}/GetAnnotationsForReview");
         }
 
         /// <summary>
@@ -97,6 +102,28 @@ namespace UI_DSM.Server.Modules
             }
 
             var annotations = await annotationManager.GetAnnotationsForReviewTask(projectId, reviewTaskId);
+            await context.Response.Negotiate(annotations.ToDtos());
+        }
+
+        /// <summary>
+        ///     Gets all <see cref="Annotation" /> that are linked to a <see cref="Review" />
+        /// </summary>
+        /// <param name="annotationManager">The <see cref="IAnnotationManager" /></param>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <param name="context">The <see cref="HttpContext" /></param>
+        /// <returns>A <see cref="Task" /></returns>
+        [Authorize]
+        public async Task GetAnnotationsForReview(IAnnotationManager annotationManager, Guid projectId, Guid reviewId, HttpContext context)
+        {
+            var participant = await this.GetParticipantBasedOnRequest(context, this.ContainerRouteKey);
+
+            if (participant == null)
+            {
+                return;
+            }
+
+            var annotations = await annotationManager.GetAnnotationsForReview(projectId, reviewId);
             await context.Response.Negotiate(annotations.ToDtos());
         }
 

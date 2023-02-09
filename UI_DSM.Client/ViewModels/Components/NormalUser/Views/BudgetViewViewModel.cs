@@ -113,7 +113,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
 
             var review = await this.reviewService.GetReviewOfProject(projectId, reviewId);
             this.AvailableBudgets = review.Artifacts.OfType<BudgetTemplate>().ToList();
-
+            this.SelectedBudgetTemplate = this.AvailableBudgets.FirstOrDefault();
             this.Iteration = this.Things.OfType<Iteration>().FirstOrDefault();
         }
 

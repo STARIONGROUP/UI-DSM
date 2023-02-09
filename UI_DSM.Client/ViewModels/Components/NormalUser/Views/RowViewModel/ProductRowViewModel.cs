@@ -51,11 +51,6 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel
         public string TechnologyValue { get; private set; } = string.Empty;
 
         /// <summary>
-        ///     The value of the TRL parameter
-        /// </summary>
-        public int? TrlValue { get; private set; }
-
-        /// <summary>
         ///     If the <see cref="ProductRowViewModel" /> has a valid TRL parameter
         /// </summary>
         public bool HasValidTrl { get; private set; }

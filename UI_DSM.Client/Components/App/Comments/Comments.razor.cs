@@ -133,7 +133,7 @@ namespace UI_DSM.Client.Components.App.Comments
 
             return new CommentCardViewModel(comment, this.ViewModel.Participant, this.ViewModel.OnCommentEditCallback, this.ViewModel.OnDeleteCallback,
                 this.ViewModel.OnUpdateStatusCallback, this.ViewModel.OnReplyCallback, this.ViewModel.OnReplyEditContentCallback,
-                this.ViewModel.OnDeleteReplyCallback, this.ViewModel.OnLinkCallback, rows);
+                this.ViewModel.OnDeleteReplyCallback, this.ViewModel.OnLinkCallback, rows, this.ViewModel.OnNavigateCallback);
         }
     }
 }

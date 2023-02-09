@@ -107,5 +107,14 @@ namespace UI_DSM.Client.Components.NormalUser.ProjectReview
 
             this.InvokeAsync(this.StateHasChanged);
         }
+
+        /// <summary>
+        /// Selects all availables <see cref="ReviewObjectiveCreationDto"/>
+        /// </summary>
+        private void SelectAll()
+        {
+	        this.ViewModel.SelectedReviewObjectivesPrr = new List<ReviewObjectiveCreationDto>(this.AvailableReviewObjectiveCreationDtoPrr);
+	        this.ViewModel.SelectedReviewObjectivesSrr = new List<ReviewObjectiveCreationDto>(this.AvailableReviewObjectiveCreationDtoSrr);
+        }
     }
 }

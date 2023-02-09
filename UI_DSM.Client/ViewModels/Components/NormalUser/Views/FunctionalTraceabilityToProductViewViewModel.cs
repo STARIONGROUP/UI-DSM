@@ -43,7 +43,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The header name of the column
         /// </summary>
-        protected override string HeaderName => "prod/func";
+        protected override string HeaderName => this.IsOnTechnologyView ? "source prod(technology)/target func" : "source prod/target func";
 
         /// <summary>
         ///     The name of the category

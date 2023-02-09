@@ -32,9 +32,16 @@ namespace UI_DSM.Shared.DTO.Common
         /// </summary>
         public int KindNumber { get; set; }
 
+        /// <summary>
+        ///     The Tooltip message
+        /// </summary>
+        public string Tooltip { get; set; }
+
+        /// <summary>Returns a string that represents the current object.</summary>
+        /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
-            return this.Kind.ToString().ToUpper() + " - " + this.KindNumber;
+            return this.Kind.ToString().ToUpper() + " - " + this.KindNumber + $" : {this.Tooltip}";
         }
     }
 }

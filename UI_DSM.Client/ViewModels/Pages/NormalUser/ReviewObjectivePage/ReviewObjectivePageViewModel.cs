@@ -135,7 +135,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewObjectivePage
         /// </summary>
         public void OpenTaskAssignmentPopup(ReviewTask selectedReviewTask)
         {
-            this.TaskAssignmentViewModel.SelectedParticipants = selectedReviewTask.IsAssignedTo;
+            this.TaskAssignmentViewModel.SelectedParticipants = new List<Participant>(selectedReviewTask.IsAssignedTo);
             this.ErrorMessageViewModel.Errors.Clear();
             this.IsOnAssignmentMode = true;
             this.SelectedReviewTask = selectedReviewTask;

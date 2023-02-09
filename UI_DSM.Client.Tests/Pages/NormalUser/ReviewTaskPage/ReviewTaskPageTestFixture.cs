@@ -30,6 +30,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
     using UI_DSM.Client.Services.AnnotationService;
     using UI_DSM.Client.Services.ReplyService;
     using UI_DSM.Client.Services.ReviewItemService;
+    using UI_DSM.Client.Services.ReviewObjectiveService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Services.ReviewTaskService;
     using UI_DSM.Client.Services.ThingService;
@@ -69,6 +70,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
         private Guid reviewTaskId;
         private Mock<IAnnotationService> annotationService;
         private Mock<IReplyService> replyService;
+        private Mock<IReviewObjectiveService> reviewObjectiveService;
 
         [SetUp]
         public void Setup()
@@ -80,6 +82,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             this.annotationService = new Mock<IAnnotationService>();
             this.reviewTaskService = new Mock<IReviewTaskService>();
             this.replyService = new Mock<IReplyService>();
+            this.reviewObjectiveService = new Mock<IReviewObjectiveService>();
 
             this.participantService.Setup(x => x.GetCurrentParticipant(It.IsAny<Guid>()))
                 .ReturnsAsync(new Participant(Guid.NewGuid())
@@ -95,7 +98,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
             this.annotationLinker = new AnnotationLinkerViewModel();
 
             this.viewModel = new ReviewTaskPageViewModel(this.thingService.Object, this.reviewService.Object, this.viewProviderService,
-                this.participantService.Object, this.reviewItemService.Object, this.reviewTaskService.Object, this.annotationLinker);
+                this.participantService.Object, this.reviewItemService.Object, this.reviewTaskService.Object, this.annotationLinker, this.reviewObjectiveService.Object);
 
             this.selectedItemCard = new SelectedItemCardViewModel();
             this.projectId = Guid.NewGuid();
@@ -150,7 +153,6 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
 
                 var review = new Review(this.reviewId)
                 {
-                    ReviewObjectives = { new ReviewObjective(Guid.NewGuid()) },
                     Artifacts =
                     {
                         new Model(Guid.NewGuid())
@@ -169,10 +171,15 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
                 this.reviewService.Setup(x => x.GetReviewOfProject(this.projectId, this.reviewId, It.IsAny<int>()))
                     .ReturnsAsync(review);
 
-                await this.viewModel.OnInitializedAsync(this.projectId, this.reviewId, this.reviewObjectiveId, this.reviewTaskId);
+                var reviewObjective = new ReviewObjective(this.reviewObjectiveId);
+
+                this.reviewObjectiveService.Setup(x => x.GetReviewObjectiveOfReview(this.projectId, this.reviewId, this.reviewObjectiveId,
+		                It.IsAny<int>())).ReturnsAsync(reviewObjective);
+
+				await this.viewModel.OnInitializedAsync(this.projectId, this.reviewId, this.reviewObjectiveId, this.reviewTaskId);
                 Assert.That(this.viewModel.ReviewObjective, Is.Null);
 
-                var reviewObjective = new ReviewObjective(this.reviewObjectiveId)
+                reviewObjective = new ReviewObjective(this.reviewObjectiveId)
                 {
                     ReviewTasks = { new ReviewTask(Guid.NewGuid()) },
                     RelatedViews =
@@ -180,8 +187,6 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewTaskPage
                         View.InterfaceView
                     }
                 };
-
-                review.ReviewObjectives.Add(reviewObjective);
 
                 await this.viewModel.OnInitializedAsync(this.projectId, this.reviewId, this.reviewObjectiveId, this.reviewTaskId);
                 Assert.That(this.viewModel.ReviewTask, Is.Null);

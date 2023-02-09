@@ -78,6 +78,15 @@ namespace UI_DSM.Client.Components.App.CommentCard
         }
 
         /// <summary>
+        ///     Handle the click event of the navigate button
+        /// </summary>
+        /// <returns>A <see cref="Task" /></returns>
+        private Task OnNavigateCallback()
+        {
+            return this.ViewModel.OnNavigateCallback.InvokeAsync(this.ViewModel.Comment);
+        }
+
+        /// <summary>
         ///     Handle the click event of the content delete button
         /// </summary>
         /// <returns>A <see cref="Task" /></returns>

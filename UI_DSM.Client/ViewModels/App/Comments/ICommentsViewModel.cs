@@ -151,6 +151,11 @@ namespace UI_DSM.Client.ViewModels.App.Comments
         IAvailableReviewTasksSelectionViewModel AvailableReviewTasksSelectionViewModel { get; set; }
 
         /// <summary>
+        ///     The <see cref="EventCallback{TValue}" /> when the user wants to navigate to the <see cref="Comment" />
+        /// </summary>
+        EventCallback<Comment> OnNavigateCallback { get; set; }
+
+        /// <summary>
         ///     Initializes this viewModel properties
         /// </summary>
         /// <param name="projectId">The <see cref="Guid" /> of the <see cref="Project" /></param>

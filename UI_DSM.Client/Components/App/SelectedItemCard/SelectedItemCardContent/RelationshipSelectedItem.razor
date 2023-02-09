@@ -10,10 +10,10 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @inherits SelectedItemBase<UI_DSM.Client.ViewModels.Components.NormalUser.Views.RowViewModel.RelationshipRowViewModel>
-<AppAccordion Label="Source Element" Variant="AppAccordion.VariantValue.Medium">
+<AppAccordion Label="@this.RowViewModel.SourceKind" Variant="AppAccordion.VariantValue.Medium">
 	<DynamicComponent Type="@this.sourceCorrespondance.Item1" Parameters="this.sourceParameters"/>
 </AppAccordion>
 
-<AppAccordion Label="Target Element" Variant="AppAccordion.VariantValue.Medium">
+<AppAccordion Label="@this.RowViewModel.TargetKind" Variant="AppAccordion.VariantValue.Medium">
 	<DynamicComponent Type="@this.targetCorrespondance.Item1" Parameters="this.targetParameters"/>
 </AppAccordion>

@@ -16,6 +16,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewPage
     using ReactiveUI;
 
     using UI_DSM.Client.Services.Administration.ParticipantService;
+    using UI_DSM.Client.Services.AnnotationService;
     using UI_DSM.Client.Services.ReviewObjectiveService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.ViewModels.Components;
@@ -43,6 +44,11 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewPage
         private readonly IReviewObjectiveService reviewObjectiveService;
 
         /// <summary>
+        /// The <see cref="IAnnotationService"/>
+        /// </summary>
+        private readonly IAnnotationService annotationService;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ReviewPageViewModel" /> class.
         /// </summary>
         /// <param name="reviewService">The <see cref="IReviewService" /></param>
@@ -50,14 +56,17 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewPage
         /// <param name="reviewObjectiveCreationViewMode"></param>
         /// <param name="participantService">The <see cref="IParticipantService" /></param>
         /// <param name="reviewObjectiveService">The <see cref="IReviewObjectiveService" /></param>
+        /// <param name="annotationService">The <see cref="IAnnotationService"/></param>
         public ReviewPageViewModel(IReviewService reviewService, IReviewObjectiveViewModel reviewObjectiveViewModel,
-            IReviewObjectiveCreationViewModel reviewObjectiveCreationViewMode, IParticipantService participantService, IReviewObjectiveService reviewObjectiveService)
+            IReviewObjectiveCreationViewModel reviewObjectiveCreationViewMode, IParticipantService participantService, 
+            IReviewObjectiveService reviewObjectiveService, IAnnotationService annotationService)
         {
             this.reviewService = reviewService;
             this.participantService = participantService;
             this.reviewObjectiveService = reviewObjectiveService;
             this.ReviewObjectiveViewModel = reviewObjectiveViewModel;
             this.ReviewObjectiveCreationViewModel = reviewObjectiveCreationViewMode;
+            this.annotationService = annotationService;
         }
 
         /// <summary>
@@ -94,6 +103,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewPage
                 this.ReviewObjectiveViewModel.Review = reviewResponse;
                 this.ReviewObjectiveViewModel.Project = new Project { Id = projectGuid };
                 this.ReviewObjectiveViewModel.CommentsAndTasks = await this.reviewObjectiveService.GetOpenTasksAndComments(projectGuid, reviewGuid);
+                this.ReviewObjectiveViewModel.Annotations = await this.annotationService.GetAnnotationsForReview(projectGuid, reviewGuid);
             }
         }
     }

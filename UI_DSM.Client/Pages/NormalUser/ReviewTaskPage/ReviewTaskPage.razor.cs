@@ -75,6 +75,18 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         public string ReviewTaskId { get; set; }
 
         /// <summary>
+        /// The <see cref="Guid"/> of the <see cref="Comment"/> to focus on, as parameter
+        /// </summary>
+        [Parameter]
+        [SupplyParameterFromQuery]
+        public string CommentId { get; set; }
+
+        /// <summary>
+        /// The <see cref="Guid"/> of the <see cref="Comment"/> to focus on
+        /// </summary>
+        private Guid commentId;
+
+        /// <summary>
         ///     The <see cref="IReviewTaskPageViewModel" />
         /// </summary>
         [Inject]
@@ -159,6 +171,11 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
 
             await this.ViewModel.OnInitializedAsync(new Guid(this.ProjectId), new Guid(this.ReviewId),
                 new Guid(this.ReviewObjectiveId), new Guid(this.ReviewTaskId));
+
+            if (Guid.TryParse(this.CommentId, out var parsedId))
+            {
+                this.commentId = parsedId;
+            }
 
             await base.OnParametersSetAsync();
             this.IsLoading = false;
@@ -247,6 +264,26 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
             if (baseView is PhysicalFlowView physicalFlowView)
             {
                 physicalFlowView.SelectedElementChangedComments(this.SelectedItem, this.Comments.ViewModel.Comments.Count > 0);
+            }
+
+            if (this.commentId != Guid.Empty && this.Comments.ViewModel.Comments.Items.Any())
+            {
+                var reviewItems = this.Comments.ViewModel.Comments.Items.FirstOrDefault(x => x.Id == this.commentId)
+                    ?.AnnotatableItems.OfType<ReviewItem>().ToList();
+
+                if (reviewItems != null && reviewItems.Any())
+                {
+                    var availableRow = baseView.GetAvailablesRows()
+                        .FirstOrDefault(x => reviewItems.Any(r => x.AnnotatableItemId == r.Id));
+
+                    if (availableRow is IHaveThingRowViewModel asThingRow)
+                    {
+                        baseView.TrySetSelectedItem(asThingRow);
+                        await baseView.TryNavigateToItem(asThingRow.Id);
+                    }
+                }
+
+                this.commentId = Guid.Empty;
             }
 
             await baseView.HasChanged();
@@ -413,6 +450,14 @@ namespace UI_DSM.Client.Pages.NormalUser.ReviewTaskPage
         private Task TryNavigateToItem(string itemName)
         {
             return this.ViewModel.CurrentBaseViewInstance != null ? this.ViewModel.CurrentBaseViewInstance.TryNavigateToItem(itemName) : Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Clears the current selected element
+        /// </summary>
+        private void ClearSelection()
+        {
+            this.ViewModel.CurrentBaseViewInstance?.TrySetSelectedItem(null);
         }
     }
 }

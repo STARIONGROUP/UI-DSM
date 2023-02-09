@@ -456,6 +456,27 @@ namespace UI_DSM.Client.Extensions
         }
 
         /// <summary>
+        ///     Gets the specific object kind name base on a <see cref="Thing" />
+        /// </summary>
+        /// <param name="thing">The <see cref="Thing" /></param>
+        /// <returns>The name of the category if any</returns>
+        public static string GetSpecificObjectKindForThing(this Thing thing)
+        {
+            return thing switch
+            {
+                ElementBase elementBase when elementBase.IsProduct() => "Product",
+                ElementBase elementBase when elementBase.IsFunction() => "Function",
+                ElementBase elementBase when elementBase.IsPort() => "Port",
+                BinaryRelationship binaryRelationship when binaryRelationship.IsInterface() => "Interface",
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(DeriveCategoryName) => "Requirement flow-down Traceability",
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(TraceCategoryName) => "Requirement Traces",
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(ImplementCategoryName) => "Function Implementation Traceability",
+                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(SatisfyCategoryName) => $"Requirement Implementation Traceability",
+                _ => thing.GetType().Name
+            };
+        }
+
+        /// <summary>
         ///     Gets the specific category name base on a <see cref="Thing" />
         /// </summary>
         /// <param name="thing">The <see cref="Thing" /></param>
@@ -464,15 +485,9 @@ namespace UI_DSM.Client.Extensions
         {
             return thing switch
             {
-                ElementBase elementBase when elementBase.IsProduct() => ProductCategoryName,
-                ElementBase elementBase when elementBase.IsFunction() => FunctionCategoryName,
-                ElementBase elementBase when elementBase.IsPort() => PortCategoryName,
-                BinaryRelationship binaryRelationship when binaryRelationship.IsInterface() => InterfaceCategoryName,
-                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(DeriveCategoryName) => DeriveCategoryName,
-                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(TraceCategoryName) => TraceCategoryName,
-                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(ImplementCategoryName) => ImplementCategoryName,
-                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(SatisfyCategoryName) && binaryRelationship.Source is ElementBase elementBase && elementBase.IsProduct() => $"{SatisfyCategoryName} product",
-                BinaryRelationship binaryRelationship when binaryRelationship.IsCategorizedBy(SatisfyCategoryName) && binaryRelationship.Source is ElementBase elementBase && elementBase.IsFunction() => $"{SatisfyCategoryName} function",
+                ElementBase elementBase when elementBase.IsProduct() => elementBase.GetCategories().First(),
+                ElementBase elementBase when elementBase.IsFunction() => elementBase.GetCategories().First(),
+                BinaryRelationship binaryRelationship when binaryRelationship.IsInterface() => binaryRelationship.GetCategories().First(),
                 _ => string.Empty
             };
         }
