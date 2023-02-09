@@ -10,7 +10,7 @@
 .review-page__body {
     padding: var(--spacing-8) 0;
     gap: var(--spacing-2);
-    display: grid;
+    display: block;
 }
 
 .review-page__sidebar__right {
@@ -28,9 +28,12 @@
 }
 
 .review-page__header {
-    padding-bottom: var(--spacing-4);
-    border-bottom: 1px solid var(--colors-gray-100);
     display: grid;
-    gap: var(--spacing-8);
     grid-template-columns: 1fr auto;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-8);
+    border-bottom: 1px solid var(--colors-gray-100);
+    padding-bottom: var(--spacing-2);
+    height: fit-content;
 }

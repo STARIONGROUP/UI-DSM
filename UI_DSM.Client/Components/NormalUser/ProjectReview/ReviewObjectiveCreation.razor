@@ -10,18 +10,24 @@
 // The UI-DSM application is provided to the community under the Apache License 2.0.
 -------------------------------------------------------------------------------------------------------->
 @using UI_DSM.Client.Enumerator
+@using UI_DSM.Shared.Enumerator
 <EditForm Context="editFormContext" Model="@this.ViewModel.ReviewObjective" OnValidSubmit="@this.ViewModel.OnValidSubmit">
-	<DxButton RenderStyle="ButtonRenderStyle.Secondary" Text="Select all" Click="@this.SelectAll"/>
-	<div>PRR</div>
-	<DxListBox Data="@this.AvailableReviewObjectiveCreationDtoPrr"
-	           @bind-Values="@this.ViewModel.SelectedReviewObjectivesPrr"
-	           ShowCheckboxes="true"
-	           SelectionMode="ListBoxSelectionMode.Multiple"/>
-	<div>SRR</div>
-	<DxListBox Data="@this.AvailableReviewObjectiveCreationDtoSrr"
-	           @bind-Values="@this.ViewModel.SelectedReviewObjectivesSrr"
-	           ShowCheckboxes="true"
-	           SelectionMode="ListBoxSelectionMode.Multiple"/>
+    <DxButton RenderStyle="ButtonRenderStyle.Secondary" Text="Select all PRR" Click="@(() => this.SelectAll(ReviewObjectiveKind.Prr))"/>
+    <div style="margin-top: 10px;">
+        <div>PRR</div>
+        <DxListBox Data="@this.AvailableReviewObjectiveCreationDtoPrr"
+                   @bind-Values="@this.ViewModel.SelectedReviewObjectivesPrr"
+                   ShowCheckboxes="true"
+                   SelectionMode="ListBoxSelectionMode.Multiple"/>
+    </div>
+    <div style="margin-top: 10px;">
+        <DxButton RenderStyle="ButtonRenderStyle.Secondary" Text="Select all SRR" Click="@(() => this.SelectAll(ReviewObjectiveKind.Srr))" />
+        <div>SRR</div>
+        <DxListBox Data="@this.AvailableReviewObjectiveCreationDtoSrr"
+                   @bind-Values="@this.ViewModel.SelectedReviewObjectivesSrr"
+                   ShowCheckboxes="true"
+                   SelectionMode="ListBoxSelectionMode.Multiple"/>
+    </div>
 	<div class="modal-footer m-top-10px">
 		<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="@this.CreationText"
 		          Enabled="@(this.ViewModel.ReviewObjectivesCreationStatus != CreationStatus.Creating)"
