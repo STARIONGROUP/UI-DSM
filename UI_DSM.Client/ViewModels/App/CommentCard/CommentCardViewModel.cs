@@ -25,26 +25,26 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
     /// </summary>
     public class CommentCardViewModel : ICommentCardViewModel
     {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="CommentCardViewModel" /> class.
-        /// </summary>
-        /// <param name="comment">The <see cref="Comment" /></param>
-        /// <param name="currentParticipant">The logged <see cref="Participant" /></param>
-        /// <param name="onContentEditCallback">The <see cref="EventCallback{TValue}" /> for content edition</param>
-        /// <param name="onDeleteCallback">The <see cref="EventCallback{TValue}" /> for delete</param>
-        /// <param name="onUpdateStatusCallback">The <see cref="EventCallback" /> to update the <see cref="StatusKind" /></param>
-        /// <param name="onReplyCallback">The <see cref="EventCallback" /> to reply</param>
-        /// <param name="onContentEditReplyCallback">The <see cref="EventCallback{TValue}" /> for reply content edition</param>
-        /// <param name="onDeleteReplyCallback">The <see cref="EventCallback{TValue}" /> for delete reply</param>
-        /// <param name="onLinkCallback">
-        ///     The <see cref="EventCallback{TValue}" /> for linking element to the <see cref="Comment" />
-        /// </param>
-        /// <param name="selectedAnnotatableItem">The current selected <see cref="AnnotatableItem" /></param>
-        /// <param name="linkedRows">A collection of linked <see cref="IHaveAnnotatableItemRowViewModel"/></param>
-        public CommentCardViewModel(Comment comment, Participant currentParticipant,
+		/// <summary>
+		///     Initializes a new instance of the <see cref="CommentCardViewModel" /> class.
+		/// </summary>
+		/// <param name="comment">The <see cref="Comment" /></param>
+		/// <param name="currentParticipant">The logged <see cref="Participant" /></param>
+		/// <param name="onContentEditCallback">The <see cref="EventCallback{TValue}" /> for content edition</param>
+		/// <param name="onDeleteCallback">The <see cref="EventCallback{TValue}" /> for delete</param>
+		/// <param name="onUpdateStatusCallback">The <see cref="EventCallback" /> to update the <see cref="StatusKind" /></param>
+		/// <param name="onReplyCallback">The <see cref="EventCallback" /> to reply</param>
+		/// <param name="onContentEditReplyCallback">The <see cref="EventCallback{TValue}" /> for reply content edition</param>
+		/// <param name="onDeleteReplyCallback">The <see cref="EventCallback{TValue}" /> for delete reply</param>
+		/// <param name="onLinkCallback">
+		///     The <see cref="EventCallback{TValue}" /> for linking element to the <see cref="Comment" />
+		/// </param>
+		/// <param name="linkedRows">A collection of linked <see cref="IHaveAnnotatableItemRowViewModel"/></param>
+		/// <param name="onNavigateCallback">The <see cref="EventCallback{TValue}" /> to navigate to the <see cref="Comment" /></param>
+		public CommentCardViewModel(Comment comment, Participant currentParticipant,
             EventCallback<Comment> onContentEditCallback, EventCallback<Comment> onDeleteCallback, EventCallback<Comment> onUpdateStatusCallback,
             EventCallback<Comment> onReplyCallback, EventCallback<Reply> onContentEditReplyCallback, EventCallback<Reply> onDeleteReplyCallback,
-            EventCallback<Comment> onLinkCallback, List<IHaveAnnotatableItemRowViewModel> linkedRows)
+            EventCallback<Comment> onLinkCallback, List<IHaveAnnotatableItemRowViewModel> linkedRows, EventCallback<Comment> onNavigateCallback)
         {
             this.Comment = comment;
             this.CurrentParticipant = currentParticipant;
@@ -56,6 +56,7 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
             this.OnDeleteReplyCallback = onDeleteReplyCallback;
             this.OnLinkCallback = onLinkCallback;
             this.LinkedRows = linkedRows;
+            this.OnNavigateCallback = onNavigateCallback;
         }
 
         /// <summary>
@@ -114,6 +115,11 @@ namespace UI_DSM.Client.ViewModels.App.CommentCard
         ///     The <see cref="EventCallback{TValue}" /> when the user wants to edit the <see cref="Comment" />
         /// </summary>
         public EventCallback<Comment> OnContentEditCallback { get; set; }
+
+        /// <summary>
+        ///     The <see cref="EventCallback{TValue}" /> when the user wants to navigate to the <see cref="Comment" />
+        /// </summary>
+        public EventCallback<Comment> OnNavigateCallback { get; set; }
 
         /// <summary>
         ///     The <see cref="EventCallback{TValue}" /> when the user wants to delete the <see cref="Comment" />

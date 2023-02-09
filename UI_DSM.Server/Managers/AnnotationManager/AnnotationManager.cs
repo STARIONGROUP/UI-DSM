@@ -307,11 +307,22 @@ namespace UI_DSM.Server.Managers.AnnotationManager
         }
 
         /// <summary>
-        ///     Finds an <see cref="Annotation" /> and includes his <see cref="Entity" /> container
+        ///     Gets all <see cref="Annotation" /> that are linked to a <see cref="Review" />
         /// </summary>
-        /// <param name="entityId">The <see cref="Entity" /> id</param>
-        /// <returns>A <see cref="Task" /> with the <see cref="Annotation" /></returns>
-        public async Task<Annotation> FindEntityWithContainer(Guid entityId)
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="Review" /> id</param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
+        public Task<IEnumerable<Entity>> GetAnnotationsForReview(Guid projectId, Guid reviewId)
+        {
+	        return this.commentManager.GetCommentsForReview(projectId, reviewId);
+        }
+
+		/// <summary>
+		///     Finds an <see cref="Annotation" /> and includes his <see cref="Entity" /> container
+		/// </summary>
+		/// <param name="entityId">The <see cref="Entity" /> id</param>
+		/// <returns>A <see cref="Task" /> with the <see cref="Annotation" /></returns>
+		public async Task<Annotation> FindEntityWithContainer(Guid entityId)
         {
             return (Annotation)await this.commentManager.FindEntityWithContainer(entityId)
                    ?? (Annotation)await this.feedbackManager.FindEntityWithContainer(entityId)

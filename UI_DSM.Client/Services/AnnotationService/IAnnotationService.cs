@@ -78,5 +78,13 @@ namespace UI_DSM.Client.Services.AnnotationService
         /// <param name="reviewTaskId">The <see cref="ReviewTask" /> id</param>
         /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
         Task<List<Annotation>> GetAnnotationsForReviewTask(Guid projectId, Guid reviewTaskId);
+
+        /// <summary>
+        ///     Gets all <see cref="Annotation" /> that are linked to a <see cref="Review" />
+        /// </summary>
+        /// <param name="projectId">The <see cref="Project" /> id</param>
+        /// <param name="reviewId">The <see cref="ReviewTask" /> id</param>
+        /// <returns>A <see cref="Task" /> with a collection of <see cref="Entity" /></returns>
+        Task<List<Annotation>> GetAnnotationsForReview(Guid projectId, Guid reviewId);
     }
 }

@@ -11,7 +11,8 @@
 -------------------------------------------------------------------------------------------------------->
 @using UI_DSM.Client.Model
 @using Blazor.Diagrams.Components.Renderers
-<div @ref="this.DivReference" class="default-node custom-node @(this.OverClass) @(this.Node.IsExpanded ? "expanded" : "") @(!this.Node.IsVisible? "hidden": "")"
+<div @ref="this.DivReference" class="default-node custom-node @(this.OverClass) @(this.Node.IsExpanded ? "expanded" : "")
+     @(!this.Node.IsVisible? "hidden": "") @(this.Node.IsSelected?"selected-element" : "")"
      @onmouseover="@(e => this.OverClass = "over")"
      @onmouseout="@(e => this.OverClass = "")">
 

@@ -57,6 +57,8 @@
 				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Id)" Caption="ID" Width="150" />
 				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Name)"  Width="200" />
 				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Definition)"  Width="400" />
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationMethod)"  Width="250" Visible="false"/>
+				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationStage)" Width="250" Visible="false" />
 				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaCategories)" Caption="@("Categories")" Width="300" AllowSort="false"/>
 				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.Justification)"  Width="250" Visible="false"/>
 				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.RequirementType)"  Width="250"/>
@@ -64,8 +66,6 @@
 				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaDerivesTo)" Caption="@("Derives To")" AllowSort="false" Width="250" />
 				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaSatisfyByFunction)" Caption="@("Satisfy By Function")" AllowSort="false" Width="250" Visible="false"/>
 				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.CommaSatisfyByProduct)" Caption="@("Satisfy By Product")" AllowSort="false" Width="250" Visible="false" />
-				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationMethod)"  Width="250" Visible="false"/>
-				<DxGridDataColumn FieldName="@nameof(RequirementRowViewModel.VerificationStage)" Width="250" Visible="false" />
 			</Columns>
 		</DxGrid>
 	</div>

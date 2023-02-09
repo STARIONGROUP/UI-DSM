@@ -13,67 +13,72 @@
 
 namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
 {
-    using Microsoft.AspNetCore.Components;
+	using Microsoft.AspNetCore.Components;
 
-    using UI_DSM.Client.Components.NormalUser.ProjectReview;
-    using UI_DSM.Shared.DTO.Common;
-    using UI_DSM.Shared.Models;
+	using UI_DSM.Client.Components.NormalUser.ProjectReview;
+	using UI_DSM.Shared.DTO.Common;
+	using UI_DSM.Shared.Models;
 
-    /// <summary>
-    ///     Interface definition for <see cref="ReviewObjectiveViewModel" />
-    /// </summary>
-    public interface IReviewObjectiveViewModel
-    {
-        /// <summary>
-        ///     The <see cref="Review" />
-        /// </summary>
-        Review Review { get; set; }
+	/// <summary>
+	///     Interface definition for <see cref="ReviewObjectiveViewModel" />
+	/// </summary>
+	public interface IReviewObjectiveViewModel
+	{
+		/// <summary>
+		///     The <see cref="Review" />
+		/// </summary>
+		Review Review { get; set; }
 
-        /// <summary>
-        ///     The <see cref="Project" />
-        /// </summary>
-        Project Project { get; set; }
+		/// <summary>
+		///     The <see cref="Project" />
+		/// </summary>
+		Project Project { get; set; }
 
-        /// <summary>
-        ///     A collection of comments and tasks of a <see cref="ReviewObjective" /> for the user
-        /// </summary>
-        Dictionary<Guid, AdditionalComputedProperties> CommentsAndTasks { get; set; }
+		/// <summary>
+		///     A collection of comments and tasks of a <see cref="ReviewObjective" /> for the user
+		/// </summary>
+		Dictionary<Guid, AdditionalComputedProperties> CommentsAndTasks { get; set; }
 
-        /// <summary>
-        ///     Value indicating the user is currently creating a new <see cref="ReviewObjective" />(s)
-        /// </summary>
-        bool IsOnCreationMode { get; set; }
+		/// <summary>
+		///     Value indicating the user is currently creating a new <see cref="ReviewObjective" />(s)
+		/// </summary>
+		bool IsOnCreationMode { get; set; }
 
-        /// <summary>
-        ///     The <see cref="IErrorMessageViewModel" />
-        /// </summary>
-        IErrorMessageViewModel ErrorMessageViewModel { get; }
+		/// <summary>
+		///     The <see cref="IErrorMessageViewModel" />
+		/// </summary>
+		IErrorMessageViewModel ErrorMessageViewModel { get; }
 
-        /// <summary>
-        ///     The <see cref="IReviewObjectiveCreationViewModel" />
-        /// </summary>
-        IReviewObjectiveCreationViewModel ReviewObjectiveCreationViewModel { get; }
+		/// <summary>
+		///     The <see cref="IReviewObjectiveCreationViewModel" />
+		/// </summary>
+		IReviewObjectiveCreationViewModel ReviewObjectiveCreationViewModel { get; }
 
-        /// <summary>
-        ///     Gets or sets the <see cref="NavigationManager" />
-        /// </summary>
-        NavigationManager NavigationManager { get; set; }
+		/// <summary>
+		///     Gets or sets the <see cref="NavigationManager" />
+		/// </summary>
+		NavigationManager NavigationManager { get; set; }
 
-        /// <summary>
-        ///     The current <see cref="Participant" />
-        /// </summary>
-        Participant Participant { get; set; }
+		/// <summary>
+		///     The current <see cref="Participant" />
+		/// </summary>
+		Participant Participant { get; set; }
 
-        /// <summary>
-        ///     Opens the <see cref="ReviewObjectiveCreation" /> as a popup
-        /// </summary>
-        void OpenCreatePopup();
+		/// <summary>
+		///     A collection of <see cref="Annotation" />
+		/// </summary>
+		List<Annotation> Annotations { get; set; }
 
-        /// <summary>
-        ///     Gets the navLink link to navigate to the <see cref="ReviewObjective"/> page
-        /// </summary>
-        /// <param name="reviewObjective">The <see cref="ReviewObjective" /></param>
-        /// <returns>The navigation link</returns>
-        string GetNavLink(ReviewObjective reviewObjective);
-    }
+		/// <summary>
+		///     Opens the <see cref="ReviewObjectiveCreation" /> as a popup
+		/// </summary>
+		void OpenCreatePopup();
+
+		/// <summary>
+		///     Gets the navLink link to navigate to the <see cref="ReviewObjective" /> page
+		/// </summary>
+		/// <param name="reviewObjective">The <see cref="ReviewObjective" /></param>
+		/// <returns>The navigation link</returns>
+		string GetNavLink(ReviewObjective reviewObjective);
+	}
 }

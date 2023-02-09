@@ -11,6 +11,7 @@
 -------------------------------------------------------------------------------------------------------->
 @page "/Search/{Keyword}"
 @using UI_DSM.Shared.Extensions
+@using UI_DSM.Client.Extensions
 
 
 <DxPopup CloseOnOutsideClick="false" HeaderText="Select View" @bind-Visible="@(this.ViewModel.IsOnViewSelectionMode)">
@@ -39,7 +40,7 @@
 						.ToDictionary(g => g.Key, g => g.ToList()))
 					{
 						<div class="search-group__category">
-							<AppAccordion PanelOpen="false" Label="@objectKindGroup.Key" Variant="AppAccordion.VariantValue.Small">
+							<AppAccordion PanelOpen="false" Label="@objectKindGroup.Key.AddSpaceBeforeUpperCase()" Variant="AppAccordion.VariantValue.Small">
 								<ul class="search-group__list">
 									@foreach (var result in objectKindGroup.Value)
 									{

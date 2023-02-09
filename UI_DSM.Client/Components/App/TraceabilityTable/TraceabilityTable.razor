@@ -19,7 +19,7 @@
 					<th>@this.ViewModel.HeaderName</th>
 					@foreach (var column in this.columnsToDisplay)
 					{
-						<th @onclick="() => this.ViewModel.SelectElement(column)" id="column_@column.ThingId">
+							<th @onclick="() => this.ViewModel.SelectElement(column)" class="@this.IsSelectedElement(column.ThingId)" id="column_@column.ThingId">
 							<span class="@this.GetHeaderClass(column)">
 								<HaveThingRowIcons Row="column"/>
 								@column.Id
@@ -32,7 +32,7 @@
 				@foreach (var currentRow in this.rowsToDisplay)
 				{
 					<tr class="@this.GetTrClass(currentRow)">
-						<th @onclick="() => this.ViewModel.SelectElement(currentRow)" id="row_@currentRow.ThingId">
+							<th @onclick="() => this.ViewModel.SelectElement(currentRow)" class="@this.IsSelectedElement(currentRow.ThingId)" id="row_@currentRow.ThingId">
 							<span class="@this.GetHeaderClass(currentRow)">
 								<HaveThingRowIcons Row="currentRow"/>
 								@currentRow.Id
@@ -42,7 +42,7 @@
 							{
 								@if (this.ViewModel.GetRelationship(currentRow, currentColumn) is { } relationship)
 								{
-									<td class="@GetTdClass(currentRow, currentColumn)" id="cell_@relationship.ThingId">
+									<td class="@GetTdClass(currentRow, currentColumn) @this.IsSelectedElement(relationship.ThingId)" id="cell_@relationship.ThingId">
 										<TraceabilityCell RelationshipRow="relationship" OnClick="(row) => this.ViewModel.SelectElement(row)"/>
 									</td>
 								}

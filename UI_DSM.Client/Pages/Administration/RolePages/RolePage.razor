@@ -14,7 +14,6 @@
 @attribute [Authorize(Roles = "Administrator")]
 
 <UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent IsLoading="this.ViewModel.RoleDetailsViewModel.Role is null">
-	<CascadingValue Name="PreventValidation" Value="true">
 	<DxFormLayout>
 		<DxFormLayoutItem Caption="Enable Modification">
 			<DxCheckBox @bind-Checked="this.ViewModel.ModificationEnabled" />
@@ -31,5 +30,4 @@
 			<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Update" SubmitFormOnClick="true" Enabled="@this.ViewModel.ModificationEnabled"/>
 		</div>
 	</EditForm>
-	</CascadingValue>
 </UI_DSM.Client.Components.App.LoadingComponent.LoadingComponent>

@@ -241,13 +241,14 @@ namespace UI_DSM.Client.Components.NormalUser.Views
         public void MouseUpOnComponent(Model model)
         {
             this.ViewModel.SetSelectedModel(model);
-        }
+            this.InvokeAsync(this.RefreshDiagram);
+		}
 
-        /// <summary>
-        ///     Method invoked when the component is ready to start, having received its
-        ///     initial parameters from its parent in the render tree.
-        /// </summary>
-        protected override void OnInitialized()
+		/// <summary>
+		///     Method invoked when the component is ready to start, having received its
+		///     initial parameters from its parent in the render tree.
+		/// </summary>
+		protected override void OnInitialized()
         {
             this.IsLoading = true;
             base.OnInitialized();

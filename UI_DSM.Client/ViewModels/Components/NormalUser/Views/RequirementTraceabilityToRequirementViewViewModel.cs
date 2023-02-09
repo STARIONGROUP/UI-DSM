@@ -43,7 +43,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The header name of the column
         /// </summary>
-        protected override string HeaderName => "req/req";
+        protected override string HeaderName => "source req/target req";
 
         /// <summary>
         ///     The name of the category

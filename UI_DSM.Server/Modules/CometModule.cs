@@ -206,7 +206,7 @@ namespace UI_DSM.Server.Modules
                             new IterationData()
                             {
                                 IterationId = x.IterationIid,
-                                IterationName = $"Iteration {x.IterationNumber}"
+                                IterationName = $"Iteration {x.IterationNumber} - {x.FrozenOn}"
                             }).ToList()
                     });
                 }

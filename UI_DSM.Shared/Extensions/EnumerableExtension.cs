@@ -103,7 +103,7 @@ namespace UI_DSM.Shared.Extensions
 
             if (availableParticipants.Any(x => !x.DomainsOfExpertise.Any()))
             {
-                group["No Domain"] = availableParticipants.Where(x => !x.DomainsOfExpertise.Any());
+	            group["No Domain"] = availableParticipants.Where(x => !x.DomainsOfExpertise.Any());
             }
 
             return group;

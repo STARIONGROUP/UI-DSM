@@ -119,6 +119,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview
         public Participant Participant { get; set; }
 
         /// <summary>
+        ///     A collection of <see cref="Annotation" />
+        /// </summary>
+        public List<Annotation> Annotations { get; set; }
+
+        /// <summary>
         ///     Gets the navLink link to navigate to the <see cref="ReviewObjective"/> page
         /// </summary>
         /// <param name="reviewObjective">The <see cref="ReviewObjective" /></param>

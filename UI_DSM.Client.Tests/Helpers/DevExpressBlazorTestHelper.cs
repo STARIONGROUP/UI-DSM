@@ -35,7 +35,12 @@ namespace UI_DSM.Client.Tests.Helpers
         /// <param name="context">The <see cref="TestContext" /></param>
         public static void ConfigureDevExpressBlazor(this TestContext context)
         {
-            context.Services.AddDevExpressBlazor(_ => ConfigureJSInterop(context.JSInterop));
+	        context.Services.TryAddScoped<IEnvironmentInfoFactory, MockEnvironmentInfoFactory>();
+	        context.Services.TryAddScoped<IEnvironmentInfo, MockEnvironmentInfo>();
+	        context.Services.AddOptions();
+	        context.Services.AddLogging();
+	        context.Services.TryAddComponentRequiredServices();
+	        context.Services.AddDevExpressBlazor(_ => ConfigureJSInterop(context.JSInterop));
         }
 
         /// <summary>

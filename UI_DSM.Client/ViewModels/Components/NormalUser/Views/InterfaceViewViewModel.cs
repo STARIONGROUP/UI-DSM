@@ -21,6 +21,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
     using CDP4Common.EngineeringModelData;
 
     using DevExpress.Blazor;
+    using DevExpress.Blazor.Internal;
 
     using DynamicData;
 
@@ -266,6 +267,11 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         public override async Task InitializeProperties(IEnumerable<Thing> things, Guid projectId, Guid reviewId, Guid reviewTaskId, List<string> prefilters, List<string> additionnalColumnsVisibleAtStart, Participant participant)
         {
             await base.InitializeProperties(things, projectId, reviewId, reviewTaskId, prefilters, additionnalColumnsVisibleAtStart, participant);
+
+            if (prefilters.Any(x => string.Equals(x , "product")))
+            {
+	            this.ShouldShowProducts = true;
+            }
 
             var products = this.Things.OfType<ElementDefinition>()
                 .Where(x => x.IsProduct())
@@ -573,9 +579,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <param name="model">the model to select</param>
         public void SetSelectedModel(Model model)
         {
-            if (model is DiagramNode node && this.ProductsMap.ContainsKey(node))
+			this.ProductsMap.Keys.ForEach(x => x.IsSelected = false);
+
+			if (model is DiagramNode node && this.ProductsMap.ContainsKey(node))
             {
                 this.SelectedElement = this.ProductsMap[node];
+                node.IsSelected = true;
             }
             else if (model is DiagramPort port && this.PortsMap.ContainsKey(port))
             {
@@ -649,7 +658,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             {
                 Title = product.Name,
                 HasComments = product.HasComment(),
-                ThingId = product.ThingId
+                ThingId = product.ThingId,
+                IsSelected = this.SelectedElement is ProductRowViewModel productRow && productRow.ThingId == product.ThingId
             };
 
             var nodeCanBeAdded = !this.ProductsMap.ContainsValue(product);
@@ -680,7 +690,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                         case "IN_OUT":
                             portNode.Direction = PortDirection.InOut;
                             break;
-                        case "OUT":
+                        case "OUTPUT":
                             portNode.Direction = PortDirection.Out;
                             break;
                     }

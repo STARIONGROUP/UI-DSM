@@ -63,6 +63,10 @@ else
 				            TextFieldName="@nameof(IterationData.IterationName)"/>
 			</DxFormLayoutItem>
 		</DxFormLayout>
+		@if (!this.ViewModel.AvailableModels.Any() && !this.ViewModel.AvailableIterationsSetup.Any())
+		{
+			<p class="alert-danger">Warning, no Model with frozen Iteration available</p>
+		}
 		<div class="modal-footer m-top-10px">
 			<DxButton RenderStyle="ButtonRenderStyle.Primary" Text="@this.UploadText" 
 			          Enabled="@(this.ViewModel.IterationUploadStatus != UploadStatus.Uploading)"

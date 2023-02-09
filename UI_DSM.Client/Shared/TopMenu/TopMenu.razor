@@ -40,7 +40,10 @@
 				@if (this.ViewModel.UserName != null)
 				{
 					<button @onclick="this.OpenUserMenu">
-						<UserAvatar UserInitials="@this.ViewModel.UserName[0].ToString()"/>
+						@{
+							var initials = this.ViewModel.UserName.Length > 1 ? this.ViewModel.UserName[..2] : this.ViewModel.UserName[..1];
+							<UserAvatar UserInitials="@initials" />
+						}
 					</button>
 				}
 

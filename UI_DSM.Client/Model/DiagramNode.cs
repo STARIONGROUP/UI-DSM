@@ -39,5 +39,10 @@ namespace UI_DSM.Client.Model
         ///     Gets or sets if the model has comments.
         /// </summary>
         public bool HasComments { get; set; }
+
+        /// <summary>
+        /// Value asserting that the element is selected
+        /// </summary>
+        public bool IsSelected { get; set; }
     }
 }

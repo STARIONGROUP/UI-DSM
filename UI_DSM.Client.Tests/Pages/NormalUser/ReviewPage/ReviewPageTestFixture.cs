@@ -24,9 +24,11 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewPage
     using UI_DSM.Client.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.Pages.NormalUser.ReviewPage;
     using UI_DSM.Client.Services.Administration.ParticipantService;
+    using UI_DSM.Client.Services.AnnotationService;
     using UI_DSM.Client.Services.ReviewObjectiveService;
     using UI_DSM.Client.Services.ReviewService;
     using UI_DSM.Client.Tests.Helpers;
+    using UI_DSM.Client.ViewModels.App.Comments;
     using UI_DSM.Client.ViewModels.Components.NormalUser.ProjectReview;
     using UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewPage;
     using UI_DSM.Shared.Models;
@@ -42,6 +44,7 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewPage
         private Mock<IReviewService> reviewService;
         private Mock<IParticipantService> participantService;
         private Mock<IReviewObjectiveService> reviewObjectiveService;
+        private Mock<IAnnotationService> annotationService;
 
         [SetUp]
         public void Setup()
@@ -52,11 +55,14 @@ namespace UI_DSM.Client.Tests.Pages.NormalUser.ReviewPage
             this.reviewService = new Mock<IReviewService>();
             this.reviewObjectiveService = new Mock<IReviewObjectiveService>();
             this.participantService = new Mock<IParticipantService>();
-            
+            this.annotationService = new Mock<IAnnotationService>();
+
             this.viewModel = new ReviewPageViewModel(this.reviewService.Object, this.reviewObjectiveViewModel, 
-                null, this.participantService.Object, this.reviewObjectiveService.Object);
+                null, this.participantService.Object, this.reviewObjectiveService.Object
+                ,this.annotationService.Object);
 
             this.context.Services.AddSingleton(this.viewModel);
+            this.context.Services.AddSingleton<ICommentsViewModel>(new Mock<ICommentsViewModel>().Object);
         }
 
         [TearDown]
