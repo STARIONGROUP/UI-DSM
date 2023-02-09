@@ -51,7 +51,7 @@ services:
 
   meilisearch:
     container_name: uidsm_meilisearch
-    image: "getmeili/meilisearch:latest"
+    image: "getmeili/meilisearch:v0.30.4"
     environment:
       - MEILI_NO_ANALYTICS=false
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterkey}
