@@ -95,7 +95,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The header of the table
         /// </summary>
-        public string HeaderName { get; }
+        public string HeaderName { get; set; }
 
         /// <summary>
         ///     Selects the current <see cref="IHaveThingRowViewModel" />

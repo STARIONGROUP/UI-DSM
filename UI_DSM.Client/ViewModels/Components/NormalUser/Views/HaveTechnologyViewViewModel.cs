@@ -58,6 +58,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             {
                 row.ComputeId(this.IsOnTechnologyView);
             }
+
+            this.TraceabilityTableViewModel.HeaderName = this.HeaderName;
         }
 
         /// <summary>

@@ -34,7 +34,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The header of the table
         /// </summary>
-        string HeaderName { get; }
+        string HeaderName { get; set; }
 
         /// <summary>
         ///     Gets the <see cref="RelationshipRowViewModel" /> that links two <see cref="IHaveThingRowViewModel" />

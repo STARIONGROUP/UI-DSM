@@ -43,12 +43,12 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
         /// <summary>
         ///     The header name of the column
         /// </summary>
-        protected override string HeaderName => "source prod/source req";
+        protected override string HeaderName => this.IsOnTechnologyView ? "source prod(technology)/source req" : "source prod/source req";
 
-        /// <summary>
-        ///     The name of the category
-        /// </summary>
-        protected override string TraceCategoryName => ThingExtension.SatisfyCategoryName;
+		/// <summary>
+		///     The name of the category
+		/// </summary>
+		protected override string TraceCategoryName => ThingExtension.SatisfyCategoryName;
 
         /// <summary>
         ///     Apply a filtering on rows

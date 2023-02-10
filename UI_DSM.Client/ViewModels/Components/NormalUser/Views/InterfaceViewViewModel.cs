@@ -304,6 +304,8 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
                     this.allPorts.First(source => source.ThingId == x.Source.Iid),
                     this.allPorts.First(target => target.ThingId == x.Target.Iid))));
 
+            this.allInterfaces.RemoveAll(x => x.NatureCategory == null);
+
             this.filteredProducts = new List<ProductRowViewModel>(this.allProducts.OrderBy(x => x.Thing.Name));
             this.Interfaces = new List<InterfaceRowViewModel>(this.allInterfaces.OrderBy(x => x.Id));
             this.ApplyVisibility();
@@ -1095,7 +1097,7 @@ namespace UI_DSM.Client.ViewModels.Components.NormalUser.Views
             });
 
             var availableProducts = new List<DefinedThing>(this.allProducts
-                    .Select(x => x.Thing.Owner))
+                .Select(x => x.Thing.Owner))
                 .DistinctBy(x => x.Iid)
                 .OrderBy(x => x.ShortName)
                 .ToList();
