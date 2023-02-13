@@ -572,7 +572,7 @@ namespace UI_DSM.Client.ViewModels.Pages.NormalUser.ReviewTaskPage
         private async Task OnConfirmMarkAsDone()
         {
             this.ReviewTask.Status = this.ReviewTask.Status == StatusKind.Open ? StatusKind.Done : StatusKind.Open;
-            await this.reviewTaskService.UpdateReviewTask(this.projectId, this.ReviewObjective.EntityContainer.Id, this.ReviewTask);
+            await this.reviewTaskService.UpdateReviewTask(this.projectId, this.reviewId, this.ReviewTask);
             this.OnCancel();
         }
 
