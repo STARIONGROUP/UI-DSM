@@ -286,7 +286,7 @@ namespace UI_DSM.Server.Managers.ReviewObjectiveManager
             {
                 BaseUrl = route,
                 ObjectKind = nameof(ReviewObjective),
-                DisplayText = $"{reviewObjective.Title} : {reviewObjective.Title}",
+                DisplayText = $"{reviewObjective.Title} : {reviewObjective.Description}",
                 Location = $"{((Project)reviewObjective.EntityContainer.EntityContainer).ProjectName} > {((Review)reviewObjective.EntityContainer).Title}"
             };
         }
